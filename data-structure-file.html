@@ -1,0 +1,57 @@
+// In your migration file: database/migrations/xxxx_xx_xx_create_schools_table.php
+public function up()
+{
+    Schema::create('schools', function (Blueprint $table) {
+        $table->id(); // Primary key
+        $table->string('name'); // School name
+        $table->text('description'); // School description
+        $table->string('address'); // School address
+        $table->string('city'); // City
+        $table->string('contact_number')->nullable(); // School contact number
+        $table->string('email')->nullable(); // School email
+        $table->string('website')->nullable(); // School website URL
+        $table->text('facilities')->nullable(); // Facilities available in the school
+        $table->enum('school_type', ['Co-Ed', 'Boys', 'Girls'])->default('Co-Ed'); // School type
+        $table->timestamps(); // Created at, updated at
+    });
+}
+
+// In your migration file: database/migrations/xxxx_xx_xx_create_reviews_table.php
+public function up()
+{
+    Schema::create('reviews', function (Blueprint $table) {
+        $table->id(); // Primary key
+        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+        $table->text('review'); // Review content
+        $table->integer('rating')->default(0); // Rating (1-5)
+        $table->string('reviewer_name'); // Reviewer (Parent/Student)
+        $table->timestamps(); // Created at, updated at
+    });
+}
+
+
+// In your migration file: database/migrations/xxxx_xx_xx_create_events_table.php
+public function up()
+{
+    Schema::create('events', function (Blueprint $table) {
+        $table->id(); // Primary key
+        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+        $table->string('event_name'); // Event name
+        $table->text('event_description'); // Event description
+        $table->date('event_date'); // Event date
+        $table->string('event_location'); // Event location
+        $table->timestamps(); // Created at, updated at
+    });
+}
+
+// In your migration file: database/migrations/xxxx_xx_xx_create_users_table.php
+public function up()
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->string('password');
+        $table->timestamps();
+    });
+}
