@@ -1,17 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Http\Controllers;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 
-class Event extends Model
+class EventController extends Controller
 {
-    use HasFactory;
-
-    // Belongs to a school
-    public function school()
-    {
-        return $this->belongsTo(School::class);
-    }
+    //
 }
