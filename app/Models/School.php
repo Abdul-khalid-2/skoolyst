@@ -9,6 +9,18 @@ class School extends Model
 {
     use HasFactory;
 
+
+    protected $fillable = [
+        'name',
+        'description',
+        'address',
+        'city',
+        'contact_number',
+        'email',
+        'website',
+        'facilities',
+        'school_type',
+    ];
     // One to many relationship with reviews
     public function reviews()
     {

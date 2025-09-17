@@ -114,13 +114,6 @@
             margin-top: auto;
         }
 
-        .page-section {
-            display: none;
-        }
-
-        .page-section.active {
-            display: block;
-        }
 
         .stats-card {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -353,39 +346,6 @@
 
     <!-- Custom JavaScript -->
     <script>
-        // Navigation functionality
-        function showPage(pageId) {
-            // Hide all pages
-            const pages = document.querySelectorAll('.page-section');
-            pages.forEach(page => page.classList.remove('active'));
-
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
-
-            // Update active nav link
-            const navLinks = document.querySelectorAll('.nav-link');
-            navLinks.forEach(link => link.classList.remove('active'));
-
-            // Find and activate the correct nav link
-            const activeLink = document.querySelector(`[onclick="showPage('${pageId}')"]`);
-            if (activeLink) {
-                activeLink.classList.add('active');
-            }
-
-            // Update page title
-            const titles = {
-                'dashboard': 'Dashboard',
-                'products': 'Products',
-                'product-form': 'Add Product'
-            };
-            document.getElementById('pageTitle').textContent = titles[pageId] || 'Dashboard';
-
-            // Close sidebar on mobile after navigation
-            if (window.innerWidth < 768) {
-                closeSidebar();
-            }
-        }
-
         // Sidebar functionality
         function toggleSidebar() {
             const sidebar = document.getElementById("sidebar");
@@ -422,7 +382,7 @@
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
             // Show dashboard by default
-            showPage('dashboard');
+
 
             // Initialize tooltips if needed
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -432,17 +392,17 @@
         });
 
         // Form handling
-        document.addEventListener('submit', function(e) {
-            if (e.target.tagName === 'FORM') {
-                e.preventDefault();
+        // document.addEventListener('submit', function(e) {
+        //     if (e.target.tagName === 'FORM') {
+        //         e.preventDefault();
 
-                // Show success message (in a real app, this would be an API call)
-                alert('Product saved successfully!');
+        //         // Show success message (in a real app, this would be an API call)
+        //         alert('Product saved successfully!');
 
-                // Redirect to products page
-                showPage('products');
-            }
-        });
+        //         // Redirect to products page
+
+        //     }
+        // });
 
         // Search functionality
         function handleSearch(searchTerm) {

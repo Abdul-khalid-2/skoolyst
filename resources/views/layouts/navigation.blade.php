@@ -11,13 +11,13 @@
         </div>
         <ul class="sidebar-nav list-unstyled">
             <li class="nav-item">
-                <a href="#dashboard" class="nav-link active">
+                <a href="{{ route('dashboard') }}" class="nav-link active">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('schooles') }}" class="nav-link">
+                <a href="{{ route('schools') }}" class="nav-link">
                     <i class="fas fa-box"></i>
                     <span>Schooles</span>
                 </a>
@@ -67,7 +67,19 @@
                     <li>
                         <hr class="dropdown-divider">
                     </li>
-                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    <li>
+                        <form class="dropdown-item" method="POST" action="{{ route('logout') }}">
+                            @csrf
+
+                            <x-dropdown-link :href="route('logout')"
+                                onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                {{ __('Log Out') }}
+                            </x-dropdown-link>
+                        </form>
+
+                        <!-- <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a> -->
+                    </li>
                 </ul>
             </div>
         </div>
