@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
 use App\Models\School;
+use App\Models\Event;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -20,19 +20,18 @@ class EventController extends Controller
     /**
      * Show the form for creating a new event.
      */
+    // app/Http/Controllers/EventController.php
     public function create()
     {
-        $schools = School::where('status', 'active')->get();
+        $schools = School::with('branches')->where('status', 'active')->get();
         return view('dashboard.events.create', compact('schools'));
     }
 
-    /**
-     * Store a newly created event in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
             'school_id' => 'required|exists:schools,id',
+            'branch_id' => 'nullable|exists:branches,id',
             'event_name' => 'required|string|max:255',
             'event_description' => 'required|string',
             'event_date' => 'required|date',
@@ -44,6 +43,8 @@ class EventController extends Controller
         return redirect()->route('events.index')
             ->with('success', 'Event created successfully.');
     }
+
+    // Similarly update the edit and update methods
 
     /**
      * Display the specified event.

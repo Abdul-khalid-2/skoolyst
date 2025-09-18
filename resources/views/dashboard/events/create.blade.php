@@ -20,7 +20,7 @@
 
                                 <div class="mb-3">
                                     <label for="school_id" class="form-label">School</label>
-                                    <select class="form-control" id="school_id" name="school_id" required>
+                                    <select class="form-control" id="school_id" name="school_id" required onchange="updateBranches()">
                                         <option value="">Select a school</option>
                                         @foreach($schools as $school)
                                         <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
@@ -32,6 +32,19 @@
                                     <div class="text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                <div class="mb-3">
+                                    <label for="branch_id" class="form-label">Branch (Optional)</label>
+                                    <select class="form-control" id="branch_id" name="branch_id">
+                                        <option value="">Select a branch (optional)</option>
+                                        <!-- Branches will be populated via JavaScript -->
+                                    </select>
+                                    @error('branch_id')
+                                    <div class="text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+
 
                                 <div class="mb-3">
                                     <label for="event_name" class="form-label">Event Name</label>
@@ -85,4 +98,53 @@
             </div>
         </section>
     </main>
+
+
+
+    @push('js')
+    <!-- Add this JavaScript to handle dynamic branch loading -->
+    <script>
+        function updateBranches() {
+            const schoolId = document.getElementById('school_id').value;
+            const branchSelect = document.getElementById('branch_id');
+
+            // Clear existing options
+            branchSelect.innerHTML = '<option value="">Select a branch (optional)</option>';
+
+            if (!schoolId) return;
+
+            // Fetch branches for the selected school
+            fetch(`/api/schools/${schoolId}/branches`)
+                .then(response => response.json())
+                .then(branches => {
+                    branches.forEach(branch => {
+                        const option = document.createElement('option');
+                        option.value = branch.id;
+                        option.textContent = `${branch.name} - ${branch.city}`;
+                        if (branch.is_main_branch) {
+                            option.textContent += ' (Main Branch)';
+                        }
+                        branchSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching branches:', error));
+        }
+
+        // If editing, populate branches on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const schoolId = document.getElementById('school_id').value;
+            if (schoolId) {
+                updateBranches();
+
+                // After loading branches, select the previously selected branch
+                setTimeout(() => {
+                    const branchId = "{{ old('branch_id', isset($event) ? $event->branch_id : '') }}";
+                    if (branchId) {
+                        document.getElementById('branch_id').value = branchId;
+                    }
+                }, 500);
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>

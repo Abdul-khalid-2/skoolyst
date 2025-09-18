@@ -10,7 +10,6 @@ class School extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'uuid',
         'name',
@@ -41,15 +40,24 @@ class School extends Model
             }
         });
     }
-    // One to many relationship with reviews
-    public function reviews()
+
+    public function branches()
     {
-        return $this->hasMany(Review::class);
+        return $this->hasMany(Branch::class);
     }
 
-    // One to many relationship with events
+    public function mainBranch()
+    {
+        return $this->hasOne(Branch::class)->where('is_main_branch', true);
+    }
+
     public function events()
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
     }
 }
