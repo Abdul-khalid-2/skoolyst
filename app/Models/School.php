@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class School extends Model
 {
@@ -41,6 +42,9 @@ class School extends Model
         });
     }
 
+    protected $casts = [
+        'publish_date' => 'datetime',
+    ];
     public function branches()
     {
         return $this->hasMany(Branch::class);
@@ -59,5 +63,20 @@ class School extends Model
     public function reviews()
     {
         return $this->hasMany(Review::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
+    // Scope for school admins to see only their schools
+    public function scopeForUser($query, $user)
+    {
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        return $query->where('id', $user->school_id);
     }
 }
