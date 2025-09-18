@@ -6,7 +6,7 @@
                     <h2 class="mb-0">Schools</h2>
                     <p class="text-muted">Manage registered schools</p>
                 </div>
-                <a href="{{ route('schools.add') }}" class="btn btn-primary">
+                <a href="{{ route('schools.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Add School
                 </a>
             </div>
@@ -31,7 +31,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $school->name }}</td>
                                 <td>{{ $school->email ?? '-' }}</td>
-                                <td>{{ $school->phone ?? '-' }}</td>
+                                <td>{{ $school->contact_number ?? '-' }}</td>
                                 <td>{{ $school->address ?? '-' }}</td>
                                 <td>
                                     @if($school->status === 'active')
