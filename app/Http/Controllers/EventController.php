@@ -2,9 +2,94 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Event;
+use App\Models\School;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    //
+    /**
+     * Display a listing of the events.
+     */
+    public function index()
+    {
+        $events = Event::with('school')->latest()->paginate(10);
+        return view('dashboard.events.index', compact('events'));
+    }
+
+    /**
+     * Show the form for creating a new event.
+     */
+    public function create()
+    {
+        $schools = School::where('status', 'active')->get();
+        return view('dashboard.events.create', compact('schools'));
+    }
+
+    /**
+     * Store a newly created event in storage.
+     */
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'school_id' => 'required|exists:schools,id',
+            'event_name' => 'required|string|max:255',
+            'event_description' => 'required|string',
+            'event_date' => 'required|date',
+            'event_location' => 'required|string|max:255',
+        ]);
+
+        Event::create($validated);
+
+        return redirect()->route('events.index')
+            ->with('success', 'Event created successfully.');
+    }
+
+    /**
+     * Display the specified event.
+     */
+    public function show(Event $event)
+    {
+        $event->load('school');
+        return view('dashboard.events.show', compact('event'));
+    }
+
+    /**
+     * Show the form for editing the specified event.
+     */
+    public function edit(Event $event)
+    {
+        $schools = School::where('status', 'active')->get();
+        return view('dashboard.events.edit', compact('event', 'schools'));
+    }
+
+    /**
+     * Update the specified event in storage.
+     */
+    public function update(Request $request, Event $event)
+    {
+        $validated = $request->validate([
+            'school_id' => 'required|exists:schools,id',
+            'event_name' => 'required|string|max:255',
+            'event_description' => 'required|string',
+            'event_date' => 'required|date',
+            'event_location' => 'required|string|max:255',
+        ]);
+
+        $event->update($validated);
+
+        return redirect()->route('events.index')
+            ->with('success', 'Event updated successfully.');
+    }
+
+    /**
+     * Remove the specified event from storage.
+     */
+    public function destroy(Event $event)
+    {
+        $event->delete();
+
+        return redirect()->route('events.index')
+            ->with('success', 'Event deleted successfully.');
+    }
 }

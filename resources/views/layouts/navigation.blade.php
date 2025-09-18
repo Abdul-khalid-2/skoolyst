@@ -17,9 +17,15 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a href="{{ route('schools') }}" class="nav-link">
+                <a href="{{ route('schools.index') }}" class="nav-link">
                     <i class="fas fa-box"></i>
                     <span>Schooles</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('events.index') }}" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    <span>Events</span>
                 </a>
             </li>
 

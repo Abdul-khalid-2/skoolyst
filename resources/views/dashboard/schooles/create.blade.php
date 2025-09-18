@@ -8,7 +8,7 @@
                     <h2 class="h4 mb-0">Create New School</h2>
                     <p class="mb-0 text-muted">Add a new school to the system</p>
                 </div>
-                <a href="{{ route('schools') }}" class="btn btn-secondary">
+                <a href="{{ route('schools.index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i> Back to Schooles
                 </a>
             </div>

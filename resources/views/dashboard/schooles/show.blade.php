@@ -12,7 +12,7 @@
                     <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-primary me-2">
                         <i class="fas fa-edit me-2"></i> Edit School
                     </a>
-                    <a href="{{ route('schools') }}" class="btn btn-secondary">
+                    <a href="{{ route('schools.index') }}" class="btn btn-secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Schools
                     </a>
                 </div>
