@@ -44,8 +44,6 @@
                                     @enderror
                                 </div>
 
-
-
                                 <div class="mb-3">
                                     <label for="event_name" class="form-label">Event Name</label>
                                     <input type="text" class="form-control" id="event_name" name="event_name"
@@ -99,50 +97,67 @@
         </section>
     </main>
 
-
+    <!-- Add this hidden div to store branches data -->
+    <div id="branches-data" style="display: none;">
+        @foreach($schools as $school)
+        <div class="school-branches" data-school-id="{{ $school->id }}">
+            @foreach($school->branches as $branch)
+            <div data-branch-id="{{ $branch->id }}"
+                data-branch-name="{{ $branch->name }}"
+                data-branch-city="{{ $branch->city }}"
+                data-is-main="{{ $branch->is_main_branch }}">
+            </div>
+            @endforeach
+        </div>
+        @endforeach
+    </div>
 
     @push('js')
-    <!-- Add this JavaScript to handle dynamic branch loading -->
     <script>
         function updateBranches() {
             const schoolId = document.getElementById('school_id').value;
             const branchSelect = document.getElementById('branch_id');
 
-            // Clear existing options
+            // Clear existing options except the first one
             branchSelect.innerHTML = '<option value="">Select a branch (optional)</option>';
 
             if (!schoolId) return;
 
-            // Fetch branches for the selected school
-            fetch(`/api/schools/${schoolId}/branches`)
-                .then(response => response.json())
-                .then(branches => {
-                    branches.forEach(branch => {
-                        const option = document.createElement('option');
-                        option.value = branch.id;
-                        option.textContent = `${branch.name} - ${branch.city}`;
-                        if (branch.is_main_branch) {
-                            option.textContent += ' (Main Branch)';
-                        }
-                        branchSelect.appendChild(option);
-                    });
-                })
-                .catch(error => console.error('Error fetching branches:', error));
+            // Find the branches for the selected school from the hidden data
+            const schoolBranches = document.querySelector(`#branches-data .school-branches[data-school-id="${schoolId}"]`);
+
+            if (schoolBranches) {
+                const branches = schoolBranches.querySelectorAll('div[data-branch-id]');
+
+                branches.forEach(branchDiv => {
+                    const branchId = branchDiv.getAttribute('data-branch-id');
+                    const branchName = branchDiv.getAttribute('data-branch-name');
+                    const branchCity = branchDiv.getAttribute('data-branch-city');
+                    const isMain = branchDiv.getAttribute('data-is-main') === '1';
+
+                    const option = document.createElement('option');
+                    option.value = branchId;
+                    option.textContent = `${branchName} - ${branchCity}`;
+                    if (isMain) {
+                        option.textContent += ' (Main Branch)';
+                    }
+                    branchSelect.appendChild(option);
+                });
+            }
         }
 
-        // If editing, populate branches on page load
+        // Initialize branches on page load if a school is already selected
         document.addEventListener('DOMContentLoaded', function() {
             const schoolId = document.getElementById('school_id').value;
             if (schoolId) {
                 updateBranches();
 
-                // After loading branches, select the previously selected branch
+                // Select the previously selected branch if editing
+                @if(old('branch_id'))
                 setTimeout(() => {
-                    const branchId = "{{ old('branch_id', isset($event) ? $event->branch_id : '') }}";
-                    if (branchId) {
-                        document.getElementById('branch_id').value = branchId;
-                    }
-                }, 500);
+                    document.getElementById('branch_id').value = "{{ old('branch_id') }}";
+                }, 100);
+                @endif
             }
         });
     </script>

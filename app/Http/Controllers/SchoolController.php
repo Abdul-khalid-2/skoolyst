@@ -69,15 +69,13 @@ class SchoolController extends Controller
     public function show($id)
     {
         try {
-            // Eager load relationships if needed
-            $school = School::with(['reviews', 'events'])->findOrFail($id);
+            // Eager load relationships including branches
+            $school = School::with(['reviews', 'events', 'branches'])->findOrFail($id);
 
             return view('dashboard.schooles.show', compact('school'));
         } catch (ModelNotFoundException $e) {
-
             return redirect()->route('schools')->with('error', 'School not found.');
         } catch (\Exception $e) {
-
             return redirect()->back()->with('error', 'Failed to load school details. Please try again.');
         }
     }

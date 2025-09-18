@@ -308,6 +308,7 @@
             }
         }
     </style>
+    @stack('css')
 </head>
 
 <body>
@@ -445,6 +446,7 @@
             }
         });
     </script>
+    @stack('js')
 </body>
 
 </html>

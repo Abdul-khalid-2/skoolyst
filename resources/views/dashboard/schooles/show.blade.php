@@ -106,6 +106,9 @@
                                 <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-primary">
                                     <i class="fas fa-edit me-2"></i> Edit School
                                 </a>
+                                <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-success">
+                                    <i class="fas fa-plus me-2"></i> Add Branch
+                                </a>
                                 <form action="{{ route('schools.destroy', $school->id) }}" method="POST" class="d-grid">
                                     @csrf
                                     @method('DELETE')
@@ -132,10 +135,54 @@
                                 <span>Upcoming Events</span>
                                 <span class="badge bg-success">{{ $school->events->where('event_date', '>=', now())->count() }}</span>
                             </div>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span>Total Branches</span>
+                                <span class="badge bg-info">{{ $school->branches->count() }}</span>
+                            </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Active Since</span>
                                 <span class="badge bg-info">{{ $school->created_at->diffForHumans() }}</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Branches Card -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h5 class="card-title mb-0">Branches</h5>
+                            <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-sm btn-outline-primary">
+                                View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            @if($school->branches->count() > 0)
+                            @foreach($school->branches->take(3) as $branch)
+                            <div class="border-bottom pb-3 mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ $branch->name }}</strong>
+                                        @if($branch->is_main_branch)
+                                        <span class="badge bg-primary ms-1">Main</span>
+                                        @endif
+                                        <p class="mb-0 small">{{ $branch->address }}, {{ $branch->city }}</p>
+                                    </div>
+                                    <div class="btn-group">
+                                        <a href="{{ route('schools.branches.show', [$school, $branch]) }}" class="btn btn-sm btn-outline-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endforeach
+                            @if($school->branches->count() > 3)
+                            <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-sm btn-outline-primary w-100">View All Branches</a>
+                            @endif
+                            @else
+                            <p class="text-muted text-center">No branches yet.</p>
+                            <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-sm btn-primary w-100">
+                                <i class="fas fa-plus me-1"></i> Add First Branch
+                            </a>
+                            @endif
                         </div>
                     </div>
 
