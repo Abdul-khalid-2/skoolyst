@@ -53,7 +53,7 @@ class SchoolController extends Controller
 
             School::create($validated);
 
-            return redirect()->route('schools')->with('success', 'School created successfully!');
+            return redirect()->route('schools.index')->with('success', 'School created successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
 
             return redirect()->back()->withErrors($e->validator)->withInput();

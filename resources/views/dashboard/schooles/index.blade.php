@@ -28,7 +28,7 @@
                         <tbody>
                             @forelse($schools as $school)
                             <tr>
-                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ ($schools->currentPage() - 1) * $schools->perPage() + $loop->iteration }}</td>
                                 <td>{{ $school->name }}</td>
                                 <td>{{ $school->email ?? '-' }}</td>
                                 <td>{{ $school->contact_number ?? '-' }}</td>
@@ -66,6 +66,13 @@
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Pagination Links -->
+                @if($schools->hasPages())
+                <div class="card-footer">
+                    {{ $schools->links() }}
+                </div>
+                @endif
             </div>
         </section>
     </main>
