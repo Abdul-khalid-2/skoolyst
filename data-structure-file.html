@@ -76,3 +76,45 @@ public function up()
         $table->timestamps();
     });
 }
+
+
+public function up()
+{
+    Schema::create('branches', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+        $table->string('name'); // Branch name (could be same as main school or different)
+        $table->string('address');
+        $table->string('city');
+        $table->string('contact_number')->nullable();
+        $table->string('branch_head_name')->nullable(); // Principal/Head of branch
+        $table->decimal('latitude', 10, 8)->nullable(); // For maps
+        $table->decimal('longitude', 11, 8)->nullable(); // For maps
+        $table->boolean('is_main_branch')->default(false); // Flag for main branch
+        $table->enum('status', ['active', 'inactive'])->default('active');
+        $table->timestamps();
+
+        // Indexes
+        $table->index('school_id');
+        $table->index('city');
+        $table->index('is_main_branch');
+    });
+}
+
+public function up()
+{
+    Schema::table('reviews', function (Blueprint $table) {
+        $table->foreignId('branch_id')
+            ->nullable()
+            ->after('school_id')
+            ->constrained('branches')
+            ->onDelete('cascade');
+    });
+}
+ public function up()
+{
+    Schema::table('events', function (Blueprint $table) {
+        $table->foreignId('branch_id')->nullable()->after('school_id')
+            ->constrained('branches')->onDelete('cascade');
+    });
+}
