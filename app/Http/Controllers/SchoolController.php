@@ -121,6 +121,12 @@ class SchoolController extends Controller
                 'website'         => 'nullable|url|max:255',
                 'facilities'      => 'nullable|string',
                 'school_type'     => 'required|in:Co-Ed,Boys,Girls',
+                'regular_fees'    => 'nullable|numeric',
+                'discounted_fees' => 'nullable|numeric',
+                'admission_fees'  => 'nullable|numeric',
+                'status'          => 'required|in:active,inactive',
+                'visibility'      => 'required|in:public,private',
+                'publish_date'    => 'nullable|date',
             ]);
 
             $school->update($validated);
