@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
+use App\Http\Controllers\PageController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -24,6 +25,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Events Routes
     Route::resource('events', EventController::class);
+
+
+    // routes/web.php
+    Route::get('/pages/create', [PageController::class, 'index'])->name('pages.index');
+    Route::post('/pages/store', [PageController::class, 'store'])->name('pages.store');
+    Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show'); // Add this line
 
     // Branch Routes within School context
     Route::prefix('schools/{school}')->group(function () {
@@ -48,5 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+
 
 require __DIR__ . '/auth.php';

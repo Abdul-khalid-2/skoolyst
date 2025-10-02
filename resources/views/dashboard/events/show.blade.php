@@ -7,6 +7,9 @@
                     <p class="mb-0 text-muted">View complete information about {{ $event->event_name }}</p>
                 </div>
                 <div>
+                    <a href="{{ route('pages.index') }}" class="btn btn-primary me-2">
+                        <i class="fas fa-edit me-2"></i> Create Banner
+                    </a>
                     <a href="{{ route('events.edit', $event->id) }}" class="btn btn-primary me-2">
                         <i class="fas fa-edit me-2"></i> Edit Event
                     </a>
