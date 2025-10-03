@@ -21,10 +21,6 @@
             --dark: #212529;
         }
 
-        * {
-            box-sizing: border-box;
-        }
-
         body {
             background: #f5f7fb;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -85,21 +81,6 @@
             padding: 2rem;
             transition: all 0.3s ease;
             border: 1px solid #eef2f6;
-        }
-
-        .content-element:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .content-element h1,
-        .content-element h2,
-        .content-element h3,
-        .content-element h4 {
-            color: #243447;
-            margin: 0 0 1rem 0;
-            font-weight: 600;
-            line-height: 1.3;
         }
 
         .content-element h1 {
@@ -420,131 +401,136 @@
     <!-- Page Content -->
     <div class="container page-content">
         @if(isset($page->structure['elements']) && count($page->structure['elements']) > 0)
-        @foreach($page->structure['elements'] as $index => $element)
-        <div class="content-element 
-                    @if($element['type'] === 'banner') banner-element 
-                    @elseif($element['type'] === 'title' || $element['type'] === 'textarea') text-element
-                    @elseif($element['type'] === 'image') image-element
-                    @endif"
-            style="animation-delay: {{ $index * 0.1 }}s !important;">
+        @php
+        // Sort elements by their top position to maintain drag & drop order
+        $elements = $page->structure['elements'];
+        usort($elements, function($a, $b) {
+        $topA = $a['position']['top'] ?? 0;
+        $topB = $b['position']['top'] ?? 0;
+        return $topA <=> $topB;
+            });
+            @endphp
 
-            <span class="element-badge">
-                <i class="fas 
-                            @if($element['type'] === 'title') fa-heading 
-                            @elseif($element['type'] === 'banner') fa-image 
-                            @elseif($element['type'] === 'image') fa-photo-video 
-                            @elseif($element['type'] === 'textarea') fa-paragraph 
-                            @elseif($element['type'] === 'two-col-tr' || $element['type'] === 'two-col-rt') fa-columns 
-                            @elseif($element['type'] === 'raw-html') fa-code 
-                            @else fa-cube 
-                            @endif me-1">
-                </i>
-                {{ $element['type'] }}
-            </span>
+            @foreach($elements as $index => $element)
+            <div class="content-element">
+                <span class="element-badge">
+                    <i class="fas 
+                    @if($element['type'] === 'title') fa-heading 
+                    @elseif($element['type'] === 'banner') fa-image 
+                    @elseif($element['type'] === 'image') fa-photo-video 
+                    @elseif($element['type'] === 'textarea') fa-paragraph 
+                    @elseif($element['type'] === 'two-col-tr' || $element['type'] === 'two-col-rt') fa-columns 
+                    @elseif($element['type'] === 'raw-html') fa-code 
+                    @else fa-cube 
+                    @endif me-1">
+                    </i>
+                    {{ $element['type'] }}
+                </span>
 
-            @switch($element['type'])
-            @case('title')
-            <div class="title-content">
-                {!! $element['content']['html'] ?? '<h1>'.($element['content']['text'] ?? '').'</h1>' !!}
-            </div>
-            @break
+                @switch($element['type'])
 
-            @case('banner')
-            @if(isset($element['content']['src']) && $element['content']['src'])
-            <img src="{{ $element['content']['src'] }}" alt="Banner" class="img-fluid">
-            @if(isset($element['content']['caption']) && $element['content']['caption'])
-            <div class="banner-caption">
-                <p class="mb-0 text-center">{{ $element['content']['caption'] }}</p>
-            </div>
-            @endif
-            @else
-            <div class="text-center py-5 bg-light">
-                <i class="fas fa-image fa-3x text-muted mb-3"></i>
-                <p class="text-muted">No banner image</p>
-            </div>
-            @endif
-            @break
-
-            @case('image')
-            @if(isset($element['content']['src']) && $element['content']['src'])
-            <img src="{{ $element['content']['src'] }}" alt="Image" class="img-fluid rounded">
-            @if(isset($element['content']['caption']) && $element['content']['caption'])
-            <div class="image-caption">{{ $element['content']['caption'] }}</div>
-            @endif
-            @else
-            <div class="text-center py-4 bg-light rounded">
-                <i class="fas fa-image fa-2x text-muted mb-2"></i>
-                <p class="text-muted">No image available</p>
-            </div>
-            @endif
-            @break
-
-            @case('textarea')
-            <div class="rich-text-content">
-                {!! $element['content']['data'] ?? '' !!}
-            </div>
-            @break
-
-            @case('two-col-tr')
-            <div class="two-col">
-                <div class="col-left">
-                    {!! $element['content']['left'] ?? '' !!}
+                @case('title')
+                <div class="title-content">
+                    <h1>{!! App\Http\Controllers\PageController::cleanContent($element['content']['html'] ?? $element['content']['text'] ?? 'Untitled') !!}</h1>
                 </div>
-                <div class="col-right">
-                    @if(isset($element['content']['images']) && count($element['content']['images']) > 0)
-                    <img src="{{ $element['content']['images'][0] }}" alt="Image" class="img-fluid rounded">
-                    @else
-                    <div class="text-center py-4 bg-light rounded">
-                        <i class="fas fa-image fa-2x text-muted mb-2"></i>
-                        <p class="text-muted">No image</p>
+                @break
+
+                @case('banner')
+                @if(isset($element['content']['src']) && $element['content']['src'])
+                <img src="{{ $element['content']['src'] }}" alt="Banner" class="img-fluid">
+                @if(isset($element['content']['caption']) && $element['content']['caption'])
+                <div class="banner-caption">
+                    <p class="mb-0 text-center">{{ $element['content']['caption'] }}</p>
+                </div>
+                @endif
+                @else
+                <div class="text-center py-5 bg-light">
+                    <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No banner image</p>
+                </div>
+                @endif
+                @break
+
+                @case('image')
+                @if(isset($element['content']['src']) && $element['content']['src'])
+                <img src="{{ $element['content']['src'] }}" alt="Image" class="img-fluid rounded">
+                @if(isset($element['content']['caption']) && $element['content']['caption'])
+                <div class="image-caption">{{ $element['content']['caption'] }}</div>
+                @endif
+                @else
+                <div class="text-center py-4 bg-light rounded">
+                    <i class="fas fa-image fa-2x text-muted mb-2"></i>
+                    <p class="text-muted">No image available</p>
+                </div>
+                @endif
+                @break
+
+                @case('textarea')
+                <div class="rich-text-content">
+                    {!! App\Http\Controllers\PageController::cleanContent($element['content']['data'] ?? '') !!}
+                </div>
+                @break
+
+                @case('two-col-tr')
+                <div class="two-col">
+                    <div class="col-left">
+                        {!! App\Http\Controllers\PageController::cleanContent($element['content']['left'] ?? '') !!}
                     </div>
-                    @endif
-                </div>
-            </div>
-            @break
-
-            @case('two-col-rt')
-            <div class="two-col">
-                <div class="col-left">
-                    @if(isset($element['content']['images']) && count($element['content']['images']) > 0)
-                    <img src="{{ $element['content']['images'][0] }}" alt="Image" class="img-fluid rounded">
-                    @else
-                    <div class="text-center py-4 bg-light rounded">
-                        <i class="fas fa-image fa-2x text-muted mb-2"></i>
-                        <p class="text-muted">No image</p>
+                    <div class="col-right">
+                        @if(isset($element['content']['images']) && count($element['content']['images']) > 0)
+                        <img src="{{ $element['content']['images'][0] }}" alt="Image" class="img-fluid rounded">
+                        @else
+                        <div class="text-center py-4 bg-light rounded">
+                            <i class="fas fa-image fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No image</p>
+                        </div>
+                        @endif
                     </div>
-                    @endif
                 </div>
-                <div class="col-right">
-                    {!! $element['content']['right'] ?? '' !!}
+                @break
+
+                @case('two-col-rt')
+                <div class="two-col">
+                    <div class="col-left">
+                        @if(isset($element['content']['images']) && count($element['content']['images']) > 0)
+                        <img src="{{ $element['content']['images'][0] }}" alt="Image" class="img-fluid rounded">
+                        @else
+                        <div class="text-center py-4 bg-light rounded">
+                            <i class="fas fa-image fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No image</p>
+                        </div>
+                        @endif
+                    </div>
+                    <div class="col-right">
+                        {!! App\Http\Controllers\PageController::cleanContent($element['content']['right'] ?? '') !!}
+                    </div>
                 </div>
-            </div>
-            @break
+                @break
 
-            @case('raw-html')
-            <div class="raw-html-content">
-                {!! $element['content']['html'] ?? '' !!}
-            </div>
-            @break
+                @case('raw-html')
+                <div class="raw-html-content">
+                    {!! $element['content']['html'] ?? '' !!}
+                </div>
+                @break
 
-            @default
-            <div class="alert alert-warning">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                Unknown element type: {{ $element['type'] }}
+                @default
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Unknown element type: {{ $element['type'] }}
+                </div>
+                @endswitch
             </div>
-            @endswitch
-        </div>
-        @endforeach
-        @else
-        <div class="empty-state">
-            <i class="fas fa-file-alt"></i>
-            <h3>No Content Available</h3>
-            <p>This page doesn't have any content elements yet.</p>
-            <a href="{{ route('pages.index') }}" class="btn btn-primary mt-3">
-                <i class="fas fa-plus me-2"></i>Create Content
-            </a>
-        </div>
-        @endif
+            @endforeach
+            @else
+            <div class="empty-state">
+                <i class="fas fa-file-alt"></i>
+                <h3>No Content Available</h3>
+                <p>This page doesn't have any content elements yet.</p>
+                <a href="{{ route('pages.index') }}" class="btn btn-primary mt-3">
+                    <i class="fas fa-plus me-2"></i>Create Content
+                </a>
+            </div>
+            @endif
     </div>
 
     <!-- Page Footer -->
@@ -552,12 +538,11 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
-                    <p>&copy; {{ date('Y') }} Bolt.ai. All rights reserved.</p>
+                    <p>&copy; {{ date('Y') }} Skoolyst. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <p>
-                        <i class="fas fa-bolt me-1"></i>
-                        Built with Bolt.ai Form Builder
+                        Skoolyst.com find your future
                     </p>
                 </div>
             </div>

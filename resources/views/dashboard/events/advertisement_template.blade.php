@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bolt.ai — Dynamic Form / Page Builder</title>
+    <title>Skoolyst — Dynamic Form / Page Builder</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -346,7 +346,7 @@
             <!-- Sidebar -->
             <div class="col-12 col-lg-3 sidebar">
                 <div class="d-flex align-items-center mb-3">
-                    <h4 class="mb-0 text-primary"><i class="fas fa-bolt me-2"></i>Bolt.ai</h4>
+                    <h4 class="mb-0 text-primary">Skoolyst</h4>
                     <small class="ms-auto small-muted">Form Builder</small>
                 </div>
 
@@ -418,8 +418,8 @@
 
                 <div class="group-title">Page Actions</div>
                 <div class="d-grid gap-2 mt-2">
-                    <button id="exportJson" class="btn btn-primary"><i class="fas fa-save me-1"></i>Export JSON</button>
-                    <button id="importJsonBtn" class="btn btn-outline-secondary"><i class="fas fa-folder-open me-1"></i>Import JSON</button>
+                    <!-- <button id="exportJson" class="btn btn-primary"><i class="fas fa-save me-1"></i>Export JSON</button>
+                    <button id="importJsonBtn" class="btn btn-outline-secondary"><i class="fas fa-folder-open me-1"></i>Import JSON</button> -->
                     <button id="clearCanvas" class="btn btn-outline-danger"><i class="fas fa-trash me-1"></i>Clear Canvas</button>
                 </div>
 
@@ -545,7 +545,7 @@
             const data = {
                 meta: {
                     created_at: new Date().toISOString(),
-                    source: 'Bolt.ai Form Builder',
+                    source: 'Skoolyst Form Builder',
                     version: '1.0'
                 },
                 elements: []
