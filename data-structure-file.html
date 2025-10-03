@@ -42,6 +42,7 @@ public function up()
 {
     Schema::create('reviews', function (Blueprint $table) {
         $table->id(); // Primary key
+        $table->uuid('uuid')->unique();
         $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
         $table->text('review'); // Review content
         $table->integer('rating')->default(0); // Rating (1-5)

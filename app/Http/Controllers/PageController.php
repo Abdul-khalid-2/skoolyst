@@ -16,6 +16,15 @@ class PageController extends Controller
      */
     public function index()
     {
+        // Fetch pages with related school and optional event
+        $pages = Page::with(['school', 'event'])
+            ->latest()
+            ->paginate(10);
+
+        return view('dashboard.events.advertisements', compact('pages'));
+    }
+    public function create()
+    {
         $events = Event::all(['id', 'event_name']);
         return view('dashboard.events.advertisement_template', compact('events'));
     }
@@ -60,6 +69,7 @@ class PageController extends Controller
             // Create the page
             $page = Page::create([
                 'event_id' => $request->event_id,
+                'school_id' => $request->school_id,
                 'name' => $request->name,
                 'slug' => $slug,
                 'structure' => $sanitizedData,

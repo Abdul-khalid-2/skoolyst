@@ -28,7 +28,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // routes/web.php
-    Route::get('/pages/create', [PageController::class, 'index'])->name('pages.index');
+    Route::get('/pages', [PageController::class, 'index'])->name('pages.index');
+    Route::get('/pages/create', [PageController::class, 'create'])->name('pages.create');
+    Route::get('/pages/edit', [PageController::class, 'edit'])->name('pages.edit');
+    Route::get('/pages/destroy', [PageController::class, 'destroy'])->name('pages.destroy');
     Route::post('/pages/store', [PageController::class, 'store'])->name('pages.store');
     Route::get('/pages/{page:slug}', [PageController::class, 'show'])->name('pages.show'); // Add this line
 

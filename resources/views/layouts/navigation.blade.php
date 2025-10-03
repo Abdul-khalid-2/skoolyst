@@ -28,6 +28,12 @@
                     <span>Events</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('pages.index') }}" class="nav-link">
+                    <i class="fas fa-box"></i>
+                    <span>Advertisements</span>
+                </a>
+            </li>
 
         </ul>
     </nav>
