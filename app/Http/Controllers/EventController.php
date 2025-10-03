@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\School;
 use App\Models\Event;
 use Illuminate\Http\Request;
@@ -44,15 +45,21 @@ class EventController extends Controller
             ->with('success', 'Event created successfully.');
     }
 
-    // Similarly update the edit and update methods
-
-    /**
-     * Display the specified event.
-     */
     public function show(Event $event)
     {
-        $event->load('school');
+        // Load both school and branch relationships
+        $event->load(['school', 'branch']);
         return view('dashboard.events.show', compact('event'));
+    }
+
+    // Add this method to get branches for a school (for AJAX if needed)
+    public function getBranches($schoolId)
+    {
+        $branches = Branch::where('school_id', $schoolId)
+            ->where('status', 'active')
+            ->get();
+
+        return response()->json($branches);
     }
 
     /**

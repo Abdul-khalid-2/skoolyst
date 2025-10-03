@@ -40,12 +40,35 @@
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
+                                    <strong>Branch:</strong>
+                                    <p>
+                                        @if($event->branch)
+                                        {{ $event->branch->name }}
+                                        @else
+                                        <span class="text-muted">All Branches</span>
+                                        @endif
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
                                     <strong>Event Date:</strong>
                                     <p>{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}</p>
                                 </div>
+                            </div>
+
+                            <div class="row mb-3">
                                 <div class="col-md-6">
                                     <strong>Event Location:</strong>
                                     <p>{{ $event->event_location }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Scope:</strong>
+                                    <p>
+                                        @if($event->branch)
+                                        <span class="badge bg-info">Branch Specific</span>
+                                        @else
+                                        <span class="badge bg-primary">School Wide</span>
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
 
@@ -93,12 +116,44 @@
                         </div>
                     </div>
 
-                    <!-- School Information Card -->
+                    <!-- School & Branch Information Card -->
                     <div class="card">
                         <div class="card-header bg-white">
-                            <h5 class="card-title mb-0">School Information</h5>
+                            <h5 class="card-title mb-0">
+                                @if($event->branch)
+                                Branch Information
+                                @else
+                                School Information
+                                @endif
+                            </h5>
                         </div>
                         <div class="card-body">
+                            @if($event->branch)
+                            <!-- Branch Details -->
+                            <div class="mb-3">
+                                <strong>Branch Name:</strong>
+                                <p>{{ $event->branch->name }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Address:</strong>
+                                <p>{{ $event->branch->address }}, {{ $event->branch->city }}</p>
+                            </div>
+                            <div class="mb-3">
+                                <strong>Contact Number:</strong>
+                                <p>{{ $event->branch->contact_number ?? 'Not provided' }}</p>
+                            </div>
+                            @if($event->branch->branch_head_name)
+                            <div class="mb-3">
+                                <strong>Branch Head:</strong>
+                                <p>{{ $event->branch->branch_head_name }}</p>
+                            </div>
+                            @endif
+                            <a href="{{ route('schools.branches.show', [$event->branch->school_id, $event->branch->id]) }}"
+                                class="btn btn-sm btn-outline-primary w-100">
+                                View Branch Details
+                            </a>
+                            @else
+                            <!-- School Details (when no branch selected) -->
                             <div class="mb-3">
                                 <strong>School Name:</strong>
                                 <p>{{ $event->school->name }}</p>
@@ -114,6 +169,7 @@
                             <a href="{{ route('schools.show', $event->school->id) }}" class="btn btn-sm btn-outline-primary w-100">
                                 View School Details
                             </a>
+                            @endif
                         </div>
                     </div>
                 </div>

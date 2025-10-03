@@ -11,6 +11,8 @@ class CreatePagesTable extends Migration
     {
         Schema::create('pages', function (Blueprint $table) {
             $table->id(); // Auto-increment primary key
+            $table->uuid('uuid')->unique();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
             $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
             $table->string('name')->notNullable();
             $table->string('slug')->nullable();
