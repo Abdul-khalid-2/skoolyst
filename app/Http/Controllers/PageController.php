@@ -14,15 +14,80 @@ class PageController extends Controller
     /**
      * Display the form builder page
      */
+    // Show list of pages (advertisements)
     public function index()
     {
-        // Fetch pages with related school and optional event
-        $pages = Page::with(['school', 'event'])
-            ->latest()
-            ->paginate(10);
-
+        $pages = Page::with(['school', 'event'])->latest()->paginate(10);
         return view('dashboard.events.advertisements', compact('pages'));
     }
+
+    // Show edit form for a specific page
+    public function edit($id)
+    {
+        $page = Page::with(['school', 'event'])->findOrFail($id);
+        $events = Event::all(); // Needed for event dropdown
+
+        return view('dashboard.events.advertisements_edit', compact('page', 'events'));
+    }
+
+    // Update existing page
+    public function update(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'event_id' => 'nullable|exists:events,id',
+            'form_data' => 'required|json',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        try {
+            $page = Page::findOrFail($id);
+
+            $formData = json_decode($request->form_data, true);
+            $sanitizedData = $this->sanitizeFormData($formData);
+
+            // Keep same slug or regenerate if name changed (optional)
+            $slug = $page->slug;
+            if ($page->name !== $request->name) {
+                $slug = Str::slug($request->name);
+                $counter = 1;
+                $originalSlug = $slug;
+                while (Page::where('slug', $slug)->where('id', '!=', $page->id)->exists()) {
+                    $slug = $originalSlug . '-' . $counter;
+                    $counter++;
+                }
+            }
+
+            $page->update([
+                'name' => $request->name,
+                'event_id' => $request->event_id,
+                'slug' => $slug,
+                'structure' => $sanitizedData,
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Page updated successfully!',
+                'page_id' => $page->id,
+                'slug' => $page->slug,
+                'redirect_url' => route('pages.show', $page->slug)
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update page: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+
     public function create()
     {
         $events = Event::all(['id', 'event_name']);
