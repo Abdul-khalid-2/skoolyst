@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Validation\Rule;
 
 class SchoolController extends Controller
 {
     public function index()
     {
         try {
-            // Optimized query with eager loading if you have relationships
+
             $schools = School::select([
                 'id',
                 'name',
@@ -45,21 +47,38 @@ class SchoolController extends Controller
                 'address'         => 'required|string|max:255',
                 'city'            => 'required|string|max:100',
                 'contact_number'  => 'nullable|string|max:20',
-                'email'           => 'nullable|email|max:100',
+                'email'           => 'required|email|max:100|unique:schools,email|unique:users,email',
                 'website'         => 'nullable|url|max:255',
                 'facilities'      => 'nullable|string',
                 'school_type'     => 'required|in:Co-Ed,Boys,Girls',
-                'regular_fees'    => 'nullable|numeric',
-                'discounted_fees' => 'nullable|numeric',
-                'admission_fees'  => 'nullable|numeric',
+                'regular_fees'    => 'nullable|numeric|min:0',
+                'discounted_fees' => 'nullable|numeric|min:0',
+                'admission_fees'  => 'nullable|numeric|min:0',
                 'status'          => 'required|in:active,inactive',
                 'visibility'      => 'required|in:public,private',
                 'publish_date'    => 'nullable|date',
+                'password'        => 'required|string|min:8|confirmed',
             ]);
 
-            School::create($validated);
+            // Create school
+            $school = new School($validated);
+            $school->save();
 
-            return redirect()->route('schools.index')->with('success', 'School created successfully!');
+            $user = new User();
+            $user->name = $validated['name'] . ' Admin';
+            $user->email = $validated['email'];
+            $user->password = $validated['password'];
+            $user->school_id = $school->id;
+            $user->save();
+
+            // Assign role
+            $user->assignRole('school-admin');
+
+            if ($request->has('save_and_add')) {
+                return redirect()->route('schools.create')->with('success', 'School and admin created successfully!');
+            }
+
+            return redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
 
             return redirect()->back()->withErrors($e->validator)->withInput();
@@ -75,7 +94,6 @@ class SchoolController extends Controller
     public function show($id)
     {
         try {
-            // Eager load relationships including branches
             $school = School::with(['reviews', 'events', 'branches'])->findOrFail($id);
 
             return view('dashboard.schooles.show', compact('school'));
@@ -86,9 +104,6 @@ class SchoolController extends Controller
         }
     }
 
-    /**
-     * Show the form for editing the specified school.
-     */
     public function edit($id)
     {
         try {
@@ -102,9 +117,6 @@ class SchoolController extends Controller
         }
     }
 
-    /**
-     * Update the specified school in storage.
-     */
     public function update(Request $request, $id)
     {
 
@@ -117,36 +129,64 @@ class SchoolController extends Controller
                 'address'         => 'required|string|max:255',
                 'city'            => 'required|string|max:100',
                 'contact_number'  => 'nullable|string|max:20',
-                'email'           => 'nullable|email|max:100',
+                'email'           => [
+                    'nullable',
+                    'email',
+                    'max:100',
+                    Rule::unique('schools', 'email')->ignore($school->id),
+                    Rule::unique('users', 'email')->ignore($school->user?->id),
+                ],
                 'website'         => 'nullable|url|max:255',
                 'facilities'      => 'nullable|string',
                 'school_type'     => 'required|in:Co-Ed,Boys,Girls',
-                'regular_fees'    => 'nullable|numeric',
-                'discounted_fees' => 'nullable|numeric',
-                'admission_fees'  => 'nullable|numeric',
+                'regular_fees'    => 'nullable|numeric|min:0',
+                'discounted_fees' => 'nullable|numeric|min:0',
+                'admission_fees'  => 'nullable|numeric|min:0',
                 'status'          => 'required|in:active,inactive',
                 'visibility'      => 'required|in:public,private',
                 'publish_date'    => 'nullable|date',
+                'password'        => 'nullable|string|min:8|confirmed',
             ]);
 
+            // Update school
             $school->update($validated);
 
-            return redirect()->route('schools')->with('success', 'School updated successfully!');
+            $user = $school->user;
+
+            if ($user) {
+                $user->name = $validated['name'] . ' Admin';
+
+                if (!empty($validated['email'])) {
+                    $user->email = $validated['email'];
+                }
+
+                if (!empty($validated['password'])) {
+                    $user->password = $validated['password'];
+                }
+
+                $user->save();
+            } else {
+                $user = User::create([
+                    'name' => $validated['name'] . ' Admin',
+                    'email' => $validated['email'],
+                    'password' => $validated['password'] ?? 'default123',
+                    'school_id' => $school->id,
+                ]);
+                $user->assignRole('school-admin');
+            }
+
+            return redirect()->route('schools.show', $school->id)
+                ->with('success', 'School updated successfully!');
         } catch (ModelNotFoundException $e) {
-
-            return redirect()->route('schools')->with('error', 'School not found.');
+            return redirect()->route('schools.index')->with('error', 'School not found.');
         } catch (\Illuminate\Validation\ValidationException $e) {
-
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-
+            Log::error('Error updating school: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
     }
 
-    /**
-     * Remove the specified school from storage.
-     */
     public function destroy($id)
     {
         try {

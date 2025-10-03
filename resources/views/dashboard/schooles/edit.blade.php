@@ -110,6 +110,19 @@
                                     @enderror
                                 </div>
 
+                                <!-- Admin Account (Optional Update) -->
+                                <h5 class="mt-4 mb-3">Admin Account (Optional)</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password" class="form-label">New Password</label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password">
+                                    </div>
+                                </div>
+
                                 <!-- Pricing -->
                                 <h5 class="mb-3">School Fees</h5>
                                 <div class="row">

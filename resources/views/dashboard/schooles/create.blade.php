@@ -73,6 +73,18 @@
                                         <option value="Girls">Girls</option>
                                     </select>
                                 </div>
+                                <!-- Admin Account -->
+                                <h5 class="mt-4 mb-3">Admin Account</h5>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password" class="form-label">Admin Password <span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter admin password" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
+                                    </div>
+                                </div>
 
                                 <!-- Pricing -->
                                 <h5 class="mb-3">School Fees</h5>
