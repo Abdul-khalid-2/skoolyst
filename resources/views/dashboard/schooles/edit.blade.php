@@ -343,17 +343,18 @@
                         </div>
                         <div class="card-body">
                             <p class="small text-muted">Once you delete a school, there is no going back. Please be certain.</p>
-                            <form action="{{ route('schools.destroy', $school->id) }}" method="POST">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger w-100"
-                                    onclick="return confirm('Are you sure you want to delete this school? This action cannot be undone.')">
-                                    <i class="fas fa-trash me-2"></i> Delete School
-                                </button>
-                            </form>
+                            <button type="button" class="btn btn-danger w-100" id="delete-school-btn">
+                                <i class="fas fa-trash me-2"></i> Delete School
+                            </button>
                         </div>
                     </div>
                 </div>
+            </form>
+
+            <!-- Hidden Delete Form (outside main form, not nested) -->
+            <form id="delete-form" action="{{ route('schools.destroy', $school->id) }}" method="POST" style="display: none;">
+                @csrf
+                @method('DELETE')
             </form>
         </section>
     </main>
@@ -393,6 +394,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+
+            const deleteButton = document.getElementById('delete-school-btn');
+            const deleteForm = document.getElementById('delete-form');
+
+            if (deleteButton && deleteForm) {
+                deleteButton.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this school? This action cannot be undone.')) {
+                        deleteForm.submit();
+                    }
+                });
+            }
+
             // Banner image preview
             const bannerInput = document.getElementById('banner_image');
             const bannerPreview = document.getElementById('banner-preview');

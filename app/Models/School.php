@@ -15,6 +15,7 @@ class School extends Model
     protected $fillable = [
         'uuid',
         'name',
+        'banner_image',
         'description',
         'address',
         'city',

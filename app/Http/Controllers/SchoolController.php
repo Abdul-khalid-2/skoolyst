@@ -70,7 +70,9 @@ class SchoolController extends Controller
             'address'         => 'required|string|max:255',
             'city'            => 'required|string|max:100',
             'contact_number'  => 'nullable|string|max:20',
-            'email'           => 'required|email|max:100|unique:schools,email|unique:users,email',
+            'email'           => 'required|email|max:100|unique:schools,email',
+            'admin-name'      => 'required|string|max:255',
+            'admin-email'     => 'required|email|max:100|email|unique:users,email',
             'website'         => 'nullable|url|max:255',
             'facilities'      => 'nullable|string',
             'school_type'     => 'required|in:Co-Ed,Boys,Girls',
@@ -158,8 +160,24 @@ class SchoolController extends Controller
     public function update(Request $request, $id)
     {
 
+
         try {
-            $school = School::findOrFail($id);
+            $school = School::with('images')->findOrFail($id);
+
+            // Count current non-removed images
+            $currentImageCount = $school->images->count();
+            $imagesToRemove = $request->input('remove_images', []);
+            $imagesToKeepCount = $currentImageCount - count($imagesToRemove);
+
+            // Count new uploads
+            $newImageCount = $request->hasFile('school_images') ? count($request->file('school_images')) : 0;
+
+            // Enforce max 10 total images
+            if (($imagesToKeepCount + $newImageCount) > 10) {
+                return redirect()->back()->withErrors([
+                    'school_images' => 'Total number of school images cannot exceed 10.'
+                ])->withInput();
+            }
 
             $validated = $request->validate([
                 'name'            => 'required|string|max:255',
@@ -184,20 +202,76 @@ class SchoolController extends Controller
                 'visibility'      => 'required|in:public,private',
                 'publish_date'    => 'nullable|date',
                 'password'        => 'nullable|string|min:8|confirmed',
+                'admin-name'      => 'required|string|max:255',
+                'admin-email'     => 'nullable|email|max:100|unique:users,email,' . optional($school->user)->id,
+                'banner_image'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'school_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image_titles'    => 'nullable|array',
+                'image_titles.*'  => 'nullable|string|max:255',
+                'remove_images'   => 'nullable|array',
+                'remove_images.*' => 'exists:school_images,id,school_id,' . $school->id,
             ]);
 
-            // Update school
-            $school->update($validated);
+            // Update school basic info
+            $school->update([
+                'name'              => $validated['name'],
+                'description'       => $validated['description'] ?? null,
+                'address'           => $validated['address'],
+                'city'              => $validated['city'],
+                'contact_number'    => $validated['contact_number'] ?? null,
+                'email'             => $validated['email'] ?? null,
+                'website'           => $validated['website'] ?? null,
+                'facilities'        => $validated['facilities'] ?? null,
+                'school_type'       => $validated['school_type'],
+                'regular_fees'      => $validated['regular_fees'] ?? null,
+                'discounted_fees'   => $validated['discounted_fees'] ?? null,
+                'admission_fees'    => $validated['admission_fees'] ?? null,
+                'status'            => $validated['status'],
+                'visibility'        => $validated['visibility'],
+                'publish_date'      => $validated['publish_date'] ?? null,
+            ]);
 
             $folderName = Str::slug($school->name, '-');
 
-            if ($request->hasFile('banner_image')) {
+            // ✅ Handle banner image
+            $shouldRemoveBanner = $request->filled('remove_banner');
+            $hasNewBanner = $request->hasFile('banner_image');
+
+            if ($shouldRemoveBanner) {
+                if ($school->banner_image) {
+                    Storage::disk('website')->delete($school->banner_image);
+                    $school->banner_image = null;
+                }
+            }
+
+            if ($hasNewBanner) {
+                // Delete old banner if exists
                 if ($school->banner_image) {
                     Storage::disk('website')->delete($school->banner_image);
                 }
-                $path = Storage::disk('website')
+                $bannerPath = Storage::disk('website')
                     ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
-                $school->update(['banner_image' => $path]);
+                $school->banner_image = $bannerPath;
+            }
+
+            $school->save();
+
+            // ✅ Handle banner title & tagline (non-file fields)
+            $school->update([
+                'banner_title'   => $request->input('banner_title'),
+                'banner_tagline' => $request->input('banner_tagline'),
+            ]);
+
+            // ✅ Delete selected existing images
+            if (!empty($imagesToRemove)) {
+                $imagesToDelete = SchoolImage::where('school_id', $school->id)
+                    ->whereIn('id', $imagesToRemove)
+                    ->get();
+
+                foreach ($imagesToDelete as $image) {
+                    Storage::disk('website')->delete($image->image_path);
+                    $image->delete();
+                }
             }
 
             // ✅ Add new gallery images
@@ -210,31 +284,30 @@ class SchoolController extends Controller
                         SchoolImage::create([
                             'school_id'  => $school->id,
                             'image_path' => $imagePath,
-                            'title'      => $request->image_titles[$index] ?? null,
+                            'title'      => $request->input("image_titles.{$index}"),
                         ]);
                     }
                 }
             }
 
+            // ✅ Update or create admin user
             $user = $school->user;
 
             if ($user) {
-                $user->name = $validated['name'] . ' Admin';
-
-                if (!empty($validated['email'])) {
-                    $user->email = $validated['email'];
+                $user->name = $validated['admin-name'];
+                if (!empty($validated['admin-email'])) {
+                    $user->email = $validated['admin-email'];
                 }
-
                 if (!empty($validated['password'])) {
-                    $user->password = $validated['password'];
+                    $user->password = bcrypt($validated['password']);
                 }
-
                 $user->save();
             } else {
+                // Create user if missing (shouldn't happen normally, but safe)
                 $user = User::create([
-                    'name' => $validated['admin-name'] ?? $validated['name'] . ' Admin',
-                    'email' => $validated['admin-email'] ?? $validated['email'],
-                    'password' => $validated['password'] ?? 'default123',
+                    'name'     => $validated['admin-name'],
+                    'email'    => $validated['admin-email'] ?? $validated['email'],
+                    'password' => bcrypt($validated['password'] ?? 'default123'),
                     'school_id' => $school->id,
                 ]);
                 $user->assignRole('school-admin');
@@ -247,7 +320,7 @@ class SchoolController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            Log::error('Error updating school: ' . $e->getMessage());
+            Log::error('Error updating school: ' . $e->getMessage(), ['school_id' => $id]);
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
     }
