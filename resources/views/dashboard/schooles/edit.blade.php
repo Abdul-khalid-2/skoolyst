@@ -13,179 +13,196 @@
                 </a>
             </div>
 
-            <div class="row">
+            <form class="row" method="POST" action="{{ route('schools.update', $school->id) }}" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <form method="POST" action="{{ route('schools.update', $school->id) }}" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-
-                                <!-- Basic Information -->
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                            id="name" name="name" value="{{ old('name', $school->name) }}" required>
-                                        @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                            id="email" name="email" value="{{ old('email', $school->email) }}">
-                                        @error('email')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('address') is-invalid @enderror"
-                                            id="address" name="address" value="{{ old('address', $school->address) }}" required>
-                                        @error('address')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('city') is-invalid @enderror"
-                                            id="city" name="city" value="{{ old('city', $school->city) }}" required>
-                                        @error('city')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="contact_number" class="form-label">Contact Number</label>
-                                        <input type="text" class="form-control @error('contact_number') is-invalid @enderror"
-                                            id="contact_number" name="contact_number" value="{{ old('contact_number', $school->contact_number) }}">
-                                        @error('contact_number')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="website" class="form-label">Website</label>
-                                        <input type="url" class="form-control @error('website') is-invalid @enderror"
-                                            id="website" name="website" value="{{ old('website', $school->website) }}">
-                                        @error('website')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">School Description</label>
-                                    <textarea class="form-control @error('description') is-invalid @enderror"
-                                        id="description" name="description" rows="4">{{ old('description', $school->description) }}</textarea>
-                                    @error('description')
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Admin Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('admin-name') is-invalid @enderror"
+                                        id="admin-name" name="admin-name" value="{{ old('name', $user->name) }}" required>
+                                    @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
-
-                                <div class="mb-3">
-                                    <label for="facilities" class="form-label">Facilities</label>
-                                    <textarea class="form-control @error('facilities') is-invalid @enderror"
-                                        id="facilities" name="facilities" rows="4">{{ old('facilities', $school->facilities) }}</textarea>
-                                    @error('facilities')
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Admin Email</label>
+                                    <input type="email" class="form-control @error('admin-email') is-invalid @enderror"
+                                        id="admin-email" name="admin-email" value="{{ old('email', $user->email) }}">
+                                    @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('school_type') is-invalid @enderror" id="school_type" name="school_type" required>
-                                        <option value="">Select School Type</option>
-                                        <option value="Co-Ed" {{ old('school_type', $school->school_type) == 'Co-Ed' ? 'selected' : '' }}>Co-Ed</option>
-                                        <option value="Boys" {{ old('school_type', $school->school_type) == 'Boys' ? 'selected' : '' }}>Boys</option>
-                                        <option value="Girls" {{ old('school_type', $school->school_type) == 'Girls' ? 'selected' : '' }}>Girls</option>
-                                    </select>
-                                    @error('school_type')
+                            <!-- Basic Information -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                        id="name" name="name" value="{{ old('name', $school->name) }}" required>
+                                    @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                        id="email" name="email" value="{{ old('email', $school->email) }}">
+                                    @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
 
-                                <!-- Admin Account (Optional Update) -->
-                                <h5 class="mt-4 mb-3">Admin Account (Optional)</h5>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="password" class="form-label">New Password</label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('address') is-invalid @enderror"
+                                        id="address" name="address" value="{{ old('address', $school->address) }}" required>
+                                    @error('address')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control @error('city') is-invalid @enderror"
+                                        id="city" name="city" value="{{ old('city', $school->city) }}" required>
+                                    @error('city')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_number" class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control @error('contact_number') is-invalid @enderror"
+                                        id="contact_number" name="contact_number" value="{{ old('contact_number', $school->contact_number) }}">
+                                    @error('contact_number')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="website" class="form-label">Website</label>
+                                    <input type="url" class="form-control @error('website') is-invalid @enderror"
+                                        id="website" name="website" value="{{ old('website', $school->website) }}">
+                                    @error('website')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">School Description</label>
+                                <textarea class="form-control @error('description') is-invalid @enderror"
+                                    id="description" name="description" rows="4">{{ old('description', $school->description) }}</textarea>
+                                @error('description')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="facilities" class="form-label">Facilities</label>
+                                <textarea class="form-control @error('facilities') is-invalid @enderror"
+                                    id="facilities" name="facilities" rows="4">{{ old('facilities', $school->facilities) }}</textarea>
+                                @error('facilities')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
+                                <select class="form-control @error('school_type') is-invalid @enderror" id="school_type" name="school_type" required>
+                                    <option value="">Select School Type</option>
+                                    <option value="Co-Ed" {{ old('school_type', $school->school_type) == 'Co-Ed' ? 'selected' : '' }}>Co-Ed</option>
+                                    <option value="Boys" {{ old('school_type', $school->school_type) == 'Boys' ? 'selected' : '' }}>Boys</option>
+                                    <option value="Girls" {{ old('school_type', $school->school_type) == 'Girls' ? 'selected' : '' }}>Girls</option>
+                                </select>
+                                @error('school_type')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Admin Account (Optional Update) -->
+                            <h5 class="mt-4 mb-3">Admin Account (Optional)</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">New Password</label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Leave blank to keep current password">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password">
+                                </div>
+                            </div>
+
+                            <!-- Pricing -->
+                            <h5 class="mb-3">School Fees</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="regular_fees" class="form-label">Regular Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="regular_fees" name="regular_fees"
+                                            value="{{ old('regular_fees', $school->regular_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="password_confirmation" class="form-label">Confirm New Password</label>
-                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="discounted_fees" class="form-label">Discounted Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
+                                            value="{{ old('discounted_fees', $school->discounted_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>
                                 </div>
-
-                                <!-- Pricing -->
-                                <h5 class="mb-3">School Fees</h5>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="regular_fees" class="form-label">Regular Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="regular_fees" name="regular_fees"
-                                                value="{{ old('regular_fees', $school->regular_fees) }}" placeholder="0.00" step="0.01" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
-                                                value="{{ old('discounted_fees', $school->discounted_fees) }}" placeholder="0.00" step="0.01" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="admission_fees" class="form-label">Admission Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="admission_fees" name="admission_fees"
-                                                value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
-                                        </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="admission_fees" class="form-label">Admission Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="admission_fees" name="admission_fees"
+                                            value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>
                                 </div>
+                            </div>
 
-                                <!-- Additional Info -->
-                                <h5 class="mb-3">Additional Information</h5>
-                                <div class="mb-3">
-                                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="status" name="status" required>
-                                        <option value="active" {{ old('status', $school->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ old('status', $school->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                    </select>
-                                </div>
+                            <!-- Additional Info -->
+                            <h5 class="mb-3">Additional Information</h5>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="active" {{ old('status', $school->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                    <option value="inactive" {{ old('status', $school->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="visibility" name="visibility" required>
-                                        <option value="public" {{ old('visibility', $school->visibility) == 'public' ? 'selected' : '' }}>Public</option>
-                                        <option value="private" {{ old('visibility', $school->visibility) == 'private' ? 'selected' : '' }}>Private</option>
-                                    </select>
-                                </div>
+                            <div class="mb-3">
+                                <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
+                                <select class="form-control" id="visibility" name="visibility" required>
+                                    <option value="public" {{ old('visibility', $school->visibility) == 'public' ? 'selected' : '' }}>Public</option>
+                                    <option value="private" {{ old('visibility', $school->visibility) == 'private' ? 'selected' : '' }}>Private</option>
+                                </select>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="publish_date" class="form-label">Publish Date</label>
-                                    <input type="datetime-local" class="form-control" id="publish_date" name="publish_date"
-                                        value="{{ old('publish_date', $school->publish_date ? \Carbon\Carbon::parse($school->publish_date)->format('Y-m-d\TH:i') : '') }}">
-                                </div>
+                            <div class="mb-3">
+                                <label for="publish_date" class="form-label">Publish Date</label>
+                                <input type="datetime-local" class="form-control" id="publish_date" name="publish_date"
+                                    value="{{ old('publish_date', $school->publish_date ? \Carbon\Carbon::parse($school->publish_date)->format('Y-m-d\TH:i') : '') }}">
+                            </div>
 
-                                <!-- Form Actions -->
-                                <div class="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Update School
-                                    </button>
-                                    <a href="{{ route('schools.show', $school->id) }}" class="btn btn-outline-secondary">
-                                        Cancel
-                                    </a>
-                                </div>
-                            </form>
+                            <!-- Form Actions -->
+                            <div class="d-flex gap-2 pt-3 border-top">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Update School
+                                </button>
+                                <a href="{{ route('schools.show', $school->id) }}" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -197,10 +214,10 @@
                             <h5 class="card-title mb-0">Banner Image</h5>
                         </div>
                         <div class="card-body">
-                            @if($school->banner_image)
+                            @if($school->banner_url)
                             <div class="mb-3 text-center">
                                 <p class="text-muted">Current Banner</p>
-                                <img src="{{ asset('storage/' . $school->banner_image) }}" class="img-fluid rounded mb-3" style="max-height: 150px;">
+                                <img src="{{ $school->banner_url }}" class="img-fluid rounded mb-3" style="max-height: 150px;">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="remove_banner" name="remove_banner" value="1">
                                     <label class="form-check-label text-danger" for="remove_banner">
@@ -263,7 +280,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <img src="{{ asset('storage/' . $image->path) }}" class="img-thumbnail" style="max-height: 100px;">
+                                                <img src="{{ asset('website/' . $image->image_path) }}" class="img-thumbnail" style="max-height: 100px;">
                                             </div>
                                             <div class="col-md-6">
                                                 <p class="mb-0"><strong>Title:</strong> {{ $image->title }}</p>
@@ -337,7 +354,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </section>
     </main>
 

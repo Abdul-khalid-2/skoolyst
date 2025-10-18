@@ -6,9 +6,11 @@
                     <h2 class="mb-0">Schools</h2>
                     <p class="text-muted">Manage registered schools</p>
                 </div>
+                @role('super-admin')
                 <a href="{{ route('schools.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Add School
                 </a>
+                @endrole
             </div>
 
             <div class="card">
@@ -48,6 +50,7 @@
                                         <a href="{{ route('schools.show', $school->id) }}" class="btn btn-sm btn-outline-info">
                                             <i class="fas fa-eye"></i>
                                         </a>
+                                        @role('super-admin')
                                         <form action="{{ route('schools.destroy', $school->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
@@ -55,6 +58,7 @@
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
+                                        @endrole
                                     </div>
                                 </td>
                             </tr>

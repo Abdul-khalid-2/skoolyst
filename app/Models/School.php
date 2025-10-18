@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class School extends Model
 {
@@ -78,5 +79,16 @@ class School extends Model
         }
 
         return $query->where('id', $user->school_id);
+    }
+
+    public function images()
+    {
+        return $this->hasMany(SchoolImage::class);
+    }
+
+
+    public function getBannerUrlAttribute(): string
+    {
+        return $this->banner_image ? asset('website/' . $this->banner_image) : asset('website/images/male_advocate_avatar.jpg');
     }
 }

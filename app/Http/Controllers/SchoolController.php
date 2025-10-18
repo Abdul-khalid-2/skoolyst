@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\School;
+use App\Models\SchoolImage;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class SchoolController extends Controller
 {
@@ -15,18 +18,38 @@ class SchoolController extends Controller
     {
         try {
 
-            $schools = School::select([
-                'id',
-                'name',
-                'email',
-                'contact_number',
-                'city',
-                'address',
-                'school_type',
-                'created_at'
-            ])->latest()->paginate(10);
+            if (auth()->user()->hasRole('super-admin')) {
+                $schools = School::select([
+                    'id',
+                    'name',
+                    'email',
+                    'contact_number',
+                    'city',
+                    'address',
+                    'school_type',
+                    'created_at'
+                ])->latest()->paginate(10);
 
-            return view('dashboard.schooles.index', compact('schools'));
+                return view('dashboard.schooles.index', compact('schools'));
+            } elseif (auth()->user()->hasRole('school-admin')) {
+
+                $schoolAdminSchoolId = auth()->user()->school_id;
+                $schools = School::where('visibility', 'public')
+                    ->select([
+                        'id',
+                        'name',
+                        'email',
+                        'contact_number',
+                        'city',
+                        'address',
+                        'school_type',
+                        'created_at'
+                    ])->where('id', $schoolAdminSchoolId)->latest()->paginate(10);
+
+                return view('dashboard.schooles.index', compact('schools'));
+            } else {
+                return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+            }
         } catch (\Exception $e) {
             Log::error('Error fetching schools: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load schools. Please try again.');
@@ -40,52 +63,66 @@ class SchoolController extends Controller
 
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'name'            => 'required|string|max:255',
-                'description'     => 'nullable|string',
-                'address'         => 'required|string|max:255',
-                'city'            => 'required|string|max:100',
-                'contact_number'  => 'nullable|string|max:20',
-                'email'           => 'required|email|max:100|unique:schools,email|unique:users,email',
-                'website'         => 'nullable|url|max:255',
-                'facilities'      => 'nullable|string',
-                'school_type'     => 'required|in:Co-Ed,Boys,Girls',
-                'regular_fees'    => 'nullable|numeric|min:0',
-                'discounted_fees' => 'nullable|numeric|min:0',
-                'admission_fees'  => 'nullable|numeric|min:0',
-                'status'          => 'required|in:active,inactive',
-                'visibility'      => 'required|in:public,private',
-                'publish_date'    => 'nullable|date',
-                'password'        => 'required|string|min:8|confirmed',
-            ]);
 
-            // Create school
-            $school = new School($validated);
-            $school->save();
+        $validated = $request->validate([
+            'name'            => 'required|string|max:255',
+            'description'     => 'nullable|string',
+            'address'         => 'required|string|max:255',
+            'city'            => 'required|string|max:100',
+            'contact_number'  => 'nullable|string|max:20',
+            'email'           => 'required|email|max:100|unique:schools,email|unique:users,email',
+            'website'         => 'nullable|url|max:255',
+            'facilities'      => 'nullable|string',
+            'school_type'     => 'required|in:Co-Ed,Boys,Girls',
+            'regular_fees'    => 'nullable|numeric|min:0',
+            'discounted_fees' => 'nullable|numeric|min:0',
+            'admission_fees'  => 'nullable|numeric|min:0',
+            'status'          => 'required|in:active,inactive',
+            'visibility'      => 'required|in:public,private',
+            'publish_date'    => 'nullable|date',
+            'password'        => 'required|string|min:8|confirmed',
+        ]);
 
-            $user = new User();
-            $user->name = $validated['name'] . ' Admin';
-            $user->email = $validated['email'];
-            $user->password = $validated['password'];
-            $user->school_id = $school->id;
-            $user->save();
+        // Create school
+        $school = new School($validated);
+        $school->save();
+        // ✅ Folder name by school name (slug-safe)
+        $folderName = Str::slug($school->name, '-');
 
-            // Assign role
-            $user->assignRole('school-admin');
-
-            if ($request->has('save_and_add')) {
-                return redirect()->route('schools.create')->with('success', 'School and admin created successfully!');
-            }
-
-            return redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
-        } catch (\Illuminate\Validation\ValidationException $e) {
-
-            return redirect()->back()->withErrors($e->validator)->withInput();
-        } catch (\Exception $e) {
-
-            return redirect()->back()->with('error', 'Failed to create school. Please try again.')->withInput();
+        // ✅ Handle banner image upload
+        if ($request->hasFile('banner_image')) {
+            $path = Storage::disk('website')
+                ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
+            $school->update(['banner_image' => $path]);
         }
+
+        // ✅ Handle multiple gallery images
+        if ($request->hasFile('school_images')) {
+            foreach ($request->file('school_images') as $index => $imageFile) {
+                if ($imageFile) {
+                    $imagePath = Storage::disk('website')
+                        ->putFile("school/{$folderName}/gallery", $imageFile);
+
+                    SchoolImage::create([
+                        'school_id'  => $school->id,
+                        'image_path' => $imagePath,
+                        'title'      => $request->image_titles[$index] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        $user = new User();
+        $user->name = $validated['admin-name'] ?? $validated['name'] . ' Admin';
+        $user->email = $validated['admin-email'] ?? $validated['email'];
+        $user->password = $validated['password'];
+        $user->school_id = $school->id;
+        $user->save();
+
+        // Assign role
+        $user->assignRole('school-admin');
+
+        return redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
     }
 
     /**
@@ -108,7 +145,8 @@ class SchoolController extends Controller
     {
         try {
             $school = School::findOrFail($id);
-            return view('dashboard.schooles.edit', compact('school'));
+            $user = user::where('school_id', $school->id)->first();
+            return view('dashboard.schooles.edit', compact('school', 'user'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('schools')->with('error', 'School not found.');
         } catch (\Exception $e) {
@@ -151,6 +189,33 @@ class SchoolController extends Controller
             // Update school
             $school->update($validated);
 
+            $folderName = Str::slug($school->name, '-');
+
+            if ($request->hasFile('banner_image')) {
+                if ($school->banner_image) {
+                    Storage::disk('website')->delete($school->banner_image);
+                }
+                $path = Storage::disk('website')
+                    ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
+                $school->update(['banner_image' => $path]);
+            }
+
+            // ✅ Add new gallery images
+            if ($request->hasFile('school_images')) {
+                foreach ($request->file('school_images') as $index => $imageFile) {
+                    if ($imageFile) {
+                        $imagePath = Storage::disk('website')
+                            ->putFile("school/{$folderName}/gallery", $imageFile);
+
+                        SchoolImage::create([
+                            'school_id'  => $school->id,
+                            'image_path' => $imagePath,
+                            'title'      => $request->image_titles[$index] ?? null,
+                        ]);
+                    }
+                }
+            }
+
             $user = $school->user;
 
             if ($user) {
@@ -167,8 +232,8 @@ class SchoolController extends Controller
                 $user->save();
             } else {
                 $user = User::create([
-                    'name' => $validated['name'] . ' Admin',
-                    'email' => $validated['email'],
+                    'name' => $validated['admin-name'] ?? $validated['name'] . ' Admin',
+                    'email' => $validated['admin-email'] ?? $validated['email'],
                     'password' => $validated['password'] ?? 'default123',
                     'school_id' => $school->id,
                 ]);

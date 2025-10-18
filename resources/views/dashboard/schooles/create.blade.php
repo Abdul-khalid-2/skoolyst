@@ -14,140 +14,150 @@
             </div>
 
 
-            <div class="row">
+            <form class="row" method="POST" action="{{ route('schools.store') }}" enctype="multipart/form-data">
+                @csrf
+
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
-                            <form method="POST" action="{{ route('schools.store') }}" enctype="multipart/form-data">
-                                @csrf
-                                <!-- Basic Information -->
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter school name" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address">
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">Admin Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="admin-name" name="admin-name" placeholder="Enter Admin Name" required>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Admin Email</label>
+                                    <input type="email" class="form-control" id="admin-email" name="admin-email" placeholder="Enter Admin email address">
+                                </div>
+                            </div>
+                            <!-- Basic Information -->
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter school name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address">
+                                </div>
+                            </div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required>
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                                </div>
+                            </div>
 
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="contact_number" class="form-label">Contact Number</label>
-                                        <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter contact number">
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="website" class="form-label">Website</label>
-                                        <input type="url" class="form-control" id="website" name="website" placeholder="Enter school website URL">
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="contact_number" class="form-label">Contact Number</label>
+                                    <input type="text" class="form-control" id="contact_number" name="contact_number" placeholder="Enter contact number">
                                 </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="website" class="form-label">Website</label>
+                                    <input type="url" class="form-control" id="website" name="website" placeholder="Enter school website URL">
+                                </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="description" class="form-label">School Description</label>
-                                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter school description"></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label for="description" class="form-label">School Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter school description"></textarea>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="facilities" class="form-label">Facilities</label>
-                                    <textarea class="form-control" id="facilities" name="facilities" rows="4" placeholder="Enter available facilities"></textarea>
-                                </div>
+                            <div class="mb-3">
+                                <label for="facilities" class="form-label">Facilities</label>
+                                <textarea class="form-control" id="facilities" name="facilities" rows="4" placeholder="Enter available facilities"></textarea>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="school_type" name="school_type" required>
-                                        <option value="">Select School Type</option>
-                                        <option value="Co-Ed">Co-Ed</option>
-                                        <option value="Boys">Boys</option>
-                                        <option value="Girls">Girls</option>
-                                    </select>
+                            <div class="mb-3">
+                                <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
+                                <select class="form-control" id="school_type" name="school_type" required>
+                                    <option value="">Select School Type</option>
+                                    <option value="Co-Ed">Co-Ed</option>
+                                    <option value="Boys">Boys</option>
+                                    <option value="Girls">Girls</option>
+                                </select>
+                            </div>
+                            <!-- Admin Account -->
+                            <h5 class="mt-4 mb-3">Admin Account</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="password" class="form-label">Admin Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter admin password" required>
                                 </div>
-                                <!-- Admin Account -->
-                                <h5 class="mt-4 mb-3">Admin Account</h5>
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label for="password" class="form-label">Admin Password <span class="text-danger">*</span></label>
-                                        <input type="password" class="form-control" id="password" name="password" placeholder="Enter admin password" required>
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
-                                    </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
                                 </div>
+                            </div>
 
-                                <!-- Pricing -->
-                                <h5 class="mb-3">School Fees</h5>
-                                <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="regular_fees" class="form-label">Regular Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="regular_fees" name="regular_fees" placeholder="0.00" step="0.01" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="discounted_fees" name="discounted_fees" placeholder="0.00" step="0.01" min="0">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="admission_fees" class="form-label">Admission Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">$</span>
-                                            <input type="number" class="form-control" id="admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0">
-                                        </div>
+                            <!-- Pricing -->
+                            <h5 class="mb-3">School Fees</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="regular_fees" class="form-label">Regular Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="regular_fees" name="regular_fees" placeholder="0.00" step="0.01" min="0">
                                     </div>
                                 </div>
-
-                                <!-- Additional Info -->
-                                <h5 class="mb-3">Additional Information</h5>
-                                <div class="mb-3">
-                                    <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="status" name="status" required>
-                                        <option value="active" selected>Active</option>
-                                        <option value="inactive">Inactive</option>
-                                    </select>
+                                <div class="col-md-4 mb-3">
+                                    <label for="discounted_fees" class="form-label">Discounted Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="discounted_fees" name="discounted_fees" placeholder="0.00" step="0.01" min="0">
+                                    </div>
                                 </div>
-
-                                <div class="mb-3">
-                                    <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
-                                    <select class="form-control" id="visibility" name="visibility" required>
-                                        <option value="public">Public</option>
-                                        <option value="private" selected>Private</option>
-                                    </select>
+                                <div class="col-md-4 mb-3">
+                                    <label for="admission_fees" class="form-label">Admission Fees</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">$</span>
+                                        <input type="number" class="form-control" id="admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0">
+                                    </div>
                                 </div>
+                            </div>
 
-                                <div class="mb-3">
-                                    <label for="publish_date" class="form-label">Publish Date</label>
-                                    <input type="datetime-local" class="form-control" id="publish_date" name="publish_date">
-                                </div>
+                            <!-- Additional Info -->
+                            <h5 class="mb-3">Additional Information</h5>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-control" id="status" name="status" required>
+                                    <option value="active" selected>Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
 
-                                <!-- Form Actions -->
-                                <div class="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-save me-2"></i>Save School
-                                    </button>
-                                    <button type="button" class="btn btn-success" id="save-and-add">
-                                        <i class="fas fa-plus me-2"></i>Save & Add New
-                                    </button>
-                                    <a href="{{ route('schools.index') }}" class="btn btn-outline-secondary">
-                                        Cancel
-                                    </a>
-                                </div>
-                            </form>
+                            <div class="mb-3">
+                                <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
+                                <select class="form-control" id="visibility" name="visibility" required>
+                                    <option value="public">Public</option>
+                                    <option value="private" selected>Private</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="publish_date" class="form-label">Publish Date</label>
+                                <input type="datetime-local" class="form-control" id="publish_date" name="publish_date">
+                            </div>
+
+                            <!-- Form Actions -->
+                            <div class="d-flex gap-2 pt-3 border-top">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>Save School
+                                </button>
+                                <button type="button" class="btn btn-success" id="save-and-add">
+                                    <i class="fas fa-plus me-2"></i>Save & Add New
+                                </button>
+                                <a href="{{ route('schools.index') }}" class="btn btn-outline-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -210,7 +220,8 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
+
 
         </section>
 

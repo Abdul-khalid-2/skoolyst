@@ -139,3 +139,17 @@ public function up()
         Schema::table('events', function (Blueprint $table) {
             $table->dropColumn('status');
         });
+         Schema::table('schools', function (Blueprint $table) {
+            $table->string('banner_image')->nullable()->after('description');
+        });
+
+        Schema::create('school_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignUuid('school_id')
+                ->constrained('schools')
+                ->onDelete('cascade'); // Delete images if school is deleted
+
+            $table->string('image_path');   // store file path
+            $table->string('title')->nullable(); // image title/caption
+            $table->timestamps();
+        });
