@@ -71,7 +71,10 @@ class School extends Model
     {
         return $this->hasMany(User::class);
     }
-
+    public function user()
+    {
+        return $this->hasOne(User::class, 'school_id');
+    }
     // Scope for school admins to see only their schools
     public function scopeForUser($query, $user)
     {

@@ -31,8 +31,8 @@
                                 <div class="col-md-6 mb-3">
                                     <label for="email" class="form-label">Admin Email</label>
                                     <input type="email" class="form-control @error('admin-email') is-invalid @enderror"
-                                        id="admin-email" name="admin-email" value="{{ old('email', $user->email) }}">
-                                    @error('email')
+                                        id="admin-email" name="admin-email" value="{{ old('admin-email', $user->email) }}">
+                                    @error('admin-email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>

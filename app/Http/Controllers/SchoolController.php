@@ -162,7 +162,7 @@ class SchoolController extends Controller
 
 
         try {
-            $school = School::with('images')->findOrFail($id);
+            $school = School::with('images', 'user')->findOrFail($id);
 
             // Count current non-removed images
             $currentImageCount = $school->images->count();
@@ -179,19 +179,31 @@ class SchoolController extends Controller
                 ])->withInput();
             }
 
+            // ✅ Dynamic rule for admin email (only apply unique if changed)
+            $adminEmailRule = ['nullable', 'email', 'max:100'];
+            $existingAdminEmail = optional($school->user)->email;
+
+            if ($request->input('admin-email') !== $existingAdminEmail) {
+                $adminEmailRule[] = Rule::unique('users', 'email');
+            }
+
+            // ✅ Dynamic rule for school email (only apply unique if changed)
+            $schoolEmailRule = ['nullable', 'email', 'max:100'];
+            if ($request->input('email') !== $school->email) {
+                $schoolEmailRule[] = Rule::unique('schools', 'email')->ignore($school->id);
+            }
+
             $validated = $request->validate([
                 'name'            => 'required|string|max:255',
                 'description'     => 'nullable|string',
                 'address'         => 'required|string|max:255',
                 'city'            => 'required|string|max:100',
                 'contact_number'  => 'nullable|string|max:20',
-                'email'           => [
-                    'nullable',
-                    'email',
-                    'max:100',
-                    Rule::unique('schools', 'email')->ignore($school->id),
-                    Rule::unique('users', 'email')->ignore($school->user?->id),
-                ],
+
+                // ✅ Apply dynamic email rules
+                'email'           => $schoolEmailRule,
+                'admin-email'     => $adminEmailRule,
+
                 'website'         => 'nullable|url|max:255',
                 'facilities'      => 'nullable|string',
                 'school_type'     => 'required|in:Co-Ed,Boys,Girls',
@@ -203,7 +215,6 @@ class SchoolController extends Controller
                 'publish_date'    => 'nullable|date',
                 'password'        => 'nullable|string|min:8|confirmed',
                 'admin-name'      => 'required|string|max:255',
-                'admin-email'     => 'nullable|email|max:100|unique:users,email,' . optional($school->user)->id,
                 'banner_image'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
                 'school_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
                 'image_titles'    => 'nullable|array',
@@ -212,23 +223,23 @@ class SchoolController extends Controller
                 'remove_images.*' => 'exists:school_images,id,school_id,' . $school->id,
             ]);
 
-            // Update school basic info
+            // ✅ Update school info
             $school->update([
-                'name'              => $validated['name'],
-                'description'       => $validated['description'] ?? null,
-                'address'           => $validated['address'],
-                'city'              => $validated['city'],
-                'contact_number'    => $validated['contact_number'] ?? null,
-                'email'             => $validated['email'] ?? null,
-                'website'           => $validated['website'] ?? null,
-                'facilities'        => $validated['facilities'] ?? null,
-                'school_type'       => $validated['school_type'],
-                'regular_fees'      => $validated['regular_fees'] ?? null,
-                'discounted_fees'   => $validated['discounted_fees'] ?? null,
-                'admission_fees'    => $validated['admission_fees'] ?? null,
-                'status'            => $validated['status'],
-                'visibility'        => $validated['visibility'],
-                'publish_date'      => $validated['publish_date'] ?? null,
+                'name'            => $validated['name'],
+                'description'     => $validated['description'] ?? null,
+                'address'         => $validated['address'],
+                'city'            => $validated['city'],
+                'contact_number'  => $validated['contact_number'] ?? null,
+                'email'           => $validated['email'] ?? null,
+                'website'         => $validated['website'] ?? null,
+                'facilities'      => $validated['facilities'] ?? null,
+                'school_type'     => $validated['school_type'],
+                'regular_fees'    => $validated['regular_fees'] ?? null,
+                'discounted_fees' => $validated['discounted_fees'] ?? null,
+                'admission_fees'  => $validated['admission_fees'] ?? null,
+                'status'          => $validated['status'],
+                'visibility'      => $validated['visibility'],
+                'publish_date'    => $validated['publish_date'] ?? null,
             ]);
 
             $folderName = Str::slug($school->name, '-');
@@ -237,15 +248,12 @@ class SchoolController extends Controller
             $shouldRemoveBanner = $request->filled('remove_banner');
             $hasNewBanner = $request->hasFile('banner_image');
 
-            if ($shouldRemoveBanner) {
-                if ($school->banner_image) {
-                    Storage::disk('website')->delete($school->banner_image);
-                    $school->banner_image = null;
-                }
+            if ($shouldRemoveBanner && $school->banner_image) {
+                Storage::disk('website')->delete($school->banner_image);
+                $school->banner_image = null;
             }
 
             if ($hasNewBanner) {
-                // Delete old banner if exists
                 if ($school->banner_image) {
                     Storage::disk('website')->delete($school->banner_image);
                 }
@@ -256,13 +264,13 @@ class SchoolController extends Controller
 
             $school->save();
 
-            // ✅ Handle banner title & tagline (non-file fields)
+            // ✅ Banner title and tagline
             $school->update([
                 'banner_title'   => $request->input('banner_title'),
                 'banner_tagline' => $request->input('banner_tagline'),
             ]);
 
-            // ✅ Delete selected existing images
+            // ✅ Remove selected images
             if (!empty($imagesToRemove)) {
                 $imagesToDelete = SchoolImage::where('school_id', $school->id)
                     ->whereIn('id', $imagesToRemove)
@@ -274,25 +282,22 @@ class SchoolController extends Controller
                 }
             }
 
-            // ✅ Add new gallery images
+            // ✅ Add new images
             if ($request->hasFile('school_images')) {
                 foreach ($request->file('school_images') as $index => $imageFile) {
-                    if ($imageFile) {
-                        $imagePath = Storage::disk('website')
-                            ->putFile("school/{$folderName}/gallery", $imageFile);
+                    $imagePath = Storage::disk('website')
+                        ->putFile("school/{$folderName}/gallery", $imageFile);
 
-                        SchoolImage::create([
-                            'school_id'  => $school->id,
-                            'image_path' => $imagePath,
-                            'title'      => $request->input("image_titles.{$index}"),
-                        ]);
-                    }
+                    SchoolImage::create([
+                        'school_id'  => $school->id,
+                        'image_path' => $imagePath,
+                        'title'      => $request->input("image_titles.{$index}"),
+                    ]);
                 }
             }
 
             // ✅ Update or create admin user
             $user = $school->user;
-
             if ($user) {
                 $user->name = $validated['admin-name'];
                 if (!empty($validated['admin-email'])) {
@@ -303,11 +308,10 @@ class SchoolController extends Controller
                 }
                 $user->save();
             } else {
-                // Create user if missing (shouldn't happen normally, but safe)
                 $user = User::create([
-                    'name'     => $validated['admin-name'],
-                    'email'    => $validated['admin-email'] ?? $validated['email'],
-                    'password' => bcrypt($validated['password'] ?? 'default123'),
+                    'name'      => $validated['admin-name'],
+                    'email'     => $validated['admin-email'] ?? $validated['email'],
+                    'password'  => bcrypt($validated['password'] ?? 'default123'),
                     'school_id' => $school->id,
                 ]);
                 $user->assignRole('school-admin');
