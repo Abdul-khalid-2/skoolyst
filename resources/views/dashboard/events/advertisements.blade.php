@@ -6,8 +6,8 @@
                     <h2 class="mb-0">Advertisement Pages</h2>
                     <p class="text-muted">Manage dynamic advertisement pages</p>
                 </div>
-                <a href="{{ route('pages.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Create New Page
+                <a href="{{ route('pages.create', [$school_id, $id]) }}" class="btn btn-primary me-2">
+                    <i class="fas fa-edit me-2"></i> Create Banner
                 </a>
             </div>
 
@@ -50,7 +50,7 @@
                                 <td>{{ $page->created_at->format('M d, Y') }}</td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('pages.show', $page->slug) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                        <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-sm btn-outline-info" target="_blank">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-outline-primary">

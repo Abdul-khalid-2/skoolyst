@@ -143,6 +143,47 @@
             font-size: 1.1rem;
         }
 
+
+        .raw-html-content {
+            width: 100%;
+            font-family: inherit;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4b5563;
+            padding: 0.5rem 0;
+            box-sizing: border-box;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            position: relative;
+            min-height: 1px;
+        }
+
+        /* Force the container to expand for positioned content */
+        .content-element {
+            position: relative;
+            overflow: visible;
+        }
+
+        /* NEW: This is the key fix - create space for positioned elements */
+        .raw-html-content::after {
+            content: '';
+            display: table;
+            clear: both;
+        }
+
+        /* NEW: Calculate proper height for positioned children */
+        .raw-html-content {
+            display: flow-root;
+            /* This creates a block formatting context */
+        }
+
+        /* NEW: Alternative approach - reset positioning if you want to prevent it */
+        .raw-html-content * {
+            position: static !important;
+            top: auto !important;
+            left: auto !important;
+        }
+
         .rich-text-content h1,
         .rich-text-content h2,
         .rich-text-content h3,
@@ -389,7 +430,7 @@
                     </p>
                 </div>
                 <div class="col-md-4 text-md-end">
-                    <a href="{{ route('pages.index') }}" class="back-btn">
+                    <a href="{{ route('pages.index', $page->event_id) }}" class="back-btn">
                         <i class="fas fa-arrow-left"></i>
                         Back to Builder
                     </a>
@@ -509,7 +550,7 @@
 
                 @case('raw-html')
                 <div class="raw-html-content">
-                    {!! $element['content']['html'] ?? '' !!}
+                    {!! App\Http\Controllers\PageController::cleanContent($element['content']['html'] ?? '') !!}
                 </div>
                 @break
 
@@ -595,6 +636,42 @@
         function printPage() {
             window.print();
         }
+
+        // Add this to your existing JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            function adjustContainersForPositionedContent() {
+                document.querySelectorAll('.raw-html-content').forEach(container => {
+                    let maxBottom = 0;
+                    let hasPositioned = false;
+
+                    // Check all direct children
+                    Array.from(container.children).forEach(child => {
+                        const style = window.getComputedStyle(child);
+                        const position = style.position;
+
+                        if (position === 'relative' || position === 'absolute') {
+                            hasPositioned = true;
+                            const rect = child.getBoundingClientRect();
+                            const containerRect = container.getBoundingClientRect();
+                            const relativeBottom = rect.bottom - containerRect.top;
+                            maxBottom = Math.max(maxBottom, relativeBottom);
+                        }
+                    });
+
+                    // If we have positioned elements, adjust container height
+                    if (hasPositioned && maxBottom > container.offsetHeight) {
+                        container.style.minHeight = (maxBottom + 20) + 'px'; // Add some padding
+                    }
+                });
+            }
+
+            // Run initially and after a short delay to ensure everything is rendered
+            adjustContainersForPositionedContent();
+            setTimeout(adjustContainersForPositionedContent, 100);
+
+            // Also run on window resize
+            window.addEventListener('resize', adjustContainersForPositionedContent);
+        });
     </script>
 </body>
 

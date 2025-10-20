@@ -26,6 +26,7 @@ class SchoolController extends Controller
                     'contact_number',
                     'city',
                     'address',
+                    'status',
                     'school_type',
                     'created_at'
                 ])->latest()->paginate(10);

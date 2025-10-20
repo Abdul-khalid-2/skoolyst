@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Models\Event;
+use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -15,17 +16,25 @@ class PageController extends Controller
      * Display the form builder page
      */
     // Show list of pages (advertisements)
-    public function index()
+    public function index($id)
     {
-        $pages = Page::with(['school', 'event'])->latest()->paginate(10);
-        return view('dashboard.events.advertisements', compact('pages'));
+
+        $school_id = auth()->user()->school_id;
+        if (auth()->user()->hasRole('super-admin')) {
+            $pages = Page::with(['school', 'event'])->where('event_id', $id)->latest()->paginate(10);
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            $pages = Page::with(['school', 'event'])->where('school_id', $school_id)->where('event_id', $id)->latest()->paginate(10);
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
+        return view('dashboard.events.advertisements', compact('pages', 'id', 'school_id'));
     }
 
     // Show edit form for a specific page
     public function edit($id)
     {
         $page = Page::with(['school', 'event'])->findOrFail($id);
-        $events = Event::all(); // Needed for event dropdown
+        $events = Event::all();
 
         return view('dashboard.events.advertisements_edit', compact('page', 'events'));
     }
@@ -77,7 +86,7 @@ class PageController extends Controller
                 'message' => 'Page updated successfully!',
                 'page_id' => $page->id,
                 'slug' => $page->slug,
-                'redirect_url' => route('pages.show', $page->slug)
+                'redirect_url' => route('pages.show', [$page->slug, $page->uuid])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -88,10 +97,17 @@ class PageController extends Controller
     }
 
 
-    public function create()
+    public function create(string $school_uuid, string $event_id)
     {
-        $events = Event::all(['id', 'event_name']);
-        return view('dashboard.events.advertisement_template', compact('events'));
+        // $school = School::where('uuid', $school_uuid)->firstOrFail();
+        $event = Event::where('id', $event_id)->firstOrFail();
+
+        // Optional: verify that the event belongs to the school
+        // if ($event->school_id !== $school->id) {
+        //     abort(403, 'Event does not belong to this school.');
+        // }
+
+        return view('dashboard.events.advertisement_template', compact('event'));
     }
 
     /**
@@ -102,6 +118,7 @@ class PageController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'event_id' => 'nullable|exists:events,id',
+            'school_id' => 'required|exists:schools,id',
             'form_data' => 'required|json',
         ]);
 
@@ -133,6 +150,7 @@ class PageController extends Controller
 
             // Create the page
             $page = Page::create([
+                'uuid' => (string) Str::uuid(),
                 'event_id' => $request->event_id,
                 'school_id' => $request->school_id,
                 'name' => $request->name,
@@ -145,7 +163,7 @@ class PageController extends Controller
                 'message' => 'Page created successfully!',
                 'page_id' => $page->id,
                 'slug' => $page->slug,
-                'redirect_url' => route('pages.show', $page->slug)
+                'redirect_url' => route('pages.show', [$page->slug, $page->uuid])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -353,7 +371,7 @@ class PageController extends Controller
     /**
      * Display a specific page
      */
-    public function show($slug)
+    public function show($slug, string $page_uuid)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
 

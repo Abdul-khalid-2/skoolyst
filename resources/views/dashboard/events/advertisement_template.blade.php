@@ -76,14 +76,18 @@
         }
 
         .canvas-element {
-            position: relative;
+            position: absolute;
+            /* ← critical: was relative, but you're positioning with left/top */
             box-shadow: 0 2px 8px rgba(18, 38, 63, 0.06);
             border-radius: 8px;
             background: #fff;
             padding: 1rem;
-            margin-bottom: 1.5rem;
             border: 1px solid transparent;
             transition: all 0.3s;
+            /* Allow vertical growth and contain overflow */
+            min-height: 60px;
+            overflow: visible;
+            /* keep visible for drag/move, but inner preview can scroll */
         }
 
         .canvas-element:hover {
@@ -470,16 +474,14 @@
                                             <div class="mb-3">
                                                 <label for="pageName" class="form-label">Page Name *</label>
                                                 <input type="text" class="form-control" id="pageName" name="name" required placeholder="Enter page name">
+                                                <input type="hidden" class="form-control" id="schoolId" name="school_id" value="{{ $event->school->id }}">
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="mb-3">
-                                                <label for="eventId" class="form-label">Event (Optional)</label>
+                                                <label for="eventId" class="form-label">Event</label>
                                                 <select class="form-control" id="eventId" name="event_id">
-                                                    <option value="">Select Event</option>
-                                                    @foreach($events as $event)
                                                     <option value="{{ $event->id }}">{{ $event->event_name }}</option>
-                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>
@@ -817,6 +819,7 @@
                 const formData = new FormData();
                 formData.append('name', pageName);
                 formData.append('event_id', $('#eventId').val());
+                formData.append('school_id', $('#schoolId').val());
                 formData.append('form_data', JSON.stringify(jsonData));
                 formData.append('_token', $('input[name="_token"]').val());
 
@@ -980,11 +983,27 @@
 
                     case 'raw-html':
                         contentHtml = `
-                            <div class="element-content">
-                                <textarea class="form-control raw-html-input" rows="4" placeholder="Paste your HTML code here"></textarea>
-                                <div class="raw-preview mt-2 p-2 border rounded bg-light small" style="display: none;"></div>
-                            </div>
-                        `;
+                                <div class="element-content">
+                                    <textarea class="form-control raw-html-input" rows="4" placeholder="Paste your HTML code here"></textarea>
+                                    <div class="raw-preview mt-2 p-2 border rounded bg-light small" style="display: none;">
+                                        <div class="raw-html-sandbox" style="
+                                            all: initial;
+                                            display: block;
+                                            width: 100%;
+                                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                                            font-size: 1rem;
+                                            line-height: 1.5;
+                                            color: #212529;
+                                            padding: 0.5rem;
+                                            box-sizing: border-box;
+                                            min-height: 40px;
+                                            max-height: 400px;
+                                            overflow: auto; /* ← this is key */
+                                            position: relative;
+                                        "></div>
+                                    </div>
+                                </div>
+                            `;
                         break;
 
                     default:
@@ -1078,10 +1097,18 @@
                 if (type === 'raw-html') {
                     const $textarea = $el.find('.raw-html-input');
                     const $preview = $el.find('.raw-preview');
+                    const $sandbox = $el.find('.raw-html-sandbox');
 
                     $textarea.on('input', function() {
-                        $preview.html($(this).val());
-                        $preview.toggle(!!$(this).val());
+                        const html = $(this).val();
+                        if (html.trim()) {
+                            // Sanitize or at least escape dangerous tags if needed (optional but recommended)
+                            // $sandbox.html(html);
+                            $sandbox.html(sanitizeHtml(html));
+                            $preview.show();
+                        } else {
+                            $preview.hide();
+                        }
                         saveHistory();
                     });
                 }
@@ -1093,6 +1120,13 @@
                 $el.on('input', 'input, textarea', function() {
                     saveHistory();
                 });
+            }
+
+            function sanitizeHtml(html) {
+                return html
+                    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+                    .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+                    .replace(/ on\w+="[^"]*"/gi, '');
             }
 
             // Make element movable

@@ -24,7 +24,7 @@
                                     <select class="form-control" id="school_id" name="school_id" required onchange="updateBranches()">
                                         <option value="">Select a school</option>
                                         @foreach($schools as $school)
-                                        <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
+                                        <option value="{{ $school->id }}" {{ $event->school_id == $school->id ? 'selected' : '' }}>
                                             {{ $school->name }}
                                         </option>
                                         @endforeach
@@ -125,6 +125,7 @@
                             option.textContent += ' (Main Branch)';
                         }
                         branchSelect.appendChild(option);
+
                     });
                 })
                 .catch(error => console.error('Error fetching branches:', error));

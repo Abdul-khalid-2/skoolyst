@@ -14,8 +14,16 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events = Event::with('school')->latest()->paginate(10);
-        return view('dashboard.events.index', compact('events'));
+        if (auth()->user()->hasRole('super-admin')) {
+            $events = Event::with('school')->latest()->paginate(10);
+            return view('dashboard.events.index', compact('events'));
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            $schoolAdminSchoolId = auth()->user()->school_id;
+            $events = Event::with('school')->where('school_id', $schoolAdminSchoolId)->latest()->paginate(10);
+            return view('dashboard.events.index', compact('events'));
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
     }
 
     /**
@@ -78,6 +86,7 @@ class EventController extends Controller
     {
         $validated = $request->validate([
             'school_id' => 'required|exists:schools,id',
+            'branch_id' => 'nullable|exists:branches,id',
             'event_name' => 'required|string|max:255',
             'event_description' => 'required|string',
             'event_date' => 'required|date',
