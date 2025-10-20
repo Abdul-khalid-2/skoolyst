@@ -9,29 +9,39 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
+
         <ul class="sidebar-nav list-unstyled">
+
+            {{-- Dashboard --}}
             <li class="nav-item">
-                <a href="{{ route('dashboard') }}" class="nav-link active">
+                <a href="{{ route('dashboard') }}"
+                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
+
+            {{-- Schools --}}
             <li class="nav-item">
-                <a href="{{ route('schools.index') }}" class="nav-link">
-                    <i class="fas fa-box"></i>
-                    <span>Schooles</span>
+                <a href="{{ route('schools.index') }}"
+                    class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+                    <i class="fas fa-school"></i>
+                    <span>Schools</span>
                 </a>
             </li>
+
+            {{-- Events --}}
             <li class="nav-item">
-                <a href="{{ route('events.index') }}" class="nav-link">
-                    <i class="fas fa-box"></i>
+                <a href="{{ route('events.index') }}"
+                    class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
                     <span>Events</span>
                 </a>
             </li>
 
-
         </ul>
     </nav>
+
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>

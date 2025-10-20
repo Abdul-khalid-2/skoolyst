@@ -73,15 +73,6 @@
             padding-bottom: 3rem;
         }
 
-        /* .content-element {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            margin-bottom: 2rem;
-            padding: 2rem;
-            transition: all 0.3s ease;
-            border: 1px solid #eef2f6;
-        } */
         .content-element {
             /* background: white;
             border-radius: 12px; */
