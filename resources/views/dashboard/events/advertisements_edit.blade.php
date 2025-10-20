@@ -375,7 +375,7 @@
                     <div class="canvas-topbar">
                         <div class="d-flex align-items-center">
                             <h5 class="mb-0 me-3">Editing: {{ $page->name }}</h5>
-                            <a href="{{ route('pages.show', $page->slug) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                            <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-outline-primary btn-sm" target="_blank">
                                 <i class="fas fa-eye me-1"></i>Preview
                             </a>
                         </div>

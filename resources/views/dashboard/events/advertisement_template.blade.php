@@ -441,7 +441,7 @@
                         <div class="ms-auto d-flex align-items-center">
                             <span class="small-muted me-3">Drag, drop, and edit elements</span>
                             <input type="file" id="jsonFileInput" class="d-none" accept=".json">
-                            <button id="downloadJson" class="btn btn-success btn-sm"><i class="fas fa-download me-1"></i>Download JSON</button>
+                            <!-- <button id="downloadJson" class="btn btn-success btn-sm"><i class="fas fa-download me-1"></i>Download JSON</button> -->
                         </div>
                     </div>
 
