@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class SchoolController extends Controller
 {
@@ -345,6 +348,73 @@ class SchoolController extends Controller
             Log::error('Error deleting school: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Failed to delete school. Please try again.');
+        }
+    }
+
+
+
+    public function register(Request $request)
+    {
+        $validated = $request->validate([
+            'school_name' => 'required|string|max:255',
+            'school_email' => 'required|email|unique:schools,email',
+            'school_address' => 'required|string',
+            'school_city' => 'required|string',
+            'school_contact' => 'nullable|string',
+            'school_description' => 'nullable|string',
+            'school_facilities' => 'nullable|string',
+            'school_type' => 'required|in:Co-Ed,Boys,Girls',
+            'school_website' => 'nullable|url',
+            'admin_name' => 'required|string|max:255',
+            'admin_email' => 'required|email|unique:users,email',
+            'admin_password' => 'required|string|min:8|confirmed',
+            'regular_fees' => 'nullable|numeric',
+            'discounted_fees' => 'nullable|numeric',
+            'admission_fees' => 'nullable|numeric',
+            'school_terms' => 'required|accepted',
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Create the school
+            $school = School::create([
+                'uuid' => Str::uuid(),
+                'name' => $validated['school_name'],
+                'email' => $validated['school_email'],
+                'address' => $validated['school_address'],
+                'city' => $validated['school_city'],
+                'contact_number' => $validated['school_contact'],
+                'website' => $validated['school_website'],
+                'description' => $validated['school_description'],
+                'facilities' => $validated['school_facilities'],
+                'school_type' => $validated['school_type'],
+                'regular_fees' => $validated['regular_fees'],
+                'discounted_fees' => $validated['discounted_fees'],
+                'admission_fees' => $validated['admission_fees'],
+                'status' => 'inactive',
+                'visibility' => 'public',
+                'publish_date' => now(),
+            ]);
+
+            // Create the admin user
+            $user = User::create([
+                'name' => $validated['admin_name'],
+                'email' => $validated['admin_email'],
+                'school_id' => $school->id,
+                'password' => $validated['admin_password'],
+            ]);
+
+            $user->assignRole('school-admin');
+
+            DB::commit();
+
+            Auth::login($user);
+
+            return redirect()->route('school.dashboard')->with('success', 'School registered successfully!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
         }
     }
 }

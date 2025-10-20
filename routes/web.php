@@ -8,19 +8,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\Website\HomeControllere;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-Route::middleware(['auth', 'verified'])->group(function () {
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(function () {
 
     Route::get('/dashboard', function () {
         return view('dashboard.dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    })->name('dashboard');
 
 
     // Add the custom create route separately
     Route::resource('schools', SchoolController::class);
+
     // Route::get('/school/create', [SchoolController::class, 'create'])->name('schools.create');
 
     // Events Routes
@@ -53,6 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+Route::middleware('guest')->group(function () {
+    Route::post('/schools/register', [SchoolController::class, 'register'])->name('school.register');
+});
+Route::get('/', [HomeControllere::class, 'index'])->name('website.home');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
