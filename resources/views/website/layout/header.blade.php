@@ -20,9 +20,6 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ url('/about') }}">About</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('form') ? 'active' : '' }}" href="{{ url('/form') }}">Form</a>
-                </li>
             </ul>
 
             <div class="auth-buttons d-flex gap-2">

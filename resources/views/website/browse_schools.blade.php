@@ -591,10 +591,10 @@
                 <div class="school-card">
                     <div class="school-image">
                         @if($school->banner_image)
-                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}"
-                            onerror="this.style.display='none';">
-                        @endif
+                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                        @else
                         <i class="fas fa-school"></i>
+                        @endif
                     </div>
                     <div class="school-content">
                         <div class="school-header">
