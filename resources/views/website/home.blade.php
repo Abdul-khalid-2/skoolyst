@@ -1,7 +1,6 @@
 @extends('website.layout.app')
 
 @push('styles')
-
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}">
@@ -34,12 +33,9 @@
                 <label class="filter-label">Location</label>
                 <select class="filter-select" id="locationFilter" onchange="applyFilters()">
                     <option value="">All Locations</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Bangalore">Bangalore</option>
-                    <option value="Pune">Pune</option>
-                    <option value="Chennai">Chennai</option>
-                    <option value="Hyderabad">Hyderabad</option>
+                    @foreach($cities as $city)
+                    <option value="{{ $city }}">{{ $city }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -47,10 +43,9 @@
                 <label class="filter-label">School Type</label>
                 <select class="filter-select" id="typeFilter" onchange="applyFilters()">
                     <option value="">All Types</option>
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
-                    <option value="International">International</option>
-                    <option value="Charter">Charter</option>
+                    @foreach($schoolTypes as $type)
+                    <option value="{{ $type }}">{{ $type }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -58,11 +53,9 @@
                 <label class="filter-label">Curriculum</label>
                 <select class="filter-select" id="curriculumFilter" onchange="applyFilters()">
                     <option value="">All Curriculums</option>
-                    <option value="CBSE">CBSE</option>
-                    <option value="ICSE">ICSE</option>
-                    <option value="IB">IB (International Baccalaureate)</option>
-                    <option value="IGCSE">IGCSE</option>
-                    <option value="State Board">State Board</option>
+                    @foreach($curriculums as $curriculum)
+                    <option value="{{ $curriculum->code }}">{{ $curriculum->name }}</option>
+                    @endforeach
                 </select>
             </div>
 
@@ -83,12 +76,81 @@
 
         <div class="row" id="schoolsContainer">
             <!-- Schools will be dynamically loaded here -->
+            @foreach($schools as $school)
+            <div class="col-lg-4 col-md-6 school-card-col">
+                <div class="school-card">
+                    <div class="school-image">
+                        @if($school->banner_image)
+                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                        @else
+                        <i class="fas fa-school"></i>
+                        @endif
+                    </div>
+                    <div class="school-content">
+                        <div class="school-header">
+                            <div>
+                                <h3 class="school-name">{{ $school->name }}</h3>
+                                <div class="school-location">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ $school->city ?? 'Location not specified' }}</span>
+                                </div>
+                            </div>
+                            <span class="school-type-badge">{{ $school->school_type }}</span>
+                        </div>
+                        <div class="school-rating">
+                            @php
+                            $averageRating = $school->reviews->avg('rating') ?? 0;
+                            $fullStars = floor($averageRating);
+                            $hasHalfStar = $averageRating - $fullStars >= 0.5;
+                            $emptyStars = 5 - ceil($averageRating);
+                            @endphp
+
+                            @for($i = 0; $i < $fullStars; $i++)
+                                <i class="fas fa-star"></i>
+                                @endfor
+
+                                @if($hasHalfStar)
+                                <i class="fas fa-star-half-alt"></i>
+                                @endif
+
+                                @for($i = 0; $i < $emptyStars; $i++)
+                                    <i class="far fa-star"></i>
+                                    @endfor
+
+                                    <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
+                                    <small style="color: #888; margin-left: 0.5rem;">({{ $school->reviews->count() }} reviews)</small>
+                        </div>
+                        <p class="school-description">
+                            {{ Str::limit($school->description, 120) ?: 'No description available.' }}
+                        </p>
+                        <div class="school-features">
+                            @if($school->curriculums->count() > 0)
+                            <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
+                            @endif
+                            @foreach($school->features->take(3) as $feature)
+                            <span class="feature-tag">{{ $feature->name }}</span>
+                            @endforeach
+                        </div>
+                        <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
+                            <i class="fas fa-eye"></i> View Full Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endforeach
         </div>
 
         <div id="noResults" class="no-results" style="display: none;">
             <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
             <p>No schools found matching your criteria. Try adjusting your filters.</p>
         </div>
+
+        @if($schools->count() == 0)
+        <div class="no-results">
+            <i class="fas fa-school" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <p>No schools available at the moment. Please check back later.</p>
+        </div>
+        @endif
     </div>
 </section>
 
@@ -210,12 +272,11 @@
     <div class="container">
         <h2 class="cta-headline">Ready to Find Your School?</h2>
         <p class="cta-subheadline">Join thousands of parents who have found their perfect educational match</p>
-        <a href="#directory" class="cta-button">Start Exploring</a>
+        <a href="{{ route('browseSchools.index') }}" class="cta-button">Start Exploring</a>
     </div>
 </section>
 
 @push('scripts')
-
 <script src="{{ asset('assets/js/home.js') }}"></script>
 @endpush
 

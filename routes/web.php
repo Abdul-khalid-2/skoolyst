@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\Website\BrowseSchoolController;
+use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
 
 // Route::get('/', function () {
@@ -58,8 +60,15 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
 Route::middleware('guest')->group(function () {
     Route::post('/schools/register', [SchoolController::class, 'register'])->name('school.register');
 });
-Route::get('/', [HomeControllere::class, 'home'])->name('website.home');
-Route::get('/how_it_works', [HomeControllere::class, 'howItWorks'])->name('website.how_it_works');
+Route::get('/', [HomeController::class, 'home'])->name('website.home');
+Route::get('/search', [HomeController::class, 'search'])->name('search.schools');
+Route::get('/browse/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
+Route::get('/browse/schools/search', [BrowseSchoolController::class, 'search'])->name('browseSchools.search');
+Route::get('/browse/schools/{uuid}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show');
+
+
+
+Route::get('/how_it_works', [HomeController::class, 'howItWorks'])->name('website.how_it_works');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
