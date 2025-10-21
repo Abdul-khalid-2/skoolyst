@@ -127,6 +127,71 @@
                                 @enderror
                             </div>
 
+                            <!-- Features Section - Grouped by Category -->
+                            <div class="mb-3">
+                                <label class="form-label">School Features</label>
+
+                                <!-- Feature Search (Optional) -->
+                                <!-- <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Search features..." onkeyup="filterFeatures(this.value)">
+                                </div> -->
+
+                                @foreach($features->groupBy('category') as $category => $categoryFeatures)
+                                <div class="card mb-3 feature-category" data-category="{{ Str::slug($category) }}">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 text-capitalize">{{ $category }} Features</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @foreach($categoryFeatures as $feature)
+                                            <div class="col-md-6 mb-2 feature-item">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="features[]"
+                                                        value="{{ $feature->id }}" id="feature_{{ $feature->id }}"
+                                                        {{ in_array($feature->id, $schoolFeatures) ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="feature_{{ $feature->id }}">
+                                                        {{ $feature->name }}
+                                                        @if($feature->icon)
+                                                        <i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>
+                                                        @endif
+                                                    </label>
+                                                </div>
+                                                @if($feature->description)
+                                                <small class="text-muted ms-4">{{ $feature->description }}</small>
+                                                @endif
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Curriculum Section -->
+                            <div class="mb-3">
+                                <label class="form-label">Curriculum <span class="text-danger">*</span></label>
+                                <div class="row">
+                                    @foreach($curriculums as $curriculum)
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="curriculum_id"
+                                                value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}"
+                                                {{ in_array($curriculum->id, $schoolCurriculums) ? 'checked' : '' }} required>
+                                            <label class="form-check-label" for="curriculum_{{ $curriculum->id }}">
+                                                {{ $curriculum->name }}
+                                            </label>
+                                        </div>
+                                        @if($curriculum->description)
+                                        <small class="text-muted ms-4">{{ $curriculum->description }}</small>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @error('curriculum_id')
+                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Admin Account (Optional Update) -->
                             <h5 class="mt-4 mb-3">Admin Account (Optional)</h5>
                             <div class="row">
@@ -560,6 +625,73 @@
                 });
             }
         });
+        // Features and Curriculum enhancement for edit form
+        document.addEventListener('DOMContentLoaded', function() {
+            // Feature search/filter functionality
+            window.filterFeatures = function(searchTerm) {
+                const featureItems = document.querySelectorAll('.feature-item');
+                featureItems.forEach(item => {
+                    const featureName = item.querySelector('.form-check-label').textContent.toLowerCase();
+                    if (featureName.includes(searchTerm.toLowerCase())) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Show/hide category cards based on visible features
+                const categoryCards = document.querySelectorAll('.feature-category');
+                categoryCards.forEach(card => {
+                    const visibleFeatures = card.querySelectorAll('.feature-item[style="display: block"]').length;
+                    if (visibleFeatures > 0) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+
+            // Curriculum selection enhancement
+            const curriculumRadios = document.querySelectorAll('input[name="curriculum_id"]');
+            curriculumRadios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    // Add visual feedback when curriculum is selected
+                    curriculumRadios.forEach(r => {
+                        r.closest('.col-md-6').classList.remove('border-primary', 'border-2', 'rounded', 'p-2', 'bg-light');
+                    });
+                    if (this.checked) {
+                        this.closest('.col-md-6').classList.add('border-primary', 'border-2', 'rounded', 'p-2', 'bg-light');
+                    }
+                });
+
+                // Trigger change on page load for initial state
+                if (radio.checked) {
+                    radio.dispatchEvent(new Event('change'));
+                }
+            });
+
+            // Feature category accordion (optional enhancement)
+            const categoryHeaders = document.querySelectorAll('.feature-category .card-header');
+            categoryHeaders.forEach(header => {
+                header.style.cursor = 'pointer';
+                header.addEventListener('click', function() {
+                    const cardBody = this.nextElementSibling;
+                    const isHidden = cardBody.style.display === 'none';
+                    cardBody.style.display = isHidden ? 'block' : 'none';
+                    this.querySelector('h6').classList.toggle('text-muted', !isHidden);
+                });
+            });
+        });
+
+        // Select all features in a category (optional helper function)
+        function selectAllFeatures(category) {
+            const checkboxes = document.querySelectorAll(`.feature-category[data-category="${category}"] input[type="checkbox"]`);
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+        }
     </script>
 
     <style>

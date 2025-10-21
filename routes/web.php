@@ -58,7 +58,8 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
 Route::middleware('guest')->group(function () {
     Route::post('/schools/register', [SchoolController::class, 'register'])->name('school.register');
 });
-Route::get('/', [HomeControllere::class, 'index'])->name('website.home');
+Route::get('/', [HomeControllere::class, 'home'])->name('website.home');
+Route::get('/how_it_works', [HomeControllere::class, 'howItWorks'])->name('website.how_it_works');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

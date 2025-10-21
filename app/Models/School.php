@@ -95,4 +95,18 @@ class School extends Model
     {
         return $this->banner_image ? asset('website/' . $this->banner_image) : asset('website/images/male_advocate_avatar.jpg');
     }
+
+    public function features()
+    {
+        return $this->belongsToMany(Feature::class, 'school_feature')
+            ->withPivot('description', 'priority')
+            ->orderBy('priority')
+            ->withTimestamps();
+    }
+
+    public function curriculums()
+    {
+        return $this->belongsToMany(Curriculum::class, 'school_curriculum')
+            ->withTimestamps();
+    }
 }

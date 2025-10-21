@@ -9,10 +9,10 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ url('/') }}">Home</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('website.home') }}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('how-it-works') ? 'active' : '' }}" href="{{ url('/how-it-works') }}">How It Works</a>
+                    <a class="nav-link {{ request()->is('how-it-works') ? 'active' : '' }}" href="{{ route('website.how_it_works') }}">How It Works</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ url('/directory') }}">Browse Schools</a>

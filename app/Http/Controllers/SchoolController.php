@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Curriculum;
+use App\Models\Feature;
 use App\Models\School;
 use App\Models\SchoolImage;
 use App\Models\User;
@@ -62,7 +64,10 @@ class SchoolController extends Controller
 
     public function create()
     {
-        return view('dashboard.schooles.create');
+        $features = Feature::orderBy('category')->orderBy('name')->get();
+        $curriculums = Curriculum::orderBy('name')->get();
+
+        return view('dashboard.schooles.create', compact('features', 'curriculums'));
     }
 
     public function store(Request $request)
@@ -76,7 +81,7 @@ class SchoolController extends Controller
             'contact_number'  => 'nullable|string|max:20',
             'email'           => 'required|email|max:100|unique:schools,email',
             'admin-name'      => 'required|string|max:255',
-            'admin-email'     => 'required|email|max:100|email|unique:users,email',
+            'admin-email'     => 'required|email|max:100|unique:users,email',
             'website'         => 'nullable|url|max:255',
             'facilities'      => 'nullable|string',
             'school_type'     => 'required|in:Co-Ed,Boys,Girls',
@@ -87,11 +92,23 @@ class SchoolController extends Controller
             'visibility'      => 'required|in:public,private',
             'publish_date'    => 'nullable|date',
             'password'        => 'required|string|min:8|confirmed',
+            'features'        => 'nullable|array',
+            'features.*'      => 'exists:features,id',
+            'curriculum_id'   => 'required|exists:curriculums,id',
         ]);
 
         // Create school
         $school = new School($validated);
         $school->save();
+
+        // ✅ Attach features to school
+        if ($request->has('features')) {
+            $school->features()->attach($request->features);
+        }
+
+        // ✅ Attach curriculum to school
+        $school->curriculums()->attach($request->curriculum_id);
+
         // ✅ Folder name by school name (slug-safe)
         $folderName = Str::slug($school->name, '-');
 
@@ -150,9 +167,25 @@ class SchoolController extends Controller
     public function edit($id)
     {
         try {
-            $school = School::findOrFail($id);
-            $user = user::where('school_id', $school->id)->first();
-            return view('dashboard.schooles.edit', compact('school', 'user'));
+            $school = School::with(['features', 'curriculums', 'images'])->findOrFail($id);
+            $user = User::where('school_id', $school->id)->first();
+
+            // Get all features and curriculums for the form
+            $features = Feature::orderBy('category')->orderBy('name')->get();
+            $curriculums = Curriculum::orderBy('name')->get();
+
+            // Get current school features and curriculums
+            $schoolFeatures = $school->features->pluck('id')->toArray();
+            $schoolCurriculums = $school->curriculums->pluck('id')->toArray();
+
+            return view('dashboard.schooles.edit', compact(
+                'school',
+                'user',
+                'features',
+                'curriculums',
+                'schoolFeatures',
+                'schoolCurriculums'
+            ));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('schools')->with('error', 'School not found.');
         } catch (\Exception $e) {
@@ -166,7 +199,7 @@ class SchoolController extends Controller
 
 
         try {
-            $school = School::with('images', 'user')->findOrFail($id);
+            $school = School::with(['images', 'user', 'features', 'curriculums'])->findOrFail($id);
 
             // Count current non-removed images
             $currentImageCount = $school->images->count();
@@ -225,6 +258,11 @@ class SchoolController extends Controller
                 'image_titles.*'  => 'nullable|string|max:255',
                 'remove_images'   => 'nullable|array',
                 'remove_images.*' => 'exists:school_images,id,school_id,' . $school->id,
+
+                // ✅ Features and Curriculum validation
+                'features'        => 'nullable|array',
+                'features.*'      => 'exists:features,id',
+                'curriculum_id'   => 'required|exists:curriculums,id',
             ]);
 
             // ✅ Update school info
@@ -245,6 +283,17 @@ class SchoolController extends Controller
                 'visibility'      => $validated['visibility'],
                 'publish_date'    => $validated['publish_date'] ?? null,
             ]);
+
+            // ✅ Update Features (Sync will handle adding/removing)
+            if ($request->has('features')) {
+                $school->features()->sync($request->features);
+            } else {
+                // If no features selected, remove all
+                $school->features()->detach();
+            }
+
+            // ✅ Update Curriculum (Sync will handle adding/removing)
+            $school->curriculums()->sync([$request->curriculum_id]);
 
             $folderName = Str::slug($school->name, '-');
 

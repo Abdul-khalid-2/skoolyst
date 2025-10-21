@@ -121,35 +121,93 @@ public function up()
 }
 
  Schema::create('pages', function (Blueprint $table) {
-            $table->id(); // Auto-increment primary key
-            $table->uuid('uuid')->unique();
-            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
-            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
-            $table->string('name')->notNullable();
-            $table->string('slug')->nullable();
-            $table->json('structure')->notNullable(); // This will store your form data
-            $table->timestamps(); // created_at and updated_at
+    $table->id(); // Auto-increment primary key
+    $table->uuid('uuid')->unique();
+    $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+    $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
+    $table->string('name')->notNullable();
+    $table->string('slug')->nullable();
+    $table->json('structure')->notNullable(); // This will store your form data
+    $table->timestamps(); // created_at and updated_at
 
-            // Indexes
+    // Indexes
 
-            $table->index('event_id');
-            $table->index('slug');
-            $table->index('name');
-        });
-        Schema::table('events', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
-         Schema::table('schools', function (Blueprint $table) {
-            $table->string('banner_image')->nullable()->after('description');
-        });
+    $table->index('event_id');
+    $table->index('slug');
+    $table->index('name');
+});
+Schema::table('events', function (Blueprint $table) {
+    $table->dropColumn('status');
+});
+    Schema::table('schools', function (Blueprint $table) {
+    $table->string('banner_image')->nullable()->after('description');
+});
 
-        Schema::create('school_images', function (Blueprint $table) {
-            $table->id();
-            $table->foreignUuid('school_id')
-                ->constrained('schools')
-                ->onDelete('cascade'); // Delete images if school is deleted
+Schema::create('school_images', function (Blueprint $table) {
+    $table->id();
+    $table->foreignUuid('school_id')
+        ->constrained('schools')
+        ->onDelete('cascade'); // Delete images if school is deleted
 
-            $table->string('image_path');   // store file path
-            $table->string('title')->nullable(); // image title/caption
-            $table->timestamps();
-        });
+    $table->string('image_path');   // store file path
+    $table->string('title')->nullable(); // image title/caption
+    $table->timestamps();
+});
+
+
+
+// Migration: create_features_table
+public function up()
+{
+    Schema::create('features', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->unique(); // e.g., "Science Labs", "Olympic Pool"
+        $table->string('category')->default('general'); // 'academic', 'sports', 'arts', etc.
+        $table->string('icon')->nullable(); // Optional icon class
+        $table->text('description')->nullable();
+        $table->timestamps();
+        
+        $table->index('category');
+    });
+}
+
+// Migration: create_school_feature_table (Pivot table)
+public function up()
+{
+    Schema::create('school_feature', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('school_id')->constrained()->onDelete('cascade');
+        $table->foreignId('feature_id')->constrained()->onDelete('cascade');
+        $table->text('description')->nullable(); // School-specific description
+        $table->integer('priority')->default(0); // For ordering features
+        $table->timestamps();
+        
+        $table->unique(['school_id', 'feature_id']);
+        $table->index('priority');
+    });
+}
+
+// Migration: create_curriculums_table
+public function up()
+{
+    Schema::create('curriculums', function (Blueprint $table) {
+        $table->id();
+        $table->string('name')->unique(); // e.g., "CBSE", "ICSE", "IB", "State Board"
+        $table->string('code')->unique(); // e.g., "cbse", "icse"
+        $table->text('description')->nullable();
+        $table->timestamps();
+    });
+}
+
+// Migration: create_school_curriculum_table (Pivot table)
+public function up()
+{
+    Schema::create('school_curriculum', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('school_id')->constrained()->onDelete('cascade');
+        $table->foreignId('curriculum_id')->constrained()->onDelete('cascade');
+        $table->timestamps();
+        
+        $table->unique(['school_id', 'curriculum_id']);
+    });
+}

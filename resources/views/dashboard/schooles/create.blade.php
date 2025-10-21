@@ -83,6 +83,65 @@
                                     <option value="Girls">Girls</option>
                                 </select>
                             </div>
+
+                            <!-- Features Section - Grouped by Category -->
+                            <div class="mb-3">
+                                <label class="form-label">School Features</label>
+
+                                <!-- Feature Search (Optional) -->
+                                <!-- <div class="mb-3">
+                                    <input type="text" class="form-control" placeholder="Search features..." onkeyup="filterFeatures(this.value)">
+                                </div> -->
+
+                                @foreach($features->groupBy('category') as $category => $categoryFeatures)
+                                <div class="card mb-3 feature-category" data-category="{{ Str::slug($category) }}">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0 text-capitalize">{{ $category }} Features</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            @foreach($categoryFeatures as $feature)
+                                            <div class="col-md-6 mb-2 feature-item">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="features[]" value="{{ $feature->id }}" id="feature_{{ $feature->id }}">
+                                                    <label class="form-check-label" for="feature_{{ $feature->id }}">
+                                                        {{ $feature->name }}
+                                                        @if($feature->icon)
+                                                        <i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>
+                                                        @endif
+                                                    </label>
+                                                </div>
+                                                @if($feature->description)
+                                                <small class="text-muted ms-4">{{ $feature->description }}</small>
+                                                @endif
+                                            </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Curriculum Section -->
+                            <div class="mb-3">
+                                <label class="form-label">Curriculum <span class="text-danger">*</span></label>
+                                <div class="row">
+                                    @foreach($curriculums as $curriculum)
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="curriculum_id" value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}" {{ $loop->first ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="curriculum_{{ $curriculum->id }}">
+                                                {{ $curriculum->name }}
+                                            </label>
+                                        </div>
+                                        @if($curriculum->description)
+                                        <small class="text-muted ms-4">{{ $curriculum->description }}</small>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+
                             <!-- Admin Account -->
                             <h5 class="mt-4 mb-3">Admin Account</h5>
                             <div class="row">
