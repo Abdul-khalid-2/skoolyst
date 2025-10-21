@@ -2,8 +2,7 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header d-flex justify-content-between align-items-center">
             <h4 class="text-white mb-0">
-                <i class="fas fa-store me-2"></i>
-                {{ __('Dashboard') }}
+                <a class="navbar-brand" href="{{ url('/') }}">SKOOLYST</a>
             </h4>
             <button class="btn btn-link d-md-none p-0" style="color: white;">
                 <i class="fas fa-times"></i>
