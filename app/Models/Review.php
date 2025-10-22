@@ -9,7 +9,20 @@ class Review extends Model
 {
     use HasFactory;
 
-    // Belongs to a school
+    protected $fillable = [
+        'school_id',
+        'user_id',
+        'user_id',
+        'review',
+        'rating',
+        'reviewer_name'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function school()
     {
         return $this->belongsTo(School::class);
@@ -18,5 +31,10 @@ class Review extends Model
     public function branch()
     {
         return $this->belongsTo(Branch::class);
+    }
+    // Accessor for reviewer name
+    public function getReviewerNameAttribute($value)
+    {
+        return $value ?? $this->user->name ?? 'Anonymous';
     }
 }

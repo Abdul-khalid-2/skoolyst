@@ -12,6 +12,7 @@ use App\Http\Controllers\Website\AboutController;
 use App\Http\Controllers\Website\BrowseSchoolController;
 use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
+use App\Http\Controllers\Website\ReviewController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -80,6 +81,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
 
 require __DIR__ . '/auth.php';

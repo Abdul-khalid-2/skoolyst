@@ -8,6 +8,305 @@
 @if($school->custom_style)
 <link rel="stylesheet" href="{{ asset('assets/css/schools/' . $school->custom_style . '.css') }}">
 @endif
+
+<style>
+    /* Review Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eaeaea;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.5rem;
+}
+
+.close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    color: #e74c3c;
+}
+
+.modal-body {
+    padding: 24px;
+}
+/* Star Rating - Fixed */
+/* Star Rating - Fixed Properly */
+.star-rating {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+    /* Remove flex-direction: row-reverse */
+}
+
+.star-rating input {
+    display: none;
+}
+
+.star-label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+/* Highlight selected stars and stars to the left */
+.star-rating input:checked ~ .star-label {
+    color: #ffc107;
+}
+
+/* Highlight on hover */
+.star-label:hover,
+.star-label:hover ~ .star-label {
+    color: #ffc107;
+}
+
+/* Keep selected state when not hovering */
+.star-rating:not(:hover) input:checked ~ .star-label {
+    color: #ffc107;
+}
+
+/* Reset stars after the hovered one */
+.star-rating:hover .star-label:hover ~ .star-label {
+    color: #ddd;
+}
+
+.rating-text {
+    margin-top: 8px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eaeaea;
+    border-radius: 8px;
+    resize: vertical;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 24px;
+}
+
+.btn-cancel, .btn-submit {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-cancel {
+    background-color: #95a5a6;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #7f8c8d;
+}
+
+.btn-submit {
+    background-color: #27ae60;
+    color: white;
+}
+
+.btn-submit:hover {
+    background-color: #219a52;
+}
+
+.btn-submit:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+}
+
+/* Login Required */
+.login-required {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.login-icon {
+    font-size: 4rem;
+    color: #3498db;
+    margin-bottom: 20px;
+}
+
+.login-required h4 {
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.login-required p {
+    color: #666;
+    margin-bottom: 24px;
+}
+
+.auth-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-login, .btn-register {
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-login {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-login:hover {
+    background-color: #2980b9;
+}
+
+.btn-register {
+    background-color: #2c3e50;
+    color: white;
+}
+
+.btn-register:hover {
+    background-color: #1a252f;
+}
+
+/* Verified Badge */
+.verified-badge {
+    background-color: #27ae60;
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+    }
+    
+    .form-actions, .auth-buttons {
+        flex-direction: column;
+    }
+}
+
+/* Star Rating Styles */
+.review-rating {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+
+.review-rating i {
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.review-rating .fas.fa-star {
+    color: #ffc107; /* Gold color for filled stars */
+    text-shadow: 0 1px 2px rgba(255, 193, 7, 0.3);
+}
+
+.review-rating .far.fa-star {
+    color: #ffc107; /* Same color but lighter */
+    opacity: 0.3;
+}
+
+/* Gradient Star Rating */
+.review-rating.gradient {
+    display: flex;
+    gap: 1px;
+}
+
+.review-rating.gradient .fas.fa-star {
+    background: linear-gradient(135deg, #ffc107, #ff6b00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 2px rgba(255, 107, 0, 0.2);
+}
+
+.review-rating.gradient .far.fa-star {
+    background: linear-gradient(135deg, #e0e0e0, #b0b0b0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+</style>
 @endpush
 
 @section('content')
@@ -272,7 +571,12 @@
                                         <div class="review-item">
                                             <div class="review-header">
                                                 <div class="reviewer-info">
-                                                    <span class="reviewer-name">{{ $review->reviewer_name }}</span>
+                                                    <span class="reviewer-name">
+                                                        {{ $review->user_id ? $review->user->name : $review->reviewer_name }}
+                                                        @if($review->user_id)
+                                                            <span class="verified-badge">✓ Verified</span>
+                                                        @endif
+                                                    </span>
                                                     <div class="review-rating">
                                                         @for($i = 1; $i <= 5; $i++)
                                                             @if($i <= $review->rating)
@@ -294,6 +598,91 @@
                             @endif
                         </div>
                     </section>
+
+                    {{-- <section class="sidebar-section">
+                        <h3 class="sidebar-title">Quick Actions</h3>
+                        <div class="action-buttons">
+                            <button class="action-btn primary">
+                                <i class="fas fa-download"></i>
+                                Download Brochure
+                            </button>
+                            <button class="action-btn secondary">
+                                <i class="fas fa-calendar-check"></i>
+                                Schedule Visit
+                            </button>
+                            <button class="action-btn tertiary" id="writeReviewBtn">
+                                <i class="fas fa-edit"></i>
+                                Write Review
+                            </button>
+                        </div>
+                    </section> --}}
+
+                    <!-- Review Modal -->
+                    <div id="reviewModal" class="modal">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Write a Review</h3>
+                                <span class="close">&times;</span>
+                            </div>
+                            <div class="modal-body">
+                                @auth
+                                    <form id="reviewForm" action="{{ route('reviews.store', $school->id) }}" method="POST">
+                                        @csrf
+                                        <div class="form-group">
+                                            <label for="rating">Your Rating *</label>
+                                            <div class="star-rating">
+                                                <input type="radio" id="star1" name="rating" value="1" required>
+                                                <label for="star1" class="star-label">
+                                                    <i class="far fa-star"></i>
+                                                </label>
+                                                <input type="radio" id="star2" name="rating" value="2" required>
+                                                <label for="star2" class="star-label">
+                                                    <i class="far fa-star"></i>
+                                                </label>
+                                                <input type="radio" id="star3" name="rating" value="3" required>
+                                                <label for="star3" class="star-label">
+                                                    <i class="far fa-star"></i>
+                                                </label>
+                                                <input type="radio" id="star4" name="rating" value="4" required>
+                                                <label for="star4" class="star-label">
+                                                    <i class="far fa-star"></i>
+                                                </label>
+                                                <input type="radio" id="star5" name="rating" value="5" required>
+                                                <label for="star5" class="star-label">
+                                                    <i class="far fa-star"></i>
+                                                </label>
+                                            </div>
+                                            <div class="rating-text">
+                                                <span id="ratingText">Select your rating</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="form-group">
+                                            <label for="review">Your Review *</label>
+                                            <textarea name="review" id="review" rows="5" placeholder="Share your experience with this school..." required></textarea>
+                                        </div>
+                                        
+                                        <div class="form-actions">
+                                            <button type="button" class="btn-cancel" id="cancelReview">Cancel</button>
+                                            <button type="submit" class="btn-submit">Submit Review</button>
+                                        </div>
+                                    </form>
+                                @else
+                                    <div class="login-required">
+                                        <div class="login-icon">
+                                            <i class="fas fa-user-lock"></i>
+                                        </div>
+                                        <h4>Login Required</h4>
+                                        <p>Please login to submit your review and help other parents make informed decisions.</p>
+                                        <div class="auth-buttons">
+                                            <a href="{{ route('login') }}" class="btn-login">Login</a>
+                                            <a href="{{ route('register') }}" class="btn-register">Register</a>
+                                        </div>
+                                    </div>
+                                @endauth
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Events Section -->
                     <section id="events" class="content-section">
@@ -458,7 +847,7 @@
                     </section>
 
                     <!-- Quick Actions -->
-                    <section class="sidebar-section">
+                      <section class="sidebar-section">
                         <h3 class="sidebar-title">Quick Actions</h3>
                         <div class="action-buttons">
                             <button class="action-btn primary">
@@ -469,7 +858,7 @@
                                 <i class="fas fa-calendar-check"></i>
                                 Schedule Visit
                             </button>
-                            <button class="action-btn tertiary">
+                            <button class="action-btn tertiary" id="writeReviewBtn">
                                 <i class="fas fa-edit"></i>
                                 Write Review
                             </button>
@@ -552,6 +941,160 @@
 
         // Update buttons when user scrolls manually
         navLinks.addEventListener('scroll', updateScrollButtons);
+    });
+
+
+    // Review Modal Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const modal = document.getElementById('reviewModal');
+        const writeReviewBtn = document.getElementById('writeReviewBtn');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancelReview');
+        const starInputs = document.querySelectorAll('.star-rating input');
+        const ratingText = document.getElementById('ratingText');
+        
+        // Rating descriptions
+        const ratingDescriptions = {
+            1: 'Poor - Very dissatisfied',
+            2: 'Fair - Could be better',
+            3: 'Good - Met expectations',
+            4: 'Very Good - Exceeded expectations',
+            5: 'Excellent - Far beyond expectations'
+        };
+        
+        // Open modal
+        writeReviewBtn.addEventListener('click', function() {
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        });
+        
+        // Close modal
+        function closeModal() {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        
+        // Close when clicking outside
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Star rating interaction
+        // Star rating interaction - improved
+        starInputs.forEach(input => {
+            const label = input.nextElementSibling;
+            
+            input.addEventListener('change', function() {
+                const rating = this.value;
+                ratingText.textContent = ratingDescriptions[rating] || 'Select your rating';
+                
+                // Update all stars based on selection
+                starInputs.forEach(star => {
+                    const starLabel = star.nextElementSibling;
+                    if (star.value <= rating) {
+                        starLabel.style.color = '#ffc107';
+                    } else {
+                        starLabel.style.color = '#ddd';
+                    }
+                });
+            });
+            
+            // Add hover effects
+            label.addEventListener('mouseenter', function() {
+                const currentRating = this.previousElementSibling.value;
+                ratingText.textContent = ratingDescriptions[currentRating] || 'Select your rating';
+            });
+        });
+
+        // Reset stars when mouse leaves the rating area
+        document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+            const checkedInput = document.querySelector('.star-rating input:checked');
+            if (checkedInput) {
+                const rating = checkedInput.value;
+                starInputs.forEach(star => {
+                    const starLabel = star.nextElementSibling;
+                    if (star.value <= rating) {
+                        starLabel.style.color = '#ffc107';
+                    } else {
+                        starLabel.style.color = '#ddd';
+                    }
+                });
+            } else {
+                // No rating selected, reset all to default
+                document.querySelectorAll('.star-label').forEach(label => {
+                    label.style.color = '#ddd';
+                });
+            }
+        });
+        
+        // Form submission handling
+        const reviewForm = document.getElementById('reviewForm');
+        // Update your form submission handler
+        if (reviewForm) {
+            reviewForm.addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent default first for debugging
+                
+                const rating = document.querySelector('input[name="rating"]:checked');
+                const reviewText = document.getElementById('review').value.trim();
+                
+                // Validation
+                if (!rating) {
+                    alert('Please select a rating');
+                    return false;
+                }
+                
+                if (!reviewText) {
+                    alert('Please write your review');
+                    return false;
+                }
+                
+                // Add loading state
+                const submitBtn = this.querySelector('.btn-submit');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                submitBtn.disabled = true;
+                
+                // Debug: Log form data
+                const formData = new FormData(this);
+                console.log('Form data:', Object.fromEntries(formData));
+                
+                // Submit via fetch to see the actual response
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.success) {
+                        alert('Review submitted successfully!');
+                        closeModal();
+                        location.reload(); // Reload to show new review
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to submit review'));
+                        submitBtn.innerHTML = 'Submit Review';
+                        submitBtn.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while submitting your review');
+                    submitBtn.innerHTML = 'Submit Review';
+                    submitBtn.disabled = false;
+                });
+            });
+        }
     });
 </script>
 @endpush
