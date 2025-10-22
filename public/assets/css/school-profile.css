@@ -709,3 +709,202 @@
         transform: none;
     }
 }
+
+
+
+
+/* School Motto */
+.school-motto {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 10px;
+    font-size: 1.1rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    padding-left: 15px;
+}
+
+.school-motto i {
+    opacity: 0.7;
+    margin: 0 5px;
+}
+
+/* School Statistics */
+.school-statistics {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4e73df;
+}
+
+.school-statistics h3 {
+    margin-bottom: 1rem;
+    color: #2e59d9;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4e73df;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Mission & Vision Section */
+.mission-vision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.mission-vision-item {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.mission-vision-item:hover {
+    transform: translateY(-5px);
+}
+
+.mv-icon {
+    font-size: 2.5rem;
+    color: #4e73df;
+    margin-bottom: 1rem;
+}
+
+.mission-vision-item h3 {
+    color: #2e59d9;
+    margin-bottom: 1rem;
+}
+
+.mission-vision-item p {
+    line-height: 1.6;
+    color: #6c757d;
+}
+
+/* Profile Info in Sidebar */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.profile-item i {
+    font-size: 1.25rem;
+    color: #4e73df;
+    width: 30px;
+}
+
+.profile-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.profile-value {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* Enhanced Quick Facts */
+.facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.fact-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #4e73df;
+}
+
+.fact-item i {
+    font-size: 1.25rem;
+    color: #4e73df;
+    width: 25px;
+}
+
+/* Social Media Links */
+.social-links {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    color: #6c757d;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-link:hover {
+    background: #4e73df;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mission-vision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .facts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .school-motto {
+        font-size: 1rem;
+        margin-top: 8px;
+    }
+}

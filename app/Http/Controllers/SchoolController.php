@@ -6,6 +6,7 @@ use App\Models\Curriculum;
 use App\Models\Feature;
 use App\Models\School;
 use App\Models\SchoolImage;
+use App\Models\SchoolProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -97,57 +98,139 @@ class SchoolController extends Controller
             'features'        => 'nullable|array',
             'features.*'      => 'exists:features,id',
             'curriculum_id'   => 'required|exists:curriculums,id',
+
+            // Profile fields validation
+            'established_year' => 'nullable|string|max:20',
+            'student_strength' => 'nullable|integer|min:0',
+            'faculty_count'    => 'nullable|integer|min:0',
+            'campus_size'      => 'nullable|string|max:100',
+            'school_motto'     => 'nullable|string|max:255',
+            'mission'          => 'nullable|string',
+            'vision'           => 'nullable|string',
+            'logo'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'facebook_url'     => 'nullable|url|max:255',
+            'twitter_url'      => 'nullable|url|max:255',
+            'instagram_url'    => 'nullable|url|max:255',
+            'linkedin_url'     => 'nullable|url|max:255',
+            'youtube_url'      => 'nullable|url|max:255',
+            'quick_fact_keys'   => 'nullable|array',
+            'quick_fact_values' => 'nullable|array',
+            'school_images'     => 'nullable|array',
+            'school_images.*'   => 'image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image_titles'      => 'nullable|array',
+            'image_titles.*'    => 'nullable|string|max:255',
         ]);
 
-        // Create school
-        $school = new School($validated);
-        $school->save();
+        try {
+            DB::beginTransaction();
 
-        // ✅ Attach features to school
-        if ($request->has('features')) {
-            $school->features()->attach($request->features);
-        }
+            // Create school
+            $school = new School($validated);
+            $school->save();
 
-        // ✅ Attach curriculum to school
-        $school->curriculums()->attach($request->curriculum_id);
+            // Create school profile
+            $profileData = [
+                'school_id' => $school->id,
+                'established_year' => $validated['established_year'] ?? null,
+                'student_strength' => $validated['student_strength'] ?? null,
+                'faculty_count' => $validated['faculty_count'] ?? null,
+                'campus_size' => $validated['campus_size'] ?? null,
+                'school_motto' => $validated['school_motto'] ?? null,
+                'mission' => $validated['mission'] ?? null,
+                'vision' => $validated['vision'] ?? null,
+            ];
 
-        // ✅ Folder name by school name (slug-safe)
-        $folderName = Str::slug($school->name, '-');
+            // Handle quick facts (JSON)
+            $quickFacts = [];
+            if ($request->has('quick_fact_keys') && $request->has('quick_fact_values')) {
+                $keys = $request->quick_fact_keys;
+                $values = $request->quick_fact_values;
 
-        // ✅ Handle banner image upload
-        if ($request->hasFile('banner_image')) {
-            $path = Storage::disk('website')
-                ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
-            $school->update(['banner_image' => $path]);
-        }
-
-        // ✅ Handle multiple gallery images
-        if ($request->hasFile('school_images')) {
-            foreach ($request->file('school_images') as $index => $imageFile) {
-                if ($imageFile) {
-                    $imagePath = Storage::disk('website')
-                        ->putFile("school/{$folderName}/gallery", $imageFile);
-
-                    SchoolImage::create([
-                        'school_id'  => $school->id,
-                        'image_path' => $imagePath,
-                        'title'      => $request->image_titles[$index] ?? null,
-                    ]);
+                for ($i = 0; $i < count($keys); $i++) {
+                    if (!empty($keys[$i]) && !empty($values[$i])) {
+                        $quickFacts[$keys[$i]] = $values[$i];
+                    }
                 }
             }
+            $profileData['quick_facts'] = !empty($quickFacts) ? json_encode($quickFacts) : null;
+
+            // Handle social media (JSON)
+            $socialMedia = [];
+            $socialPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
+            foreach ($socialPlatforms as $platform) {
+                $urlField = $platform . '_url';
+                if (!empty($validated[$urlField])) {
+                    $socialMedia[$platform] = $validated[$urlField];
+                }
+            }
+            $profileData['social_media'] = !empty($socialMedia) ? json_encode($socialMedia) : null;
+
+            // Create the profile
+            $schoolProfile = SchoolProfile::create($profileData);
+
+            // ✅ Folder name by school name (slug-safe)
+            $folderName = Str::slug($school->name, '-');
+
+            // ✅ Handle logo upload (to profile)
+            if ($request->hasFile('logo')) {
+                $logoPath = Storage::disk('website')
+                    ->putFile("school/{$folderName}/logo", $request->file('logo'));
+                $schoolProfile->update(['logo' => $logoPath]);
+            }
+
+            // ✅ Handle banner image upload (to school)
+            if ($request->hasFile('banner_image')) {
+                $bannerPath = Storage::disk('website')
+                    ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
+                $school->update(['banner_image' => $bannerPath]);
+            }
+
+            // ✅ Handle multiple gallery images
+            if ($request->hasFile('school_images')) {
+                foreach ($request->file('school_images') as $index => $imageFile) {
+                    if ($imageFile) {
+                        $imagePath = Storage::disk('website')
+                            ->putFile("school/{$folderName}/gallery", $imageFile);
+
+                        SchoolImage::create([
+                            'school_id'  => $school->id,
+                            'image_path' => $imagePath,
+                            'title'      => $request->image_titles[$index] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            // ✅ Attach features to school
+            if ($request->has('features')) {
+                $school->features()->attach($request->features);
+            }
+
+            // ✅ Attach curriculum to school
+            $school->curriculums()->attach($request->curriculum_id);
+
+            // Create admin user
+            $user = new User();
+            $user->name = $validated['admin-name'] ?? $validated['name'] . ' Admin';
+            $user->email = $validated['admin-email'] ?? $validated['email'];
+            $user->password = Hash::make($validated['password']);
+            $user->school_id = $school->id;
+            $user->save();
+
+            // Assign role
+            $user->assignRole('school-admin');
+
+            DB::commit();
+
+            $redirect = $request->has('save_and_add')
+                ? redirect()->route('schools.create')->with('success', 'School created successfully! Create another school.')
+                : redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
+
+            return $redirect;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error creating school: ' . $e->getMessage())->withInput();
         }
-
-        $user = new User();
-        $user->name = $validated['admin-name'] ?? $validated['name'] . ' Admin';
-        $user->email = $validated['admin-email'] ?? $validated['email'];
-        $user->password = $validated['password'];
-        $user->school_id = $school->id;
-        $user->save();
-
-        // Assign role
-        $user->assignRole('school-admin');
-
-        return redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
     }
 
     /**

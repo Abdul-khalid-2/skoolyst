@@ -30,6 +30,7 @@ class School extends Model
         'status',
         'visibility',
         'publish_date',
+        'logo',
         'banner_title',
         'banner_tagline'
     ];
@@ -110,5 +111,24 @@ class School extends Model
     {
         return $this->belongsToMany(Curriculum::class, 'school_curriculum')
             ->withTimestamps();
+    }
+
+    // Add the profile relationship
+    public function profile()
+    {
+        return $this->hasOne(SchoolProfile::class);
+    }
+
+    public function getLogoUrl()
+    {
+        if ($this->logo) {
+            return asset('website/' . $this->logo);
+        }
+
+        if ($this->profile && $this->profile->logo) {
+            return asset('website/' . $this->profile->logo);
+        }
+
+        return null;
     }
 }

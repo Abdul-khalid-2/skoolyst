@@ -121,11 +121,25 @@ class BrowseSchoolController extends Controller
 
     public function show($uuid)
     {
-        $school = School::with(['curriculums', 'features', 'reviews', 'images', 'branches', 'events'])
+        $school = School::with([
+            'profile',
+            'curriculums',
+            'features',
+            'reviews',
+            'images',
+            'branches',
+            'events'
+        ])
             ->where('status', 'active')
             ->where('visibility', 'public')
             ->where('uuid', $uuid)
             ->firstOrFail();
+
+        // Increment visitor count
+        if ($school->profile) {
+            $school->profile->increment('visitor_count');
+            $school->profile->update(['last_visited_at' => now()]);
+        }
 
         return view('website.school_profile', compact('school'));
     }

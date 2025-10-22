@@ -8,7 +8,6 @@
 @if($school->custom_style)
 <link rel="stylesheet" href="{{ asset('assets/css/schools/' . $school->custom_style . '.css') }}">
 @endif
-<link rel="stylesheet" href="{{ asset('assets/css/school-profile.css') }}">
 @endpush
 
 @section('content')
@@ -24,8 +23,8 @@
         <div class="container">
             <div class="school-hero-content">
                 <div class="school-logo-wrapper">
-                    @if($school->logo)
-                        <img src="{{ asset('website/' . $school->logo) }}" alt="{{ $school->name }} Logo" class="school-logo-img">
+                    @if($school->getLogoUrl())
+                        <img src="{{ $school->getLogoUrl() }}" alt="{{ $school->name }} Logo" class="school-logo-img">
                     @else
                         <div class="school-logo-placeholder">
                             <i class="fas fa-school"></i>
@@ -36,9 +35,18 @@
                 <div class="school-text-content">
                     <h1 class="school-title">{{ $school->banner_title ?? $school->name }}</h1>
                     @if($school->banner_tagline)
-                        <p class="school-tagline">{{ $school->banner_tagline??"Find You Future" }}</p>
+                        <p class="school-tagline">{{ $school->banner_tagline ?? "Find Your Future" }}</p>
                     @endif
                     <p class="school-name-sub">{{ $school->name }}</p>
+                    
+                    <!-- School Motto -->
+                    @if($school->profile && $school->profile->school_motto)
+                        <div class="school-motto">
+                            <i class="fas fa-quote-left"></i>
+                            {{ $school->profile->school_motto }}
+                            <i class="fas fa-quote-right"></i>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -46,7 +54,6 @@
         
     </section>
 
-    <!-- School Navigation -->
     <!-- School Navigation -->
     <nav class="school-navigation">
         <div class="container">
@@ -59,6 +66,7 @@
                     <li><a href="#gallery" class="nav-link" data-tab="gallery">Gallery</a></li>
                     <li><a href="#curriculum" class="nav-link" data-tab="curriculum">Curriculum</a></li>
                     <li><a href="#facilities" class="nav-link" data-tab="facilities">Facilities</a></li>
+                    <li><a href="#mission-vision" class="nav-link" data-tab="mission-vision">Mission & Vision</a></li>
                     <li><a href="#reviews" class="nav-link" data-tab="reviews">Reviews</a></li>
                     <li><a href="#events" class="nav-link" data-tab="events">Events</a></li>
                     <li><a href="#branches" class="nav-link" data-tab="branches">Branches</a></li>
@@ -84,27 +92,74 @@
                             <p class="school-description">
                                 {{ $school->description ?? 'No description available for this school.' }}
                             </p>
+                            
+                            <!-- Quick Facts -->
                             <div class="quick-facts">
                                 <h3>Quick Facts</h3>
                                 <div class="facts-grid">
+                                    <!-- Basic Facts -->
                                     <div class="fact-item">
                                         <i class="fas fa-calendar"></i>
-                                        <span>Established: {{ $school->established_year ?? 'N/A' }}</span>
+                                        <span>Established: {{ $school->profile->established_year ?? 'N/A' }}</span>
                                     </div>
                                     <div class="fact-item">
                                         <i class="fas fa-users"></i>
-                                        <span>Student Strength: {{ $school->student_strength ?? 'N/A' }}</span>
+                                        <span>Student Strength: {{ $school->profile->student_strength ?? 'N/A' }}</span>
                                     </div>
                                     <div class="fact-item">
                                         <i class="fas fa-chalkboard-teacher"></i>
-                                        <span>Faculty: {{ $school->faculty_count ?? 'N/A' }} teachers</span>
+                                        <span>Faculty: {{ $school->profile->faculty_count ?? 'N/A' }} teachers</span>
                                     </div>
                                     <div class="fact-item">
                                         <i class="fas fa-building"></i>
-                                        <span>Campus Size: {{ $school->campus_size ?? 'N/A' }}</span>
+                                        <span>Campus Size: {{ $school->profile->campus_size ?? 'N/A' }}</span>
                                     </div>
+                                    
+                                    <!-- Additional Quick Facts from JSON -->
+                                   @if($school->profile && $school->profile->quick_facts)
+                                        @php
+                                            $quickFacts = json_decode($school->profile->quick_facts, true);
+                                        @endphp
+
+                                        @foreach($quickFacts as $key => $value)
+                                            @if(!in_array($key, ['established_year', 'student_strength', 'faculty_count', 'campus_size']))
+                                                <div class="fact-item">
+                                                    <i class="fas fa-check-circle"></i>
+                                                    <span>{{ ucfirst(str_replace('_', ' ', $key)) }}: {{ $value }}</span>
+                                                </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
+
                                 </div>
                             </div>
+
+                            <!-- School Statistics -->
+                            @if($school->profile && ($school->profile->visitor_count > 0 || $school->profile->total_time_spent > 0))
+                            <div class="school-statistics">
+                                <h3>School Statistics</h3>
+                                <div class="stats-grid">
+                                    @if($school->profile->visitor_count > 0)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ $school->profile->visitor_count }}</div>
+                                        <div class="stat-label">Profile Visitors</div>
+                                    </div>
+                                    @endif
+                                    @if($school->profile->total_time_spent > 0)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ round($school->profile->total_time_spent / 60) }}</div>
+                                        <div class="stat-label">Minutes Spent by Visitors</div>
+                                    </div>
+                                    @endif
+                                    @if($school->profile->last_visited_at)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ $school->profile->last_visited_at->format('M d') }}</div>
+                                        <div class="stat-label">Last Visited</div>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            @endif
                         </div>
                     </section>
 
@@ -159,7 +214,9 @@
                                             <i class="fas fa-{{ $feature->icon ?? 'check' }}"></i>
                                             <div>
                                                 <span>{{ $feature->name }}</span>
-                                                @if($feature->description)
+                                                @if($feature->pivot->description)
+                                                    <p class="facility-description">{{ $feature->pivot->description }}</p>
+                                                @elseif($feature->description)
                                                     <p class="facility-description">{{ $feature->description }}</p>
                                                 @endif
                                             </div>
@@ -168,6 +225,48 @@
                                 </div>
                             @else
                                 <p class="no-content">Facilities information not available.</p>
+                            @endif
+                        </div>
+                    </section>
+
+                    <!-- Mission & Vision Section -->
+                    <section id="mission-vision" class="content-section">
+                        <h2 class="section-title">Mission & Vision</h2>
+                        <div class="section-content">
+                            <div class="mission-vision-grid">
+                                @if($school->profile && $school->profile->mission)
+                                <div class="mission-vision-item">
+                                    <div class="mv-icon">
+                                        <i class="fas fa-bullseye"></i>
+                                    </div>
+                                    <h3>Our Mission</h3>
+                                    <p>{{ $school->profile->mission }}</p>
+                                </div>
+                                @endif
+                                
+                                @if($school->profile && $school->profile->vision)
+                                <div class="mission-vision-item">
+                                    <div class="mv-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <h3>Our Vision</h3>
+                                    <p>{{ $school->profile->vision }}</p>
+                                </div>
+                                @endif
+                                
+                                @if($school->profile && $school->profile->school_motto)
+                                <div class="mission-vision-item">
+                                    <div class="mv-icon">
+                                        <i class="fas fa-quote-left"></i>
+                                    </div>
+                                    <h3>Our Motto</h3>
+                                    <p>"{{ $school->profile->school_motto }}"</p>
+                                </div>
+                                @endif
+                            </div>
+                            
+                            @if(!$school->profile || (!$school->profile->mission && !$school->profile->vision && !$school->profile->school_motto))
+                                <p class="no-content">Mission and vision information not available.</p>
                             @endif
                         </div>
                     </section>
@@ -304,6 +403,41 @@
                         </div>
                     </section>
 
+                    <!-- School Profile Info -->
+                    <section class="sidebar-section">
+                        <h3 class="sidebar-title">School Profile</h3>
+                        <div class="profile-info">
+                            <div class="profile-item">
+                                <i class="fas fa-school"></i>
+                                <div>
+                                    <span class="profile-label">Established</span>
+                                    <span class="profile-value">{{ $school->profile->established_year ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-item">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <span class="profile-label">Students</span>
+                                    <span class="profile-value">{{ $school->profile->student_strength ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-item">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <div>
+                                    <span class="profile-label">Faculty</span>
+                                    <span class="profile-value">{{ $school->profile->faculty_count ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                            <div class="profile-item">
+                                <i class="fas fa-expand-arrows-alt"></i>
+                                <div>
+                                    <span class="profile-label">Campus</span>
+                                    <span class="profile-value">{{ $school->profile->campus_size ?? 'N/A' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <!-- Fee Structure -->
                     <section class="sidebar-section">
                         <h3 class="sidebar-title">Fee Structure</h3>
@@ -311,19 +445,19 @@
                             @if($school->regular_fees)
                                 <div class="fee-item">
                                     <span class="fee-label">Regular Fees:</span>
-                                    <span class="fee-amount">₹{{ number_format($school->regular_fees) }}/year</span>
+                                    <span class="fee-amount">Rs{{ number_format($school->regular_fees) }}/year</span>
                                 </div>
                             @endif
                             @if($school->discounted_fees)
                                 <div class="fee-item">
                                     <span class="fee-label">Discounted Fees:</span>
-                                    <span class="fee-amount">₹{{ number_format($school->discounted_fees) }}/year</span>
+                                    <span class="fee-amount">Rs{{ number_format($school->discounted_fees) }}/year</span>
                                 </div>
                             @endif
                             @if($school->admission_fees)
                                 <div class="fee-item">
                                     <span class="fee-label">Admission Fees:</span>
-                                    <span class="fee-amount">₹{{ number_format($school->admission_fees) }}</span>
+                                    <span class="fee-amount">Rs{{ number_format($school->admission_fees) }}</span>
                                 </div>
                             @endif
                             @if(!$school->regular_fees && !$school->discounted_fees && !$school->admission_fees)
@@ -355,21 +489,27 @@
                     <section class="sidebar-section">
                         <h3 class="sidebar-title">Follow Us</h3>
                         <div class="social-links">
-                            <a href="#" class="social-link">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-twitter"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
-                            <a href="#" class="social-link">
-                                <i class="fab fa-youtube"></i>
-                            </a>
+                            @if($school->profile && $school->profile->social_media)
+                                @php
+                                    $socialMedia = json_decode($school->profile->social_media, true);
+                                @endphp
+
+                                @foreach($socialMedia as $platform => $url)
+                                    @if($url)
+                                        <a href="{{ $url }}" target="_blank" class="social-link" title="{{ ucfirst($platform) }}">
+                                            <i class="fab fa-{{ $platform }}"></i>
+                                        </a>
+                                    @endif
+                                @endforeach
+                            @else
+                                <!-- Fallback social links -->
+                                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                                <a href="#" class="social-link"><i class="fab fa-youtube"></i></a>
+                            @endif
+
                         </div>
                     </section>
                 </div>
