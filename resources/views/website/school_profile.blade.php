@@ -985,7 +985,6 @@
         });
         
         // Star rating interaction
-        // Star rating interaction - improved
         starInputs.forEach(input => {
             const label = input.nextElementSibling;
             
