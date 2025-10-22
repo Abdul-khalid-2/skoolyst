@@ -2,85 +2,72 @@
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+
 <link rel="stylesheet" href="{{ asset('assets/css/school-profile.css') }}">
 @if($school->custom_style)
 <link rel="stylesheet" href="{{ asset('assets/css/schools/' . $school->custom_style . '.css') }}">
 @endif
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/school-profile.css') }}">
 @endpush
 
 @section('content')
     <!-- School Header Section -->
-    <section class="school-header" 
+    <section class="school-header {{ $school->banner_image ? 'has-banner-image' : '' }}"
         @if($school->banner_image)
-            style="background-image: url('{{ asset('website/' . $school->banner_image) }}'); background-size: cover; background-position: center center;"
+            style="background-image: url('{{ asset('website/' . $school->banner_image) }}')"
         @endif
     >
+        <div class="school-header-overlay"></div>
+
+    @if($school->banner_title)
         <div class="container">
-            <div class="school-basic-info">
-                <div class="school-logo">
+            <div class="school-hero-content">
+                <div class="school-logo-wrapper">
                     @if($school->logo)
-                        <img src="{{ asset('website/' . $school->logo) }}" alt="{{ $school->name }} Logo">
+                        <img src="{{ asset('website/' . $school->logo) }}" alt="{{ $school->name }} Logo" class="school-logo-img">
                     @else
                         <div class="school-logo-placeholder">
                             <i class="fas fa-school"></i>
                         </div>
                     @endif
                 </div>
-                <div class="school-info">
-                    <h1 class="school-name">{{ $school->name }}</h1>
-                    <div class="school-meta">
-                        <span class="school-location">
-                            <i class="fas fa-map-marker-alt"></i>
-                            {{ $school->city }}, {{ $school->address }}
-                        </span>
-                        <span class="school-type">
-                            <i class="fas fa-tag"></i>
-                            {{ $school->school_type }}
-                        </span>
-                    </div>
-                    <div class="school-rating">
-                        @php
-                            $averageRating = $school->reviews->avg('rating') ?? 0;
-                            $reviewCount = $school->reviews->count();
-                        @endphp
-                        <div class="rating-stars">
-                            @for($i = 1; $i <= 5; $i++)
-                                @if($i <= floor($averageRating))
-                                    <i class="fas fa-star"></i>
-                                @elseif($i - 0.5 <= $averageRating)
-                                    <i class="fas fa-star-half-alt"></i>
-                                @else
-                                    <i class="far fa-star"></i>
-                                @endif
-                            @endfor
-                        </div>
-                        <span class="rating-value">{{ number_format($averageRating, 1) }}</span>
-                        <span class="review-count">({{ $reviewCount }} reviews)</span>
-                    </div>
+
+                <div class="school-text-content">
+                    <h1 class="school-title">{{ $school->banner_title ?? $school->name }}</h1>
+                    @if($school->banner_tagline)
+                        <p class="school-tagline">{{ $school->banner_tagline??"Find You Future" }}</p>
+                    @endif
+                    <p class="school-name-sub">{{ $school->name }}</p>
                 </div>
             </div>
         </div>
-
-        {{-- Optional: Keep a semi-transparent overlay for better text contrast --}}
-        @if($school->banner)
-            <div class="school-header-overlay"></div>
-        @endif
+    @endif
+        
     </section>
 
     <!-- School Navigation -->
+    <!-- School Navigation -->
     <nav class="school-navigation">
         <div class="container">
-            <ul class="nav-links">
-                <li><a href="#overview" class="nav-link active" data-tab="overview">Overview</a></li>
-                <li><a href="#gallery" class="nav-link" data-tab="gallery">Gallery</a></li>
-                <li><a href="#curriculum" class="nav-link" data-tab="curriculum">Curriculum</a></li>
-                <li><a href="#facilities" class="nav-link" data-tab="facilities">Facilities</a></li>
-                <li><a href="#reviews" class="nav-link" data-tab="reviews">Reviews</a></li>
-                <li><a href="#events" class="nav-link" data-tab="events">Events</a></li>
-                <li><a href="#branches" class="nav-link" data-tab="branches">Branches</a></li>
-                <li><a href="#contact" class="nav-link" data-tab="contact">Contact</a></li>
-            </ul>
+            <div class="nav-links-wrapper">
+                <button class="nav-scroll-btn nav-scroll-left" aria-label="Scroll left">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <ul class="nav-links" id="schoolNavLinks">
+                    <li><a href="#overview" class="nav-link active" data-tab="overview">Overview</a></li>
+                    <li><a href="#gallery" class="nav-link" data-tab="gallery">Gallery</a></li>
+                    <li><a href="#curriculum" class="nav-link" data-tab="curriculum">Curriculum</a></li>
+                    <li><a href="#facilities" class="nav-link" data-tab="facilities">Facilities</a></li>
+                    <li><a href="#reviews" class="nav-link" data-tab="reviews">Reviews</a></li>
+                    <li><a href="#events" class="nav-link" data-tab="events">Events</a></li>
+                    <li><a href="#branches" class="nav-link" data-tab="branches">Branches</a></li>
+                    <li><a href="#contact" class="nav-link" data-tab="contact">Contact</a></li>
+                </ul>
+                <button class="nav-scroll-btn nav-scroll-right" aria-label="Scroll right">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </nav>
 
@@ -393,4 +380,47 @@
 
 @push('scripts')
 <script src="{{ asset('assets/js/school-profile.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const navLinks = document.getElementById('schoolNavLinks');
+    const scrollLeftBtn = document.querySelector('.nav-scroll-left');
+    const scrollRightBtn = document.querySelector('.nav-scroll-right');
+
+    if (!navLinks || !scrollLeftBtn || !scrollRightBtn) return;
+
+    // Scroll amount (in pixels)
+    const scrollAmount = 150;
+
+    // Update button visibility based on scroll position
+    function updateScrollButtons() {
+        const atStart = navLinks.scrollLeft <= 10;
+        const atEnd = navLinks.scrollLeft + navLinks.clientWidth >= navLinks.scrollWidth - 10;
+
+        scrollLeftBtn.disabled = atStart;
+        scrollRightBtn.disabled = atEnd;
+    }
+
+    // Initial check
+    updateScrollButtons();
+
+    // Scroll left
+    scrollLeftBtn.addEventListener('click', () => {
+        navLinks.scrollBy({
+            left: -scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    // Scroll right
+    scrollRightBtn.addEventListener('click', () => {
+        navLinks.scrollBy({
+            left: scrollAmount,
+            behavior: 'smooth'
+        });
+    });
+
+    // Update buttons when user scrolls manually
+    navLinks.addEventListener('scroll', updateScrollButtons);
+});
+</script>
 @endpush

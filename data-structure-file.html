@@ -211,3 +211,8 @@ public function up()
         $table->unique(['school_id', 'curriculum_id']);
     });
 }
+
+ Schema::table('schools', function (Blueprint $table) {
+            $table->string('banner_title')->nullable()->after('banner_image');
+            $table->string('banner_tagline')->nullable()->after('banner_title');
+        });

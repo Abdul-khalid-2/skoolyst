@@ -29,7 +29,9 @@ class School extends Model
         'admission_fees',
         'status',
         'visibility',
-        'publish_date'
+        'publish_date',
+        'banner_title',
+        'banner_tagline'
     ];
 
     // Generate UUID automatically

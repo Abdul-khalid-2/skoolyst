@@ -76,6 +76,8 @@ class SchoolController extends Controller
         $validated = $request->validate([
             'name'            => 'required|string|max:255',
             'description'     => 'nullable|string',
+            'banner_title'    => 'nullable|string',
+            'banner_tagline'  => 'nullable|string',
             'address'         => 'required|string|max:255',
             'city'            => 'required|string|max:100',
             'contact_number'  => 'nullable|string|max:20',
