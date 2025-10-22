@@ -19,38 +19,29 @@
     >
         <div class="school-header-overlay"></div>
 
-    @if($school->banner_title)
-        <div class="container">
-            <div class="school-hero-content">
-                <div class="school-logo-wrapper">
-                    @if($school->getLogoUrl())
-                        <img src="{{ $school->getLogoUrl() }}" alt="{{ $school->name }} Logo" class="school-logo-img">
-                    @else
-                        <div class="school-logo-placeholder">
-                            <i class="fas fa-school"></i>
-                        </div>
-                    @endif
-                </div>
+        @if($school->banner_title)
+            <div class="container">
+                <div class="school-hero-content">
+                    <div class="school-logo-wrapper">
+                        @if($school->profile->getLogoUrl())
+                            <img src="{{ $school->profile->getLogoUrl() }}" alt="{{ $school->name }} Logo" class="school-logo-img">
+                        @else
+                            <div class="school-logo-placeholder">
+                                <i class="fas fa-school"></i>
+                            </div>
+                        @endif
+                    </div>
 
-                <div class="school-text-content">
-                    <h1 class="school-title">{{ $school->banner_title ?? $school->name }}</h1>
-                    @if($school->banner_tagline)
-                        <p class="school-tagline">{{ $school->banner_tagline ?? "Find Your Future" }}</p>
-                    @endif
-                    <p class="school-name-sub">{{ $school->name }}</p>
-                    
-                    <!-- School Motto -->
-                    @if($school->profile && $school->profile->school_motto)
-                        <div class="school-motto">
-                            <i class="fas fa-quote-left"></i>
-                            {{ $school->profile->school_motto }}
-                            <i class="fas fa-quote-right"></i>
-                        </div>
-                    @endif
+                    <div class="school-text-content">
+                        <h1 class="school-title">{{ $school->banner_title ?? $school->name }}</h1>
+                        @if($school->banner_tagline)
+                            <p class="school-tagline">{{ $school->banner_tagline ?? "" }}</p>
+                        @endif
+                        <p class="school-name-sub">{{ $school->name }}</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    @endif
+        @endif
         
     </section>
 
@@ -116,7 +107,7 @@
                                     </div>
                                     
                                     <!-- Additional Quick Facts from JSON -->
-                                   @if($school->profile && $school->profile->quick_facts)
+                                    @if($school->profile && $school->profile->quick_facts)
                                         @php
                                             $quickFacts = json_decode($school->profile->quick_facts, true);
                                         @endphp
@@ -135,7 +126,7 @@
                             </div>
 
                             <!-- School Statistics -->
-                            @if($school->profile && ($school->profile->visitor_count > 0 || $school->profile->total_time_spent > 0))
+                            <!-- @if($school->profile && ($school->profile->visitor_count > 0 || $school->profile->total_time_spent > 0))
                             <div class="school-statistics">
                                 <h3>School Statistics</h3>
                                 <div class="stats-grid">
@@ -159,7 +150,7 @@
                                     @endif
                                 </div>
                             </div>
-                            @endif
+                            @endif -->
                         </div>
                     </section>
 
@@ -445,13 +436,13 @@
                             @if($school->regular_fees)
                                 <div class="fee-item">
                                     <span class="fee-label">Regular Fees:</span>
-                                    <span class="fee-amount">Rs{{ number_format($school->regular_fees) }}/year</span>
+                                    <span class="fee-amount">Rs{{ number_format($school->regular_fees) }}/month</span>
                                 </div>
                             @endif
                             @if($school->discounted_fees)
                                 <div class="fee-item">
                                     <span class="fee-label">Discounted Fees:</span>
-                                    <span class="fee-amount">Rs{{ number_format($school->discounted_fees) }}/year</span>
+                                    <span class="fee-amount">Rs{{ number_format($school->discounted_fees) }}/month</span>
                                 </div>
                             @endif
                             @if($school->admission_fees)
@@ -522,45 +513,45 @@
 <script src="{{ asset('assets/js/school-profile.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const navLinks = document.getElementById('schoolNavLinks');
-    const scrollLeftBtn = document.querySelector('.nav-scroll-left');
-    const scrollRightBtn = document.querySelector('.nav-scroll-right');
+        const navLinks = document.getElementById('schoolNavLinks');
+        const scrollLeftBtn = document.querySelector('.nav-scroll-left');
+        const scrollRightBtn = document.querySelector('.nav-scroll-right');
 
-    if (!navLinks || !scrollLeftBtn || !scrollRightBtn) return;
+        if (!navLinks || !scrollLeftBtn || !scrollRightBtn) return;
 
-    // Scroll amount (in pixels)
-    const scrollAmount = 150;
+        // Scroll amount (in pixels)
+        const scrollAmount = 150;
 
-    // Update button visibility based on scroll position
-    function updateScrollButtons() {
-        const atStart = navLinks.scrollLeft <= 10;
-        const atEnd = navLinks.scrollLeft + navLinks.clientWidth >= navLinks.scrollWidth - 10;
+        // Update button visibility based on scroll position
+        function updateScrollButtons() {
+            const atStart = navLinks.scrollLeft <= 10;
+            const atEnd = navLinks.scrollLeft + navLinks.clientWidth >= navLinks.scrollWidth - 10;
 
-        scrollLeftBtn.disabled = atStart;
-        scrollRightBtn.disabled = atEnd;
-    }
+            scrollLeftBtn.disabled = atStart;
+            scrollRightBtn.disabled = atEnd;
+        }
 
-    // Initial check
-    updateScrollButtons();
+        // Initial check
+        updateScrollButtons();
 
-    // Scroll left
-    scrollLeftBtn.addEventListener('click', () => {
-        navLinks.scrollBy({
-            left: -scrollAmount,
-            behavior: 'smooth'
+        // Scroll left
+        scrollLeftBtn.addEventListener('click', () => {
+            navLinks.scrollBy({
+                left: -scrollAmount,
+                behavior: 'smooth'
+            });
         });
-    });
 
-    // Scroll right
-    scrollRightBtn.addEventListener('click', () => {
-        navLinks.scrollBy({
-            left: scrollAmount,
-            behavior: 'smooth'
+        // Scroll right
+        scrollRightBtn.addEventListener('click', () => {
+            navLinks.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
         });
-    });
 
-    // Update buttons when user scrolls manually
-    navLinks.addEventListener('scroll', updateScrollButtons);
-});
+        // Update buttons when user scrolls manually
+        navLinks.addEventListener('scroll', updateScrollButtons);
+    });
 </script>
 @endpush

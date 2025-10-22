@@ -116,4 +116,17 @@ class SchoolProfile extends Model
     {
         return $value ?? null;
     }
+
+    public function getLogoUrl()
+    {
+        if ($this->logo) {
+            return asset('website/' . $this->logo);
+        }
+
+        if ($this->profile && $this->profile->logo) {
+            return asset('website/' . $this->profile->logo);
+        }
+
+        return null;
+    }
 }
