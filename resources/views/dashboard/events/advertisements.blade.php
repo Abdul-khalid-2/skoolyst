@@ -6,7 +6,7 @@
                     <h2 class="mb-0">Advertisement Pages</h2>
                     <p class="text-muted">Manage dynamic advertisement pages</p>
                 </div>
-                <a href="{{ route('pages.create', [$school_id, $id]) }}" class="btn btn-primary me-2">
+                <a href="{{ route('pages.create', [$school_uuid, $id]) }}" class="btn btn-primary me-2">
                     <i class="fas fa-edit me-2"></i> Create Banner
                 </a>
             </div>

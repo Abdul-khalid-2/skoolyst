@@ -18,16 +18,27 @@ class PageController extends Controller
     // Show list of pages (advertisements)
     public function index($id)
     {
+        $event = Event::with('school')->find($id);
 
-        $school_id = auth()->user()->school_id;
-        if (auth()->user()->hasRole('super-admin')) {
-            $pages = Page::with(['school', 'event'])->where('event_id', $id)->latest()->paginate(10);
-        } elseif (auth()->user()->hasRole('school-admin')) {
-            $pages = Page::with(['school', 'event'])->where('school_id', $school_id)->where('event_id', $id)->latest()->paginate(10);
+        if (!$event) {
+            return redirect()->route('dashboard')->with('error', 'Event not found.');
+        }
+
+        $school_uuid = $event->school->uuid;
+        $user = auth()->user();
+
+        $query = Page::with(['school', 'event'])
+            ->where('event_id', $id);
+
+        if ($user->hasRole('super-admin')) {
+            // No additional filters for super-admin
+        } elseif ($user->hasRole('school-admin')) {
+            $query->where('school_id', $user->school_id);
         } else {
             return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
         }
-        return view('dashboard.events.advertisements', compact('pages', 'id', 'school_id'));
+        $pages = $query->latest()->paginate(10);
+        return view('dashboard.events.advertisements', compact('pages', 'id', 'school_uuid'));
     }
 
     // Show edit form for a specific page
