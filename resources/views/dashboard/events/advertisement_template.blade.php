@@ -77,17 +77,14 @@
 
         .canvas-element {
             position: absolute;
-            /* ← critical: was relative, but you're positioning with left/top */
             box-shadow: 0 2px 8px rgba(18, 38, 63, 0.06);
             border-radius: 8px;
             background: #fff;
             padding: 1rem;
             border: 1px solid transparent;
             transition: all 0.3s;
-            /* Allow vertical growth and contain overflow */
             min-height: 60px;
             overflow: visible;
-            /* keep visible for drag/move, but inner preview can scroll */
         }
 
         .canvas-element:hover {
@@ -330,15 +327,153 @@
             display: none;
         }
 
-        @media (max-width: 991px) {
-            .sidebar {
-                min-height: auto;
-                border-right: none;
-                border-bottom: 1px solid #e6e9ef;
-            }
+        /* Preview Modal Styles */
+        .preview-modal .modal-dialog {
+            max-width: 90%;
+            width: 90%;
+            height: 90vh;
+        }
 
-            .two-col {
+        .preview-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            border: 1px solid #eef2f6;
+            min-height: 600px;
+            height: 100%;
+            position: relative;
+            overflow: auto;
+        }
+
+        /* Positioned preview elements */
+        .preview-positioned-element {
+            position: absolute !important;
+            box-shadow: 0 2px 8px rgba(18, 38, 63, 0.06);
+            border-radius: 8px;
+            background: #fff;
+            padding: 1rem;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+            min-height: 60px;
+        }
+
+        .preview-positioned-element:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.15);
+        }
+
+        /* Specific element styles for positioned layout */
+        .preview-positioned-element.preview-title {
+            border-left: 4px solid #4361ee;
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+        }
+
+        .preview-positioned-element.preview-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #4361ee, #3a56d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0;
+        }
+
+        .preview-positioned-element.preview-banner {
+            padding: 0 !important;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-positioned-element.preview-banner img {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+        }
+
+        .preview-positioned-element.preview-image {
+            background: linear-gradient(135deg, #f0f4ff, #ffffff);
+            text-align: center;
+            border-radius: 12px;
+        }
+
+        .preview-positioned-element.preview-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .preview-positioned-element.preview-textarea {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-radius: 12px;
+            border: 1px solid #eef2f6;
+        }
+
+        .preview-positioned-element.preview-two-col {
+            background: linear-gradient(135deg, #f8fafc, #ffffff);
+            border-radius: 12px;
+            border: 1px solid #eef2f6;
+        }
+
+        .preview-positioned-element.preview-raw-html {
+            background: linear-gradient(135deg, #fff8f5, #ffffff);
+            border-radius: 12px;
+            border: 1px solid #ffe8d6;
+        }
+
+        .preview-caption {
+            font-style: italic;
+            color: var(--secondary);
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            padding: 0.5rem;
+        }
+
+        .preview-rich-text {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 1.1rem;
+        }
+
+        /* Two column layout for positioned elements */
+        .preview-positioned-element .two-col {
+            display: flex;
+            gap: 1rem;
+            align-items: stretch;
+        }
+
+        .preview-positioned-element .two-col .col-left,
+        .preview-positioned-element .two-col .col-right {
+            flex: 1;
+            padding: 0.75rem;
+        }
+
+        .preview-positioned-element .two-col img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+        }
+
+        /* Ensure images maintain aspect ratio in preview */
+        .preview-positioned-element img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Responsive adjustments for preview */
+        @media (max-width: 768px) {
+            .preview-positioned-element .two-col {
                 flex-direction: column;
+            }
+            
+            .preview-positioned-element {
+                position: relative !important;
+                left: auto !important;
+                top: auto !important;
+                width: 100% !important;
+                margin-bottom: 1rem;
             }
         }
     </style>
@@ -416,14 +551,13 @@
                         <button id="redoBtn" class="btn btn-outline-secondary btn-sm"><i class="fas fa-redo me-1"></i>Redo</button>
                     </div>
                     <button id="addSpaceBtn" class="btn btn-outline-info btn-sm"><i class="fas fa-expand me-1"></i>Add Space</button>
+                    <button id="previewBtn" class="btn btn-outline-warning btn-sm"><i class="fas fa-eye me-1"></i>Preview Page</button>
                 </div>
 
                 <hr>
 
                 <div class="group-title">Page Actions</div>
                 <div class="d-grid gap-2 mt-2">
-                    <!-- <button id="exportJson" class="btn btn-primary"><i class="fas fa-save me-1"></i>Export JSON</button>
-                    <button id="importJsonBtn" class="btn btn-outline-secondary"><i class="fas fa-folder-open me-1"></i>Import JSON</button> -->
                     <button id="clearCanvas" class="btn btn-outline-danger"><i class="fas fa-trash me-1"></i>Clear Canvas</button>
                 </div>
 
@@ -440,8 +574,9 @@
                         </div>
                         <div class="ms-auto d-flex align-items-center">
                             <span class="small-muted me-3">Drag, drop, and edit elements</span>
-                            <input type="file" id="jsonFileInput" class="d-none" accept=".json">
-                            <!-- <button id="downloadJson" class="btn btn-success btn-sm"><i class="fas fa-download me-1"></i>Download JSON</button> -->
+                            <button id="previewBtnTop" class="btn btn-warning btn-sm me-2">
+                                <i class="fas fa-eye me-1"></i>Preview
+                            </button>
                         </div>
                     </div>
 
@@ -496,14 +631,36 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- <div class="alert alert-info">
-                                        <small><i class="fas fa-info-circle me-1"></i>All form data will be securely sanitized before saving to prevent XSS attacks.</small>
-                                    </div> -->
                                 </form>
                                 <div id="saveResult" class="mt-3"></div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal fade preview-modal" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" style="max-width: 95%; height: 95vh;">
+            <div class="modal-content h-100">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="previewModalLabel">
+                        <i class="fas fa-eye me-2"></i>Page Preview - Exact Layout
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0" style="height: calc(100% - 120px);">
+                    <div class="preview-container h-100" id="previewContainer" style="position: relative; min-height: 800px;">
+                        <!-- Preview content will be inserted here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="savePage()">
+                        <i class="fas fa-save me-1"></i>Save Page
+                    </button>
                 </div>
             </div>
         </div>
@@ -641,6 +798,155 @@
             return data;
         }
 
+        // Generate preview HTML with exact positioning
+        function generatePreview() {
+            const jsonData = exportCanvasToJson();
+            const elements = jsonData.elements;
+            
+            let previewHtml = '';
+            
+            elements.forEach(element => {
+                const type = element.type;
+                const content = element.content || {};
+                const position = element.position || {};
+                
+                const width = position.width || 'auto';
+                const left = position.left || 0;
+                const top = position.top || 0;
+                const zIndex = position.zIndex || 1;
+                
+                let elementHtml = '';
+                let previewClass = '';
+                
+                switch (type) {
+                    case 'title':
+                        previewClass = 'preview-title';
+                        elementHtml = `
+                            <div class="preview-element ${previewClass}">
+                                <h1>${content.html || content.text || 'Untitled'}</h1>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'banner':
+                        previewClass = 'preview-banner';
+                        if (content.src) {
+                            elementHtml = `
+                                <div class="preview-element ${previewClass}">
+                                    <img src="${content.src}" alt="Banner">
+                                    ${content.caption ? `<div class="preview-caption">${content.caption}</div>` : ''}
+                                </div>
+                            `;
+                        }
+                        break;
+                        
+                    case 'image':
+                        previewClass = 'preview-image';
+                        if (content.src) {
+                            elementHtml = `
+                                <div class="preview-element ${previewClass}">
+                                    <img src="${content.src}" alt="Image">
+                                    ${content.caption ? `<div class="preview-caption">${content.caption}</div>` : ''}
+                                </div>
+                            `;
+                        }
+                        break;
+                        
+                    case 'textarea':
+                        previewClass = 'preview-textarea';
+                        if (content.data) {
+                            elementHtml = `
+                                <div class="preview-element ${previewClass}">
+                                    <div class="preview-rich-text">${content.data}</div>
+                                </div>
+                            `;
+                        }
+                        break;
+                        
+                    case 'two-col-tr':
+                        previewClass = 'preview-two-col';
+                        elementHtml = `
+                            <div class="preview-element ${previewClass}">
+                                <div class="two-col">
+                                    <div class="col-left">${content.left || ''}</div>
+                                    <div class="col-right">
+                                        ${content.images && content.images.length > 0 ? 
+                                            `<img src="${content.images[0]}" alt="Image">` : 
+                                            '<div class="text-center py-4 bg-light rounded">No image</div>'
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'two-col-rt':
+                        previewClass = 'preview-two-col';
+                        elementHtml = `
+                            <div class="preview-element ${previewClass}">
+                                <div class="two-col">
+                                    <div class="col-left">
+                                        ${content.images && content.images.length > 0 ? 
+                                            `<img src="${content.images[0]}" alt="Image">` : 
+                                            '<div class="text-center py-4 bg-light rounded">No image</div>'
+                                        }
+                                    </div>
+                                    <div class="col-right">${content.right || ''}</div>
+                                </div>
+                            </div>
+                        `;
+                        break;
+                        
+                    case 'raw-html':
+                        previewClass = 'preview-raw-html';
+                        if (content.html) {
+                            elementHtml = `
+                                <div class="preview-element ${previewClass}">
+                                    ${content.html}
+                                </div>
+                            `;
+                        }
+                        break;
+                }
+                
+                // Add the positioned element with exact styling
+                if (elementHtml) {
+                    previewHtml += `
+                        <div class="preview-positioned-element ${previewClass}" 
+                            style="position: absolute; 
+                                    left: ${left}px; 
+                                    top: ${top}px; 
+                                    width: ${typeof width === 'number' ? width + 'px' : width}; 
+                                    z-index: ${zIndex};
+                                    max-width: 100%;">
+                            ${elementHtml}
+                        </div>
+                    `;
+                }
+            });
+            
+            return previewHtml || '<div class="text-center py-5 text-muted">No content to preview</div>';
+        }
+
+        // Show preview modal
+        function showPreview() {
+            const elementsCount = $('#canvas .canvas-element').length;
+            if (elementsCount === 0) {
+                showNotification('Please add some elements to the canvas first', 'error');
+                return;
+            }
+            
+            const previewHtml = generatePreview();
+            $('#previewContainer').html(previewHtml);
+            $('#previewModal').modal('show');
+        }
+
+        // Save page directly from preview
+        function savePage() {
+            $('#previewModal').modal('hide');
+            $('#saveForm').trigger('submit');
+        }
+
         // Main application
         $(function() {
             const $canvas = $('#canvas');
@@ -650,6 +956,9 @@
             // Initialize with empty canvas state
             saveHistory();
             updateElementCount();
+
+            // Preview buttons
+            $('#previewBtn, #previewBtnTop').on('click', showPreview);
 
             // Make sidebar widgets draggable
             $('.widget').on('dragstart', function(e) {
@@ -721,34 +1030,6 @@
                 showNotification('Canvas cleared');
             });
 
-            // Export JSON
-            $('#exportJson').on('click', function() {
-                const json = exportCanvasToJson();
-                const str = JSON.stringify(json, null, 2);
-                $exportArea.val(str);
-                showNotification('JSON exported to textarea');
-            });
-
-            // Download JSON file
-            $('#downloadJson').on('click', function() {
-                const json = exportCanvasToJson();
-                const str = JSON.stringify(json, null, 2);
-                const blob = new Blob([str], {
-                    type: 'application/json'
-                });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-
-                a.href = url;
-                a.download = 'boltai-form.json';
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                URL.revokeObjectURL(url);
-
-                showNotification('JSON file downloaded');
-            });
-
             // Undo/Redo functionality
             $('#undoBtn').on('click', function() {
                 if (history.length > 1) {
@@ -804,11 +1085,14 @@
                 }
 
                 // Get the current JSON data
-                const jsonData = exportCanvasToJson();
+                let jsonData = exportCanvasToJson();
                 if (!jsonData.elements || jsonData.elements.length === 0) {
                     alert('Please add some elements to the canvas before saving');
                     return;
                 }
+
+                // Process images (server will handle the actual conversion)
+                jsonData = processImagesBeforeSave(jsonData);
 
                 // Show loading state
                 const $saveBtn = $('#saveBtn');
@@ -835,7 +1119,7 @@
                             showNotification('Page saved successfully!', 'success');
                             $('#saveResult').html(`
                                 <div class="alert alert-success">
-                                   <strong>Success!</strong> Page "${pageName}" has been saved successfully.
+                                <strong>Success!</strong> Page "${pageName}" has been saved successfully.
                                     <br><small>Page ID: ${response.page_id} | Slug: ${response.slug}</small>
                                     <br><a href="${response.redirect_url}" class="btn btn-primary btn-sm mt-2">View Page</a>
                                 </div>
@@ -986,21 +1270,7 @@
                                 <div class="element-content">
                                     <textarea class="form-control raw-html-input" rows="4" placeholder="Paste your HTML code here"></textarea>
                                     <div class="raw-preview mt-2 p-2 border rounded bg-light small" style="display: none;">
-                                        <div class="raw-html-sandbox" style="
-                                            all: initial;
-                                            display: block;
-                                            width: 100%;
-                                            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-                                            font-size: 1rem;
-                                            line-height: 1.5;
-                                            color: #212529;
-                                            padding: 0.5rem;
-                                            box-sizing: border-box;
-                                            min-height: 40px;
-                                            max-height: 400px;
-                                            overflow: auto; /* ← this is key */
-                                            position: relative;
-                                        "></div>
+                                        <div class="raw-html-sandbox"></div>
                                     </div>
                                 </div>
                             `;
@@ -1102,8 +1372,6 @@
                     $textarea.on('input', function() {
                         const html = $(this).val();
                         if (html.trim()) {
-                            // Sanitize or at least escape dangerous tags if needed (optional but recommended)
-                            // $sandbox.html(html);
                             $sandbox.html(sanitizeHtml(html));
                             $preview.show();
                         } else {
@@ -1351,6 +1619,30 @@
                 redoStack = [];
             }
         });
+
+        // Add this function to your JavaScript
+        function processImagesBeforeSave(jsonData) {
+            if (!jsonData.elements) return jsonData;
+
+            jsonData.elements.forEach(element => {
+                if (element.content && element.content.images) {
+                    // Images array will now be processed on the server side
+                    // We keep the base64 data for server processing
+                }
+                
+                // Process HTML content for images
+                if (element.content) {
+                    Object.keys(element.content).forEach(key => {
+                        if (typeof element.content[key] === 'string' && 
+                            element.content[key].includes('data:image/')) {
+                            // Server will process these base64 images
+                        }
+                    });
+                }
+            });
+
+            return jsonData;
+        }
     </script>
 </body>
 

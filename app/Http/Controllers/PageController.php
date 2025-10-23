@@ -1,5 +1,4 @@
 <?php
-// app/Http/Controllers/PageController.php
 
 namespace App\Http\Controllers;
 
@@ -9,13 +8,13 @@ use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class PageController extends Controller
 {
     /**
      * Display the form builder page
      */
-    // Show list of pages (advertisements)
     public function index($id)
     {
         $event = Event::with('school')->find($id);
@@ -76,13 +75,7 @@ class PageController extends Controller
             // Keep same slug or regenerate if name changed (optional)
             $slug = $page->slug;
             if ($page->name !== $request->name) {
-                $slug = Str::slug($request->name);
-                $counter = 1;
-                $originalSlug = $slug;
-                while (Page::where('slug', $slug)->where('id', '!=', $page->id)->exists()) {
-                    $slug = $originalSlug . '-' . $counter;
-                    $counter++;
-                }
+                $slug = $this->generateUniqueSlug($request->name, $page->id);
             }
 
             $page->update([
@@ -142,22 +135,21 @@ class PageController extends Controller
         }
 
         try {
-            // Decode the JSON data
+            $school = School::find($request->school_id);
+            if (!$school) {
+                throw new \Exception('School not found');
+            }
+
             $formData = json_decode($request->form_data, true);
 
-            // Sanitize the entire structure recursively
-            $sanitizedData = $this->sanitizeFormData($formData);
+            // Process images and store them
+            $processedData = $this->processFormDataImages($formData, $school);
 
-            // Generate slug from name
-            $slug = Str::slug($request->name);
+            // Sanitize the structure
+            $sanitizedData = $this->sanitizeFormData($processedData);
 
-            // Check if slug already exists
-            $counter = 1;
-            $originalSlug = $slug;
-            while (Page::where('slug', $slug)->exists()) {
-                $slug = $originalSlug . '-' . $counter;
-                $counter++;
-            }
+            // Generate unique slug
+            $slug = $this->generateUniqueSlug($request->name);
 
             // Create the page
             $page = Page::create([
@@ -185,12 +177,195 @@ class PageController extends Controller
     }
 
     /**
-     * Recursively sanitize form data to prevent XSS attacks
+     * Display a specific page
+     */
+    public function show($slug, string $page_uuid)
+    {
+        $page = Page::where('slug', $slug)->firstOrFail();
+        $page->structure = $this->prepareStructureForDisplay($page->structure);
+
+        return view('dashboard.events.advertisement_show', compact('page'));
+    }
+
+    /**
+     * Generate unique slug for page
+     */
+    private function generateUniqueSlug($name, $excludeId = null)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $counter = 1;
+
+        $query = Page::where('slug', $slug);
+        if ($excludeId) {
+            $query->where('id', '!=', $excludeId);
+        }
+
+        while ($query->exists()) {
+            $slug = $originalSlug . '-' . $counter;
+            $counter++;
+
+            $query = Page::where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Process base64 images and store them in website disk
+     */
+    private function processFormDataImages($data, $school)
+    {
+        if (!is_array($data)) {
+            return $data;
+        }
+
+        $folderName = Str::slug($school->name, '-');
+        $processedImages = []; // Track processed images to avoid duplicates
+
+        // Process elements array
+        if (isset($data['elements']) && is_array($data['elements'])) {
+            foreach ($data['elements'] as &$element) {
+                if (isset($element['content']) && is_array($element['content'])) {
+
+                    // Process images array in content
+                    if (isset($element['content']['images']) && is_array($element['content']['images'])) {
+                        foreach ($element['content']['images'] as &$image) {
+                            if ($this->isBase64Image($image) && !isset($processedImages[$image])) {
+                                $savedPath = $this->saveBase64Image($image, $folderName);
+                                if ($savedPath) {
+                                    $processedImages[$image] = $savedPath;
+                                    $image = $savedPath;
+                                }
+                            } elseif (isset($processedImages[$image])) {
+                                // Use already processed image
+                                $image = $processedImages[$image];
+                            }
+                        }
+                    }
+
+                    // Process individual content fields
+                    foreach ($element['content'] as $key => &$value) {
+                        if (is_string($value) && $this->containsBase64Image($value)) {
+                            $value = $this->processHtmlImages($value, $folderName, $processedImages);
+                        }
+                    }
+
+                    // Process src fields (for banner, image types)
+                    if (
+                        isset($element['content']['src']) &&
+                        $this->isBase64Image($element['content']['src']) &&
+                        !isset($processedImages[$element['content']['src']])
+                    ) {
+                        $savedPath = $this->saveBase64Image($element['content']['src'], $folderName);
+                        if ($savedPath) {
+                            $processedImages[$element['content']['src']] = $savedPath;
+                            $element['content']['src'] = $savedPath;
+                        }
+                    } elseif (isset($element['content']['src']) && isset($processedImages[$element['content']['src']])) {
+                        $element['content']['src'] = $processedImages[$element['content']['src']];
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * Check if string is a base64 image
+     */
+    private function isBase64Image($string)
+    {
+        if (!is_string($string)) return false;
+
+        return strpos($string, 'data:image/') === 0 && strpos($string, 'base64,') !== false;
+    }
+
+    /**
+     * Check if HTML contains base64 images
+     */
+    private function containsBase64Image($html)
+    {
+        return is_string($html) && strpos($html, 'data:image/') !== false;
+    }
+
+    /**
+     * Save base64 image to website disk and return path
+     */
+    private function saveBase64Image($base64Image, $folderName)
+    {
+        try {
+            // Extract image data
+            preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches);
+            $imageType = $matches[1] ?? 'jpeg';
+            $imageData = substr($base64Image, strpos($base64Image, ',') + 1);
+            $imageData = base64_decode($imageData);
+
+            if (!$imageData) {
+                throw new \Exception('Invalid base64 image data');
+            }
+
+            // Generate unique filename
+            $filename = Str::uuid() . '.' . $imageType;
+
+            // Define the path structure
+            $filePath = "school/{$folderName}/page/images/{$filename}";
+
+            // Store image using website disk
+            Storage::disk('website')->put($filePath, $imageData);
+
+            return $filePath;
+        } catch (\Exception $e) {
+            return '';
+        }
+    }
+
+    /**
+     * Process HTML content and replace base64 images with stored images
+     */
+    private function processHtmlImages($html, $folderName, &$processedImages = [])
+    {
+        // Find all base64 images in the HTML
+        preg_match_all('/src="(data:image\/[^"]+)"/', $html, $matches);
+
+        if (empty($matches[1])) {
+            return $html;
+        }
+
+        foreach ($matches[1] as $base64Image) {
+            if ($this->isBase64Image($base64Image)) {
+                if (isset($processedImages[$base64Image])) {
+                    // Use already processed image
+                    $html = str_replace($base64Image, $processedImages[$base64Image], $html);
+                } else {
+                    // Process new image
+                    $imagePath = $this->saveBase64Image($base64Image, $folderName);
+                    if ($imagePath) {
+                        $processedImages[$base64Image] = $imagePath;
+                        $html = str_replace($base64Image, $imagePath, $html);
+                    }
+                }
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Sanitize form data while preserving image paths
      */
     private function sanitizeFormData($data)
     {
         if (is_array($data)) {
             foreach ($data as $key => $value) {
+                // Skip sanitization for image paths and images arrays
+                if ($key === 'images' || $this->isImagePath($value)) {
+                    continue;
+                }
                 $data[$key] = $this->sanitizeFormData($value);
             }
             return $data;
@@ -202,11 +377,23 @@ class PageController extends Controller
     }
 
     /**
-     * Smart sanitization that preserves safe HTML but removes dangerous content
+     * Check if value is an image path from website disk
+     */
+    private function isImagePath($value)
+    {
+        if (!is_string($value)) return false;
+
+        return strpos($value, 'school/') === 0 &&
+            strpos($value, '/page/images/') !== false &&
+            preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $value);
+    }
+
+    /**
+     * Smart sanitization that preserves image paths and safe HTML
      */
     private function smartSanitize($string)
     {
-        if (empty($string)) {
+        if (empty($string) || $this->isImagePath($string)) {
             return $string;
         }
 
@@ -238,7 +425,7 @@ class PageController extends Controller
         $string = preg_replace('/href=["\']javascript:[^"\']*["\']/i', 'href="#"', $string);
         $string = preg_replace('/src=["\']javascript:[^"\']*["\']/i', 'src=""', $string);
         $string = preg_replace('/href=["\']data:[^"\']*["\']/i', 'href="#"', $string);
-        $string = preg_replace('/src=["\']data:[^"\']*["\']/i', 'src=""', $string);
+        // $string = preg_replace('/src=["\']data:[^"\']*["\']/i', 'src=""', $string);
 
         // Use strip_tags with allowed tags to preserve safe HTML
         $string = strip_tags($string, $allowedTags);
@@ -246,10 +433,7 @@ class PageController extends Controller
         // Clean up any empty tags that might have been created
         $string = preg_replace('/<([^>]+)>\s*<\/\1>/', '', $string);
 
-        // Trim whitespace
-        $string = trim($string);
-
-        return $string;
+        return trim($string);
     }
 
     /**
@@ -380,34 +564,39 @@ class PageController extends Controller
     }
 
     /**
-     * Display a specific page
+     * Prepare structure for display by converting image paths to URLs
      */
-    public function show($slug, string $page_uuid)
-    {
-        $page = Page::where('slug', $slug)->firstOrFail();
-
-        // Process the page structure to ensure proper content display
-        $page->structure = $this->prepareStructureForDisplay($page->structure);
-
-        return view('dashboard.events.advertisement_show', compact('page'));
-    }
-
     private function prepareStructureForDisplay($structure)
     {
         if (isset($structure['elements']) && is_array($structure['elements'])) {
             foreach ($structure['elements'] as &$element) {
                 if (isset($element['content'])) {
-                    // For raw-html type, ensure HTML is properly formatted
-                    if ($element['type'] === 'raw-html' && isset($element['content']['html'])) {
-                        $element['content']['html'] = $this->cleanContent($element['content']['html']);
-                        $element['content']['html'] = $this->decodeSafeContent($element['content']['html']);
+                    // Ensure image paths are converted to URLs for display in images array
+                    if (isset($element['content']['images']) && is_array($element['content']['images'])) {
+                        foreach ($element['content']['images'] as &$image) {
+                            if (!empty($image) && is_string($image)) {
+                                $image = $this->getCorrectImageUrl($image);
+                            }
+                        }
                     }
 
-                    // For other content types, clean and decode the content
-                    foreach ($element['content'] as $key => $value) {
+                    // Process src fields for banner and image types
+                    if (
+                        isset($element['content']['src']) &&
+                        is_string($element['content']['src'])
+                    ) {
+                        $element['content']['src'] = $this->getCorrectImageUrl($element['content']['src']);
+                    }
+
+                    // Process ALL content fields that might contain HTML with images
+                    foreach ($element['content'] as $key => &$value) {
                         if (is_string($value)) {
-                            $element['content'][$key] = $this->cleanContent($value);
-                            $element['content'][$key] = $this->decodeSafeContent($element['content'][$key]);
+                            // Replace website disk paths with full URLs in HTML for ALL fields
+                            $value = $this->convertImagePathsToCorrectUrls($value);
+
+                            // Clean and decode content
+                            $value = $this->cleanContent($value);
+                            $value = $this->decodeSafeContent($value);
                         }
                     }
                 }
@@ -415,6 +604,111 @@ class PageController extends Controller
         }
 
         return $structure;
+    }
+
+    /**
+     * Get correct image URL with proper port and protocol
+     */
+    private function getCorrectImageUrl($path)
+    {
+        // If it's already a full URL, check if it needs port correction
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $this->ensureCorrectPort($path);
+        }
+
+        // If it starts with http, check port
+        if (strpos($path, 'http') === 0) {
+            return $this->ensureCorrectPort($path);
+        }
+
+        // If it's a relative path (starts with school/), convert to asset URL
+        if (strpos($path, 'school/') === 0) {
+            return asset('website/' . $path);
+        }
+
+        // For any stored full URL that might be incorrect
+        return $this->ensureCorrectPort($path);
+    }
+
+    /**
+     * Ensure URL has the correct port (match what asset() generates)
+     */
+    private function ensureCorrectPort($url)
+    {
+        $currentBaseUrl = url('/');
+        $parsedUrl = parse_url($url);
+
+        // If the URL doesn't match our current base URL, reconstruct it
+        if (isset($parsedUrl['host']) && $parsedUrl['host'] === parse_url($currentBaseUrl, PHP_URL_HOST)) {
+            // Reconstruct with current base URL to ensure correct port
+            $path = $parsedUrl['path'] ?? '';
+            $query = isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '';
+            $fragment = isset($parsedUrl['fragment']) ? '#' . $parsedUrl['fragment'] : '';
+
+            return $currentBaseUrl . $path . $query . $fragment;
+        }
+
+        return $url;
+    }
+
+    /**
+     * Convert image paths to correct URLs in HTML content
+     */
+    private function convertImagePathsToCorrectUrls($content)
+    {
+        if (empty($content) || !is_string($content)) {
+            return $content;
+        }
+
+        // Replace image paths in src attributes (both quoted formats)
+        $content = preg_replace_callback(
+            '/src=(["\'])(.*?)\1/i',
+            function ($matches) {
+                $url = $matches[2];
+                $correctUrl = $this->getCorrectImageUrl($url);
+                return 'src=' . $matches[1] . $correctUrl . $matches[1];
+            },
+            $content
+        );
+
+        return $content;
+    }
+    /**
+     * Convert image paths to URLs in HTML content
+     */
+    private function convertImagePathsToUrls($content)
+    {
+        if (empty($content) || !is_string($content)) {
+            return $content;
+        }
+
+        // Replace image paths in src attributes
+        $content = preg_replace_callback(
+            '/src="(school\/[^"]+\.(jpg|jpeg|png|gif|webp))"/i',
+            function ($matches) {
+                return 'src="' . $this->getImageUrl($matches[1]) . '"';
+            },
+            $content
+        );
+
+        // Also handle single quotes
+        $content = preg_replace_callback(
+            "/src='(school\/[^']+\.(jpg|jpeg|png|gif|webp))'/i",
+            function ($matches) {
+                return "src='" . $this->getImageUrl($matches[1]) . "'";
+            },
+            $content
+        );
+
+        return $content;
+    }
+
+    /**
+     * Get image URL from path
+     */
+    private function getImageUrl($path)
+    {
+        return Storage::disk('website')->url($path);
     }
 
     /**
@@ -464,6 +758,9 @@ class PageController extends Controller
         return $content;
     }
 
+    /**
+     * Clean content by removing editing attributes
+     */
     public static function cleanContent($content)
     {
         if (empty($content)) {

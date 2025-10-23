@@ -32,7 +32,14 @@ class EventController extends Controller
     // app/Http/Controllers/EventController.php
     public function create()
     {
-        $schools = School::with('branches')->where('status', 'active')->get();
+        if (auth()->user()->hasRole('super-admin')) {
+            $schools = School::with('branches')->where('status', 'active')->get();
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            $schoolAdminSchoolId = auth()->user()->school_id;
+            $schools = School::with('branches')->where('id', $schoolAdminSchoolId)->where('status', 'active')->get();
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
         return view('dashboard.events.create', compact('schools'));
     }
 
