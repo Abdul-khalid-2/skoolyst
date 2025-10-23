@@ -148,10 +148,13 @@ class PageController extends Controller
             // Sanitize the structure
             $sanitizedData = $this->sanitizeFormData($processedData);
 
+            // Extract individual element data
+            $elementData = $this->extractElementData($sanitizedData);
+
             // Generate unique slug
             $slug = $this->generateUniqueSlug($request->name);
 
-            // Create the page
+            // Create the page with all element data
             $page = Page::create([
                 'uuid' => (string) Str::uuid(),
                 'event_id' => $request->event_id,
@@ -159,6 +162,13 @@ class PageController extends Controller
                 'name' => $request->name,
                 'slug' => $slug,
                 'structure' => $sanitizedData,
+                'title' => $elementData['titles'] ?? null,
+                'banner' => $elementData['banners'] ?? null,
+                'image' => $elementData['images'] ?? null,
+                'rich_text' => $elementData['rich_texts'] ?? null,
+                'text_left_image_right' => $elementData['text_left_image_right'] ?? null,
+                'custom_html' => $elementData['custom_htmls'] ?? null,
+                'canvas_elements' => $elementData['canvas_elements'] ?? null,
             ]);
 
             return response()->json([
@@ -177,14 +187,117 @@ class PageController extends Controller
     }
 
     /**
-     * Display a specific page
+     * Extract individual element data from form data
      */
+    private function extractElementData($formData)
+    {
+        $elementData = [
+            'titles' => [],
+            'banners' => [],
+            'images' => [],
+            'rich_texts' => [],
+            'text_left_image_right' => [],
+            'custom_htmls' => [],
+            'canvas_elements' => []
+        ];
+
+        if (isset($formData['elements']) && is_array($formData['elements'])) {
+            foreach ($formData['elements'] as $element) {
+                $type = $element['type'] ?? null;
+                $content = $element['content'] ?? [];
+                $position = $element['position'] ?? [];
+                $styles = $element['styles'] ?? [];
+
+                $elementInfo = [
+                    'id' => $element['id'] ?? uniqid(),
+                    'type' => $type,
+                    'content' => $content,
+                    'position' => $position,
+                    'styles' => $styles,
+                    'created_at' => now()->toISOString()
+                ];
+
+                // Add to type-specific array
+                switch ($type) {
+                    case 'title':
+                        $elementData['titles'][] = $elementInfo;
+                        break;
+                    case 'banner':
+                        $elementData['banners'][] = $elementInfo;
+                        break;
+                    case 'image':
+                        $elementData['images'][] = $elementInfo;
+                        break;
+                    case 'textarea':
+                        $elementData['rich_texts'][] = $elementInfo;
+                        break;
+                    case 'two-col-tr':
+                    case 'two-col-rt':
+                        $elementData['text_left_image_right'][] = $elementInfo;
+                        break;
+                    case 'raw-html':
+                        $elementData['custom_htmls'][] = $elementInfo;
+                        break;
+                }
+
+                // Add to canvas_elements
+                $elementData['canvas_elements'][] = $elementInfo;
+            }
+        }
+
+        return $elementData;
+    }
+
     public function show($slug, string $page_uuid)
     {
         $page = Page::where('slug', $slug)->firstOrFail();
-        $page->structure = $this->prepareStructureForDisplay($page->structure);
+
+        // Use canvas_elements if available, otherwise fall back to structure
+        if (!empty($page->canvas_elements)) {
+            $page->elements = $this->prepareCanvasElementsForDisplay($page->canvas_elements);
+        } else {
+            $page->structure = $this->prepareStructureForDisplay($page->structure);
+            $page->elements = $page->structure['elements'] ?? [];
+        }
 
         return view('dashboard.events.advertisement_show', compact('page'));
+    }
+
+    /**
+     * Prepare canvas elements for display with proper image URLs
+     */
+    private function prepareCanvasElementsForDisplay($canvasElements)
+    {
+        if (!is_array($canvasElements)) {
+            return [];
+        }
+
+        foreach ($canvasElements as &$element) {
+            if (isset($element['content'])) {
+                // Process image sources
+                if (isset($element['content']['src']) && is_string($element['content']['src'])) {
+                    $element['content']['src'] = $this->getCorrectImageUrl($element['content']['src']);
+                }
+
+                // Process images array
+                if (isset($element['content']['images']) && is_array($element['content']['images'])) {
+                    foreach ($element['content']['images'] as &$image) {
+                        if (is_string($image)) {
+                            $image = $this->getCorrectImageUrl($image);
+                        }
+                    }
+                }
+
+                // Process HTML content for images
+                foreach ($element['content'] as $key => &$value) {
+                    if (is_string($value) && $this->containsBase64Image($value)) {
+                        $value = $this->convertImagePathsToCorrectUrls($value);
+                    }
+                }
+            }
+        }
+
+        return $canvasElements;
     }
 
     /**
@@ -231,18 +344,30 @@ class PageController extends Controller
             foreach ($data['elements'] as &$element) {
                 if (isset($element['content']) && is_array($element['content'])) {
 
-                    // Process images array in content
+                    // Process images array in content - handle both strings and objects
                     if (isset($element['content']['images']) && is_array($element['content']['images'])) {
                         foreach ($element['content']['images'] as &$image) {
-                            if ($this->isBase64Image($image) && !isset($processedImages[$image])) {
+                            // Handle both string URLs and image objects
+                            if (is_string($image) && $this->isBase64Image($image) && !isset($processedImages[$image])) {
                                 $savedPath = $this->saveBase64Image($image, $folderName);
                                 if ($savedPath) {
                                     $processedImages[$image] = $savedPath;
                                     $image = $savedPath;
                                 }
-                            } elseif (isset($processedImages[$image])) {
+                            } elseif (is_string($image) && isset($processedImages[$image])) {
                                 // Use already processed image
                                 $image = $processedImages[$image];
+                            } elseif (is_array($image) && isset($image['src'])) {
+                                // Handle image objects with src property
+                                if ($this->isBase64Image($image['src']) && !isset($processedImages[$image['src']])) {
+                                    $savedPath = $this->saveBase64Image($image['src'], $folderName);
+                                    if ($savedPath) {
+                                        $processedImages[$image['src']] = $savedPath;
+                                        $image['src'] = $savedPath;
+                                    }
+                                } elseif (is_string($image['src']) && isset($processedImages[$image['src']])) {
+                                    $image['src'] = $processedImages[$image['src']];
+                                }
                             }
                         }
                     }
@@ -257,6 +382,7 @@ class PageController extends Controller
                     // Process src fields (for banner, image types)
                     if (
                         isset($element['content']['src']) &&
+                        is_string($element['content']['src']) &&
                         $this->isBase64Image($element['content']['src']) &&
                         !isset($processedImages[$element['content']['src']])
                     ) {
@@ -265,8 +391,93 @@ class PageController extends Controller
                             $processedImages[$element['content']['src']] = $savedPath;
                             $element['content']['src'] = $savedPath;
                         }
-                    } elseif (isset($element['content']['src']) && isset($processedImages[$element['content']['src']])) {
+                    } elseif (isset($element['content']['src']) && is_string($element['content']['src']) && isset($processedImages[$element['content']['src']])) {
                         $element['content']['src'] = $processedImages[$element['content']['src']];
+                    }
+
+                    // Process left and right content for two-col elements
+                    if (in_array($element['type'] ?? '', ['two-col-tr', 'two-col-rt'])) {
+                        // Process left content
+                        if (isset($element['content']['left']) && is_string($element['content']['left'])) {
+                            $element['content']['left'] = $this->processHtmlImages($element['content']['left'], $folderName, $processedImages);
+                        }
+
+                        // Process right content  
+                        if (isset($element['content']['right']) && is_string($element['content']['right'])) {
+                            $element['content']['right'] = $this->processHtmlImages($element['content']['right'], $folderName, $processedImages);
+                        }
+                    }
+                }
+            }
+        }
+
+        // Also process canvas_elements array if it exists
+        if (isset($data['canvas_elements']) && is_array($data['canvas_elements'])) {
+            foreach ($data['canvas_elements'] as &$element) {
+                if (isset($element['content']) && is_array($element['content'])) {
+
+                    // Process images array in content - handle both strings and objects
+                    if (isset($element['content']['images']) && is_array($element['content']['images'])) {
+                        foreach ($element['content']['images'] as &$image) {
+                            // Handle both string URLs and image objects
+                            if (is_string($image) && $this->isBase64Image($image) && !isset($processedImages[$image])) {
+                                $savedPath = $this->saveBase64Image($image, $folderName);
+                                if ($savedPath) {
+                                    $processedImages[$image] = $savedPath;
+                                    $image = $savedPath;
+                                }
+                            } elseif (is_string($image) && isset($processedImages[$image])) {
+                                // Use already processed image
+                                $image = $processedImages[$image];
+                            } elseif (is_array($image) && isset($image['src'])) {
+                                // Handle image objects with src property
+                                if ($this->isBase64Image($image['src']) && !isset($processedImages[$image['src']])) {
+                                    $savedPath = $this->saveBase64Image($image['src'], $folderName);
+                                    if ($savedPath) {
+                                        $processedImages[$image['src']] = $savedPath;
+                                        $image['src'] = $savedPath;
+                                    }
+                                } elseif (is_string($image['src']) && isset($processedImages[$image['src']])) {
+                                    $image['src'] = $processedImages[$image['src']];
+                                }
+                            }
+                        }
+                    }
+
+                    // Process individual content fields
+                    foreach ($element['content'] as $key => &$value) {
+                        if (is_string($value) && $this->containsBase64Image($value)) {
+                            $value = $this->processHtmlImages($value, $folderName, $processedImages);
+                        }
+                    }
+
+                    // Process src fields
+                    if (
+                        isset($element['content']['src']) &&
+                        is_string($element['content']['src']) &&
+                        $this->isBase64Image($element['content']['src']) &&
+                        !isset($processedImages[$element['content']['src']])
+                    ) {
+                        $savedPath = $this->saveBase64Image($element['content']['src'], $folderName);
+                        if ($savedPath) {
+                            $processedImages[$element['content']['src']] = $savedPath;
+                            $element['content']['src'] = $savedPath;
+                        }
+                    } elseif (isset($element['content']['src']) && is_string($element['content']['src']) && isset($processedImages[$element['content']['src']])) {
+                        $element['content']['src'] = $processedImages[$element['content']['src']];
+                    }
+
+                    // Process left and right content for two-col elements
+                    if (in_array($element['type'] ?? '', ['two-col-tr', 'two-col-rt'])) {
+                        // Process left content
+                        if (isset($element['content']['left']) && is_string($element['content']['left'])) {
+                            $element['content']['left'] = $this->processHtmlImages($element['content']['left'], $folderName, $processedImages);
+                        }
+
+                        // Process right content  
+                        if (isset($element['content']['right']) && is_string($element['content']['right'])) {
+                            $element['content']['right'] = $this->processHtmlImages($element['content']['right'], $folderName, $processedImages);
+                        }
                     }
                 }
             }

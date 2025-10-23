@@ -16,11 +16,25 @@ class Page extends Model
         'event_id',
         'name',
         'slug',
-        'structure'
+        'structure',
+        'title',
+        'banner',
+        'image',
+        'rich_text',
+        'text_left_image_right',
+        'custom_html',
+        'canvas_elements'
     ];
 
     protected $casts = [
         'structure' => 'array',
+        'title' => 'array',
+        'banner' => 'array',
+        'image' => 'array',
+        'rich_text' => 'array',
+        'text_left_image_right' => 'array',
+        'custom_html' => 'array',
+        'canvas_elements' => 'array',
     ];
 
     // Relationship with Event

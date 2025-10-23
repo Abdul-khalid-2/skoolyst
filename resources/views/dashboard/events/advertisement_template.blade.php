@@ -699,7 +699,7 @@
             $('#elementCount').text(`${count} element${count !== 1 ? 's' : ''}`);
         }
 
-        // Export canvas to JSON (Moved to global scope)
+        /// Enhanced export function to include styling and positioning
         function exportCanvasToJson() {
             const data = {
                 meta: {
@@ -707,7 +707,8 @@
                     source: 'Skoolyst Form Builder',
                     version: '1.0'
                 },
-                elements: []
+                elements: [],
+                canvas_elements: [] // New array for individual elements with styling
             };
 
             $('#canvas .canvas-element').each(function() {
@@ -716,7 +717,29 @@
                 const type = $el.attr('data-type');
                 const position = $el.position();
                 const width = $el.width();
+                const height = $el.height();
                 const zIndex = parseInt($el.css('z-index')) || 0;
+                
+                // Get computed styles
+                const styles = {
+                    position: 'absolute',
+                    left: position.left + 'px',
+                    top: position.top + 'px',
+                    width: width + 'px',
+                    height: height + 'px',
+                    zIndex: zIndex,
+                    backgroundColor: $el.css('background-color'),
+                    color: $el.css('color'),
+                    fontSize: $el.css('font-size'),
+                    fontFamily: $el.css('font-family'),
+                    fontWeight: $el.css('font-weight'),
+                    textAlign: $el.css('text-align'),
+                    padding: $el.css('padding'),
+                    margin: $el.css('margin'),
+                    border: $el.css('border'),
+                    borderRadius: $el.css('border-radius'),
+                    boxShadow: $el.css('box-shadow')
+                };
 
                 let content = {};
 
@@ -724,7 +747,9 @@
                     case 'title':
                         content = {
                             text: $el.find('h2').text() || '',
-                            html: $el.find('h2').html() || ''
+                            html: $el.find('h2').html() || '',
+                            level: $el.find('h2').prop('tagName') || 'h2',
+                            alignment: $el.find('h2').css('text-align') || 'left'
                         };
                         break;
 
@@ -732,9 +757,12 @@
                     case 'image':
                         const imgSrc = $el.find('img').attr('src') || '';
                         const caption = $el.find('.caption-input').val() || '';
+                        const altText = $el.find('img').attr('alt') || '';
                         content = {
                             src: imgSrc,
-                            caption: caption
+                            caption: caption,
+                            alt: altText,
+                            size: $el.find('img').css('width') || '100%'
                         };
                         break;
 
@@ -749,7 +777,8 @@
                         }
 
                         content = {
-                            data: textData
+                            data: textData,
+                            format: 'html'
                         };
                         break;
 
@@ -759,20 +788,23 @@
                         const rightContent = $el.find('.col-right').html();
                         const images = [];
 
+                        // Extract image sources as strings (not objects)
                         $el.find('img').each(function() {
-                            images.push($(this).attr('src'));
+                            images.push($(this).attr('src')); // Just push the src string
                         });
 
                         content = {
                             left: leftContent,
                             right: rightContent,
-                            images: images
+                            images: images, // Now this is just an array of strings
+                            layout: type === 'two-col-tr' ? 'text-image' : 'image-text'
                         };
                         break;
 
                     case 'raw-html':
                         content = {
-                            html: $el.find('.raw-html-input').val() || ''
+                            html: $el.find('.raw-html-input').val() || '',
+                            type: 'custom'
                         };
                         break;
 
@@ -782,6 +814,7 @@
                         };
                 }
 
+                // Add to elements array (existing structure)
                 data.elements.push({
                     id: id,
                     type: type,
@@ -789,10 +822,39 @@
                         left: position.left,
                         top: position.top,
                         width: width,
+                        height: height,
                         zIndex: zIndex
                     },
+                    styles: styles,
                     content: content
                 });
+
+                // Add to canvas_elements array with individual element data
+                const elementData = {
+                    id: id,
+                    type: type,
+                    position: {
+                        x: position.left,
+                        y: position.top,
+                        width: width,
+                        height: height
+                    },
+                    styles: styles,
+                    content: content,
+                    metadata: {
+                        created: new Date().toISOString(),
+                        modified: new Date().toISOString()
+                    }
+                };
+
+                // Store in individual arrays based on type
+                if (!data[type]) {
+                    data[type] = [];
+                }
+                data[type].push(elementData);
+
+                // Also add to canvas_elements
+                data.canvas_elements.push(elementData);
             });
 
             return data;
@@ -947,10 +1009,33 @@
             $('#saveForm').trigger('submit');
         }
 
+        // Add this function to your JavaScript
+        function processImagesBeforeSave(jsonData) {
+            if (!jsonData.elements) return jsonData;
+
+            jsonData.elements.forEach(element => {
+                if (element.content && element.content.images) {
+                    // Images array will now be processed on the server side
+                    // We keep the base64 data for server processing
+                }
+                
+                // Process HTML content for images
+                if (element.content) {
+                    Object.keys(element.content).forEach(key => {
+                        if (typeof element.content[key] === 'string' && 
+                            element.content[key].includes('data:image/')) {
+                            // Server will process these base64 images
+                        }
+                    });
+                }
+            });
+
+            return jsonData;
+        }
+
         // Main application
         $(function() {
             const $canvas = $('#canvas');
-            const $exportArea = $('#exportArea');
             const $gridGuides = $('#gridGuides');
 
             // Initialize with empty canvas state
@@ -1024,7 +1109,6 @@
                 }
 
                 $canvas.empty().append('<div class="drop-hint">Drag elements here to start building</div>');
-                $exportArea.val('');
                 saveHistory();
                 updateElementCount();
                 showNotification('Canvas cleared');
@@ -1119,7 +1203,7 @@
                             showNotification('Page saved successfully!', 'success');
                             $('#saveResult').html(`
                                 <div class="alert alert-success">
-                                <strong>Success!</strong> Page "${pageName}" has been saved successfully.
+                                    <strong>Success!</strong> Page "${pageName}" has been saved successfully.
                                     <br><small>Page ID: ${response.page_id} | Slug: ${response.slug}</small>
                                     <br><a href="${response.redirect_url}" class="btn btn-primary btn-sm mt-2">View Page</a>
                                 </div>
@@ -1619,30 +1703,6 @@
                 redoStack = [];
             }
         });
-
-        // Add this function to your JavaScript
-        function processImagesBeforeSave(jsonData) {
-            if (!jsonData.elements) return jsonData;
-
-            jsonData.elements.forEach(element => {
-                if (element.content && element.content.images) {
-                    // Images array will now be processed on the server side
-                    // We keep the base64 data for server processing
-                }
-                
-                // Process HTML content for images
-                if (element.content) {
-                    Object.keys(element.content).forEach(key => {
-                        if (typeof element.content[key] === 'string' && 
-                            element.content[key].includes('data:image/')) {
-                            // Server will process these base64 images
-                        }
-                    });
-                }
-            });
-
-            return jsonData;
-        }
     </script>
 </body>
 
