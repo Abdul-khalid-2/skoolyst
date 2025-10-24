@@ -23,7 +23,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
@@ -101,7 +101,7 @@
 
         /* Element Type Specific Styles */
         .element-heading {
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            /* background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); */
             border-left: 6px solid var(--primary);
         }
 
@@ -117,14 +117,14 @@
         }
 
         .element-text {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 2px solid #eef2f6;
+            /* background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); */
+            /* border: 2px solid #eef2f6; */
         }
 
         .element-image {
-            background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+            /* background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%); */
             text-align: center;
-            border: 2px solid #e8eeff;
+            /* border: 2px solid #e8eeff; */
             padding: 2rem !important;
         }
 
@@ -149,8 +149,8 @@
         }
 
         .element-columns {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 2px solid #eef2f6;
+            /* background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); */
+            /* border: 2px solid #eef2f6; */
         }
 
         /* Element Badge */
