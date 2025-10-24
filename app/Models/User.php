@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -23,6 +24,10 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'phone',
+        'address',
+        'bio',
+        'profile_picture',
         'password',
         'school_id',
     ];
@@ -70,5 +75,15 @@ class User extends Authenticatable
                 $model->uuid = (string) Str::uuid();
             }
         });
+    }
+
+    public function getProfilePictureUrlAttribute()
+    {
+        if ($this->profile_picture) {
+            // Use asset() instead of Storage::url() for website disk
+            return asset('website/' . $this->profile_picture);
+        }
+
+        return asset('images/default-avatar.png');
     }
 }

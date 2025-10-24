@@ -82,7 +82,14 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        $schools = School::where('status', 'active')->get();
+        if (auth()->user()->hasRole('super-admin')) {
+            $schools = School::with('branches')->where('status', 'active')->get();
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            $schoolAdminSchoolId = auth()->user()->school_id;
+            $schools = School::with('branches')->where('id', $schoolAdminSchoolId)->where('status', 'active')->get();
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
         return view('dashboard.events.edit', compact('event', 'schools'));
     }
 

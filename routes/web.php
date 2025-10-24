@@ -14,6 +14,7 @@ use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
 use App\Http\Controllers\Website\ReviewController;
 
+use App\Http\Controllers\UserProfileController;
 
 use App\Http\Controllers\SchoolImageGalleryController;
 
@@ -92,6 +93,17 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'show'])->name('school-image-galleries.show');
         Route::put('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'update'])->name('school-image-galleries.update');
         Route::delete('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'destroy'])->name('school-image-galleries.destroy');
+    });
+});
+
+
+
+// User Profile Routes
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('user_profile')->group(function () {
+        Route::get('/', [UserProfileController::class, 'show'])->name('user_profile.show');
+        Route::get('/edit', [UserProfileController::class, 'edit'])->name('user_profile.edit');
+        Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
     });
 });
 

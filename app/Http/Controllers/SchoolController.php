@@ -48,6 +48,7 @@ class SchoolController extends Controller
                         'email',
                         'contact_number',
                         'city',
+                        'status',
                         'address',
                         'school_type',
                         'created_at'
