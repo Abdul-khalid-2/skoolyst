@@ -75,9 +75,9 @@
         }
 
         .canvas-container {
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            /* background: white; */
+            /* border-radius: 25px; */
+            /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); */
             padding: 3rem;
             position: relative;
             min-height: 400px;
@@ -88,15 +88,15 @@
             margin-bottom: 2rem;
             padding: 2rem;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            /* box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); */
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
 
         .page-element:hover {
-            border-color: var(--primary);
+            /* border-color: var(--primary);
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2);
+            box-shadow: 0 10px 30px rgba(67, 97, 238, 0.2); */
         }
 
         /* Element Type Specific Styles */
@@ -271,7 +271,7 @@
         }
 
         /* Add this to your existing styles */
-        .element-custom-html {
+        /* .element-custom-html {
             background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
             border: 2px solid #fed7d7;
             padding: 2rem !important;
@@ -280,7 +280,7 @@
         .element-custom-html .custom-html-content {
             width: 100%;
             min-height: 100px;
-        }
+        } */
     </style>
 </head>
 
@@ -438,16 +438,9 @@
                                         <i class="fas fa-code"></i>
                                         Custom HTML
                                     </div>
-                                    <div class="custom-html-content">
+                                    <div class="custom-html-content" style="all: unset;">
                                         <style>
-                                            .custom-html-content {
-                                                all: initial;
-                                                display: block;
-                                            }
-                                            .custom-html-content * {
-                                                all: unset;
-                                                box-sizing: border-box;
-                                            }
+                                            
                                             {!! $elementContent['css'] ?? '' !!}
                                         </style>
                                         {!! $elementContent['html'] ?? '<p>No custom HTML content</p>' !!}
