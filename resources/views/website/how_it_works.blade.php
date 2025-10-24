@@ -186,7 +186,7 @@
 <section class="final-cta" id="cta">
     <div class="container">
         <h2 class="final-cta-headline">Bring Your School Online Today</h2>
-        <a href="#home" class="final-cta-button">Get Started</a>
+        <a href="{{ route('register') }}" class="final-cta-button">Get Started</a>
     </div>
 </section>
 
