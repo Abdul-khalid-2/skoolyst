@@ -5,7 +5,7 @@
         <section id="dashboard" class="page-section active">
             <!-- Stats Cards -->
             <div class="row mb-4">
-                <div class="col-lg-3 col-md-6 mb-4">
+                <!-- <div class="col-lg-3 col-md-6 mb-4">
                     <div class="card stats-card text-white">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
@@ -56,15 +56,15 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
-                <div class="col-lg-3 col-md-6 mb-4">
+                <div class="col-lg-4 col-md-6 mb-4">
                     <div class="card stats-card text-white"
-                        style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                        style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
-                                    <h6 class="card-title opacity-75">Active Users</h6>
+                                    <h6 class="card-title opacity-75">People Profile Visite</h6>
                                     <h2 class="mb-0">2,890</h2>
                                     <small class="opacity-75">+5% from last month</small>
                                 </div>
@@ -78,7 +78,7 @@
             </div>
 
             <!-- Charts Row -->
-            <div class="row mb-4">
+            <!-- <div class="row mb-4">
                 <div class="col-lg-8 mb-4">
                     <div class="card chart-card">
                         <div class="card-header bg-white border-0 pb-0">
@@ -135,10 +135,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Recent Activity -->
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-lg-6 mb-4">
                     <div class="card chart-card">
                         <div class="card-header bg-white border-0">
@@ -222,7 +222,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </section>
     </main>
 </x-app-layout>
