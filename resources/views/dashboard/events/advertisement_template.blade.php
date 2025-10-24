@@ -29,6 +29,12 @@
             transition: all 0.3s;
             margin-bottom: 10px;
         }
+        .widget-card-gallery {
+            cursor:pointer;
+            border: 2px dashed #dee2e6;
+            transition: all 0.3s;
+            margin-bottom: 10px;
+        }
         
         .widget-card:hover {
             border-color: #0d6efd;
@@ -161,6 +167,17 @@
             color: white;
             border-color: #0d6efd;
         }
+        .position-btn.remove-btn {
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .position-btn.remove-btn:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        
     </style>
 </head>
 
@@ -211,6 +228,12 @@
                     <div class="d-flex align-items-center">
                         <i class="fas fa-code text-primary me-2"></i>
                         <span>Custom HTML</span>
+                    </div>
+                </div>
+                <div class="widget-card-gallery p-3" draggable="false" data-type="columns">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-columns text-primary me-2"></i>
+                        <span>Image Gallery</span>
                     </div>
                 </div>
 
@@ -291,6 +314,113 @@
             </div>
         </div>
     </div>
+
+    <!-- Image Gallery Modal -->
+<div class="modal fade" id="imageGalleryModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Image Gallery</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Upload Form -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-upload me-1"></i>Upload New Image</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadImageForm" enctype="multipart/form-data">
+                            @csrf
+                            <input type="hidden" id="gallerySchoolId" value="{{ $event->school->id }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="imageName" class="form-label">Image Name *</label>
+                                        <input type="text" class="form-control" id="imageName" name="image_name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="imageFile" class="form-label">Image File *</label>
+                                        <input type="file" class="form-control" id="imageFile" name="image_file" accept="image/*" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary" id="uploadBtn">
+                                <i class="fas fa-upload me-1"></i>Upload Image
+                            </button>
+                        </form>
+                        <div id="uploadResult" class="mt-2"></div>
+                    </div>
+                </div>
+
+                <!-- Images Grid -->
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0"><i class="fas fa-images me-1"></i>Gallery Images</h6>
+                    </div>
+                    <div class="card-body">
+                        <div id="galleryLoading" class="text-center py-4">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-2">Loading images...</p>
+                        </div>
+                        <div id="galleryImages" class="row g-3" style="display: none;"></div>
+                        <div id="galleryEmpty" class="text-center py-4" style="display: none;">
+                            <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                            <h5>No images found</h5>
+                            <p class="text-muted">Upload your first image to get started</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Image Modal -->
+<div class="modal fade" id="editImageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editImageForm">
+                    @csrf
+                    @method('PUT')
+                    <input type="hidden" id="editImageId">
+                    <div class="mb-3">
+                        <label for="editImageName" class="form-label">Image Name</label>
+                        <input type="text" class="form-control" id="editImageName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editImageStatus" class="form-label">Status</label>
+                        <select class="form-select" id="editImageStatus" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                    <div class="text-center">
+                        <img id="editImagePreview" src="" class="img-fluid rounded mb-3" style="max-height: 200px;">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary flex-fill">
+                            <i class="fas fa-save me-1"></i>Update
+                        </button>
+                        <button type="button" class="btn btn-danger" id="deleteImageBtn">
+                            <i class="fas fa-trash me-1"></i>Delete
+                        </button>
+                    </div>
+                </form>
+                <div id="editResult" class="mt-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -379,8 +509,8 @@
                         right: 'Right column content...' 
                     },
                     'custom_html': {
-                        html: '<div class="alert alert-info">\n  <h4>Custom HTML Content</h4>\n  <p>Edit this HTML to create custom content with your own styles and structure.</p>\n</div>',
-                        css: '/* Add your custom CSS here */\n.alert-info {\n  border-left: 4px solid #17a2b8;\n}'
+                        html: '<div class="alert custom-alert-info">\n  <h4>Custom HTML Content</h4>\n  <p>Edit this HTML to create custom content with your own styles and structure.</p>\n</div>',
+                        css: '/* Add your custom CSS here */\n.custom-alert-info {\n  border-left: 4px solid #17a2b8;\n}'
                     }
                 };
                 return defaults[type] || {};
@@ -417,6 +547,9 @@
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
                                     </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                             <input type="text" class="form-control heading-input" 
@@ -444,6 +577,9 @@
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
                                     </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                             <textarea class="form-control text-content" rows="4" 
@@ -464,6 +600,9 @@
                                     </button>
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
@@ -489,6 +628,9 @@
                                     </button>
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
@@ -516,6 +658,9 @@
                                     </button>
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
@@ -545,6 +690,9 @@
                                     </button>
                                     <button type="button" class="position-btn move-down" title="Move Down" onclick="builder.moveElementDown('${el.id}')">
                                         <i class="fas fa-arrow-down"></i>
+                                    </button>
+                                    <button type="button" class="position-btn remove-btn" title="Remove Element" onclick="builder.removeElement('${el.id}')">
+                                        <i class="fas fa-times"></i>
                                     </button>
                                 </div>
                             </div>
@@ -576,26 +724,55 @@
 
                 return templates[element.type] ? templates[element.type](element) : '<div>Unknown element type</div>';
             }
-
+            removeElement(elementId) {
+                if (!confirm('Remove this element?')) return;
+                
+                // Remove element from array
+                const index = this.elements.findIndex(el => el.id === elementId);
+                if (index !== -1) {
+                    this.elements.splice(index, 1);
+                    
+                    // Update positions of remaining elements
+                    this.elements.forEach((el, idx) => {
+                        el.position = idx;
+                    });
+                    
+                    // Remove element from DOM
+                    $(`[data-id="${elementId}"]`).remove();
+                    
+                    // Update element count
+                    this.updateElementCount();
+                    
+                    // Update position buttons
+                    this.updatePositionButtons();
+                    
+                    // Show empty canvas if no elements left
+                    if (this.elements.length === 0) {
+                        this.showEmptyCanvas();
+                    }
+                }
+            }
             switchTab(elementId, tabName) {
+                const $element = $(`[data-id="${elementId}"]`);
+                
                 // Hide all containers
                 $(`#html-editor-${elementId}`).hide();
                 $(`#css-editor-${elementId}`).hide();
                 $(`#preview-${elementId}`).hide();
                 
                 // Remove active class from all tabs
-                $(`[data-id="${elementId}"] .code-tab`).removeClass('active');
+                $element.find('.code-tab').removeClass('active');
                 
                 // Show selected container and activate tab
                 if (tabName === 'html') {
                     $(`#html-editor-${elementId}`).show();
-                    $(`[data-id="${elementId}"] .code-tab:contains("HTML")`).addClass('active');
+                    $element.find('.code-tab').eq(0).addClass('active'); // First tab is HTML
                 } else if (tabName === 'css') {
                     $(`#css-editor-${elementId}`).show();
-                    $(`[data-id="${elementId}"] .code-tab:contains("CSS")`).addClass('active');
+                    $element.find('.code-tab').eq(1).addClass('active'); // Second tab is CSS
                 } else if (tabName === 'preview') {
                     $(`#preview-${elementId}`).show();
-                    $(`[data-id="${elementId}"] .code-tab:contains("Preview")`).addClass('active');
+                    $element.find('.code-tab').eq(2).addClass('active'); // Third tab is Preview
                     this.updateHtmlPreview(elementId);
                 }
             }
@@ -612,23 +789,32 @@
                 // Clear existing content
                 previewContainer.innerHTML = '';
                 
-                // Create shadow root for style isolation
-                const shadowRoot = previewContainer.attachShadow({ mode: 'open' });
-                
-                // Add styles and HTML to shadow DOM
-                shadowRoot.innerHTML = `
-                    <style>
-                        /* Reset styles for the shadow DOM */
-                        :host {
-                            all: initial;
-                            display: block;
-                        }
-                        
-                        /* Custom CSS from user */
-                        ${cssContent}
-                    </style>
-                    ${htmlContent}
-                `;
+                try {
+                    // Create a container div for the preview
+                    const previewDiv = document.createElement('div');
+                    
+                    // Add CSS styles in a style tag
+                    if (cssContent.trim()) {
+                        const styleTag = document.createElement('style');
+                        styleTag.textContent = cssContent;
+                        previewDiv.appendChild(styleTag);
+                    }
+                    
+                    // Add HTML content
+                    previewDiv.innerHTML += htmlContent;
+                    
+                    // Append to preview container
+                    previewContainer.appendChild(previewDiv);
+                    
+                } catch (error) {
+                    console.error('Error rendering HTML preview:', error);
+                    previewContainer.innerHTML = `
+                        <div class="alert alert-danger">
+                            <strong>Error rendering preview:</strong><br>
+                            ${error.message}
+                        </div>
+                    `;
+                }
             }
 
             attachElementEvents(elementId) {
@@ -949,6 +1135,348 @@
                 window.builder.clearCanvas();
             }
         }
+
+
+        class SchoolImageGalleryManager {
+            constructor() {
+                this.currentSchoolId = $('#gallerySchoolId').val();
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Upload form submission
+                $('#uploadImageForm').on('submit', (e) => this.uploadImage(e));
+                
+                // Edit form submission
+                $('#editImageForm').on('submit', (e) => this.updateImage(e));
+                
+                // Delete button
+                $('#deleteImageBtn').on('click', () => this.deleteImage());
+                
+                // Modal show events
+                $('#imageGalleryModal').on('show.bs.modal', () => this.loadImages());
+            }
+
+            async loadImages() {
+                $('#galleryLoading').show();
+                $('#galleryImages').hide();
+                $('#galleryEmpty').hide();
+
+                try {
+                    const response = await fetch(`/school-image-galleries?school_id=${this.currentSchoolId}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.renderImages(result.images);
+                    } else {
+                        throw new Error('Failed to load images');
+                    }
+                } catch (error) {
+                    console.error('Error loading images:', error);
+                    $('#galleryLoading').hide();
+                    $('#galleryEmpty').show();
+                }
+            }
+
+            renderImages(images) {
+                const $gallery = $('#galleryImages');
+                $gallery.empty();
+
+                if (images.length === 0) {
+                    $('#galleryLoading').hide();
+                    $('#galleryEmpty').show();
+                    return;
+                }
+
+                images.forEach(image => {
+                    const imageCard = `
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card image-card" data-image-id="${image.id}">
+                                <img src="${image.image_url}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${image.image_name}">
+                                <div class="card-body">
+                                    <h6 class="card-title text-truncate">${image.image_name}</h6>
+                                    <span class="badge ${image.status === 'active' ? 'bg-success' : 'bg-warning'}">${image.status}</span>
+                                    <div class="mt-2 d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary edit-image" data-image='${JSON.stringify(image).replace(/'/g, "&#39;")}' title="Edit Image">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info insert-image" data-image-url="${image.image_url}" title="Insert into HTML Editor">
+                                            <i class="fas fa-code"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary copy-url" data-image-url="${image.image_url}" title="Copy Image URL">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $gallery.append(imageCard);
+                });
+
+                // Add event listener for copy URL button
+                $gallery.find('.copy-url').on('click', (e) => {
+                    const imageUrl = $(e.currentTarget).data('image-url');
+                    this.copyImageUrlToClipboard(imageUrl);
+                });
+
+                // Attach event listeners to dynamically created buttons
+                $gallery.find('.edit-image').on('click', (e) => {
+                    const imageData = JSON.parse($(e.currentTarget).data('image').replace(/&#39;/g, "'"));
+                    this.openEditModal(imageData);
+                });
+
+                $gallery.find('.insert-image').on('click', (e) => {
+                    const imageUrl = $(e.currentTarget).data('image-url');
+                    this.insertImageToEditor(imageUrl);
+                });
+
+                $('#galleryLoading').hide();
+                $gallery.show();
+            }
+
+            async uploadImage(e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('school_id', this.currentSchoolId);
+                formData.append('image_name', $('#imageName').val());
+                formData.append('image_file', $('#imageFile')[0].files[0]);
+                formData.append('_token', $('input[name="_token"]').val());
+
+                const $uploadBtn = $('#uploadBtn');
+                $uploadBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Uploading...');
+
+                try {
+                    const response = await fetch('/school-image-galleries', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#uploadResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                        $('#uploadImageForm')[0].reset();
+                        this.loadImages(); // Reload the gallery
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#uploadResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                } finally {
+                    $uploadBtn.prop('disabled', false).html('<i class="fas fa-upload me-1"></i>Upload Image');
+                }
+            }
+
+            openEditModal(image) {
+                $('#editImageId').val(image.id);
+                $('#editImageName').val(image.image_name);
+                $('#editImageStatus').val(image.status);
+                $('#editImagePreview').attr('src', image.image_url);
+                $('#editResult').empty();
+
+                const editModal = new bootstrap.Modal(document.getElementById('editImageModal'));
+                editModal.show();
+            }
+
+            async updateImage(e) {
+                e.preventDefault();
+
+                const imageId = $('#editImageId').val();
+                const formData = {
+                    image_name: $('#editImageName').val(),
+                    status: $('#editImageStatus').val(),
+                    _token: $('input[name="_token"]').val(),
+                    _method: 'PUT'
+                };
+
+                try {
+                    const response = await fetch(`/school-image-galleries/${imageId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': formData._token
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#editResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                        
+                        // Reload gallery and close modal after delay
+                        setTimeout(() => {
+                            this.loadImages();
+                            bootstrap.Modal.getInstance(document.getElementById('editImageModal')).hide();
+                        }, 1000);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#editResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                }
+            }
+
+            async deleteImage() {
+                if (!confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+                    return;
+                }
+
+                const imageId = $('#editImageId').val();
+
+                try {
+                    const response = await fetch(`/school-image-galleries/${imageId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Close modals and reload gallery
+                        bootstrap.Modal.getInstance(document.getElementById('editImageModal')).hide();
+                        this.loadImages();
+                        
+                        // Show success message in main gallery
+                        $('#uploadResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#editResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                }
+            }
+
+            insertImageToEditor(imageUrl) {
+                // Try multiple ways to find an active custom HTML element
+                let activeElement = null;
+                let $activeTextarea = null;
+
+                // Method 1: Find any visible HTML editor textarea
+                $activeTextarea = $('.html-editor-container:visible textarea').first();
+                
+                if ($activeTextarea.length > 0) {
+                    const elementId = $activeTextarea.closest('.canvas-element').data('id');
+                    activeElement = window.builder.elements.find(el => el.id === elementId);
+                }
+
+                // Method 2: If no visible editor, find the first custom HTML element
+                if (!activeElement) {
+                    activeElement = window.builder.elements.find(el => el.type === 'custom_html');
+                    if (activeElement) {
+                        $activeTextarea = $(`[data-id="${activeElement.id}"] .html-editor-container textarea`).first();
+                    }
+                }
+
+                if (activeElement && $activeTextarea.length > 0) {
+                    const imgHtml = `<img src="${imageUrl}" class="img-fluid" alt="Gallery Image" style="max-width: 100%; height: auto;">`;
+                    const currentValue = $activeTextarea.val();
+                    const cursorPos = $activeTextarea[0].selectionStart;
+                    
+                    const newValue = currentValue.substring(0, cursorPos) + 
+                                imgHtml + 
+                                currentValue.substring(cursorPos);
+                    
+                    $activeTextarea.val(newValue);
+                    
+                    // Trigger input event to update the element content
+                    $activeTextarea.trigger('input');
+                    
+                    // Close the gallery modal
+                    bootstrap.Modal.getInstance(document.getElementById('imageGalleryModal')).hide();
+                    
+                    // Switch to HTML tab and update preview
+                    window.builder.switchTab(activeElement.id, 'html');
+                    
+                    // Show success message
+                    alert('Image inserted successfully!');
+                } else {
+                    // If no custom HTML element exists, offer to create one
+                    if (confirm('No Custom HTML element found. Would you like to create one and insert the image?')) {
+                        // Add a new custom HTML element
+                        window.builder.addElement('custom_html');
+                        
+                        // Wait a bit for the element to render, then insert the image
+                        setTimeout(() => {
+                            const newElement = window.builder.elements.find(el => el.type === 'custom_html');
+                            if (newElement) {
+                                const $newTextarea = $(`[data-id="${newElement.id}"] .html-editor-container textarea`);
+                                const imgHtml = `<img src="${imageUrl}" class="img-fluid" alt="Gallery Image" style="max-width: 100%; height: auto;">`;
+                                $newTextarea.val(imgHtml);
+                                $newTextarea.trigger('input');
+                                
+                                // Close the gallery modal
+                                bootstrap.Modal.getInstance(document.getElementById('imageGalleryModal')).hide();
+                                
+                                alert('New Custom HTML element created with your image!');
+                            }
+                        }, 500);
+                    } else {
+                        // Copy image URL to clipboard as fallback
+                        this.copyImageUrlToClipboard(imageUrl);
+                    }
+                }
+            }
+
+            // Add this new method to copy image URL to clipboard
+            copyImageUrlToClipboard(imageUrl) {
+                navigator.clipboard.writeText(imageUrl).then(() => {
+                    alert('Image URL copied to clipboard! You can paste it manually in your HTML editor.\n\nURL: ' + imageUrl);
+                }).catch(() => {
+                    // Fallback for browsers that don't support clipboard API
+                    const tempInput = document.createElement('input');
+                    tempInput.value = imageUrl;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    alert('Image URL copied to clipboard! You can paste it manually in your HTML editor.\n\nURL: ' + imageUrl);
+                });
+            }
+        }
+
+        // Initialize gallery manager when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            window.schoolImageGallery = new SchoolImageGalleryManager();
+            
+            // Add click event to gallery widget
+            $('.widget-card-gallery').on('click', function() {
+                const galleryModal = new bootstrap.Modal(document.getElementById('imageGalleryModal'));
+                galleryModal.show();
+            });
+        });
     </script>
 </body>
 </html>

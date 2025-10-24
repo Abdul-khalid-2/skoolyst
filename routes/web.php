@@ -14,6 +14,9 @@ use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
 use App\Http\Controllers\Website\ReviewController;
 
+
+use App\Http\Controllers\SchoolImageGalleryController;
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -81,6 +84,16 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('school-image-galleries')->group(function () {
+        Route::get('/', [SchoolImageGalleryController::class, 'index'])->name('school-image-galleries.index');
+        Route::post('/', [SchoolImageGalleryController::class, 'store'])->name('school-image-galleries.store');
+        Route::get('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'show'])->name('school-image-galleries.show');
+        Route::put('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'update'])->name('school-image-galleries.update');
+        Route::delete('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'destroy'])->name('school-image-galleries.destroy');
+    });
+});
 
 Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 
