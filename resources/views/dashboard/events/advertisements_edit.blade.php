@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Edit Advertisement — {{ $page->name }}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -375,7 +370,8 @@
                     <div class="canvas-topbar">
                         <div class="d-flex align-items-center">
                             <h5 class="mb-0 me-3">Editing: {{ $page->name }}</h5>
-                            <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-outline-primary btn-sm" target="_blank">
+                            <span class="badge bg-primary" id="elementCount">0 elements</span>
+                            <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-outline-primary btn-sm ms-2" target="_blank">
                                 <i class="fas fa-eye me-1"></i>Preview
                             </a>
                         </div>
@@ -403,13 +399,14 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-header bg-warning text-white">
-                                <h6 class="mb-0"><i class="fas fa-edit me-1"></i>Edit Advertisement Page</h6>
+                                <h6 class="mb-0"><i class="fas fa-edit me-1"></i>Update Advertisement Page</h6>
                             </div>
                             <div class="card-body">
-                                <form id="saveForm">
+                                <form id="updateForm">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" id="pageId" value="{{ $page->id }}">
+                                    <input type="hidden" id="schoolId" name="school_id" value="{{ $page->school_id }}">
                                     <div class="row">
                                         <div class="col-md-4">
                                             <div class="mb-3">
@@ -434,7 +431,7 @@
                                             <div class="mb-3">
                                                 <label class="form-label">&nbsp;</label>
                                                 <div class="d-grid">
-                                                    <button type="submit" class="btn btn-warning" id="saveBtn">
+                                                    <button type="submit" class="btn btn-warning" id="updateBtn">
                                                         <i class="fas fa-save me-1"></i>Update Page
                                                     </button>
                                                 </div>
@@ -442,7 +439,7 @@
                                         </div>
                                     </div>
                                 </form>
-                                <div id="saveResult" class="mt-3"></div>
+                                <div id="updateResult" class="mt-3"></div>
                             </div>
                         </div>
                     </div>
@@ -461,6 +458,10 @@
         let redoStack = [];
         let isGridVisible = false;
         let nextElementY = 20;
+
+        // Page data from server - try multiple sources
+        const pageData = @json($page->structure ?? $page->canvas_elements ?? []);
+        const pageId = {{ $page->id }};
 
         // Utility functions
         function uid(prefix = 'el') {
@@ -485,72 +486,95 @@
         function exportCanvasToJson() {
             const data = {
                 meta: {
-                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString(),
                     source: 'Skoolyst Form Builder',
-                    version: '1.0'
+                    version: '1.0',
+                    page_id: pageId
                 },
-                elements: []
+                elements: [],
+                canvas_elements: []
             };
+
             $('#canvas .canvas-element').each(function() {
                 const $el = $(this);
                 const id = $el.attr('data-id');
                 const type = $el.attr('data-type');
                 const position = $el.position();
                 const width = $el.width();
+                const height = $el.height();
                 const zIndex = parseInt($el.css('z-index')) || 0;
+                
                 let content = {};
+
                 switch (type) {
                     case 'title':
                         content = {
                             text: $el.find('h2').text() || '',
-                            html: $el.find('h2').html() || ''
+                            html: $el.find('h2').html() || '',
+                            level: $el.find('h2').prop('tagName') || 'h2'
                         };
                         break;
+
                     case 'banner':
                     case 'image':
                         const imgSrc = $el.find('img').attr('src') || '';
                         const caption = $el.find('.caption-input').val() || '';
+                        const altText = $el.find('img').attr('alt') || '';
                         content = {
                             src: imgSrc,
-                            caption: caption
+                            caption: caption,
+                            alt: altText
                         };
                         break;
+
                     case 'textarea':
                         const textareaId = $el.find('textarea.rich-text').attr('id');
                         let textData = '';
+
                         if (textareaId && CKEDITOR.instances[textareaId]) {
                             textData = CKEDITOR.instances[textareaId].getData();
                         } else {
                             textData = $el.find('textarea.rich-text').val() || '';
                         }
+
                         content = {
-                            data: textData
+                            data: textData,
+                            format: 'html'
                         };
                         break;
+
                     case 'two-col-tr':
                     case 'two-col-rt':
                         const leftContent = $el.find('.col-left').html();
                         const rightContent = $el.find('.col-right').html();
                         const images = [];
+
                         $el.find('img').each(function() {
                             images.push($(this).attr('src'));
                         });
+
                         content = {
                             left: leftContent,
                             right: rightContent,
-                            images: images
+                            images: images,
+                            layout: type === 'two-col-tr' ? 'text-image' : 'image-text'
                         };
                         break;
+
                     case 'raw-html':
                         content = {
-                            html: $el.find('.raw-html-input').val() || ''
+                            html: $el.find('.raw-html-input').val() || '',
+                            type: 'custom'
                         };
                         break;
+
                     default:
                         content = {
                             html: $el.html()
                         };
                 }
+
+                // Add to elements array
                 data.elements.push({
                     id: id,
                     type: type,
@@ -558,27 +582,120 @@
                         left: position.left,
                         top: position.top,
                         width: width,
+                        height: height,
                         zIndex: zIndex
                     },
                     content: content
                 });
+
+                // Add to canvas_elements array
+                data.canvas_elements.push({
+                    id: id,
+                    type: type,
+                    position: {
+                        x: position.left,
+                        y: position.top,
+                        width: width,
+                        height: height
+                    },
+                    content: content,
+                    metadata: {
+                        created: new Date().toISOString(),
+                        modified: new Date().toISOString()
+                    }
+                });
             });
+
             return data;
+        }
+
+        // Process images before update
+        function processImagesBeforeUpdate(jsonData) {
+            if (!jsonData.elements) return jsonData;
+
+            jsonData.elements.forEach(element => {
+                if (element.content && element.content.images) {
+                    // Images will be processed on server side
+                }
+                
+                if (element.content) {
+                    Object.keys(element.content).forEach(key => {
+                        if (typeof element.content[key] === 'string' && 
+                            element.content[key].includes('data:image/')) {
+                            // Server will process base64 images
+                        }
+                    });
+                }
+            });
+
+            return jsonData;
         }
 
         $(function() {
             const $canvas = $('#canvas');
             const $gridGuides = $('#gridGuides');
 
-            // Load existing page structure
-            const initialData = @json($page->structure);
-            if (initialData && Array.isArray(initialData.elements) && initialData.elements.length > 0) {
-                loadCanvasFromJson(initialData);
-                updateElementCount();
-            } else {
-                saveHistory();
-                updateElementCount();
+            // Load existing page structure - handle both old and new data formats
+            function loadExistingData() {
+                let elementsToLoad = [];
+                
+                // Try canvas_elements first (new format)
+                if (pageData && Array.isArray(pageData) && pageData.length > 0) {
+                    elementsToLoad = pageData;
+                }
+                // Try structure.elements (old format)
+                else if (pageData && pageData.elements && Array.isArray(pageData.elements)) {
+                    elementsToLoad = pageData.elements;
+                }
+                // Try individual element columns
+                else {
+                    // Combine all individual element types
+                    const allElements = [];
+                    
+                    @if($page->title)
+                        allElements.push(...@json($page->title ?? []));
+                    @endif
+                    
+                    @if($page->banner)
+                        allElements.push(...@json($page->banner ?? []));
+                    @endif
+                    
+                    @if($page->image)
+                        allElements.push(...@json($page->image ?? []));
+                    @endif
+                    
+                    @if($page->rich_text)
+                        allElements.push(...@json($page->rich_text ?? []));
+                    @endif
+                    
+                    @if($page->text_left_image_right)
+                        allElements.push(...@json($page->text_left_image_right ?? []));
+                    @endif
+                    
+                    @if($page->custom_html)
+                        allElements.push(...@json($page->custom_html ?? []));
+                    @endif
+                    
+                    @if($page->canvas_elements)
+                        allElements.push(...@json($page->canvas_elements ?? []));
+                    @endif
+                    
+                    elementsToLoad = allElements;
+                }
+
+                if (elementsToLoad.length > 0) {
+                    loadCanvasFromJson({ elements: elementsToLoad });
+                    updateElementCount();
+                    showNotification('Existing page data loaded successfully');
+                } else {
+                    saveHistory();
+                    updateElementCount();
+                    showNotification('No existing data found. Start with a fresh canvas.', 'info');
+                }
             }
+
+            // Load existing data on page load
+            loadExistingData();
 
             // Make sidebar widgets draggable
             $('.widget').on('dragstart', function(e) {
@@ -649,7 +766,7 @@
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = 'advertisement-page.json';
+                a.download = 'advertisement-page-' + pageId + '.json';
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -701,8 +818,8 @@
                 }
             });
 
-            // Save form (UPDATE)
-            $('#saveForm').on('submit', function(e) {
+            // Update form (UPDATE)
+            $('#updateForm').on('submit', function(e) {
                 e.preventDefault();
                 const pageName = $('#pageName').val().trim();
                 const pageId = $('#pageId').val();
@@ -711,19 +828,23 @@
                     return;
                 }
 
-                const jsonData = exportCanvasToJson();
+                let jsonData = exportCanvasToJson();
                 if (!jsonData.elements || jsonData.elements.length === 0) {
-                    alert('Please add some elements to the canvas before saving');
+                    alert('Please add some elements to the canvas before updating');
                     return;
                 }
 
-                const $saveBtn = $('#saveBtn');
-                const originalText = $saveBtn.html();
-                $saveBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Saving...');
+                // Process images
+                jsonData = processImagesBeforeUpdate(jsonData);
+
+                const $updateBtn = $('#updateBtn');
+                const originalText = $updateBtn.html();
+                $updateBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Updating...');
 
                 const formData = new FormData();
                 formData.append('name', pageName);
                 formData.append('event_id', $('#eventId').val());
+                formData.append('school_id', $('#schoolId').val());
                 formData.append('form_data', JSON.stringify(jsonData));
                 formData.append('_token', $('input[name="_token"]').val());
                 formData.append('_method', 'PUT');
@@ -737,7 +858,7 @@
                     success: function(response) {
                         if (response.success) {
                             showNotification('Page updated successfully!', 'success');
-                            $('#saveResult').html(`
+                            $('#updateResult').html(`
                                 <div class="alert alert-success">
                                     <strong>Success!</strong> Page "${pageName}" has been updated.
                                     <br><small>Slug: ${response.slug}</small>
@@ -752,15 +873,15 @@
                         let message = 'Failed to update page';
                         if (xhr.responseJSON?.message) message = xhr.responseJSON.message;
                         showNotification(message, 'error');
-                        $('#saveResult').html(`<div class="alert alert-danger"><strong>Error!</strong> ${message}</div>`);
+                        $('#updateResult').html(`<div class="alert alert-danger"><strong>Error!</strong> ${message}</div>`);
                     },
                     complete: function() {
-                        $saveBtn.prop('disabled', false).html(originalText);
+                        $updateBtn.prop('disabled', false).html(originalText);
                     }
                 });
             });
 
-            // =============== Helper Functions (from original) ===============
+            // =============== Helper Functions ===============
             function addElementToCanvas(type, x = 20, y = null, options = {}) {
                 if (y === null) {
                     y = nextElementY;
@@ -801,7 +922,7 @@
                         $el.css({ width: options.width || '90%' });
                         break;
                     case 'raw-html':
-                        contentHtml = `<div class="element-content"><textarea class="form-control raw-html-input" rows="4" placeholder="Paste your HTML code here"></textarea><div class="raw-preview mt-2 p-2 border rounded bg-light small" style="display: none;"></div></div>`;
+                        contentHtml = `<div class="element-content"><textarea class="form-control raw-html-input" rows="4" placeholder="Paste your HTML code here"></textarea><div class="raw-preview mt-2 p-2 border rounded bg-light small" style="display: none;"><div class="raw-html-sandbox"></div></div></div>`;
                         break;
                     default:
                         contentHtml = '<div class="element-content">Unknown element type</div>';
@@ -856,9 +977,15 @@
                 if (type === 'raw-html') {
                     const $textarea = $el.find('.raw-html-input');
                     const $preview = $el.find('.raw-preview');
+                    const $sandbox = $el.find('.raw-html-sandbox');
                     $textarea.on('input', function() {
-                        $preview.html($(this).val());
-                        $preview.toggle(!!$(this).val());
+                        const html = $(this).val();
+                        if (html.trim()) {
+                            $sandbox.html(html);
+                            $preview.show();
+                        } else {
+                            $preview.hide();
+                        }
                         saveHistory();
                     });
                 }
@@ -963,61 +1090,65 @@
                 }
                 $canvas.empty();
                 if (!json || !Array.isArray(json.elements)) {
-                    alert('Invalid JSON format. Expected: { elements: [ ... ] }');
+                    console.error('Invalid JSON format for loading:', json);
                     return;
                 }
                 json.elements.forEach(function(item) {
                     const type = item.type;
                     const position = item.position || { left: 20, top: 20, width: 'auto' };
+                    const content = item.content || {};
                     const $el = addElementToCanvas(type, position.left, position.top, { width: position.width });
                     if (position.zIndex) {
                         $el.css('z-index', position.zIndex);
                     }
                     switch (type) {
                         case 'title':
-                            if (item.content && item.content.text) {
-                                $el.find('h2').text(item.content.text);
+                            if (content.html || content.text) {
+                                $el.find('h2').html(content.html || content.text);
                             }
                             break;
                         case 'banner':
                         case 'image':
-                            if (item.content && item.content.src) {
-                                $el.find('.placeholder').replaceWith(`<img src="${item.content.src}" alt="Uploaded image" class="img-fluid">`);
-                                if (item.content.caption) {
-                                    $el.find('.caption-input').val(item.content.caption);
+                            if (content.src) {
+                                $el.find('.placeholder').replaceWith(`<img src="${content.src}" alt="${content.alt || 'Image'}" class="img-fluid">`);
+                                if (content.caption) {
+                                    $el.find('.caption-input').val(content.caption);
                                 }
                             }
                             break;
                         case 'textarea':
-                            if (item.content && item.content.data) {
+                            if (content.data) {
                                 const textareaId = $el.find('textarea.rich-text').attr('id');
                                 setTimeout(() => {
                                     if (textareaId && CKEDITOR.instances[textareaId]) {
-                                        CKEDITOR.instances[textareaId].setData(item.content.data);
+                                        CKEDITOR.instances[textareaId].setData(content.data);
                                     } else {
-                                        $el.find('textarea.rich-text').val(item.content.data);
+                                        $el.find('textarea.rich-text').val(content.data);
                                     }
                                 }, 200);
                             }
                             break;
                         case 'two-col-tr':
                         case 'two-col-rt':
-                            if (item.content) {
-                                if (item.content.left) $el.find('.col-left').html(item.content.left);
-                                if (item.content.right) $el.find('.col-right').html(item.content.right);
-                                if (item.content.images && item.content.images.length > 0) {
+                            if (content) {
+                                if (content.left) $el.find('.col-left').html(content.left);
+                                if (content.right) $el.find('.col-right').html(content.right);
+                                if (content.images && content.images.length > 0) {
                                     $el.find('.placeholder').each(function(index) {
-                                        if (index < item.content.images.length) {
-                                            $(this).replaceWith(`<img src="${item.content.images[index]}" alt="Uploaded image" class="img-fluid">`);
+                                        if (index < content.images.length) {
+                                            $(this).replaceWith(`<img src="${content.images[index]}" alt="Uploaded image" class="img-fluid">`);
                                         }
                                     });
                                 }
                             }
                             break;
                         case 'raw-html':
-                            if (item.content && item.content.html) {
-                                $el.find('.raw-html-input').val(item.content.html);
-                                $el.find('.raw-preview').html(item.content.html).show();
+                            if (content.html) {
+                                $el.find('.raw-html-input').val(content.html);
+                                const $preview = $el.find('.raw-preview');
+                                const $sandbox = $el.find('.raw-html-sandbox');
+                                $sandbox.html(content.html);
+                                $preview.show();
                             }
                             break;
                     }
