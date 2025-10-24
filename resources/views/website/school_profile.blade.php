@@ -306,6 +306,200 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+
+
+/* Contact Section Styles */
+/* .contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 20px;
+} */
+
+.contact-info-section h3,
+.contact-form-section h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.contact-detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #3498db;
+}
+
+.contact-detail-item i {
+    color: #3498db;
+    font-size: 1.2rem;
+    margin-top: 2px;
+    width: 20px;
+}
+
+.contact-detail-item div {
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-detail-item strong {
+    color: #2c3e50;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+}
+
+.contact-detail-item span,
+.contact-detail-item a {
+    color: #555;
+    text-decoration: none;
+}
+
+.contact-detail-item a:hover {
+    color: #3498db;
+}
+
+/* Contact Form Styles */
+.contact-form {
+    background: #f8f9fa;
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.contact-form .form-group {
+    margin-bottom: 20px;
+}
+
+.contact-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #eaeaea;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-form .form-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.contact-form .btn-submit {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.contact-form .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.contact-form .btn-submit:active {
+    transform: translateY(0);
+}
+
+/* Form Validation Styles */
+.contact-form input:invalid:not(:focus):not(:placeholder-shown),
+.contact-form select:invalid:not(:focus),
+.contact-form textarea:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: #e74c3c;
+}
+
+.contact-form input:valid:not(:focus):not(:placeholder-shown),
+.contact-form select:valid:not(:focus),
+.contact-form textarea:valid:not(:focus):not(:placeholder-shown) {
+    border-color: #27ae60;
+}
+
+/* Success Message */
+.form-success {
+    background: #d4edda;
+    color: #155724;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    /* .contact-container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    } */
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .contact-form {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-detail-item {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+    
+    .contact-detail-item i {
+        align-self: center;
+    }
+}
 </style>
 @endpush
 
@@ -748,6 +942,61 @@
                             @else
                                 <p class="no-content">No additional branches information available.</p>
                             @endif
+                        </div>
+                    </section>
+
+                    <!-- Contact Section -->
+                    <section id="contact" class="content-section">
+                        <h2 class="section-title">Contact Us</h2>
+                        <div class="section-content">
+                            <!-- Contact Form -->
+                            <div class="contact-form-section">
+                                <form id="contactForm" class="contact-form" action="" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="school_id" value="{{ $school->id }}">
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="name">Full Name *</label>
+                                            <input type="text" id="name" name="name" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="email">Email Address *</label>
+                                            <input type="email" id="email" name="email" required>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="phone">Phone Number</label>
+                                            <input type="tel" id="phone" name="phone">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="subject">Subject *</label>
+                                            <select id="subject" name="subject" required>
+                                                <option value="">Select a subject</option>
+                                                <option value="admission">Admission Inquiry</option>
+                                                <option value="tour">Schedule a Tour</option>
+                                                <option value="general">General Information</option>
+                                                <option value="feedback">Feedback</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="message">Message *</label>
+                                        <textarea id="message" name="message" rows="5" placeholder="Please enter your message here..." required></textarea>
+                                    </div>
+                                    
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-submit">
+                                            <i class="fas fa-paper-plane"></i>
+                                            Send Message
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </section>
                 </div>
