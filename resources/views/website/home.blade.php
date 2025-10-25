@@ -12,7 +12,7 @@
 <!-- ==================== HERO SECTION ==================== -->
 <section class="hero-section" id="home">
     <div class="hero-content">
-        <img class="hero-subheading" src="{{ asset('assets/assets/hero1.png') }}" alt="hero1.png">
+        <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Hero Image">
         <div class="search-container">
             <div class="search-box">
                 <input type="text" class="search-input" id="mainSearch" placeholder="Search by school name, location, or curriculum...">

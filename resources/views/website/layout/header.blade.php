@@ -27,12 +27,12 @@
                 @auth
                 @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin'))
                 {{-- Show Dashboard Button --}}
-                <a href="{{ url('/dashboard') }}" class="btn btn-primary">Dashboard</a>
+                <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
                 @else
                 {{-- Show Logout Button --}}
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="btn btn-danger">Logout</button>
+                    <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
                 </form>
                 @endif
                 @else
