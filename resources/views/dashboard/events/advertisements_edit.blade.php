@@ -306,9 +306,9 @@
                                         <select class="form-control" id="eventId" name="event_id">
                                             <option value="">Select Event</option>
                                             @foreach($events as $event)
-                                                <option value="{{ $event->id }}" {{ $page->event_id == $event->id ? 'selected' : '' }}>
-                                                    {{ $event->event_name }}
-                                                </option>
+                                            <option value="{{ $event->id }}" {{ $page->event_id == $event->id ? 'selected' : '' }}>
+                                                {{ $event->event_name }}
+                                            </option>
                                             @endforeach
                                         </select>
                                     </div>

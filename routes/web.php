@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
 
     // Events Routes
     Route::resource('events', EventController::class);
+    Route::put('/events/{event}/status', [EventController::class, 'updateStatus'])->name('events.update_status');
 
 
     // routes/web.php

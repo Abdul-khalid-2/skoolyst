@@ -130,8 +130,9 @@ class PageController extends Controller
      */
     public function edit($id)
     {
+        $user = auth()->user();
         $page = Page::with(['school', 'event'])->findOrFail($id);
-        $events = Event::all();
+        $events = Event::where('school_id', $page->school_id)->get();
 
         // Prepare structure for editing
         if (!$page->structure) {

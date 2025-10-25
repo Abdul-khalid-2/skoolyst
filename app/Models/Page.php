@@ -42,6 +42,10 @@ class Page extends Model
     {
         return $this->belongsTo(Event::class);
     }
+    public function events()
+    {
+        return $this->belongsTo(Event::class);
+    }
     public function school()
     {
         return $this->belongsTo(School::class);

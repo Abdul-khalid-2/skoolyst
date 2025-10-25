@@ -60,6 +60,39 @@ class EventController extends Controller
             ->with('success', 'Event created successfully.');
     }
 
+
+    public function updateStatus(Request $request, Event $event)
+    {
+        // Authorization check - ensure user can update this event
+        if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id != $event->school_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        try {
+            $validated = $request->validate([
+                'status' => 'required|boolean'
+            ]);
+
+            // Convert boolean to string for ENUM column
+            $statusValue = $validated['status'] ? 'active' : 'inactive';
+
+            $event->update([
+                'status' => $statusValue
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Event status updated successfully',
+                'event' => $event
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update event status'
+            ], 500);
+        }
+    }
+
     public function show(Event $event)
     {
         // Load both school and branch relationships
