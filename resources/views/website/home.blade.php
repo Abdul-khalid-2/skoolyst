@@ -197,7 +197,7 @@
 </section>
 
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
-<section class="how-it-works-section" id="how-it-works">
+{{-- <section class="how-it-works-section" id="how-it-works">
     <div class="container">
         <h2 class="section-title">How It Works</h2>
         <p class="section-subtitle">Find your ideal school in four simple steps</p>
@@ -252,7 +252,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- ==================== TESTIMONIALS SECTION ==================== -->
 <section class="testimonials-section" id="testimonials">
