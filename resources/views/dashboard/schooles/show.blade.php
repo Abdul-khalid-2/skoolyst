@@ -22,16 +22,24 @@
             <div class="card mb-4 overflow-hidden">
                 <div class="school-header-card {{ $school->banner_image ? 'has-banner-image' : '' }}"
                     @if($school->banner_image)
-                    style="background-image: url('{{ asset('website/' . $school->banner_image) }}'); height: 200px; background-size: cover; background-position: center;"
+                        style="background-image: url('{{ asset('website/' . $school->banner_image) }}'); height: 200px; background-size: cover; background-position: center;"
                     @else
-                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 150px;"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); height: 150px;"
                     @endif
                     >
                     <div class="school-header-overlay" style="background: rgba(0,0,0,0.3); position: absolute; top: 0; left: 0; right: 0; bottom: 0;"></div>
 
                     <div class="container position-relative" style="z-index: 2; height: 100%;">
                         <div class="d-flex align-items-center h-100">
-
+                            <div class="school-logo-wrapper me-3">
+                                @if($school->profile->logo)
+                                <img src="{{ asset('website/'. $school->profile->logo) }}" alt="{{ $school->name }} Logo" class="school-logo-img rounded" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid white;">
+                                @else
+                                <div class="school-logo-placeholder rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2);">
+                                    <i class="fas fa-school text-white"></i>
+                                </div>
+                                @endif
+                            </div>
 
                             <div class="school-text-content text-white">
                                 <h1 class="h3 mb-1">{{ $school->banner_title ?? $school->name }}</h1>

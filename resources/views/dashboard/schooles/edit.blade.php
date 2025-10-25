@@ -19,19 +19,21 @@
                 <div class="col-lg-8">
                     <div class="card">
                         <div class="card-body">
+                            <!-- Admin Information -->
+                            <h5 class="mb-3">Admin Information</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label for="name" class="form-label">Admin Name <span class="text-danger">*</span></label>
+                                    <label for="admin-name" class="form-label">Admin Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control @error('admin-name') is-invalid @enderror"
-                                        id="admin-name" name="admin-name" value="{{ old('name', $user->name) }}" required>
-                                    @error('name')
+                                        id="admin-name" name="admin-name" value="{{ old('admin-name', $user->name) }}" required>
+                                    @error('admin-name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Admin Email</label>
+                                    <label for="admin-email" class="form-label">Admin Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control @error('admin-email') is-invalid @enderror"
-                                        id="admin-email" name="admin-email" value="{{ old('admin-email', $user->email) }}">
+                                        id="admin-email" name="admin-email" value="{{ old('admin-email', $user->email) }}" required>
                                     @error('admin-email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -39,6 +41,7 @@
                             </div>
 
                             <!-- Basic Information -->
+                            <h5 class="mb-3">Basic Information</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
@@ -49,7 +52,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email</label>
+                                    <label for="email" class="form-label">School Email</label>
                                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                                         id="email" name="email" value="{{ old('email', $school->email) }}">
                                     @error('email')
@@ -91,6 +94,193 @@
                                     <input type="url" class="form-control @error('website') is-invalid @enderror"
                                         id="website" name="website" value="{{ old('website', $school->website) }}">
                                     @error('website')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <!-- School Profile Information -->
+                            <h5 class="mb-3">School Profile Details</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="established_year" class="form-label">Established Year</label>
+                                    <input type="text" class="form-control @error('established_year') is-invalid @enderror"
+                                        id="established_year" name="established_year"
+                                        value="{{ old('established_year', $school->profile->established_year ?? '') }}" placeholder="e.g., 1995">
+                                    @error('established_year')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="student_strength" class="form-label">Student Strength</label>
+                                    <input type="number" class="form-control @error('student_strength') is-invalid @enderror"
+                                        id="student_strength" name="student_strength"
+                                        value="{{ old('student_strength', $school->profile->student_strength ?? '') }}" placeholder="e.g., 1000">
+                                    @error('student_strength')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="faculty_count" class="form-label">Faculty Count</label>
+                                    <input type="number" class="form-control @error('faculty_count') is-invalid @enderror"
+                                        id="faculty_count" name="faculty_count"
+                                        value="{{ old('faculty_count', $school->profile->faculty_count ?? '') }}" placeholder="e.g., 50">
+                                    @error('faculty_count')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="campus_size" class="form-label">Campus Size</label>
+                                    <input type="text" class="form-control @error('campus_size') is-invalid @enderror"
+                                        id="campus_size" name="campus_size"
+                                        value="{{ old('campus_size', $school->profile->campus_size ?? '') }}" placeholder="e.g., 5 acres">
+                                    @error('campus_size')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="school_motto" class="form-label">School Motto</label>
+                                <input type="text" class="form-control @error('school_motto') is-invalid @enderror"
+                                    id="school_motto" name="school_motto"
+                                    value="{{ old('school_motto', $school->profile->school_motto ?? '') }}" placeholder="Enter school motto">
+                                @error('school_motto')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="mission" class="form-label">Mission</label>
+                                <textarea class="form-control @error('mission') is-invalid @enderror"
+                                    id="mission" name="mission" rows="3"
+                                    placeholder="Enter school mission statement">{{ old('mission', $school->profile->mission ?? '') }}</textarea>
+                                @error('mission')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="vision" class="form-label">Vision</label>
+                                <textarea class="form-control @error('vision') is-invalid @enderror"
+                                    id="vision" name="vision" rows="3"
+                                    placeholder="Enter school vision statement">{{ old('vision', $school->profile->vision ?? '') }}</textarea>
+                                @error('vision')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Quick Facts (JSON) -->
+                            <div class="mb-3">
+                                <label class="form-label">Quick Facts</label>
+                                <div id="quick-facts-container">
+                                    @php
+                                        $quickFacts = $school->profile && $school->profile->quick_facts 
+                                            ? json_decode($school->profile->quick_facts, true) 
+                                            : [];
+                                        $hasQuickFacts = !empty($quickFacts);
+                                        $standardFields = ['established_year', 'student_strength', 'faculty_count', 'campus_size'];
+                                    @endphp
+                                    
+                                    @if($hasQuickFacts)
+                                        @foreach($quickFacts as $key => $value)
+                                            @if(!in_array($key, $standardFields))
+                                            <div class="quick-fact-item mb-2">
+                                                <div class="row g-2">
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control" name="quick_fact_keys[]" 
+                                                               placeholder="Fact key (e.g., accreditation)" value="{{ $key }}">
+                                                    </div>
+                                                    <div class="col-md-5">
+                                                        <input type="text" class="form-control" name="quick_fact_values[]" 
+                                                               placeholder="Fact value (e.g., CBSE Affiliated)" value="{{ $value }}">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <button type="button" class="btn btn-danger btn-sm remove-quick-fact">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                    
+                                    <!-- Always show at least one empty field -->
+                                    <div class="quick-fact-item mb-2">
+                                        <div class="row g-2">
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" name="quick_fact_keys[]" placeholder="Fact key (e.g., accreditation)">
+                                            </div>
+                                            <div class="col-md-5">
+                                                <input type="text" class="form-control" name="quick_fact_values[]" placeholder="Fact value (e.g., CBSE Affiliated)">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="button" class="btn btn-danger btn-sm remove-quick-fact" style="display: none;">
+                                                    <i class="fas fa-times"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-quick-fact">
+                                    <i class="fas fa-plus me-1"></i> Add Quick Fact
+                                </button>
+                            </div>
+
+                            <!-- Social Media Links -->
+                           <!-- Social Media Links -->
+                            <h5 class="mb-3">Social Media Links</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="facebook_url" class="form-label">Facebook</label>
+                                    <input type="url" class="form-control @error('facebook_url') is-invalid @enderror"
+                                        id="facebook_url" name="facebook_url"
+                                        value="{{ old('facebook_url', $school->profile && $school->profile->social_media ? json_decode($school->profile->social_media, true)['facebook'] ?? '' : '') }}" placeholder="https://facebook.com/...">
+                                    @error('facebook_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="twitter_url" class="form-label">Twitter</label>
+                                    <input type="url" class="form-control @error('twitter_url') is-invalid @enderror"
+                                        id="twitter_url" name="twitter_url"
+                                        value="{{ old('twitter_url', $school->profile && $school->profile->social_media ? json_decode($school->profile->social_media, true)['twitter'] ?? '' : '') }}" placeholder="https://twitter.com/...">
+                                    @error('twitter_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="instagram_url" class="form-label">Instagram</label>
+                                    <input type="url" class="form-control @error('instagram_url') is-invalid @enderror"
+                                        id="instagram_url" name="instagram_url"
+                                        value="{{ old('instagram_url', $school->profile && $school->profile->social_media ? json_decode($school->profile->social_media, true)['instagram'] ?? '' : '') }}" placeholder="https://instagram.com/...">
+                                    @error('instagram_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="linkedin_url" class="form-label">LinkedIn</label>
+                                    <input type="url" class="form-control @error('linkedin_url') is-invalid @enderror"
+                                        id="linkedin_url" name="linkedin_url"
+                                        value="{{ old('linkedin_url', $school->profile && $school->profile->social_media ? json_decode($school->profile->social_media, true)['linkedin'] ?? '' : '') }}" placeholder="https://linkedin.com/...">
+                                    @error('linkedin_url')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="youtube_url" class="form-label">YouTube</label>
+                                    <input type="url" class="form-control @error('youtube_url') is-invalid @enderror"
+                                        id="youtube_url" name="youtube_url"
+                                        value="{{ old('youtube_url', $school->profile && $school->profile->social_media ? json_decode($school->profile->social_media, true)['youtube'] ?? '' : '') }}" placeholder="https://youtube.com/...">
+                                    @error('youtube_url')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -176,7 +366,7 @@
                                         <div class="form-check">
                                             <input class="form-check-input" type="radio" name="curriculum_id"
                                                 value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}"
-                                                {{ in_array($curriculum->id, $schoolCurriculums) ? 'checked' : '' }} required>
+                                                {{ old('curriculum_id', $schoolCurriculums[0] ?? '') == $curriculum->id ? 'checked' : '' }} required>
                                             <label class="form-check-label" for="curriculum_{{ $curriculum->id }}">
                                                 {{ $curriculum->name }}
                                             </label>
@@ -273,6 +463,38 @@
                 </div>
 
                 <div class="col-lg-4">
+                    <!-- School Logo -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-white border-0">
+                            <h5 class="card-title mb-0">School Logo</h5>
+                        </div>
+                        <div class="card-body">
+                            @if($school->logo_url)
+                            <div class="mb-3 text-center">
+                                <p class="text-muted">Current Logo</p>
+                                <img src="{{ $school->logo_url }}" class="img-fluid rounded mb-3" style="max-height: 150px;">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remove_logo" name="remove_logo" value="1">
+                                    <label class="form-check-label text-danger" for="remove_logo">
+                                        Remove current logo
+                                    </label>
+                                </div>
+                            </div>
+                            @endif
+
+                            <div class="mb-3">
+                                <label for="logo" class="form-label">Upload new logo</label>
+                                <input type="file" class="form-control" id="logo" name="logo" accept=".webp,.jpg,.png">
+                                <div class="form-text">Recommended size: 200x200px. Max file size: 2MB.</div>
+                            </div>
+
+                            <div class="logo-preview mt-3 text-center" id="logo-preview" style="display: none;">
+                                <p class="text-muted">New Logo Preview</p>
+                                <img id="logo-preview-img" class="img-fluid rounded" style="max-height: 150px;">
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Banner Image -->
                     <div class="card mb-4">
                         <div class="card-header bg-white border-0">
@@ -457,6 +679,25 @@
         </div>
     </template>
 
+    <!-- Template for quick facts -->
+    <template id="quick-fact-template">
+        <div class="quick-fact-item mb-2">
+            <div class="row g-2">
+                <div class="col-md-5">
+                    <input type="text" class="form-control" name="quick_fact_keys[]" placeholder="Fact key (e.g., accreditation)">
+                </div>
+                <div class="col-md-5">
+                    <input type="text" class="form-control" name="quick_fact_values[]" placeholder="Fact value (e.g., CBSE Affiliated)">
+                </div>
+                <div class="col-md-2">
+                    <button type="button" class="btn btn-danger btn-sm remove-quick-fact">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
@@ -467,6 +708,27 @@
                 deleteButton.addEventListener('click', function() {
                     if (confirm('Are you sure you want to delete this school? This action cannot be undone.')) {
                         deleteForm.submit();
+                    }
+                });
+            }
+
+            // Logo preview functionality
+            const logoInput = document.getElementById('logo');
+            const logoPreview = document.getElementById('logo-preview');
+            const logoPreviewImg = document.getElementById('logo-preview-img');
+
+            if (logoInput && logoPreview) {
+                logoInput.addEventListener('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            logoPreviewImg.src = e.target.result;
+                            logoPreview.style.display = 'block';
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        logoPreview.style.display = 'none';
                     }
                 });
             }
@@ -492,7 +754,50 @@
                 });
             }
 
-            // Add image field
+            // Quick Facts functionality
+            const quickFactsContainer = document.getElementById('quick-facts-container');
+            const addQuickFactBtn = document.getElementById('add-quick-fact');
+            const quickFactTemplate = document.getElementById('quick-fact-template');
+
+            if (addQuickFactBtn && quickFactsContainer) {
+                addQuickFactBtn.addEventListener('click', function() {
+                    const newQuickFact = quickFactTemplate.content.cloneNode(true);
+
+                    // Set up remove button
+                    const removeBtn = newQuickFact.querySelector('.remove-quick-fact');
+                    removeBtn.addEventListener('click', function() {
+                        this.closest('.quick-fact-item').remove();
+                        updateQuickFactRemoveButtons();
+                    });
+
+                    quickFactsContainer.appendChild(newQuickFact);
+                    updateQuickFactRemoveButtons();
+                });
+
+                // Set up existing remove buttons
+                document.querySelectorAll('.remove-quick-fact').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        this.closest('.quick-fact-item').remove();
+                        updateQuickFactRemoveButtons();
+                    });
+                });
+
+                updateQuickFactRemoveButtons();
+            }
+
+            function updateQuickFactRemoveButtons() {
+                const quickFactItems = quickFactsContainer.querySelectorAll('.quick-fact-item');
+                const shouldShowRemove = quickFactItems.length > 1;
+                
+                quickFactItems.forEach(item => {
+                    const removeBtn = item.querySelector('.remove-quick-fact');
+                    if (removeBtn) {
+                        removeBtn.style.display = shouldShowRemove ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Add image field functionality
             const addImageBtn = document.getElementById('add-image-btn');
             const imageFieldsContainer = document.getElementById('image-fields-container');
             const imageFieldTemplate = document.getElementById('image-field-template');
@@ -624,9 +929,8 @@
                     field.querySelector('.image-number').textContent = index + 1;
                 });
             }
-        });
-        // Features and Curriculum enhancement for edit form
-        document.addEventListener('DOMContentLoaded', function() {
+
+            // Features and Curriculum enhancement
             // Feature search/filter functionality
             window.filterFeatures = function(searchTerm) {
                 const featureItems = document.querySelectorAll('.feature-item');
@@ -709,12 +1013,20 @@
             border-left: 3px solid #4e73df;
         }
 
-        .remove-image-btn {
+        .remove-image-btn,
+        .remove-quick-fact {
             padding: 0.25rem 0.5rem;
         }
 
         .border-dashed {
             border-style: dashed !important;
+        }
+
+        .quick-fact-item {
+            padding: 0.5rem;
+            border: 1px solid #e9ecef;
+            border-radius: 0.375rem;
+            background-color: #f8f9fa;
         }
     </style>
 </x-app-layout>

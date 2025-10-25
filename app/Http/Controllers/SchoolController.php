@@ -261,7 +261,16 @@ class SchoolController extends Controller
     public function edit($id)
     {
         try {
-            $school = School::with(['features', 'curriculums', 'images'])->findOrFail($id);
+            $school = School::with([
+                'profile',
+                'curriculums',
+                'features',
+                'reviews',
+                'images',
+                'branches',
+                'events'
+            ])->findOrFail($id);
+
             $user = User::where('school_id', $school->id)->first();
 
             // Get all features and curriculums for the form
@@ -293,7 +302,7 @@ class SchoolController extends Controller
 
 
         try {
-            $school = School::with(['images', 'user', 'features', 'curriculums'])->findOrFail($id);
+            $school = School::with(['profile', 'images', 'user', 'features', 'curriculums'])->findOrFail($id);
 
             // Count current non-removed images
             $currentImageCount = $school->images->count();
@@ -311,7 +320,7 @@ class SchoolController extends Controller
             }
 
             // ✅ Dynamic rule for admin email (only apply unique if changed)
-            $adminEmailRule = ['nullable', 'email', 'max:100'];
+            $adminEmailRule = ['required', 'email', 'max:100'];
             $existingAdminEmail = optional($school->user)->email;
 
             if ($request->input('admin-email') !== $existingAdminEmail) {
@@ -325,60 +334,123 @@ class SchoolController extends Controller
             }
 
             $validated = $request->validate([
-                'name'            => 'required|string|max:255',
-                'description'     => 'nullable|string',
-                'address'         => 'required|string|max:255',
-                'city'            => 'required|string|max:100',
-                'contact_number'  => 'nullable|string|max:20',
-
-                // ✅ Apply dynamic email rules
-                'email'           => $schoolEmailRule,
-                'admin-email'     => $adminEmailRule,
-
-                'website'         => 'nullable|url|max:255',
-                'facilities'      => 'nullable|string',
-                'school_type'     => 'required|in:Co-Ed,Boys,Girls',
-                'regular_fees'    => 'nullable|numeric|min:0',
-                'discounted_fees' => 'nullable|numeric|min:0',
-                'admission_fees'  => 'nullable|numeric|min:0',
-                'status'          => 'required|in:active,inactive',
-                'visibility'      => 'required|in:public,private',
-                'publish_date'    => 'nullable|date',
-                'password'        => 'nullable|string|min:8|confirmed',
-                'admin-name'      => 'required|string|max:255',
-                'banner_image'    => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-                'school_images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
-                'image_titles'    => 'nullable|array',
-                'image_titles.*'  => 'nullable|string|max:255',
-                'remove_images'   => 'nullable|array',
-                'remove_images.*' => 'exists:school_images,id,school_id,' . $school->id,
-
-                // ✅ Features and Curriculum validation
-                'features'        => 'nullable|array',
-                'features.*'      => 'exists:features,id',
-                'curriculum_id'   => 'required|exists:curriculums,id',
+                'name'              => 'required|string|max:255',
+                'description'       => 'nullable|string',
+                'address'           => 'required|string|max:255',
+                'city'              => 'required|string|max:100',
+                'contact_number'    => 'nullable|string|max:20',
+                'email'             => $schoolEmailRule,
+                'admin-name'        => 'required|string|max:255',
+                'admin-email'       => $adminEmailRule,
+                'website'           => 'nullable|url|max:255',
+                'facilities'        => 'nullable|string',
+                'school_type'       => 'required|in:Co-Ed,Boys,Girls',
+                'established_year'  => 'nullable|string|max:4',
+                'student_strength'  => 'nullable|integer|min:0',
+                'faculty_count'     => 'nullable|integer|min:0',
+                'campus_size'       => 'nullable|string|max:100',
+                'school_motto'      => 'nullable|string|max:255',
+                'mission'           => 'nullable|string',
+                'vision'            => 'nullable|string',
+                'facebook_url'      => 'nullable|url|max:255',
+                'twitter_url'       => 'nullable|url|max:255',
+                'instagram_url'     => 'nullable|url|max:255',
+                'linkedin_url'      => 'nullable|url|max:255',
+                'youtube_url'       => 'nullable|url|max:255',
+                'regular_fees'      => 'nullable|numeric|min:0',
+                'discounted_fees'   => 'nullable|numeric|min:0',
+                'admission_fees'    => 'nullable|numeric|min:0',
+                'status'            => 'required|in:active,inactive',
+                'visibility'        => 'required|in:public,private',
+                'publish_date'      => 'nullable|date',
+                'password'          => 'nullable|string|min:8|confirmed',
+                'logo'              => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'banner_image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'banner_title'      => 'nullable|string|max:255',
+                'banner_tagline'    => 'nullable|string|max:255',
+                'school_images.*'   => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image_titles'      => 'nullable|array',
+                'image_titles.*'    => 'nullable|string|max:255',
+                'remove_images'     => 'nullable|array',
+                'remove_images.*'   => 'exists:school_images,id,school_id,' . $school->id,
+                'remove_logo'       => 'nullable|boolean',
+                'remove_banner'     => 'nullable|boolean',
+                'features'          => 'nullable|array',
+                'features.*'        => 'exists:features,id',
+                'curriculum_id'     => 'required|exists:curriculums,id',
+                'quick_fact_keys'   => 'nullable|array',
+                'quick_fact_values' => 'nullable|array',
             ]);
+
+            DB::beginTransaction();
 
             // ✅ Update school info
             $school->update([
-                'name'            => $validated['name'],
-                'description'     => $validated['description'] ?? null,
-                'address'         => $validated['address'],
-                'city'            => $validated['city'],
-                'contact_number'  => $validated['contact_number'] ?? null,
-                'email'           => $validated['email'] ?? null,
-                'website'         => $validated['website'] ?? null,
-                'facilities'      => $validated['facilities'] ?? null,
-                'school_type'     => $validated['school_type'],
-                'regular_fees'    => $validated['regular_fees'] ?? null,
-                'discounted_fees' => $validated['discounted_fees'] ?? null,
-                'admission_fees'  => $validated['admission_fees'] ?? null,
-                'status'          => $validated['status'],
-                'visibility'      => $validated['visibility'],
-                'publish_date'    => $validated['publish_date'] ?? null,
+                'name'              => $validated['name'],
+                'description'       => $validated['description'] ?? null,
+                'address'           => $validated['address'],
+                'city'              => $validated['city'],
+                'contact_number'    => $validated['contact_number'] ?? null,
+                'email'             => $validated['email'] ?? null,
+                'website'           => $validated['website'] ?? null,
+                'facilities'        => $validated['facilities'] ?? null,
+                'school_type'       => $validated['school_type'],
+                'regular_fees'      => $validated['regular_fees'] ?? null,
+                'discounted_fees'   => $validated['discounted_fees'] ?? null,
+                'admission_fees'    => $validated['admission_fees'] ?? null,
+                'status'            => $validated['status'],
+                'visibility'        => $validated['visibility'],
+                'publish_date'      => $validated['publish_date'] ?? null,
+                'banner_title'      => $validated['banner_title'] ?? null,
+                'banner_tagline'    => $validated['banner_tagline'] ?? null,
             ]);
 
-            // ✅ Update Features (Sync will handle adding/removing)
+            // ✅ Update or create school profile
+            $profileData = [
+                'established_year' => $validated['established_year'] ?? null,
+                'student_strength' => $validated['student_strength'] ?? null,
+                'faculty_count'    => $validated['faculty_count'] ?? null,
+                'campus_size'      => $validated['campus_size'] ?? null,
+                'school_motto'     => $validated['school_motto'] ?? null,
+                'mission'          => $validated['mission'] ?? null,
+                'vision'           => $validated['vision'] ?? null,
+            ];
+
+            // Handle quick facts (JSON) - Save to profile
+            $quickFacts = [];
+            if ($request->has('quick_fact_keys') && $request->has('quick_fact_values')) {
+                $keys = $request->quick_fact_keys;
+                $values = $request->quick_fact_values;
+
+                for ($i = 0; $i < count($keys); $i++) {
+                    if (!empty($keys[$i]) && !empty($values[$i])) {
+                        $quickFacts[$keys[$i]] = $values[$i];
+                    }
+                }
+            }
+            $profileData['quick_facts'] = !empty($quickFacts) ? json_encode($quickFacts) : null;
+
+            // Handle social media (JSON) - Save to profile
+            $socialMedia = [];
+            $socialPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube'];
+            foreach ($socialPlatforms as $platform) {
+                $urlField = $platform . '_url';
+                if (!empty($validated[$urlField])) {
+                    $socialMedia[$platform] = $validated[$urlField];
+                }
+            }
+            $profileData['social_media'] = !empty($socialMedia) ? json_encode($socialMedia) : null;
+
+            // Update or create profile
+            if ($school->profile) {
+                $school->profile->update($profileData);
+                $schoolProfile = $school->profile;
+            } else {
+                $profileData['school_id'] = $school->id;
+                $schoolProfile = SchoolProfile::create($profileData);
+            }
+
+            // ✅ Update Features
             if ($request->has('features')) {
                 $school->features()->sync($request->features);
             } else {
@@ -391,13 +463,31 @@ class SchoolController extends Controller
 
             $folderName = Str::slug($school->name, '-');
 
-            // ✅ Handle banner image
+            // ✅ Handle logo upload (to profile)
+            $shouldRemoveLogo = $request->filled('remove_logo');
+            $hasNewLogo = $request->hasFile('logo');
+
+            if ($shouldRemoveLogo && $schoolProfile->logo) {
+                Storage::disk('website')->delete($schoolProfile->logo);
+                $schoolProfile->update(['logo' => null]);
+            }
+
+            if ($hasNewLogo) {
+                if ($schoolProfile->logo) {
+                    Storage::disk('website')->delete($schoolProfile->logo);
+                }
+                $logoPath = Storage::disk('website')
+                    ->putFile("school/{$folderName}/logo", $request->file('logo'));
+                $schoolProfile->update(['logo' => $logoPath]);
+            }
+
+            // ✅ Handle banner image upload (to school)
             $shouldRemoveBanner = $request->filled('remove_banner');
             $hasNewBanner = $request->hasFile('banner_image');
 
             if ($shouldRemoveBanner && $school->banner_image) {
                 Storage::disk('website')->delete($school->banner_image);
-                $school->banner_image = null;
+                $school->update(['banner_image' => null]);
             }
 
             if ($hasNewBanner) {
@@ -406,16 +496,8 @@ class SchoolController extends Controller
                 }
                 $bannerPath = Storage::disk('website')
                     ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
-                $school->banner_image = $bannerPath;
+                $school->update(['banner_image' => $bannerPath]);
             }
-
-            $school->save();
-
-            // ✅ Banner title and tagline
-            $school->update([
-                'banner_title'   => $request->input('banner_title'),
-                'banner_tagline' => $request->input('banner_tagline'),
-            ]);
 
             // ✅ Remove selected images
             if (!empty($imagesToRemove)) {
@@ -447,9 +529,7 @@ class SchoolController extends Controller
             $user = $school->user;
             if ($user) {
                 $user->name = $validated['admin-name'];
-                if (!empty($validated['admin-email'])) {
-                    $user->email = $validated['admin-email'];
-                }
+                $user->email = $validated['admin-email'];
                 if (!empty($validated['password'])) {
                     $user->password = bcrypt($validated['password']);
                 }
@@ -457,12 +537,14 @@ class SchoolController extends Controller
             } else {
                 $user = User::create([
                     'name'      => $validated['admin-name'],
-                    'email'     => $validated['admin-email'] ?? $validated['email'],
+                    'email'     => $validated['admin-email'],
                     'password'  => bcrypt($validated['password'] ?? 'default123'),
                     'school_id' => $school->id,
                 ]);
                 $user->assignRole('school-admin');
             }
+
+            DB::commit();
 
             return redirect()->route('schools.show', $school->id)
                 ->with('success', 'School updated successfully!');
@@ -471,6 +553,7 @@ class SchoolController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error('Error updating school: ' . $e->getMessage(), ['school_id' => $id]);
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
