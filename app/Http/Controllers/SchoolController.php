@@ -240,7 +240,15 @@ class SchoolController extends Controller
     public function show($id)
     {
         try {
-            $school = School::with(['reviews', 'events', 'branches'])->findOrFail($id);
+            $school = School::with([
+                'profile',
+                'curriculums',
+                'features',
+                'reviews',
+                'images',
+                'branches',
+                'events'
+            ])->findOrFail($id);
 
             return view('dashboard.schooles.show', compact('school'));
         } catch (ModelNotFoundException $e) {
