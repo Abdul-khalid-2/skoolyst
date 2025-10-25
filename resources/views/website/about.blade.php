@@ -498,7 +498,7 @@
 </section>
 
 <!-- ==================== FUTURE ROADMAP ==================== -->
-<section class="roadmap-section">
+<!-- <section class="roadmap-section">
     <div class="container">
         <h2 class="section-title">Our Future Vision</h2>
 
@@ -540,7 +540,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> -->
 
 <!-- ==================== CTA SECTION ==================== -->
 <section class="cta-section">
