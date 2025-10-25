@@ -31,15 +31,7 @@
 
                     <div class="container position-relative" style="z-index: 2; height: 100%;">
                         <div class="d-flex align-items-center h-100">
-                            <div class="school-logo-wrapper me-3">
-                                @if($school->profile && $school->profile->getLogoUrl())
-                                <img src="{{ $school->profile->getLogoUrl() }}" alt="{{ $school->name }} Logo" class="school-logo-img rounded" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid white;">
-                                @else
-                                <div class="school-logo-placeholder rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2);">
-                                    <i class="fas fa-school text-white"></i>
-                                </div>
-                                @endif
-                            </div>
+
 
                             <div class="school-text-content text-white">
                                 <h1 class="h3 mb-1">{{ $school->banner_title ?? $school->name }}</h1>
@@ -661,6 +653,38 @@
                             </div>
                             @else
                             <p class="text-muted text-center mb-0">No social media links available.</p>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-white">
+                            <h5 class="card-title mb-0">Profile Visitors</h5>
+                        </div>
+                        <div class="card-body">
+                            @if($school->profile && ($school->profile->visitor_count > 0 || $school->profile->total_time_spent > 0))
+                            <div class="school-statistics">
+                                <h3>School Statistics</h3>
+                                <div class="stats-grid">
+                                    @if($school->profile->visitor_count > 0)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ $school->profile->visitor_count }}</div>
+                                        <div class="stat-label">Profile Visitors</div>
+                                    </div>
+                                    @endif
+                                    @if($school->profile->total_time_spent > 0)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ round($school->profile->total_time_spent / 60) }}</div>
+                                        <div class="stat-label">Minutes Spent by Visitors</div>
+                                    </div>
+                                    @endif
+                                    @if($school->profile->last_visited_at)
+                                    <div class="stat-item">
+                                        <div class="stat-number">{{ $school->profile->last_visited_at->format('M d') }}</div>
+                                        <div class="stat-label">Last Visited</div>
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
                             @endif
                         </div>
                     </div>

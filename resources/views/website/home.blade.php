@@ -6,6 +6,48 @@
 <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
+@push('meta')
+    <title>Find & Compare the Best Schools in Pakistan | SKOOLYST</title>
+    <meta name="description" content="Explore and compare the best schools in Pakistan with SKOOLYST. Search by city, curriculum, and type to find the perfect school in Karachi, Lahore, Islamabad, and beyond.">
+    <meta name="keywords" content="best schools in Pakistan, Karachi schools, Lahore schools, Islamabad schools, O Level schools, Montessori schools, A Level schools, school admissions Pakistan, compare schools Pakistan">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'WebPage',
+        'name' => 'Find Best Schools in Pakistan',
+        'description' => 'Search and compare top schools across Pakistan by location, curriculum, and reviews.',
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'SKOOLYST Pakistan',
+            'url' => url('/'),
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => asset('assets/assets/hero.png')
+            ],
+        ],
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'itemListElement' => $schools->map(function($school, $index) {
+                return [
+                    '@type' => 'ListItem',
+                    'position' => $index + 1,
+                    'url' => route('browseSchools.show', $school->uuid),
+                    'name' => $school->name,
+                    'image' => $school->banner_image ? asset('website/' . $school->banner_image) : asset('assets/images/default-school.jpg'),
+                    'address' => $school->city,
+                    'aggregateRating' => [
+                        '@type' => 'AggregateRating',
+                        'ratingValue' => number_format($school->reviews->avg('rating') ?? 0, 1),
+                        'reviewCount' => $school->reviews->count(),
+                    ],
+                ];
+            }),
+        ],
+    ], JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
+    </script>
+@endpush
 
 @section('content')
 
@@ -71,7 +113,7 @@
 <!-- ==================== SCHOOL DIRECTORY SECTION ==================== -->
 <section class="directory-section" id="directory">
     <div class="container">
-        <h2 class="section-title">Browse Schools</h2>
+        <h2 class="section-title">Schools</h2>
         <p class="section-subtitle">Explore educational institutions that match your needs</p>
 
         <div class="row" id="schoolsContainer">

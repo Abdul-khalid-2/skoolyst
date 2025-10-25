@@ -71,7 +71,7 @@ Route::middleware('guest')->group(function () {
 Route::get('/', [HomeController::class, 'home'])->name('website.home');
 Route::get('/search', [HomeController::class, 'search'])->name('search.schools');
 
-Route::get('/browse/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
+Route::get('/all/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
 Route::get('/browse/schools/search', [BrowseSchoolController::class, 'search'])->name('browseSchools.search');
 Route::get('/school/profile/{uuid}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show');
 

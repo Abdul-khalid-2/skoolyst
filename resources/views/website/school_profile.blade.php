@@ -515,12 +515,12 @@
         @if($school->banner_title)
             <div class="container">
                 <div class="school-hero-content">
-                    <div class="school-logo-wrapper">
-                        @if($school->profile->getLogoUrl())
-                            <img src="{{ $school->profile->getLogoUrl() }}" alt="{{ $school->name }} Logo" class="school-logo-img">
+                    <div class="school-logo-wrapper me-3">
+                        @if($school->logo_url)
+                            <img src="{{ $school->logo_url }}" alt="{{ $school->name }} Logo" class="school-logo-img rounded" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid white;">
                         @else
-                            <div class="school-logo-placeholder">
-                                <i class="fas fa-school"></i>
+                            <div class="school-logo-placeholder rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2);">
+                                <i class="fas fa-school text-white"></i>
                             </div>
                         @endif
                     </div>

@@ -15,7 +15,7 @@
                     <a class="nav-link {{ request()->is('how-it-works') ? 'active' : '' }}" href="{{ route('website.how_it_works') }}">How It Works</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ route('browseSchools.index') }}">Browse Schools</a>
+                    <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ route('browseSchools.index') }}">Schools</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ url('/about') }}">About</a>
