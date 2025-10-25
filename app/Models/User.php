@@ -80,10 +80,9 @@ class User extends Authenticatable
     public function getProfilePictureUrlAttribute()
     {
         if ($this->profile_picture) {
-            // Use asset() instead of Storage::url() for website disk
             return asset('website/' . $this->profile_picture);
         }
 
-        return asset('images/default-avatar.png');
+        return null;
     }
 }
