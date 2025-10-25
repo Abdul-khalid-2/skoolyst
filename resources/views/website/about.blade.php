@@ -471,7 +471,7 @@
 
         <div class="value-grid">
             <div class="value-card">
-                <div class="value-number">For Parents</div>
+                <div class="value-number">Parents</div>
                 <h3 class="value-title">Informed Decisions</h3>
                 <p class="value-description">
                     Comprehensive school information, authentic reviews, and easy comparison tools to choose the best educational path for your children.
@@ -479,7 +479,7 @@
             </div>
 
             <div class="value-card">
-                <div class="value-number">For Schools</div>
+                <div class="value-number">Schools</div>
                 <h3 class="value-title">Enhanced Visibility</h3>
                 <p class="value-description">
                     Reach your target audience effectively, showcase your unique offerings, and get valuable insights to improve your outreach strategies.
@@ -487,7 +487,7 @@
             </div>
 
             <div class="value-card">
-                <div class="value-number">For Students</div>
+                <div class="value-number">Students</div>
                 <h3 class="value-title">Bright Future</h3>
                 <p class="value-description">
                     Find the perfect learning environment that matches your interests, learning style, and career aspirations for a successful educational journey.
