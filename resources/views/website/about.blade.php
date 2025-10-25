@@ -170,8 +170,8 @@
     /* ==================== VALUE PROPOSITION ==================== */
     .value-section {
         padding: 80px 0;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+        /* color: white; */
     }
 
     .value-grid {
@@ -467,7 +467,7 @@
 <!-- ==================== VALUE PROPOSITION ==================== -->
 <section class="value-section">
     <div class="container">
-        <h2 class="section-title" style="color: white;">Why Choose SKOOLYST?</h2>
+        <h2 class="section-title">Why Choose SKOOLYST?</h2>
 
         <div class="value-grid">
             <div class="value-card">
