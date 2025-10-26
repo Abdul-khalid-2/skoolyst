@@ -711,6 +711,9 @@
                                 <p class="no-content">Facilities information not available.</p>
                             @endif
                         </div>
+                        @if($school->description)
+                            <p>{{ $school->description??"" }}</p>
+                        @endif
                     </section>
 
                     <!-- Mission & Vision Section -->
