@@ -13,6 +13,7 @@ use App\Http\Controllers\Website\BrowseSchoolController;
 use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
 use App\Http\Controllers\Website\ReviewController;
+use App\Http\Controllers\Website\AdvertisementPageController;
 
 use App\Http\Controllers\UserProfileController;
 
@@ -107,6 +108,9 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
     });
 });
+// advertisement pages
+Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');
+Route::get('/page-view/{slug}/{page_uuid}', [AdvertisementPageController::class, 'show'])->name('advertisement_pages.show');
 
 Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
 

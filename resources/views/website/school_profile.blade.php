@@ -891,7 +891,9 @@
                                                 <span class="event-month">{{ \Carbon\Carbon::parse($event->event_date)->format('M') }}</span>
                                             </div>
                                             <div class="event-details">
-                                                <h4 class="event-title">{{ $event->event_name }}</h4>
+                                                <a href="{{ route('advertisement_pages.index', $event->id) }}">
+                                                    <h4 class="event-title">{{ $event->event_name }}</h4>
+                                                </a>
                                                 <p class="event-description">{{ $event->event_description }}</p>
                                                 <div class="event-meta">
                                                     <span class="event-location">
