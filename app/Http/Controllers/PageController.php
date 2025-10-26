@@ -221,11 +221,7 @@ class PageController extends Controller
             $this->deletePageImages($page);
 
             $page->delete();
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Page deleted successfully!'
-            ]);
+            return redirect()->back()->with('success', 'Page deleted successfully!');
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

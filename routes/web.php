@@ -44,7 +44,7 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
     Route::get('/pages/create/{school_uuid}/{event_id}', [PageController::class, 'create'])->name('pages.create');
     Route::get('/pages/{id}/edit', [PageController::class, 'edit'])->name('pages.edit');
     Route::put('/pages/{id}', [PageController::class, 'update'])->name('pages.update');
-    Route::get('/pages/destroy', [PageController::class, 'destroy'])->name('pages.destroy');
+    Route::delete('/pages/{id}', [PageController::class, 'destroy'])->name('pages.destroy');
     Route::post('/pages/store', [PageController::class, 'store'])->name('pages.store');
     Route::get('/pages/{slug}/{page_uuid}', [PageController::class, 'show'])->name('pages.show');
 
