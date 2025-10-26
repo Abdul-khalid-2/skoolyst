@@ -86,6 +86,7 @@ class PageController extends Controller
                 'school_id' => $request->school_id,
                 'event_id' => $request->event_id,
                 'name' => $request->name,
+                'description' => $request->description,
                 'slug' => $slug,
                 'structure' => $processedData,
                 'title' => $elementData['titles'] ?? null,
@@ -180,6 +181,7 @@ class PageController extends Controller
 
             $page->update([
                 'name' => $request->name,
+                'description' => $request->description,
                 'event_id' => $request->event_id,
                 'slug' => $slug,
                 'structure' => $processedData,

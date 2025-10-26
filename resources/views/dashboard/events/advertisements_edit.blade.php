@@ -313,6 +313,13 @@
                                         </select>
                                     </div>
                                 </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="pageDescription" class="form-label">Description</label>
+                                        <textarea class="form-control" name="description" id="pageDescription" cols="30" rows="3">{{ $page->description }}</textarea>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-12">
@@ -1088,6 +1095,7 @@
                 e.preventDefault();
 
                 const pageName = $('#pageName').val().trim();
+                const pageDescription = $('#pageDescription').val();
                 const pageId = $('#pageId').val();
                 if (!pageName) {
                     alert('Please enter a page name');
@@ -1101,6 +1109,7 @@
 
                 const formData = new FormData();
                 formData.append('name', pageName);
+                formData.append('description', pageDescription);
                 formData.append('school_id', $('#schoolId').val());
                 formData.append('event_id', $('#eventId').val());
                 formData.append('form_data', JSON.stringify(this.getPageData()));

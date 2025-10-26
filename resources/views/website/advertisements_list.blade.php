@@ -422,7 +422,7 @@
                     <h3 class="event-title">{{ $page->name }}</h3>
 
                     <p class="event-description">
-                        {{ Str::limit($page->description ?? 'Discover this amazing event and be part of our educational community. Join us for an unforgettable experience.', 150) }}
+                        {{ Str::limit($page->description ?? '', 150) }}
                     </p>
 
                     <div class="event-meta">
