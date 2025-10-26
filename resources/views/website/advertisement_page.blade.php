@@ -311,162 +311,161 @@
         <div class="container">
             <div class="canvas-container" id="pageCanvas">
                 @if(isset($page->structure['elements']) && count($page->structure['elements']) > 0)
-                @foreach($page->structure['elements'] as $index => $element)
-                @php
-                $elementType = $element['type'] ?? '';
-                $elementContent = $element['content'] ?? [];
-                $elementPosition = $element['position'] ?? $index; // Use index as fallback position
-                @endphp
+                    @foreach($page->structure['elements'] as $index => $element)
+                        @php
+                            $elementType = $element['type'] ?? '';
+                            $elementContent = $element['content'] ?? [];
+                            $elementPosition = $element['position'] ?? $index; // Use index as fallback position
+                        @endphp
 
-                @switch($elementType)
-                @case('heading')
-                <div class="page-element element-heading">
-                    {{-- <div class="element-badge">
+                        @switch($elementType)
+                            @case('heading')
+                                <div class="page-element element-heading">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-heading"></i>
                                         Heading • {{ $elementContent['level'] ?? 'h2' }}
-                </div> --}}
-                <{{ $elementContent['level'] ?? 'h2' }} class="mb-0">
-                    {{ $elementContent['text'] ?? 'Heading Text' }}
-                </{{ $elementContent['level'] ?? 'h2' }}>
-            </div>
-            @break
+                                    </div> --}}
+                                    <{{ $elementContent['level'] ?? 'h2' }} class="mb-0">
+                                        {{ $elementContent['text'] ?? 'Heading Text' }}
+                                    </{{ $elementContent['level'] ?? 'h2' }}>
+                                </div>
+                                @break
 
-            @case('text')
-            <div class="page-element element-text">
-                {{-- <div class="element-badge">
+                            @case('text')
+                                <div class="page-element element-text">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-paragraph"></i>
                                         Text Content
                                     </div> --}}
-                <div class="rich-text-content">
-                    {!! nl2br(e($elementContent['content'] ?? 'Text content goes here...')) !!}
-                </div>
-            </div>
-            @break
+                                    <div class="rich-text-content">
+                                        {!! nl2br(e($elementContent['content'] ?? 'Text content goes here...')) !!}
+                                    </div>
+                                </div>
+                                @break
 
-            @case('image')
-            <div class="page-element element-image">
-                {{-- <div class="element-badge">
+                            @case('image')
+                                <div class="page-element element-image">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-image"></i>
                                         Image
                                     </div> --}}
-                @if(isset($elementContent['src']) && $elementContent['src'])
-                <img src="{{ $elementContent['src'] }}"
-                    alt="{{ $elementContent['alt'] ?? 'Image' }}"
-                    style="max-height: 300px;">
-                @else
-                <div class="text-center py-4 bg-light rounded text-muted">
-                    <i class="fas fa-image fa-2x mb-2"></i>
-                    <p>No Image Available</p>
-                </div>
-                @endif
-                @if(isset($elementContent['caption']) && $elementContent['caption'])
-                <div class="image-caption mt-3">
-                    {{ $elementContent['caption'] }}
-                </div>
-                @endif
-            </div>
-            @break
+                                    @if(isset($elementContent['src']) && $elementContent['src'])
+                                        <img src="{{ $elementContent['src'] }}" 
+                                             alt="{{ $elementContent['alt'] ?? 'Image' }}" 
+                                             style="max-height: 300px;">
+                                    @else
+                                        <div class="text-center py-4 bg-light rounded text-muted">
+                                            <i class="fas fa-image fa-2x mb-2"></i>
+                                            <p>No Image Available</p>
+                                        </div>
+                                    @endif
+                                    @if(isset($elementContent['caption']) && $elementContent['caption'])
+                                        <div class="image-caption mt-3">
+                                            {{ $elementContent['caption'] }}
+                                        </div>
+                                    @endif
+                                </div>
+                                @break
 
-            @case('banner')
-            <div class="page-element element-banner">
-                {{-- <div class="element-badge">
+                            @case('banner')
+                                <div class="page-element element-banner">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-banner"></i>
                                         Banner
                                     </div> --}}
-                @if(isset($elementContent['src']) && $elementContent['src'])
-                <img src="{{ $elementContent['src'] }}"
-                    alt="{{ $elementContent['alt'] ?? 'Banner' }}"
-                    style="max-height: 400px;">
-                @else
-                <div class="text-center py-5 bg-light text-muted">
-                    <i class="fas fa-image fa-3x mb-3"></i>
-                    <p>No Banner Image</p>
-                </div>
-                @endif
-                @if(isset($elementContent['title']) || isset($elementContent['subtitle']))
-                <div class="banner-caption">
-                    @if(isset($elementContent['title']))
-                    <h3 class="mb-2 text-white">{{ $elementContent['title'] }}</h3>
-                    @endif
-                    @if(isset($elementContent['subtitle']))
-                    <p class="mb-0">{{ $elementContent['subtitle'] }}</p>
-                    @endif
-                </div>
-                @endif
-            </div>
-            @break
+                                    @if(isset($elementContent['src']) && $elementContent['src'])
+                                        <img src="{{ $elementContent['src'] }}" 
+                                             alt="{{ $elementContent['alt'] ?? 'Banner' }}"
+                                             style="max-height: 400px;">
+                                    @else
+                                        <div class="text-center py-5 bg-light text-muted">
+                                            <i class="fas fa-image fa-3x mb-3"></i>
+                                            <p>No Banner Image</p>
+                                        </div>
+                                    @endif
+                                    @if(isset($elementContent['title']) || isset($elementContent['subtitle']))
+                                        <div class="banner-caption">
+                                            @if(isset($elementContent['title']))
+                                                <h3 class="mb-2 text-white">{{ $elementContent['title'] }}</h3>
+                                            @endif
+                                            @if(isset($elementContent['subtitle']))
+                                                <p class="mb-0">{{ $elementContent['subtitle'] }}</p>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                                @break
 
-            @case('columns')
-            <div class="page-element element-columns">
-                {{-- <div class="element-badge">
+                            @case('columns')
+                                <div class="page-element element-columns">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-columns"></i>
                                         Two Columns
                                     </div> --}}
-                <div class="two-col">
-                    <div class="col-left">
-                        @if(isset($elementContent['left']))
-                        <div class="rich-text-content">
-                            {!! nl2br(e($elementContent['left'])) !!}
-                        </div>
-                        @else
-                        <p class="text-muted">Left column content</p>
-                        @endif
-                    </div>
-                    <div class="col-right">
-                        @if(isset($elementContent['right']))
-                        <div class="rich-text-content">
-                            {!! nl2br(e($elementContent['right'])) !!}
-                        </div>
-                        @else
-                        <p class="text-muted">Right column content</p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-            @break
+                                    <div class="two-col">
+                                        <div class="col-left">
+                                            @if(isset($elementContent['left']))
+                                                <div class="rich-text-content">
+                                                    {!! nl2br(e($elementContent['left'])) !!}
+                                                </div>
+                                            @else
+                                                <p class="text-muted">Left column content</p>
+                                            @endif
+                                        </div>
+                                        <div class="col-right">
+                                            @if(isset($elementContent['right']))
+                                                <div class="rich-text-content">
+                                                    {!! nl2br(e($elementContent['right'])) !!}
+                                                </div>
+                                            @else
+                                                <p class="text-muted">Right column content</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                @break
 
-
-            @case('custom_html') {{-- Add this case --}}
-            @case('custom-html') {{-- And this for consistency --}}
-            <div class="page-element element-custom-html">
-                {{-- <div class="element-badge">
+                            
+                            @case('custom_html') {{-- Add this case --}}
+                            @case('custom-html') {{-- And this for consistency --}}
+                                <div class="page-element element-custom-html">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-code"></i>
                                         Custom HTML
                                     </div> --}}
-                <div class="custom-html-content" style="all: unset;">
-                    <style>
-                        {
-                            ! ! $elementContent['css'] ?? '' ! !
-                        }
-                    </style>
-                    {!! $elementContent['html'] ?? '<p>No custom HTML content</p>' !!}
-                </div>
-            </div>
-            @break
-            @default
-            <div class="page-element">
-                {{-- <div class="element-badge">
+                                    <div class="custom-html-content" style="all: unset;">
+                                        <style>
+                                            
+                                            {!! $elementContent['css'] ?? '' !!}
+                                        </style>
+                                        {!! $elementContent['html'] ?? '<p>No custom HTML content</p>' !!}
+                                    </div>
+                                </div>
+                                @break
+                                @default
+                                <div class="page-element">
+                                    {{-- <div class="element-badge">
                                         <i class="fas fa-question"></i>
                                         Unknown Element
                                     </div> --}}
-                <p>Unknown element type: {{ $elementType }}</p>
-                <pre>{{ json_encode($element, JSON_PRETTY_PRINT) }}</pre>
+                                    <p>Unknown element type: {{ $elementType }}</p>
+                                    <pre>{{ json_encode($element, JSON_PRETTY_PRINT) }}</pre>
+                                </div>
+                        @endswitch
+                    @endforeach
+                @else
+                    <div class="empty-state">
+                        <i class="fas fa-palette"></i>
+                        <h3>No Content Yet</h3>
+                        <p>This page doesn't have any content elements added yet.</p>
+                        <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i>
+                            Edit Page
+                        </a>
+                    </div>
+                @endif
             </div>
-            @endswitch
-            @endforeach
-            @else
-            <div class="empty-state">
-                <i class="fas fa-palette"></i>
-                <h3>No Content Yet</h3>
-                <p>This page doesn't have any content elements added yet.</p>
-                <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i>
-                    Edit Page
-                </a>
-            </div>
-            @endif
         </div>
-    </div>
     </div>
 
     <!-- Footer -->

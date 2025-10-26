@@ -38,7 +38,6 @@ class AdvertisementPageController extends Controller
 
     public function show($slug, string $page_uuid)
     {
-        dd(123);
         $page = Page::where('slug', $slug)->where('uuid', $page_uuid)->firstOrFail();
 
         // Prepare data for display - convert image paths to URLs
