@@ -73,11 +73,27 @@
         .status-inactive {
             color: #dc3545;
         }
+
+        /* ✅ Mobile Table Improvements */
+        @media (max-width: 576px) {
+            table.table th,
+            table.table td {
+                white-space: nowrap;
+                font-size: 0.875rem;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                border-radius: 0.5rem;
+                border: 1px solid #dee2e6;
+            }
+        }
     </style>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <main class="main-content">
         <section id="events" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <div>
                     <h2 class="mb-0">Events</h2>
                     <p class="text-muted">Manage school events</p>
@@ -91,9 +107,9 @@
             <div id="alert-container"></div>
 
             <div class="card">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
+                <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
+                    <table class="table table-hover align-middle mb-0 text-nowrap">
+                        <thead class="table-light">
                             <tr>
                                 <th>#</th>
                                 <th>Event Name</th>
@@ -108,21 +124,21 @@
                             @forelse($events as $event)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $event->event_name }}</td>
+                                <td class="text-truncate" style="max-width:160px;">{{ $event->event_name }}</td>
                                 <td>{{ $event->school->name }}</td>
                                 <td>{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}</td>
-                                <td>{{ $event->event_location }}</td>
+                                <td class="text-truncate" style="max-width:180px;">{{ $event->event_location }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <label class="switch">
                                             <input type="checkbox"
                                                 class="status-toggle"
                                                 data-event-id="{{ $event->id }}"
-                                                {{ $event->status ? 'checked' : '' }}>
+                                                {{ $event->status === 'active' ? 'checked' : '' }}>
                                             <span class="slider round"></span>
                                         </label>
-                                        <span class="status-text {{ $event->status ? 'status-active' : 'status-inactive' }}">
-                                            {{ $event->status ? 'Active' : 'Inactive' }}
+                                        <span class="status-text {{ $event->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                                            {{ $event->status === 'active' ? 'Active' : 'Inactive' }}
                                         </span>
                                     </div>
                                 </td>
