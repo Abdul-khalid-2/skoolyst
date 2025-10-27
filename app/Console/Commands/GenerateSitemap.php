@@ -15,11 +15,13 @@ class GenerateSitemap extends Command
     {
         $this->info('Generating sitemap...');
 
+        $base = config('app.url') ?? 'https://skoolyst.com';
+
         Sitemap::create()
-            ->add(Url::create('/'))
-            ->add(Url::create('/about'))
-            ->add(Url::create('/contact'))
-            ->add(Url::create('/schools'))
+            ->add(Url::create($base . '/'))
+            ->add(Url::create($base . '/about'))
+            ->add(Url::create($base . '/contact'))
+            ->add(Url::create($base . '/schools'))
             ->writeToFile(public_path('sitemap.xml'));
 
         $this->info('✅ Sitemap generated successfully at public/sitemap.xml');
