@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -24,9 +25,7 @@ use App\Http\Controllers\SchoolImageGalleryController;
 // });
 Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('dashboard.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardControlle::class, 'index'])->name('dashboard');
 
 
     // Add the custom create route separately

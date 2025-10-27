@@ -1,7 +1,37 @@
-// In your migration file: database/migrations/xxxx_xx_xx_create_schools_table.php
-public function up()
-{
-    Schema::create('schools', function (Blueprint $table) {
+   // 0001_01_01_000001_create_users_table
+    public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+
+        Schema::create('password_reset_tokens', function (Blueprint $table) {
+            $table->string('email')->primary();
+            $table->string('token');
+            $table->timestamp('created_at')->nullable();
+        });
+
+        Schema::create('sessions', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->foreignId('user_id')->nullable()->index();
+            $table->string('ip_address', 45)->nullable();
+            $table->text('user_agent')->nullable();
+            $table->longText('payload');
+            $table->integer('last_activity')->index();
+        });
+    }
+    // 0001_01_01_000000_create_schools_table
+    public function up()
+    {
+        Schema::create('schools', function (Blueprint $table) {
             $table->id(); // Auto-increment PK (hidden from outside)
             $table->uuid('uuid')->unique(); // Public-facing identifier
 
@@ -35,55 +65,324 @@ public function up()
             $table->index('school_type');
             $table->index('status');
         });
-}
+    }
 
-// In your migration file: database/migrations/xxxx_xx_xx_create_reviews_table.php
-public function up()
-{
-    Schema::create('reviews', function (Blueprint $table) {
-        $table->id(); // Primary key
-        $table->uuid('uuid')->unique();
-        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
-        $table->text('review'); // Review content
-        $table->integer('rating')->default(0); // Rating (1-5)
-        $table->string('reviewer_name'); // Reviewer (Parent/Student)
-        $table->timestamps(); // Created at, updated at
-    });
-}
+    // 2025_09_17_213223_create_reviews_table
+    public function up()
+    {
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id(); // Primary key
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+            $table->text('review'); // Review content
+            $table->integer('rating')->default(0); // Rating (1-5)
+            $table->string('reviewer_name'); // Reviewer (Parent/Student)
+            $table->timestamps(); // Created at, updated at
+        });
+    }
 
 
-// In your migration file: database/migrations/xxxx_xx_xx_create_events_table.php
-public function up()
-{
-    Schema::create('events', function (Blueprint $table) {
-        $table->id(); // Primary key
-        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
-        $table->string('event_name'); // Event name
-        $table->text('event_description'); // Event description
-        $table->date('event_date'); // Event date
-        $table->string('event_location'); // Event location
-        $table->timestamps(); // Created at, updated at
-    });
-}
+    // 2025_09_17_213404_create_events_table
+    public function up(): void
+    {
+        Schema::create('events', function (Blueprint $table) {
+            $table->id(); // Primary key
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+            $table->string('event_name'); // Event name
+            $table->text('event_description'); // Event description
+            $table->date('event_date'); // Event date
+            $table->string('event_location'); // Event location
+            $table->timestamps(); // Created at, updated at
+        });
+    }
 
-// In your migration file: database/migrations/xxxx_xx_xx_create_users_table.php
-public function up()
-{
-    Schema::create('users', function (Blueprint $table) {
+    // 2025_09_18_213009_create_branches_table
+    public function up()
+    {
+        Schema::create('branches', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->foreignId('school_id')->nullable()->constrained('schools')->onDelete('cascade');
-            $table->rememberToken();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->string('name'); // Branch name (could be same as main school or different)
+            $table->string('address');
+            $table->string('city');
+            $table->string('contact_number')->nullable();
+            $table->string('branch_head_name')->nullable(); // Principal/Head of branch
+            $table->decimal('latitude', 10, 8)->nullable(); // For maps
+            $table->decimal('longitude', 11, 8)->nullable(); // For maps
+            $table->boolean('is_main_branch')->default(false); // Flag for main branch
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamps();
+
+            // Indexes
+            $table->index('school_id');
+            $table->index('city');
+            $table->index('is_main_branch');
+        });
+    }
+
+    public function up()
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->foreignId('branch_id')->nullable()->after('school_id')
+                ->constrained('branches')->onDelete('cascade');
+        });
+    }
+
+
+    // 2025_09_18_213308_add_branch_id_to_reviews_table
+    public function up()
+    {
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->foreignId('branch_id')
+                ->nullable()
+                ->after('school_id')
+                ->constrained('branches')
+                ->onDelete('cascade');
+        });
+    }
+
+    // 2025_09_18_214550_create_personal_access_tokens_table
+    public function up(): void
+    {
+        Schema::create('personal_access_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('tokenable');
+            $table->text('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('expires_at')->nullable()->index();
             $table->timestamps();
         });
+    }
 
-}
+    // 2025_09_18_233728_create_permission_tables
+    public function up(): void
+    {
+        $teams = config('permission.teams');
+        $tableNames = config('permission.table_names');
+        $columnNames = config('permission.column_names');
+        $pivotRole = $columnNames['role_pivot_key'] ?? 'role_id';
+        $pivotPermission = $columnNames['permission_pivot_key'] ?? 'permission_id';
+
+        throw_if(empty($tableNames), new Exception('Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.'));
+        throw_if($teams && empty($columnNames['team_foreign_key'] ?? null), new Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.'));
+
+        Schema::create($tableNames['permissions'], static function (Blueprint $table) {
+            // $table->engine('InnoDB');
+            $table->bigIncrements('id'); // permission id
+            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->timestamps();
+
+            $table->unique(['name', 'guard_name']);
+        });
+
+        Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teams, $columnNames) {
+            // $table->engine('InnoDB');
+            $table->bigIncrements('id'); // role id
+            if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
+                $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
+                $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
+            }
+            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->timestamps();
+            if ($teams || config('permission.testing')) {
+                $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
+            } else {
+                $table->unique(['name', 'guard_name']);
+            }
+        });
+
+        Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
+            $table->unsignedBigInteger($pivotPermission);
+
+            $table->string('model_type');
+            $table->unsignedBigInteger($columnNames['model_morph_key']);
+            $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_permissions_model_id_model_type_index');
+
+            $table->foreign($pivotPermission)
+                ->references('id') // permission id
+                ->on($tableNames['permissions'])
+                ->onDelete('cascade');
+            if ($teams) {
+                $table->unsignedBigInteger($columnNames['team_foreign_key']);
+                $table->index($columnNames['team_foreign_key'], 'model_has_permissions_team_foreign_key_index');
+
+                $table->primary([$columnNames['team_foreign_key'], $pivotPermission, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_permissions_permission_model_type_primary');
+            } else {
+                $table->primary([$pivotPermission, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_permissions_permission_model_type_primary');
+            }
+
+        });
+
+        Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+            $table->unsignedBigInteger($pivotRole);
+
+            $table->string('model_type');
+            $table->unsignedBigInteger($columnNames['model_morph_key']);
+            $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
+
+            $table->foreign($pivotRole)
+                ->references('id') // role id
+                ->on($tableNames['roles'])
+                ->onDelete('cascade');
+            if ($teams) {
+                $table->unsignedBigInteger($columnNames['team_foreign_key']);
+                $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
+
+                $table->primary([$columnNames['team_foreign_key'], $pivotRole, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_roles_role_model_type_primary');
+            } else {
+                $table->primary([$pivotRole, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_roles_role_model_type_primary');
+            }
+        });
+
+        Schema::create($tableNames['role_has_permissions'], static function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
+            $table->unsignedBigInteger($pivotPermission);
+            $table->unsignedBigInteger($pivotRole);
+
+            $table->foreign($pivotPermission)
+                ->references('id') // permission id
+                ->on($tableNames['permissions'])
+                ->onDelete('cascade');
+
+            $table->foreign($pivotRole)
+                ->references('id') // role id
+                ->on($tableNames['roles'])
+                ->onDelete('cascade');
+
+            $table->primary([$pivotPermission, $pivotRole], 'role_has_permissions_permission_id_role_id_primary');
+        });
+
+        app('cache')
+            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
+            ->forget(config('permission.cache.key'));
+    }
 
 
+    // 2025_10_02_204529_create_pages_table
+    public function up()
+    {
+        Schema::create('pages', function (Blueprint $table) {
+            $table->id(); // Auto-increment primary key
+            $table->uuid('uuid')->unique();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
+            $table->string('name')->notNullable();
+            $table->string('slug')->nullable();
+            $table->json('structure')->notNullable(); // This will store your form data
+            $table->timestamps(); // created_at and updated_at
+
+            // Indexes
+            $table->index('event_id');
+            $table->index('slug');
+            $table->index('name');
+        });
+    }
+
+    // 2025_10_02_211339_add_status_to_events_table
+    public function up()
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->enum('status', ['active', 'inactive'])->default('active');
+        });
+    }
+
+    // 2025_10_18_064945_create_school_images_table
+    public function up(): void
+    {
+        Schema::create('school_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+
+            $table->string('image_path');   // store file path
+            $table->string('title')->nullable(); // image title/caption
+            $table->timestamps();
+            $table->index('school_id');
+        });
+    }
+
+    // 2025_10_18_065015_add_banner_image_to_schools_table
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('banner_image')->nullable()->after('description');
+        });
+    }
+
+
+    // 2025_10_21_035303_create_features_table
+    public function up()
+    {
+        Schema::create('features', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('category')->default('general');
+            $table->string('icon')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamps();
+
+            $table->index('category');
+        });
+    }
+
+    // 2025_10_21_035310_create_school_feature_table
+    public function up()
+    {
+        Schema::create('school_feature', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->foreignId('feature_id')->constrained()->onDelete('cascade');
+            $table->text('description')->nullable();
+            $table->integer('priority')->default(0);
+            $table->timestamps();
+
+            $table->unique(['school_id', 'feature_id']);
+            $table->index('priority');
+        });
+    }
+
+    // 2025_10_21_035317_create_curriculums_table
+    public function up()
+    {
+        Schema::create('curriculums', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('code')->unique();
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+    }
+
+
+// 2025_10_21_035325_create_school_curriculum_table
+    public function up()
+    {
+        Schema::create('school_curriculum', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->foreignId('curriculum_id')->constrained('curriculums')->onDelete('cascade'); // Explicitly specify table name
+            $table->timestamps();
+
+            $table->unique(['school_id', 'curriculum_id']);
+        });
+    }
+
+    // 2025_10_22_064141_add_banner_fields_to_schools_table
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('banner_title')->nullable()->after('banner_image');
+            $table->string('banner_tagline')->nullable()->after('banner_title');
+        });
+    }
+
+
+   // 0001_01_01_000001_create_users_table
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
@@ -113,148 +412,417 @@ public function up()
             $table->integer('last_activity')->index();
         });
     }
+    // 0001_01_01_000000_create_schools_table
+    public function up()
+    {
+        Schema::create('schools', function (Blueprint $table) {
+            $table->id(); // Auto-increment PK (hidden from outside)
+            $table->uuid('uuid')->unique(); // Public-facing identifier
 
-public function up()
-{
-    Schema::create('branches', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
-        $table->string('name'); // Branch name (could be same as main school or different)
-        $table->string('address');
-        $table->string('city');
-        $table->string('contact_number')->nullable();
-        $table->string('branch_head_name')->nullable(); // Principal/Head of branch
-        $table->decimal('latitude', 10, 8)->nullable(); // For maps
-        $table->decimal('longitude', 11, 8)->nullable(); // For maps
-        $table->boolean('is_main_branch')->default(false); // Flag for main branch
-        $table->enum('status', ['active', 'inactive'])->default('active');
-        $table->timestamps();
+            $table->string('name');
+            $table->string('email')->nullable()->unique();
+            $table->string('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('contact_number')->nullable();
+            $table->string('website')->nullable();
 
-        // Indexes
-        $table->index('school_id');
-        $table->index('city');
-        $table->index('is_main_branch');
-    });
-}
+            $table->text('description')->nullable();
+            $table->text('facilities')->nullable();
 
-public function up()
-{
-    Schema::table('reviews', function (Blueprint $table) {
-        $table->foreignId('branch_id')
-            ->nullable()
-            ->after('school_id')
-            ->constrained('branches')
-            ->onDelete('cascade');
-    });
-}
- public function up()
-{
-    Schema::table('events', function (Blueprint $table) {
-        $table->foreignId('branch_id')->nullable()->after('school_id')
-            ->constrained('branches')->onDelete('cascade');
-    });
-}
+            $table->enum('school_type', ['Co-Ed', 'Boys', 'Girls'])->default('Co-Ed');
 
- Schema::create('pages', function (Blueprint $table) {
-    $table->id(); // Auto-increment primary key
-    $table->uuid('uuid')->unique();
-    $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
-    $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
-    $table->string('name')->notNullable();
-    $table->string('slug')->nullable();
-    $table->json('structure')->notNullable(); // This will store your form data
-    $table->timestamps(); // created_at and updated_at
+            // 💰 Fees
+            $table->decimal('regular_fees', 10, 2)->nullable();
+            $table->decimal('discounted_fees', 10, 2)->nullable();
+            $table->decimal('admission_fees', 10, 2)->nullable();
 
-    // Indexes
+            // 📌 Other fields
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->enum('visibility', ['public', 'private'])->default('public');
+            $table->timestamp('publish_date')->nullable();
 
-    $table->index('event_id');
-    $table->index('slug');
-    $table->index('name');
-});
+            $table->timestamps();
+
+            // Indexes
+            $table->index('name');
+            $table->index('city');
+            $table->index('school_type');
+            $table->index('status');
+        });
+    }
 
 
-Schema::table('events', function (Blueprint $table) {
-    $table->dropColumn('status');
-});
-    Schema::table('schools', function (Blueprint $table) {
-    $table->string('banner_image')->nullable()->after('description');
-});
-
-Schema::create('school_images', function (Blueprint $table) {
-    $table->id();
-    $table->foreignUuid('school_id')
-        ->constrained('schools')
-        ->onDelete('cascade'); // Delete images if school is deleted
-
-    $table->string('image_path');   // store file path
-    $table->string('title')->nullable(); // image title/caption
-    $table->timestamps();
-});
+    // 2025_09_17_213223_create_reviews_table
+    public function up()
+    {
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id(); // Primary key
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+            $table->text('review'); // Review content
+            $table->integer('rating')->default(0); // Rating (1-5)
+            $table->string('reviewer_name'); // Reviewer (Parent/Student)
+            $table->timestamps(); // Created at, updated at
+        });
+    }
 
 
+    // 2025_09_17_213404_create_events_table
+    public function up(): void
+    {
+        Schema::create('events', function (Blueprint $table) {
+            $table->id(); // Primary key
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade'); // Foreign key for schools
+            $table->string('event_name'); // Event name
+            $table->text('event_description'); // Event description
+            $table->date('event_date'); // Event date
+            $table->string('event_location'); // Event location
+            $table->timestamps(); // Created at, updated at
+        });
+    }
 
-// Migration: create_features_table
-public function up()
-{
-    Schema::create('features', function (Blueprint $table) {
-        $table->id();
-        $table->string('name')->unique(); // e.g., "Science Labs", "Olympic Pool"
-        $table->string('category')->default('general'); // 'academic', 'sports', 'arts', etc.
-        $table->string('icon')->nullable(); // Optional icon class
-        $table->text('description')->nullable();
-        $table->timestamps();
-        
-        $table->index('category');
-    });
-}
+    // 2025_09_18_213009_create_branches_table
+    public function up()
+    {
+        Schema::create('branches', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->string('name'); // Branch name (could be same as main school or different)
+            $table->string('address');
+            $table->string('city');
+            $table->string('contact_number')->nullable();
+            $table->string('branch_head_name')->nullable(); // Principal/Head of branch
+            $table->decimal('latitude', 10, 8)->nullable(); // For maps
+            $table->decimal('longitude', 11, 8)->nullable(); // For maps
+            $table->boolean('is_main_branch')->default(false); // Flag for main branch
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamps();
 
-// Migration: create_school_feature_table (Pivot table)
-public function up()
-{
-    Schema::create('school_feature', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('school_id')->constrained()->onDelete('cascade');
-        $table->foreignId('feature_id')->constrained()->onDelete('cascade');
-        $table->text('description')->nullable(); // School-specific description
-        $table->integer('priority')->default(0); // For ordering features
-        $table->timestamps();
-        
-        $table->unique(['school_id', 'feature_id']);
-        $table->index('priority');
-    });
-}
+            // Indexes
+            $table->index('school_id');
+            $table->index('city');
+            $table->index('is_main_branch');
+        });
+    }
 
-// Migration: create_curriculums_table
-public function up()
-{
-    Schema::create('curriculums', function (Blueprint $table) {
-        $table->id();
-        $table->string('name')->unique(); // e.g., "CBSE", "ICSE", "IB", "State Board"
-        $table->string('code')->unique(); // e.g., "cbse", "icse"
-        $table->text('description')->nullable();
-        $table->timestamps();
-    });
-}
+    public function up()
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->foreignId('branch_id')->nullable()->after('school_id')
+                ->constrained('branches')->onDelete('cascade');
+        });
+    }
 
-// Migration: create_school_curriculum_table (Pivot table)
-public function up()
-{
-    Schema::create('school_curriculum', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('school_id')->constrained()->onDelete('cascade');
-        $table->foreignId('curriculum_id')->constrained()->onDelete('cascade');
-        $table->timestamps();
-        
-        $table->unique(['school_id', 'curriculum_id']);
-    });
-}
 
- Schema::table('schools', function (Blueprint $table) {
+    // 2025_09_18_213308_add_branch_id_to_reviews_table
+    public function up()
+    {
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->foreignId('branch_id')
+                ->nullable()
+                ->after('school_id')
+                ->constrained('branches')
+                ->onDelete('cascade');
+        });
+    }
+
+    // 2025_09_18_214550_create_personal_access_tokens_table
+    public function up(): void
+    {
+        Schema::create('personal_access_tokens', function (Blueprint $table) {
+            $table->id();
+            $table->morphs('tokenable');
+            $table->text('name');
+            $table->string('token', 64)->unique();
+            $table->text('abilities')->nullable();
+            $table->timestamp('last_used_at')->nullable();
+            $table->timestamp('expires_at')->nullable()->index();
+            $table->timestamps();
+        });
+    }
+
+    // 2025_09_18_233728_create_permission_tables
+
+    public function up(): void
+    {
+        $teams = config('permission.teams');
+        $tableNames = config('permission.table_names');
+        $columnNames = config('permission.column_names');
+        $pivotRole = $columnNames['role_pivot_key'] ?? 'role_id';
+        $pivotPermission = $columnNames['permission_pivot_key'] ?? 'permission_id';
+
+        throw_if(empty($tableNames), new Exception('Error: config/permission.php not loaded. Run [php artisan config:clear] and try again.'));
+        throw_if($teams && empty($columnNames['team_foreign_key'] ?? null), new Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.'));
+
+        Schema::create($tableNames['permissions'], static function (Blueprint $table) {
+            // $table->engine('InnoDB');
+            $table->bigIncrements('id'); // permission id
+            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->timestamps();
+
+            $table->unique(['name', 'guard_name']);
+        });
+
+        Schema::create($tableNames['roles'], static function (Blueprint $table) use ($teams, $columnNames) {
+            // $table->engine('InnoDB');
+            $table->bigIncrements('id'); // role id
+            if ($teams || config('permission.testing')) { // permission.testing is a fix for sqlite testing
+                $table->unsignedBigInteger($columnNames['team_foreign_key'])->nullable();
+                $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
+            }
+            $table->string('name');       // For MyISAM use string('name', 225); // (or 166 for InnoDB with Redundant/Compact row format)
+            $table->string('guard_name'); // For MyISAM use string('guard_name', 25);
+            $table->timestamps();
+            if ($teams || config('permission.testing')) {
+                $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
+            } else {
+                $table->unique(['name', 'guard_name']);
+            }
+        });
+
+        Schema::create($tableNames['model_has_permissions'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
+            $table->unsignedBigInteger($pivotPermission);
+
+            $table->string('model_type');
+            $table->unsignedBigInteger($columnNames['model_morph_key']);
+            $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_permissions_model_id_model_type_index');
+
+            $table->foreign($pivotPermission)
+                ->references('id') // permission id
+                ->on($tableNames['permissions'])
+                ->onDelete('cascade');
+            if ($teams) {
+                $table->unsignedBigInteger($columnNames['team_foreign_key']);
+                $table->index($columnNames['team_foreign_key'], 'model_has_permissions_team_foreign_key_index');
+
+                $table->primary([$columnNames['team_foreign_key'], $pivotPermission, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_permissions_permission_model_type_primary');
+            } else {
+                $table->primary([$pivotPermission, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_permissions_permission_model_type_primary');
+            }
+
+        });
+
+        Schema::create($tableNames['model_has_roles'], static function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
+            $table->unsignedBigInteger($pivotRole);
+
+            $table->string('model_type');
+            $table->unsignedBigInteger($columnNames['model_morph_key']);
+            $table->index([$columnNames['model_morph_key'], 'model_type'], 'model_has_roles_model_id_model_type_index');
+
+            $table->foreign($pivotRole)
+                ->references('id') // role id
+                ->on($tableNames['roles'])
+                ->onDelete('cascade');
+            if ($teams) {
+                $table->unsignedBigInteger($columnNames['team_foreign_key']);
+                $table->index($columnNames['team_foreign_key'], 'model_has_roles_team_foreign_key_index');
+
+                $table->primary([$columnNames['team_foreign_key'], $pivotRole, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_roles_role_model_type_primary');
+            } else {
+                $table->primary([$pivotRole, $columnNames['model_morph_key'], 'model_type'],
+                    'model_has_roles_role_model_type_primary');
+            }
+        });
+
+        Schema::create($tableNames['role_has_permissions'], static function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
+            $table->unsignedBigInteger($pivotPermission);
+            $table->unsignedBigInteger($pivotRole);
+
+            $table->foreign($pivotPermission)
+                ->references('id') // permission id
+                ->on($tableNames['permissions'])
+                ->onDelete('cascade');
+
+            $table->foreign($pivotRole)
+                ->references('id') // role id
+                ->on($tableNames['roles'])
+                ->onDelete('cascade');
+
+            $table->primary([$pivotPermission, $pivotRole], 'role_has_permissions_permission_id_role_id_primary');
+        });
+
+        app('cache')
+            ->store(config('permission.cache.store') != 'default' ? config('permission.cache.store') : null)
+            ->forget(config('permission.cache.key'));
+    }
+
+
+    // 2025_10_02_204529_create_pages_table
+    public function up()
+    {
+        Schema::create('pages', function (Blueprint $table) {
+            $table->id(); // Auto-increment primary key
+            $table->uuid('uuid')->unique();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('cascade');
+            $table->string('name')->notNullable();
+            $table->string('slug')->nullable();
+            $table->json('structure')->notNullable(); // This will store your form data
+            $table->timestamps(); // created_at and updated_at
+
+            // Indexes
+            $table->index('event_id');
+            $table->index('slug');
+            $table->index('name');
+        });
+    }
+
+    // 2025_10_02_211339_add_status_to_events_table
+    public function up()
+    {
+        Schema::table('events', function (Blueprint $table) {
+            $table->enum('status', ['active', 'inactive'])->default('active');
+        });
+    }
+
+    // 2025_10_18_064945_create_school_images_table
+    public function up(): void
+    {
+        Schema::create('school_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained('schools')->onDelete('cascade');
+
+            $table->string('image_path');   // store file path
+            $table->string('title')->nullable(); // image title/caption
+            $table->timestamps();
+            $table->index('school_id');
+        });
+    }
+
+    // 2025_10_18_065015_add_banner_image_to_schools_table
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('banner_image')->nullable()->after('description');
+        });
+    }
+
+
+    // 2025_10_21_035303_create_features_table
+    public function up()
+    {
+        Schema::create('features', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('category')->default('general');
+            $table->string('icon')->nullable();
+            $table->text('description')->nullable();
+            $table->timestamps();
+
+            $table->index('category');
+        });
+    }
+
+    // 2025_10_21_035310_create_school_feature_table
+    public function up()
+    {
+        Schema::create('school_feature', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->foreignId('feature_id')->constrained()->onDelete('cascade');
+            $table->text('description')->nullable();
+            $table->integer('priority')->default(0);
+            $table->timestamps();
+
+            $table->unique(['school_id', 'feature_id']);
+            $table->index('priority');
+        });
+    }
+
+    // 2025_10_21_035317_create_curriculums_table
+    public function up()
+    {
+        Schema::create('curriculums', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('code')->unique();
+            $table->text('description')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    // 2025_10_21_035325_create_school_curriculum_table
+    public function up()
+    {
+        Schema::create('school_curriculum', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->foreignId('curriculum_id')->constrained('curriculums')->onDelete('cascade'); // Explicitly specify table name
+            $table->timestamps();
+
+            $table->unique(['school_id', 'curriculum_id']);
+        });
+    }
+    // 2025_10_22_064141_add_banner_fields_to_schools_table
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
             $table->string('banner_title')->nullable()->after('banner_image');
             $table->string('banner_tagline')->nullable()->after('banner_title');
         });
+    }
 
-         public function up()
+     // 2025_10_22_094622_create_school_profiles_table
+    public function up()
+    {
+        Schema::create('school_profiles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+
+            // Quick Facts (JSON format for flexibility)
+            $table->json('quick_facts')->nullable();
+
+            // School Logo
+            $table->string('logo')->nullable();
+
+            // Social Media Links (JSON format)
+            $table->json('social_media')->nullable();
+
+            // Analytics
+            $table->integer('visitor_count')->default(0);
+            $table->bigInteger('total_time_spent')->default(0); // in seconds
+            $table->timestamp('last_visited_at')->nullable();
+
+            // Additional profile fields you might need
+            $table->string('established_year')->nullable();
+            $table->integer('student_strength')->nullable();
+            $table->integer('faculty_count')->nullable();
+            $table->string('campus_size')->nullable();
+            $table->string('school_motto')->nullable();
+            $table->text('mission')->nullable();
+            $table->text('vision')->nullable();
+
+            $table->timestamps();
+
+            // Indexes
+            $table->unique('school_id');
+            $table->index('visitor_count');
+        });
+    }
+
+    // 2025_10_22_103514_add_logo_to_schools_table
+    public function up(): void
+    {
+        Schema::table('schools', function (Blueprint $table) {
+            $table->string('logo')->nullable()->after('banner_tagline');
+        });
+    }
+
+    // 2025_10_22_140413_add_user_id_to_reviews_table
+    public function up()
+    {
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            // Make reviewer_name nullable since authenticated users might not need it
+            $table->string('reviewer_name')->nullable()->change();
+        });
+    }
+
+    // 2025_10_23_205941_add_element_columns_to_pages_table
+    public function up()
     {
         Schema::table('pages', function (Blueprint $table) {
             // Add new columns for individual element types
@@ -267,5 +835,46 @@ public function up()
 
             // You can also add a general elements column to store all canvas elements
             $table->json('canvas_elements')->nullable()->after('custom_html');
+        });
+    }
+
+    // 2025_10_24_110548_create_school_image_galleries_table
+    public function up()
+    {
+        Schema::create('school_image_galleries', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            $table->string('image_path');
+            $table->string('image_name');
+            $table->string('image_unique_name')->unique();
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->timestamps();
+
+            $table->index(['school_id', 'status']);
+        });
+    }
+
+    // 2025_10_24_182517_add_profile_columns_to_users_table
+    public function up()
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('phone')->nullable()->after('school_id');
+            $table->text('address')->nullable()->after('phone');
+            $table->text('bio')->nullable()->after('address');
+            $table->string('profile_picture')->nullable()->after('bio');
+        });
+    }
+
+
+    // 2025_10_26_110932_add_fields_to_pages_table
+    public function up(): void
+    {
+        Schema::table('pages', function (Blueprint $table) {
+            $table->text('description')->nullable()->after('slug');
+            $table->string('feature_image')->nullable()->after('description');
+            $table->date('start_date')->nullable()->after('feature_image');
+            $table->date('end_date')->nullable()->after('start_date');
+            $table->enum('status', ['active', 'pending', 'inactive'])->default('pending')->after('end_date');
         });
     }

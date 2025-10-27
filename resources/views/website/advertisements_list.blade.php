@@ -452,7 +452,7 @@
             <p class="empty-description">
                 There are currently no events or announcements scheduled. Please check back later for updates, or contact us for more information about upcoming activities.
             </p>
-            <a href="{{ route('home') }}" class="btn-view">
+            <a href="{{ route('website.home') }}" class="btn-view">
                 <i class="fas fa-home me-2"></i> Return to Home
             </a>
         </div>
