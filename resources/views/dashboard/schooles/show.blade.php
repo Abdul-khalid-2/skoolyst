@@ -6,7 +6,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="h4 mb-0">School Details</h2>
-                    <p class="mb-0 text-muted">View complete information about {{ $school->name }}</p>
+                    <p class="mb-0 text-muted">View complete information about {{ $school->name ?? 'School' }}</p>
                 </div>
                 <div>
                     <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-primary me-2">
@@ -32,7 +32,7 @@
                     <div class="container position-relative" style="z-index: 2; height: 100%;">
                         <div class="d-flex align-items-center h-100">
                             <div class="school-logo-wrapper me-3">
-                                @if($school->profile->logo)
+                                @if(optional($school->profile)->logo)
                                 <img src="{{ asset('website/'. $school->profile->logo) }}" alt="{{ $school->name }} Logo" class="school-logo-img rounded" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid white;">
                                 @else
                                 <div class="school-logo-placeholder rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2);">
@@ -42,11 +42,11 @@
                             </div>
 
                             <div class="school-text-content text-white">
-                                <h1 class="h3 mb-1">{{ $school->banner_title ?? $school->name }}</h1>
+                                <h1 class="h3 mb-1">{{ $school->banner_title ?? $school->name ?? 'School Name' }}</h1>
                                 @if($school->banner_tagline)
                                 <p class="mb-1">{{ $school->banner_tagline ?? "" }}</p>
                                 @endif
-                                <p class="mb-0 opacity-75">{{ $school->name }}</p>
+                                <p class="mb-0 opacity-75">{{ $school->name ?? 'School' }}</p>
                             </div>
                         </div>
                     </div>
@@ -64,11 +64,11 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <strong>School Name:</strong>
-                                    <p>{{ $school->name }}</p>
+                                    <p>{{ $school->name ?? 'Not available' }}</p>
                                 </div>
                                 <div class="col-md-6">
                                     <strong>School Type:</strong>
-                                    <p>{{ $school->school_type }}</p>
+                                    <p>{{ $school->school_type ?? 'Not specified' }}</p>
                                 </div>
                             </div>
 
@@ -86,7 +86,13 @@
                             <div class="row mb-3">
                                 <div class="col-12">
                                     <strong>Address:</strong>
-                                    <p>{{ $school->address }}, {{ $school->city }}</p>
+                                    <p>
+                                        @if($school->address && $school->city)
+                                            {{ $school->address }}, {{ $school->city }}
+                                        @else
+                                            Address not available
+                                        @endif
+                                    </p>
                                 </div>
                             </div>
 
@@ -103,7 +109,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <strong>Created At:</strong>
-                                    <p>{{ $school->created_at->format('M d, Y') }}</p>
+                                    <p>{{ $school->created_at ? $school->created_at->format('M d, Y') : 'N/A' }}</p>
                                 </div>
                             </div>
                         </div>
@@ -131,7 +137,7 @@
                                         <i class="fas fa-calendar text-primary me-3"></i>
                                         <div>
                                             <strong>Established</strong>
-                                            <p class="mb-0">{{ $school->profile->established_year ?? 'N/A' }}</p>
+                                            <p class="mb-0">{{ optional($school->profile)->established_year ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -140,7 +146,7 @@
                                         <i class="fas fa-users text-primary me-3"></i>
                                         <div>
                                             <strong>Student Strength</strong>
-                                            <p class="mb-0">{{ $school->profile->student_strength ?? 'N/A' }}</p>
+                                            <p class="mb-0">{{ optional($school->profile)->student_strength ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -149,7 +155,7 @@
                                         <i class="fas fa-chalkboard-teacher text-primary me-3"></i>
                                         <div>
                                             <strong>Faculty</strong>
-                                            <p class="mb-0">{{ $school->profile->faculty_count ?? 'N/A' }} teachers</p>
+                                            <p class="mb-0">{{ optional($school->profile)->faculty_count ?? 'N/A' }} teachers</p>
                                         </div>
                                     </div>
                                 </div>
@@ -158,7 +164,7 @@
                                         <i class="fas fa-building text-primary me-3"></i>
                                         <div>
                                             <strong>Campus Size</strong>
-                                            <p class="mb-0">{{ $school->profile->campus_size ?? 'N/A' }}</p>
+                                            <p class="mb-0">{{ optional($school->profile)->campus_size ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -169,21 +175,30 @@
                                 $quickFacts = json_decode($school->profile->quick_facts, true);
                                 @endphp
 
-                                @foreach($quickFacts as $key => $value)
-                                @if(!in_array($key, ['established_year', 'student_strength', 'faculty_count', 'campus_size']))
-                                <div class="col-md-6 mb-3">
-                                    <div class="d-flex align-items-center">
-                                        <i class="fas fa-check-circle text-primary me-3"></i>
-                                        <div>
-                                            <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong>
-                                            <p class="mb-0">{{ $value }}</p>
+                                @if(is_array($quickFacts))
+                                    @foreach($quickFacts as $key => $value)
+                                    @if(!in_array($key, ['established_year', 'student_strength', 'faculty_count', 'campus_size']) && !empty($value))
+                                    <div class="col-md-6 mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-check-circle text-primary me-3"></i>
+                                            <div>
+                                                <strong>{{ ucfirst(str_replace('_', ' ', $key)) }}</strong>
+                                                <p class="mb-0">{{ $value }}</p>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                    @endif
+                                    @endforeach
                                 @endif
-                                @endforeach
                                 @endif
                             </div>
+
+                            @if(!$school->profile || (!$school->profile->established_year && !$school->profile->student_strength && !$school->profile->faculty_count && !$school->profile->campus_size))
+                            <div class="text-center py-3">
+                                <i class="fas fa-info-circle fa-2x text-muted mb-2"></i>
+                                <p class="text-muted mb-0">Quick facts information not available.</p>
+                            </div>
+                            @endif
                         </div>
                     </div>
 
@@ -201,7 +216,8 @@
                                         <img src="{{ asset('website/' . $image->image_path) }}"
                                             class="card-img-top"
                                             alt="{{ $image->title ?? 'School Image' }}"
-                                            style="height: 200px; object-fit: cover;">
+                                            style="height: 200px; object-fit: cover;"
+                                            onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIE5vdCBGb3VuZDwvdGV4dD48L3N2Zz4='">
                                         @if($image->title)
                                         <div class="card-footer">
                                             <p class="mb-0">{{ $image->title }}</p>
@@ -232,7 +248,7 @@
                                 <div class="col-md-6 mb-4">
                                     <div class="card h-100">
                                         <div class="card-body">
-                                            <h5 class="card-title">{{ $curriculum->name }}</h5>
+                                            <h5 class="card-title">{{ $curriculum->name ?? 'Unnamed Curriculum' }}</h5>
                                             <p class="card-text">{{ $curriculum->description ?? 'No description available.' }}</p>
                                         </div>
                                     </div>
@@ -261,8 +277,8 @@
                                     <div class="d-flex align-items-start">
                                         <i class="fas fa-{{ $feature->icon ?? 'check' }} text-primary mt-1 me-3"></i>
                                         <div>
-                                            <h6 class="mb-1">{{ $feature->name }}</h6>
-                                            @if($feature->pivot->description)
+                                            <h6 class="mb-1">{{ $feature->name ?? 'Unnamed Feature' }}</h6>
+                                            @if(isset($feature->pivot) && $feature->pivot->description)
                                             <p class="text-muted mb-0 small">{{ $feature->pivot->description }}</p>
                                             @elseif($feature->description)
                                             <p class="text-muted mb-0 small">{{ $feature->description }}</p>
@@ -355,14 +371,14 @@
                                             <div class="d-flex justify-content-between align-items-start mb-3">
                                                 <div>
                                                     <h6 class="mb-1">
-                                                        {{ $review->user_id ? $review->user->name : $review->reviewer_name }}
+                                                        {{ $review->user_id ? ($review->user->name ?? 'Unknown User') : ($review->reviewer_name ?? 'Anonymous') }}
                                                         @if($review->user_id)
                                                         <span class="badge bg-success ms-1">Verified</span>
                                                         @endif
                                                     </h6>
                                                     <div class="text-warning">
                                                         @for($i = 1; $i <= 5; $i++)
-                                                            @if($i <=$review->rating)
+                                                            @if($i <= ($review->rating ?? 0))
                                                             <i class="fas fa-star"></i>
                                                             @else
                                                             <i class="far fa-star"></i>
@@ -370,9 +386,9 @@
                                                             @endfor
                                                     </div>
                                                 </div>
-                                                <small class="text-muted">{{ $review->created_at->format('M d, Y') }}</small>
+                                                <small class="text-muted">{{ $review->created_at ? $review->created_at->format('M d, Y') : 'Date not available' }}</small>
                                             </div>
-                                            <p class="mb-0">{{ $review->review }}</p>
+                                            <p class="mb-0">{{ $review->review ?? 'No review content' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -402,16 +418,16 @@
                                             <div class="d-flex align-items-start">
                                                 <div class="bg-primary text-white text-center rounded me-3" style="width: 60px;">
                                                     <div class="p-2">
-                                                        <div class="fw-bold">{{ \Carbon\Carbon::parse($event->event_date)->format('d') }}</div>
-                                                        <div class="small">{{ \Carbon\Carbon::parse($event->event_date)->format('M') }}</div>
+                                                        <div class="fw-bold">{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('d') : '??' }}</div>
+                                                        <div class="small">{{ $event->event_date ? \Carbon\Carbon::parse($event->event_date)->format('M') : '???' }}</div>
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <h5 class="card-title mb-1">{{ $event->event_name }}</h5>
-                                                    <p class="card-text mb-2">{{ $event->event_description }}</p>
+                                                    <h5 class="card-title mb-1">{{ $event->event_name ?? 'Unnamed Event' }}</h5>
+                                                    <p class="card-text mb-2">{{ $event->event_description ?? 'No description available' }}</p>
                                                     <div class="d-flex align-items-center text-muted small">
                                                         <i class="fas fa-map-marker-alt me-1"></i>
-                                                        {{ $event->event_location }}
+                                                        {{ $event->event_location ?? 'Location not specified' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -445,7 +461,7 @@
                                     <div class="card h-100">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                                <h5 class="card-title mb-0">{{ $branch->name }}</h5>
+                                                <h5 class="card-title mb-0">{{ $branch->name ?? 'Unnamed Branch' }}</h5>
                                                 @if($branch->is_main_branch)
                                                 <span class="badge bg-primary">Main Branch</span>
                                                 @endif
@@ -453,7 +469,13 @@
                                             <div class="mb-3">
                                                 <div class="d-flex align-items-center mb-1">
                                                     <i class="fas fa-map-marker-alt text-muted me-2"></i>
-                                                    <span>{{ $branch->address }}, {{ $branch->city }}</span>
+                                                    <span>
+                                                        @if($branch->address && $branch->city)
+                                                            {{ $branch->address }}, {{ $branch->city }}
+                                                        @else
+                                                            Address not available
+                                                        @endif
+                                                    </span>
                                                 </div>
                                                 @if($branch->contact_number)
                                                 <div class="d-flex align-items-center mb-1">
@@ -561,19 +583,19 @@
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Total Reviews</span>
-                                <span class="badge bg-primary">{{ $school->reviews->count() }}</span>
+                                <span class="badge bg-primary">{{ $school->reviews ? $school->reviews->count() : 0 }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Upcoming Events</span>
-                                <span class="badge bg-success">{{ $school->events->where('event_date', '>=', now())->count() }}</span>
+                                <span class="badge bg-success">{{ $school->events ? $school->events->where('event_date', '>=', now())->count() : 0 }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Total Branches</span>
-                                <span class="badge bg-info">{{ $school->branches->count() }}</span>
+                                <span class="badge bg-info">{{ $school->branches ? $school->branches->count() : 0 }}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Active Since</span>
-                                <span class="badge bg-info">{{ $school->created_at->diffForHumans() }}</span>
+                                <span class="badge bg-info">{{ $school->created_at ? $school->created_at->diffForHumans() : 'N/A' }}</span>
                             </div>
                         </div>
                     </div>
@@ -604,7 +626,13 @@
                             @endif
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-map-marker-alt text-muted me-2"></i>
-                                <span>{{ $school->address }}, {{ $school->city }}</span>
+                                <span>
+                                    @if($school->address && $school->city)
+                                        {{ $school->address }}, {{ $school->city }}
+                                    @else
+                                        Address not available
+                                    @endif
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -650,15 +678,19 @@
                             $socialMedia = json_decode($school->profile->social_media, true);
                             @endphp
 
+                            @if(is_array($socialMedia) && count(array_filter($socialMedia)) > 0)
                             <div class="d-flex flex-wrap gap-2">
                                 @foreach($socialMedia as $platform => $url)
-                                @if($url)
+                                @if($url && is_string($url))
                                 <a href="{{ $url }}" target="_blank" class="btn btn-outline-primary btn-sm" title="{{ ucfirst($platform) }}">
                                     <i class="fab fa-{{ $platform }} me-1"></i> {{ ucfirst($platform) }}
                                 </a>
                                 @endif
                                 @endforeach
                             </div>
+                            @else
+                            <p class="text-muted text-center mb-0">No social media links available.</p>
+                            @endif
                             @else
                             <p class="text-muted text-center mb-0">No social media links available.</p>
                             @endif
@@ -671,28 +703,29 @@
                         <div class="card-body">
                             @if($school->profile && ($school->profile->visitor_count > 0 || $school->profile->total_time_spent > 0))
                             <div class="school-statistics">
-                                <h3>School Statistics</h3>
                                 <div class="stats-grid">
                                     @if($school->profile->visitor_count > 0)
-                                    <div class="stat-item">
-                                        <div class="stat-number">{{ $school->profile->visitor_count }}</div>
-                                        <div class="stat-label">Profile Visitors</div>
+                                    <div class="stat-item text-center mb-3">
+                                        <div class="stat-number text-primary">{{ $school->profile->visitor_count }}</div>
+                                        <div class="stat-label text-muted">Profile Visitors</div>
                                     </div>
                                     @endif
                                     @if($school->profile->total_time_spent > 0)
-                                    <div class="stat-item">
-                                        <div class="stat-number">{{ round($school->profile->total_time_spent / 60) }}</div>
-                                        <div class="stat-label">Minutes Spent by Visitors</div>
+                                    <div class="stat-item text-center mb-3">
+                                        <div class="stat-number text-primary">{{ round($school->profile->total_time_spent / 60) }}</div>
+                                        <div class="stat-label text-muted">Minutes Spent</div>
                                     </div>
                                     @endif
                                     @if($school->profile->last_visited_at)
-                                    <div class="stat-item">
-                                        <div class="stat-number">{{ $school->profile->last_visited_at->format('M d') }}</div>
-                                        <div class="stat-label">Last Visited</div>
+                                    <div class="stat-item text-center">
+                                        <div class="stat-number text-primary">{{ $school->profile->last_visited_at->format('M d') }}</div>
+                                        <div class="stat-label text-muted">Last Visited</div>
                                     </div>
                                     @endif
                                 </div>
                             </div>
+                            @else
+                            <p class="text-muted text-center mb-0">No visitor data available.</p>
                             @endif
                         </div>
                     </div>
