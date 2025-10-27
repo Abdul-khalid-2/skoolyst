@@ -1,7 +1,7 @@
 <x-app-layout>
     <main class="main-content">
         <section id="schools" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
                 <div>
                     <h2 class="mb-0">Schools</h2>
                     <p class="text-muted">Manage registered schools</p>
@@ -14,9 +14,9 @@
             </div>
 
             <div class="card">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
+                <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
+                    <table class="table table-hover align-middle mb-0 text-nowrap">
+                        <thead class="table-light">
                             <tr>
                                 <th>#</th>
                                 <th>Name</th>
@@ -32,9 +32,9 @@
                             <tr>
                                 <td>{{ ($schools->currentPage() - 1) * $schools->perPage() + $loop->iteration }}</td>
                                 <td>{{ $school->name }}</td>
-                                <td>{{ $school->email ?? '-' }}</td>
+                                <td class="text-truncate" style="max-width:150px;">{{ $school->email ?? '-' }}</td>
                                 <td>{{ $school->contact_number ?? '-' }}</td>
-                                <td>{{ $school->address ?? '-' }}</td>
+                                <td class="text-truncate" style="max-width:180px;">{{ $school->address ?? '-' }}</td>
                                 <td>
                                     @if($school->status === 'active')
                                     <span class="badge bg-success">Active</span>
