@@ -401,7 +401,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="regular_fees" class="form-label">Regular Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="regular_fees" name="regular_fees"
                                             value="{{ old('regular_fees', $school->regular_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>
@@ -409,7 +409,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="discounted_fees" class="form-label">Discounted Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
                                             value="{{ old('discounted_fees', $school->discounted_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>
@@ -417,7 +417,7 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="admission_fees" class="form-label">Admission Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="admission_fees" name="admission_fees"
                                             value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
                                     </div>

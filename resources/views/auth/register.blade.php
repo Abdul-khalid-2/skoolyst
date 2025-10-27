@@ -300,7 +300,7 @@
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="regular_fees" class="form-label">Regular Fees (₹)</label>
+                                        <label for="regular_fees" class="form-label">Regular Fees</label>
                                         <input id="regular_fees" class="form-control" type="number" name="regular_fees" value="{{ old('regular_fees') }}" step="0.01" placeholder="0.00">
                                         @if ($errors->has('regular_fees'))
                                         <div class="input-error">
@@ -311,7 +311,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="discounted_fees" class="form-label">Discounted Fees (₹)</label>
+                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
                                         <input id="discounted_fees" class="form-control" type="number" name="discounted_fees" value="{{ old('discounted_fees') }}" step="0.01" placeholder="0.00">
                                         @if ($errors->has('discounted_fees'))
                                         <div class="input-error">
@@ -322,7 +322,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="admission_fees" class="form-label">Admission Fees (₹)</label>
+                                        <label for="admission_fees" class="form-label">Admission Fees</label>
                                         <input id="admission_fees" class="form-control" type="number" name="admission_fees" value="{{ old('admission_fees') }}" step="0.01" placeholder="0.00">
                                         @if ($errors->has('admission_fees'))
                                         <div class="input-error">
