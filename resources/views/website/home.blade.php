@@ -338,9 +338,8 @@
         
         <div class="video-player-container" id="videoPlayerContainer">
             <div class="video-wrapper">
-                <video class="video-element" id="mainVideo" poster="{{ asset('assets/assets/video-poster.jpg') }}">
+                <video class="video-element" id="mainVideo" poster="{{ asset('assets/videos/video-poster.jpg') }}">
                     <source src="{{ asset('assets/videos/skoolyst-promo.mp4') }}" type="video/mp4">
-                    <source src="{{ asset('assets/videos/skoolyst-promo.webm') }}" type="video/webm">
                     Your browser does not support the video tag.
                 </video>
                 
