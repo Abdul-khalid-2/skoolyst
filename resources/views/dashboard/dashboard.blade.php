@@ -264,12 +264,12 @@
                                         </a>
                                     </div>
                                     <div class="col-md-3 col-6 mb-3">
-                                        <a href="{{ route('users.index') }}" class="btn btn-outline-success w-100">
+                                        <a href="" class="btn btn-outline-success w-100">
                                             <i class="fas fa-users me-2"></i>Manage Users
                                         </a>
                                     </div>
                                     <div class="col-md-3 col-6 mb-3">
-                                        <a href="{{ route('reviews.index') }}" class="btn btn-outline-warning w-100">
+                                        <a href="" class="btn btn-outline-warning w-100">
                                             <i class="fas fa-star me-2"></i>View Reviews
                                         </a>
                                     </div>
