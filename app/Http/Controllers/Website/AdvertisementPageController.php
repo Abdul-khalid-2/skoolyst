@@ -7,6 +7,7 @@ use App\Models\Event;
 use App\Models\Page;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class AdvertisementPageController extends Controller
 {
@@ -25,12 +26,16 @@ class AdvertisementPageController extends Controller
         $query = Page::with(['school', 'event'])
             ->where('event_id', $id);
 
-        if ($user->hasRole('super-admin')) {
-            // No additional filters for super-admin
-        } elseif ($user->hasRole('school-admin')) {
-            $query->where('school_id', $user->school_id);
-        } else {
-            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            if ($user->hasRole('super-admin')) {
+                // No additional filters for super-admin
+            } elseif ($user->hasRole('school-admin')) {
+                $query->where('school_id', $user->school_id);
+            } else {
+                return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+            }
         }
         $pages = $query->latest()->paginate(10);
         return view('website.advertisements_list', compact('pages', 'id', 'school_uuid', 'event'));
