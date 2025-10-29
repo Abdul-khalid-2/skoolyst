@@ -8,7 +8,7 @@
     <title>SKOOLYST Pakistan - Find Best Schools Near You | Compare, Apply & Connect</title>
     <meta name="description" content="SKOOLYST Pakistan helps parents discover, compare, and connect with the best schools across Pakistan. Find top CBSE, Cambridge, O/A Level, and Montessori schools by city, fees, and reviews.">
     <meta name="keywords" content="best schools in Pakistan, schools near me, Lahore schools, Karachi schools, Islamabad schools, Montessori schools, O Level schools, A Level schools, school admission Pakistan, school directory Pakistan, find schools online">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
+    
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SKOOLYST Pakistan">
