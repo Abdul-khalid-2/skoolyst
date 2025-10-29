@@ -118,13 +118,19 @@ Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->na
 Route::post('/contact-inquiry', [ContactInquiryController::class, 'store'])->name('contact.inquiry.store');
 
 // Admin routes 
-// Route::middleware(['auth'])->prefix('admin')->group(function () {
-//     Route::get('/inquiries', [ContactInquiryController::class, 'index'])->name('admin.inquiries.index');
-//     Route::get('/inquiries/{inquiry}', [ContactInquiryController::class, 'show'])->name('admin.inquiries.show');
-//     Route::patch('/inquiries/{inquiry}/status', [ContactInquiryController::class, 'updateStatus'])->name('admin.inquiries.updateStatus');
-//     Route::post('/inquiries/{inquiry}/assign', [ContactInquiryController::class, 'assign'])->name('admin.inquiries.assign');
-//     Route::get('/inquiries/stats', [ContactInquiryController::class, 'getStats'])->name('admin.inquiries.stats');
-// });
+Route::middleware(['auth'])->prefix('school-admin')->group(function () {
+    Route::get('/inquiries', [ContactInquiryController::class, 'index'])->name('admin.inquiries.index');
+    Route::get('/inquiries/{inquiry}', [ContactInquiryController::class, 'show'])->name('admin.inquiries.show');
+    Route::patch('/inquiries/{inquiry}/status', [ContactInquiryController::class, 'updateStatus'])->name('admin.inquiries.updateStatus');
+    Route::post('/inquiries/{inquiry}/assign', [ContactInquiryController::class, 'assign'])->name('admin.inquiries.assign');
+    Route::get('/inquiries/stats', [ContactInquiryController::class, 'getStats'])->name('admin.inquiries.stats');
+});
 
+
+// Notification routes
+Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
+    Route::get('/notification-count', [ContactInquiryController::class, 'getNotificationCount'])->name('admin.inquiries.notification-count');
+    Route::post('/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
+});
 
 require __DIR__ . '/auth.php';

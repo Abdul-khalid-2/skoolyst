@@ -57,6 +57,82 @@
 
 
     <script src="{{ asset('assets/dashboard/js/app.js') }}"></script>
+
+    <script>
+        // public/js/notifications.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const notificationBadge = document.getElementById('notificationBadge');
+            const contactNotificationsDropdown = document.getElementById('contactNotificationsDropdown');
+            
+            // Function to update notification count
+            function updateNotificationCount() {
+                fetch('/admin/inquiries/notification-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.count > 0) {
+                            if (notificationBadge) {
+                                notificationBadge.textContent = data.count;
+                            } else {
+                                // Create badge if it doesn't exist
+                                const badge = document.createElement('span');
+                                badge.id = 'notificationBadge';
+                                badge.className = 'position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger';
+                                badge.style.fontSize = '0.6rem';
+                                badge.textContent = data.count;
+                                
+                                const bellIcon = document.querySelector('#contactNotifications i');
+                                bellIcon.parentNode.appendChild(badge);
+                            }
+                        } else {
+                            // Remove badge if no notifications
+                            if (notificationBadge) {
+                                notificationBadge.remove();
+                            }
+                        }
+                    })
+                    .catch(error => console.error('Error updating notifications:', error));
+            }
+            
+            // Update notification count every 30 seconds
+            setInterval(updateNotificationCount, 30000);
+            
+            // Update when dropdown is shown
+            const contactNotifications = document.getElementById('contactNotifications');
+            if (contactNotifications) {
+                contactNotifications.addEventListener('show.bs.dropdown', function() {
+                    updateNotificationCount();
+                });
+            }
+            
+            // Mark as read when clicking on notification
+            if (contactNotificationsDropdown) {
+                contactNotificationsDropdown.addEventListener('click', function(e) {
+                    if (e.target.closest('.notification-item')) {
+                        const inquiryId = e.target.closest('.notification-item').dataset.id;
+                        if (inquiryId) {
+                            markAsRead(inquiryId);
+                        }
+                    }
+                });
+            }
+            
+            function markAsRead(inquiryId) {
+                fetch(`/admin/inquiries/${inquiryId}/mark-read`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateNotificationCount();
+                    }
+                });
+            }
+        });
+    </script>
     @stack('js')
 </body>
 

@@ -56,17 +56,83 @@
 
         <div class="d-flex align-items-center">
             <div class="dropdown me-3">
-                <button class="btn btn-link position-relative" data-bs-toggle="dropdown">
+                <button class="btn btn-link position-relative" data-bs-toggle="dropdown" id="contactNotifications">
                     <i class="fas fa-bell text-gray-600"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                        style="font-size: 0.6rem;">
-                        3
-                    </span>
+                    @php
+                        $newInquiriesCount = \App\Models\ContactInquiry::forSchool(auth()->user()->school_id)
+                            ->where('status', 'new')
+                            ->count();
+                    @endphp
+                    @if($newInquiriesCount > 0)
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                            style="font-size: 0.6rem;" id="notificationBadge">
+                            {{ $newInquiriesCount }}
+                        </span>
+                    @endif
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">New order received</a></li>
-                    <li><a class="dropdown-item" href="#">Product out of stock</a></li>
-                    <li><a class="dropdown-item" href="#">Customer message</a></li>
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;" id="contactNotificationsDropdown">
+                    <li class="dropdown-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>Contact Inquiries</strong>
+                            @if($newInquiriesCount > 0)
+                                <span class="badge bg-primary">{{ $newInquiriesCount }} new</span>
+                            @endif
+                        </div>
+                    </li>
+                    <li>
+                        <div class="dropdown-item-text">
+                            @php
+                                $recentInquiries = \App\Models\ContactInquiry::with(['user', 'branch'])
+                                    ->forSchool(auth()->user()->school_id)
+                                    ->latest()
+                                    ->limit(5)
+                                    ->get();
+                            @endphp
+                            
+                            @if($recentInquiries->count() > 0)
+                                <div class="notification-list">
+                                    @foreach($recentInquiries as $inquiry)
+                                        <div class="notification-item p-2 border-bottom">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div class="flex-grow-1">
+                                                    <div class="fw-bold text-truncate" style="max-width: 200px;">
+                                                        {{ $inquiry->name }}
+                                                    </div>
+                                                    <small class="text-muted">
+                                                        {{ $inquiry->full_subject }}
+                                                    </small>
+                                                    <div class="text-truncate small" style="max-width: 250px;">
+                                                        {{ Str::limit($inquiry->message, 50) }}
+                                                    </div>
+                                                </div>
+                                                <div class="text-end">
+                                                    <span class="badge bg-{{ $inquiry->status === 'new' ? 'danger' : 'secondary' }} badge-sm">
+                                                        {{ ucfirst($inquiry->status) }}
+                                                    </span>
+                                                    <div class="text-muted small">
+                                                        {{ $inquiry->created_at->diffForHumans() }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @else
+                                <div class="text-center py-3 text-muted">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <p class="mb-0">No contact inquiries yet</p>
+                                </div>
+                            @endif
+                        </div>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-center" href="{{ route('admin.inquiries.index') }}">
+                            <i class="fas fa-eye me-1"></i> View All Inquiries
+                        </a>
+                    </li>
                 </ul>
             </div>
 

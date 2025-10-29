@@ -49,8 +49,6 @@ class ContactInquiryController extends Controller
                 'inquiry_id' => $inquiry->uuid,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Contact inquiry submission failed: ' . $e->getMessage());
-
             return response()->json([
                 'success' => false,
                 'message' => 'Sorry, there was an error submitting your inquiry. Please try again.',
@@ -95,24 +93,32 @@ class ContactInquiryController extends Controller
      */
     public function index(Request $request)
     {
-        // Remove the forSchool scope call since it doesn't exist yet
-        $query = ContactInquiry::with(['school', 'branch', 'assignedAdmin'])
-            ->where('school_id', auth()->user()->school_id) // Direct where clause
+        $schoolId = auth()->user()->school_id;
+
+        $query = ContactInquiry::with(['school', 'branch', 'assignedAdmin', 'user'])
+            ->forSchool($schoolId)
             ->latest();
 
         // Filter by status
-        if ($request->has('status') && in_array($request->status, ['new', 'in_progress', 'resolved', 'closed'])) {
+        if ($request->has('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
-        }
-
-        // Filter by subject
-        if ($request->has('subject') && $request->subject) {
-            $query->where('subject', $request->subject);
         }
 
         $inquiries = $query->paginate(20);
 
-        return view('admin.inquiries.index', compact('inquiries'));
+        // Get statistics
+        $totalInquiries = ContactInquiry::forSchool($schoolId)->count();
+        $newInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'new')->count();
+        $inProgressInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'in_progress')->count();
+        $resolvedInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'resolved')->count();
+
+        return view('dashboard.inquiries_contacts.index', compact(
+            'inquiries',
+            'totalInquiries',
+            'newInquiries',
+            'inProgressInquiries',
+            'resolvedInquiries'
+        ));
     }
 
     /**
@@ -127,7 +133,7 @@ class ContactInquiryController extends Controller
 
         $inquiry->load(['school', 'branch', 'assignedAdmin']);
 
-        return view('admin.inquiries.show', compact('inquiry'));
+        return view('dashboard.inquiries_contacts.show', compact('inquiry'));
     }
 
     /**
@@ -147,10 +153,7 @@ class ContactInquiryController extends Controller
 
         $inquiry->update($validated);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Inquiry status updated successfully.',
-        ]);
+        return redirect()->back()->with('success', 'Inquiry status updated successfully.');
     }
 
     /**
@@ -199,5 +202,40 @@ class ContactInquiryController extends Controller
             'new' => $newCount,
             'stats' => $stats,
         ]);
+    }
+
+
+
+    public function getNotificationCount()
+    {
+        $schoolId = auth()->user()->school_id;
+
+        $newCount = ContactInquiry::forSchool($schoolId)
+            ->where('status', 'new')
+            ->count();
+
+        return response()->json([
+            'count' => $newCount,
+        ]);
+    }
+
+    /**
+     * Mark inquiry as read
+     */
+    public function markAsRead(ContactInquiry $inquiry)
+    {
+        // Authorization check
+        if ($inquiry->school_id !== auth()->user()->school_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized action.'
+            ], 403);
+        }
+
+        $inquiry->update([
+            'status' => 'in_progress'
+        ]);
+
+        return redirect()->back()->with('success', 'Inquiry marked as read successfully.');
     }
 }
