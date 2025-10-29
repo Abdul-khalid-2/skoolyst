@@ -881,6 +881,32 @@
                         </div>
                     </div>
 
+
+
+                    <!-- Add the modal for login required -->
+                    <div id="contactInquiryForm" class="modal" style="display: none;">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h3>Submit Query</h3>
+                                <span class="close">&times;</span>
+                            </div>
+                            <div class="modal-body">                               
+                                <div class="login-required">
+                                    <div class="login-icon">
+                                        <i class="fas fa-user-lock"></i>
+                                    </div>
+                                    <h4>Login Required</h4>
+                                    <p>Please login to submit your query and help other parents make informed decisions.</p>
+                                    <div class="auth-buttons">
+                                        <a href="{{ route('login') }}" class="btn-login">Login</a>
+                                        <a href="{{ route('register') }}" class="btn-register">Register</a>
+                                    </div>
+                                </div>                                    
+                            </div>
+                        </div>
+                    </div>
+
+
                     <!-- Events Section -->
                     <section id="events" class="content-section">
                         <h2 class="section-title">Upcoming Events</h2>
@@ -956,7 +982,7 @@
                         <div class="section-content">
                             <!-- Contact Form -->
                             <div class="contact-form-section">
-                                <form id="contactForm" class="contact-form" action="" method="POST">
+                                <form id="contactForm" class="contact-form" action="{{ route('contact.inquiry.store') }}" method="POST">
                                     @csrf
                                     <input type="hidden" name="school_id" value="{{ $school->id }}">
                                     
@@ -1154,6 +1180,7 @@
 
 @push('scripts')
 <script src="{{ asset('assets/js/school-profile.js') }}"></script>
+<script src="{{ asset('assets/js/contact-form.js') }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const navLinks = document.getElementById('schoolNavLinks');

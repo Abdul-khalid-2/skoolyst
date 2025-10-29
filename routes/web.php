@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
@@ -112,6 +113,18 @@ Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->n
 Route::get('/page-view/{slug}/{page_uuid}', [AdvertisementPageController::class, 'show'])->name('advertisement_pages.show');
 
 Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+
+
+Route::post('/contact-inquiry', [ContactInquiryController::class, 'store'])->name('contact.inquiry.store');
+
+// Admin routes 
+// Route::middleware(['auth'])->prefix('admin')->group(function () {
+//     Route::get('/inquiries', [ContactInquiryController::class, 'index'])->name('admin.inquiries.index');
+//     Route::get('/inquiries/{inquiry}', [ContactInquiryController::class, 'show'])->name('admin.inquiries.show');
+//     Route::patch('/inquiries/{inquiry}/status', [ContactInquiryController::class, 'updateStatus'])->name('admin.inquiries.updateStatus');
+//     Route::post('/inquiries/{inquiry}/assign', [ContactInquiryController::class, 'assign'])->name('admin.inquiries.assign');
+//     Route::get('/inquiries/stats', [ContactInquiryController::class, 'getStats'])->name('admin.inquiries.stats');
+// });
 
 
 require __DIR__ . '/auth.php';
