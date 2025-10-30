@@ -914,24 +914,26 @@
                             @if($school->events && $school->events->count() > 0)
                                 <div class="events-list">
                                     @foreach($school->events as $event)
-                                        <div class="event-item">
-                                            <div class="event-date">
-                                                <span class="event-day">{{ \Carbon\Carbon::parse($event->event_date)->format('d') }}</span>
-                                                <span class="event-month">{{ \Carbon\Carbon::parse($event->event_date)->format('M') }}</span>
-                                            </div>
-                                            <div class="event-details">
-                                                <a href="{{ route('advertisement_pages.index', $event->id) }}">
-                                                    <h4 class="event-title">{{ $event->event_name }}</h4>
-                                                </a>
-                                                <p class="event-description">{{ $event->event_description }}</p>
-                                                <div class="event-meta">
-                                                    <span class="event-location">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                        {{ $event->event_location }}
-                                                    </span>
+                                        @if($event->status == 'active')
+                                            <div class="event-item">
+                                                <div class="event-date">
+                                                    <span class="event-day">{{ \Carbon\Carbon::parse($event->event_date)->format('d') }}</span>
+                                                    <span class="event-month">{{ \Carbon\Carbon::parse($event->event_date)->format('M') }}</span>
+                                                </div>
+                                                <div class="event-details">
+                                                    <a href="{{ route('advertisement_pages.index', $event->id) }}">
+                                                        <h4 class="event-title">{{ $event->event_name }}</h4>
+                                                    </a>
+                                                    <p class="event-description">{{ $event->event_description }}</p>
+                                                    <div class="event-meta">
+                                                        <span class="event-location">
+                                                            <i class="fas fa-map-marker-alt"></i>
+                                                            {{ $event->event_location }}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        @endif
                                     @endforeach
                                 </div>
                             @else
