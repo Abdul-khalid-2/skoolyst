@@ -10,6 +10,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CKEditor 4 -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <style>
         .builder-container {
             background: #f8f9fa;
@@ -189,6 +191,20 @@
         .image-card .btn {
             padding: 0.25rem 0.5rem;
             font-size: 0.75rem;
+        }
+
+        /* CKEditor Styles */
+        .ckeditor-container {
+            margin-top: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+        }
+        
+        .ckeditor-column {
+            margin-bottom: 15px;
+        }
+        .cke_notification_warning{
+            display: none;
         }
     </style>
 </head>
@@ -469,6 +485,7 @@
             constructor() {
                 this.elements = [];
                 this.nextId = 1;
+                this.ckEditors = new Map();
                 this.init();
             }
 
@@ -568,12 +585,12 @@
             getDefaultContent(type) {
                 const defaults = {
                     heading: { text: 'New Heading', level: 'h2' },
-                    text: { content: 'Enter your text here...' },
+                    text: { content: '<p>Enter your text here...</p>' },
                     image: { src: '', alt: 'Image', caption: '' },
                     banner: { src: '', title: 'Banner Title', subtitle: 'Banner subtitle' },
                     columns: { 
-                        left: 'Left column content...', 
-                        right: 'Right column content...' 
+                        left: '<p>Left column content...</p>', 
+                        right: '<p>Right column content...</p>' 
                     },
                     'custom_html': {
                         html: '<div class="alert custom-alert-info">\n  <h4>Custom HTML Content</h4>\n  <p>Edit this HTML to create custom content with your own styles and structure.</p>\n</div>',
@@ -587,6 +604,9 @@
                 const html = this.getElementHTML(element);
                 $('#canvas').append(html);
                 this.attachElementEvents(element.id);
+                
+                // Initialize CKEditor for text and columns elements
+                this.initCKEditor(element.id, element.type);
             }
 
             renderAllElements() {
@@ -662,8 +682,9 @@
                                     </button>
                                 </div>
                             </div>
-                            <textarea class="form-control text-content" rows="4" 
-                                    placeholder="Enter your text here">${el.content.content || ''}</textarea>
+                            <div class="ckeditor-container">
+                                <textarea class="form-control ckeditor-text" id="ckeditor-text-${el.id}" rows="6">${el.content.content || ''}</textarea>
+                            </div>
                         </div>
                     `,
                     
@@ -745,13 +766,17 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <textarea class="form-control column-left" rows="3" 
-                                            placeholder="Left column content">${el.content.left || ''}</textarea>
+                                <div class="col-md-6 ckeditor-column">
+                                    <label class="form-label">Left Column</label>
+                                    <div class="ckeditor-container">
+                                        <textarea class="form-control ckeditor-column-left" id="ckeditor-left-${el.id}" rows="6">${el.content.left || ''}</textarea>
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <textarea class="form-control column-right" rows="3" 
-                                            placeholder="Right column content">${el.content.right || ''}</textarea>
+                                <div class="col-md-6 ckeditor-column">
+                                    <label class="form-label">Right Column</label>
+                                    <div class="ckeditor-container">
+                                        <textarea class="form-control ckeditor-column-right" id="ckeditor-right-${el.id}" rows="6">${el.content.right || ''}</textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -817,6 +842,9 @@
                     this.elements.forEach((el, idx) => {
                         el.position = idx;
                     });
+                    
+                    // Remove CKEditor instances
+                    this.destroyCKEditor(elementId);
                     
                     $(`[data-id="${elementId}"]`).remove();
                     
@@ -886,6 +914,12 @@
 
             attachElementEvents(elementId) {
                 $(`[data-id="${elementId}"] input, [data-id="${elementId}"] textarea, [data-id="${elementId}"] select`).on('change input', (e) => {
+                    // Skip CKEditor textareas as they are handled separately
+                    if ($(e.target).hasClass('ckeditor-text') || 
+                        $(e.target).hasClass('ckeditor-column-left') || 
+                        $(e.target).hasClass('ckeditor-column-right')) {
+                        return;
+                    }
                     this.updateElementContent(elementId, e.target);
                 });
 
@@ -1012,6 +1046,14 @@
             clearCanvas() {
                 if (!confirm('Clear all elements? This cannot be undone.')) return;
                 
+                // Destroy all CKEditor instances
+                this.ckEditors.forEach((editor, key) => {
+                    if (editor && editor.destroy) {
+                        editor.destroy();
+                    }
+                });
+                this.ckEditors.clear();
+                
                 this.elements = [];
                 $('#canvas').empty();
                 this.showEmptyCanvas();
@@ -1053,7 +1095,7 @@
             renderPreviewElement(element) {
                 const templates = {
                     heading: (el) => `<${el.content.level || 'h2'} class="mb-3">${el.content.text || ''}</${el.content.level || 'h2'}>`,
-                    text: (el) => `<div class="mb-3">${(el.content.content || '').replace(/\n/g, '<br>')}</div>`,
+                    text: (el) => `<div class="mb-3">${el.content.content || ''}</div>`,
                     image: (el) => `
                         <div class="mb-4">
                             ${el.content.src ? `<img src="${el.content.src}" class="img-fluid rounded mb-2" style="max-height: 300px;">` : '<div class="bg-light text-center py-5 rounded text-muted">No image</div>'}
@@ -1071,12 +1113,12 @@
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="bg-light p-3 rounded">
-                                    ${(el.content.left || '').replace(/\n/g, '<br>')}
+                                    ${el.content.left || ''}
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="bg-light p-3 rounded">
-                                    ${(el.content.right || '').replace(/\n/g, '<br>')}
+                                    ${el.content.right || ''}
                                 </div>
                             </div>
                         </div>
@@ -1146,6 +1188,113 @@
                     `);
                 } finally {
                     $updateBtn.prop('disabled', false).html('<i class="fas fa-save me-1"></i>Update Page');
+                }
+            }
+
+            // CKEditor Methods - Using CKEditor 4
+            initCKEditor(elementId, elementType) {
+                try {
+                    if (elementType === 'text') {
+                        // Initialize CKEditor for text content
+                        const editor = CKEDITOR.replace(`ckeditor-text-${elementId}`, {
+                            toolbar: [
+                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
+                                { name: 'links', items: ['Link', 'Unlink'] },
+                                { name: 'insert', items: ['Image', 'Table'] },
+                                { name: 'tools', items: ['Maximize'] },
+                                { name: 'document', items: ['Source'] }
+                            ],
+                            height: 200
+                        });
+                        
+                        // Store editor instance
+                        this.ckEditors.set(elementId, editor);
+                        
+                        // Update element content when editor changes
+                        editor.on('change', () => {
+                            const element = this.elements.find(el => el.id === elementId);
+                            if (element) {
+                                element.content.content = editor.getData();
+                            }
+                        });
+                        
+                    } else if (elementType === 'columns') {
+                        // Initialize CKEditor for left column
+                        const leftEditor = CKEDITOR.replace(`ckeditor-left-${elementId}`, {
+                            toolbar: [
+                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
+                                { name: 'links', items: ['Link', 'Unlink'] },
+                                { name: 'insert', items: ['Image', 'Table'] },
+                                { name: 'tools', items: ['Maximize'] },
+                                { name: 'document', items: ['Source'] }
+                            ],
+                            height: 200
+                        });
+                        
+                        // Initialize CKEditor for right column
+                        const rightEditor = CKEDITOR.replace(`ckeditor-right-${elementId}`, {
+                            toolbar: [
+                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
+                                { name: 'links', items: ['Link', 'Unlink'] },
+                                { name: 'insert', items: ['Image', 'Table'] },
+                                { name: 'tools', items: ['Maximize'] },
+                                { name: 'document', items: ['Source'] }
+                            ],
+                            height: 200
+                        });
+                        
+                        // Store editor instances
+                        this.ckEditors.set(`${elementId}-left`, leftEditor);
+                        this.ckEditors.set(`${elementId}-right`, rightEditor);
+                        
+                        // Update element content when editors change
+                        leftEditor.on('change', () => {
+                            const element = this.elements.find(el => el.id === elementId);
+                            if (element) {
+                                element.content.left = leftEditor.getData();
+                            }
+                        });
+                        
+                        rightEditor.on('change', () => {
+                            const element = this.elements.find(el => el.id === elementId);
+                            if (element) {
+                                element.content.right = rightEditor.getData();
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error initializing CKEditor:', error);
+                }
+            }
+
+            destroyCKEditor(elementId) {
+                // Destroy text editor
+                if (this.ckEditors.has(elementId)) {
+                    const editor = this.ckEditors.get(elementId);
+                    if (editor && editor.destroy) {
+                        editor.destroy();
+                    }
+                    this.ckEditors.delete(elementId);
+                }
+                
+                // Destroy column editors
+                if (this.ckEditors.has(`${elementId}-left`)) {
+                    const editor = this.ckEditors.get(`${elementId}-left`);
+                    if (editor && editor.destroy) {
+                        editor.destroy();
+                    }
+                    this.ckEditors.delete(`${elementId}-left`);
+                }
+                
+                if (this.ckEditors.has(`${elementId}-right`)) {
+                    const editor = this.ckEditors.get(`${elementId}-right`);
+                    if (editor && editor.destroy) {
+                        editor.destroy();
+                    }
+                    this.ckEditors.delete(`${elementId}-right`);
                 }
             }
         }

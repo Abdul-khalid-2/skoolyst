@@ -24,7 +24,6 @@
         }
 
         body {
-            /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
@@ -76,9 +75,6 @@
         }
 
         .canvas-container {
-            /* background: white; */
-            /* border-radius: 25px; */
-            /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); */
             padding: 3rem;
             position: relative;
             min-height: 400px;
@@ -89,7 +85,6 @@
             margin-bottom: 2rem;
             padding: 2rem;
             border-radius: 15px;
-            /* box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); */
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
@@ -102,7 +97,6 @@
 
         /* Element Type Specific Styles */
         .element-heading {
-            /* background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%); */
             border-left: 6px solid var(--primary);
         }
 
@@ -123,9 +117,7 @@
         }
 
         .element-image {
-            /* background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%); */
             text-align: center;
-            /* border: 2px solid #e8eeff; */
             padding: 2rem !important;
         }
 
@@ -222,6 +214,86 @@
             padding-left: 2rem;
         }
 
+        /* CKEditor Content Styles */
+        .ck-content {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .ck-content h1, 
+        .ck-content h2, 
+        .ck-content h3, 
+        .ck-content h4, 
+        .ck-content h5, 
+        .ck-content h6 {
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .ck-content h1 { font-size: 2.5rem; }
+        .ck-content h2 { font-size: 2rem; }
+        .ck-content h3 { font-size: 1.75rem; }
+        .ck-content h4 { font-size: 1.5rem; }
+        .ck-content h5 { font-size: 1.25rem; }
+        .ck-content h6 { font-size: 1rem; }
+
+        .ck-content p {
+            margin-bottom: 1em;
+        }
+
+        .ck-content ul, 
+        .ck-content ol {
+            margin-bottom: 1em;
+            padding-left: 2em;
+        }
+
+        .ck-content ul { list-style-type: disc; }
+        .ck-content ol { list-style-type: decimal; }
+
+        .ck-content blockquote {
+            border-left: 4px solid #4361ee;
+            padding-left: 1em;
+            margin: 1em 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        .ck-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+
+        .ck-content table th,
+        .ck-content table td {
+            border: 1px solid #ddd;
+            padding: 0.75em;
+            text-align: left;
+        }
+
+        .ck-content table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        .ck-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .ck-content a {
+            color: #4361ee;
+            text-decoration: none;
+        }
+
+        .ck-content a:hover {
+            text-decoration: underline;
+        }
+
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -269,19 +341,11 @@
                 flex-direction: column;
                 gap: 1rem;
             }
-        }
 
-        /* Add this to your existing styles */
-        /* .element-custom-html {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
-            border: 2px solid #fed7d7;
-            padding: 2rem !important;
+            .ck-content h1 { font-size: 2rem; }
+            .ck-content h2 { font-size: 1.75rem; }
+            .ck-content h3 { font-size: 1.5rem; }
         }
-
-        .element-custom-html .custom-html-content {
-            width: 100%;
-            min-height: 100px;
-        } */
     </style>
 </head>
 
@@ -343,8 +407,8 @@
                                         <i class="fas fa-paragraph"></i>
                                         Text Content
                                     </div>
-                                    <div class="rich-text-content">
-                                        {!! nl2br(e($elementContent['content'] ?? 'Text content goes here...')) !!}
+                                    <div class="ck-content rich-text-content">
+                                        {!! $elementContent['content'] ?? '<p>Text content goes here...</p>' !!}
                                     </div>
                                 </div>
                                 @break
@@ -411,8 +475,8 @@
                                     <div class="two-col">
                                         <div class="col-left">
                                             @if(isset($elementContent['left']))
-                                                <div class="rich-text-content">
-                                                    {!! nl2br(e($elementContent['left'])) !!}
+                                                <div class="ck-content rich-text-content">
+                                                    {!! $elementContent['left'] !!}
                                                 </div>
                                             @else
                                                 <p class="text-muted">Left column content</p>
@@ -420,8 +484,8 @@
                                         </div>
                                         <div class="col-right">
                                             @if(isset($elementContent['right']))
-                                                <div class="rich-text-content">
-                                                    {!! nl2br(e($elementContent['right'])) !!}
+                                                <div class="ck-content rich-text-content">
+                                                    {!! $elementContent['right'] !!}
                                                 </div>
                                             @else
                                                 <p class="text-muted">Right column content</p>
@@ -431,24 +495,22 @@
                                 </div>
                                 @break
 
-                            
-                            @case('custom_html') {{-- Add this case --}}
-                            @case('custom-html') {{-- And this for consistency --}}
+                            @case('custom_html')
                                 <div class="page-element element-custom-html">
                                     <div class="element-badge">
                                         <i class="fas fa-code"></i>
                                         Custom HTML
                                     </div>
-                                    <div class="custom-html-content" style="all: unset;">
+                                    <div class="custom-html-content">
                                         <style>
-                                            
                                             {!! $elementContent['css'] ?? '' !!}
                                         </style>
                                         {!! $elementContent['html'] ?? '<p>No custom HTML content</p>' !!}
                                     </div>
                                 </div>
                                 @break
-                                @default
+
+                            @default
                                 <div class="page-element">
                                     <div class="element-badge">
                                         <i class="fas fa-question"></i>
@@ -499,6 +561,19 @@
                     element.style.opacity = '1';
                     element.style.transform = 'translateY(0)';
                 }, index * 100);
+            });
+
+            // Make images in CKEditor content responsive
+            document.querySelectorAll('.ck-content img').forEach(img => {
+                img.classList.add('img-fluid');
+            });
+
+            // Add table responsive wrapper
+            document.querySelectorAll('.ck-content table').forEach(table => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-responsive';
+                table.parentNode.insertBefore(wrapper, table);
+                wrapper.appendChild(table);
             });
         });
     </script>

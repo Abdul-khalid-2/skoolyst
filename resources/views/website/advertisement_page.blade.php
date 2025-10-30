@@ -23,7 +23,6 @@
         }
 
         body {
-            /* background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); */
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
@@ -75,9 +74,6 @@
         }
 
         .canvas-container {
-            /* background: white; */
-            /* border-radius: 25px; */
-            /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); */
             padding: 3rem;
             position: relative;
             min-height: 400px;
@@ -88,7 +84,6 @@
             margin-bottom: 2rem;
             padding: 0rem;
             border-radius: 15px;
-            /* box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); */
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
@@ -153,6 +148,75 @@
             /* border: 2px solid #eef2f6; */
         }
 
+        /* Rich Text Content */
+        .rich-text-content {
+            color: #4b5563;
+            line-height: 1.7;
+        }
+
+        .rich-text-content h1,
+        .rich-text-content h2,
+        .rich-text-content h3 {
+            color: var(--dark);
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .rich-text-content ul,
+        .rich-text-content ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+        }
+
+        .rich-text-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .rich-text-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .rich-text-content table, 
+        .rich-text-content th, 
+        .rich-text-content td {
+            border: 1px solid #ddd;
+        }
+
+        .rich-text-content th, 
+        .rich-text-content td {
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .rich-text-content th {
+            background-color: #f8f9fa;
+        }
+
+        .rich-text-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 1rem;
+            margin: 1rem 0;
+            font-style: italic;
+            color: #666;
+        }
+
+        /* Two Column Layout */
+        .two-col {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .two-col .col-left,
+        .two-col .col-right {
+            flex: 1;
+        }
+
         /* Element Badge */
         .element-badge {
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -187,38 +251,6 @@
             padding: 0.75rem;
             background: rgba(67, 97, 238, 0.05);
             border-radius: 8px;
-        }
-
-        /* Two Column Layout */
-        .two-col {
-            display: flex;
-            gap: 2rem;
-            align-items: flex-start;
-        }
-
-        .two-col .col-left,
-        .two-col .col-right {
-            flex: 1;
-        }
-
-        /* Rich Text Content */
-        .rich-text-content {
-            color: #4b5563;
-            line-height: 1.7;
-        }
-
-        .rich-text-content h1,
-        .rich-text-content h2,
-        .rich-text-content h3 {
-            color: var(--dark);
-            margin-top: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .rich-text-content ul,
-        .rich-text-content ol {
-            margin-bottom: 1rem;
-            padding-left: 2rem;
         }
 
         /* Empty State */
@@ -269,18 +301,6 @@
                 gap: 1rem;
             }
         }
-
-        /* Add this to your existing styles */
-        /* .element-custom-html {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
-            border: 2px solid #fed7d7;
-            padding: 2rem !important;
-        }
-
-        .element-custom-html .custom-html-content {
-            width: 100%;
-            min-height: 100px;
-        } */
     </style>
 </head>
 
@@ -315,16 +335,12 @@
                         @php
                             $elementType = $element['type'] ?? '';
                             $elementContent = $element['content'] ?? [];
-                            $elementPosition = $element['position'] ?? $index; // Use index as fallback position
+                            $elementPosition = $element['position'] ?? $index;
                         @endphp
 
                         @switch($elementType)
                             @case('heading')
                                 <div class="page-element element-heading">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-heading"></i>
-                                        Heading • {{ $elementContent['level'] ?? 'h2' }}
-                                    </div> --}}
                                     <{{ $elementContent['level'] ?? 'h2' }} class="mb-0">
                                         {{ $elementContent['text'] ?? 'Heading Text' }}
                                     </{{ $elementContent['level'] ?? 'h2' }}>
@@ -333,22 +349,14 @@
 
                             @case('text')
                                 <div class="page-element element-text">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-paragraph"></i>
-                                        Text Content
-                                    </div> --}}
                                     <div class="rich-text-content">
-                                        {!! nl2br(e($elementContent['content'] ?? 'Text content goes here...')) !!}
+                                        {!! $elementContent['content'] ?? '<p>Text content goes here...</p>' !!}
                                     </div>
                                 </div>
                                 @break
 
                             @case('image')
                                 <div class="page-element element-image">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-image"></i>
-                                        Image
-                                    </div> --}}
                                     @if(isset($elementContent['src']) && $elementContent['src'])
                                         <img src="{{ $elementContent['src'] }}" 
                                              alt="{{ $elementContent['alt'] ?? 'Image' }}" 
@@ -369,10 +377,6 @@
 
                             @case('banner')
                                 <div class="page-element element-banner">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-banner"></i>
-                                        Banner
-                                    </div> --}}
                                     @if(isset($elementContent['src']) && $elementContent['src'])
                                         <img src="{{ $elementContent['src'] }}" 
                                              alt="{{ $elementContent['alt'] ?? 'Banner' }}"
@@ -398,15 +402,11 @@
 
                             @case('columns')
                                 <div class="page-element element-columns">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-columns"></i>
-                                        Two Columns
-                                    </div> --}}
                                     <div class="two-col">
                                         <div class="col-left">
                                             @if(isset($elementContent['left']))
                                                 <div class="rich-text-content">
-                                                    {!! nl2br(e($elementContent['left'])) !!}
+                                                    {!! $elementContent['left'] !!}
                                                 </div>
                                             @else
                                                 <p class="text-muted">Left column content</p>
@@ -415,7 +415,7 @@
                                         <div class="col-right">
                                             @if(isset($elementContent['right']))
                                                 <div class="rich-text-content">
-                                                    {!! nl2br(e($elementContent['right'])) !!}
+                                                    {!! $elementContent['right'] !!}
                                                 </div>
                                             @else
                                                 <p class="text-muted">Right column content</p>
@@ -425,15 +425,10 @@
                                 </div>
                                 @break
 
-                            
-                            @case('custom_html') {{-- Add this case --}}
-                            @case('custom-html') {{-- And this for consistency --}}
+                            @case('custom_html')
+                            @case('custom-html')
                                 <div class="page-element element-custom-html">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-code"></i>
-                                        Custom HTML
-                                    </div> --}}
-                                    <div class="custom-html-content" style="all: unset;">
+                                    <div class="custom-html-content">
                                         <style>
                                             
                                             {!! $elementContent['css'] ?? '' !!}
@@ -442,12 +437,9 @@
                                     </div>
                                 </div>
                                 @break
-                                @default
+
+                            @default
                                 <div class="page-element">
-                                    {{-- <div class="element-badge">
-                                        <i class="fas fa-question"></i>
-                                        Unknown Element
-                                    </div> --}}
                                     <p>Unknown element type: {{ $elementType }}</p>
                                     <pre>{{ json_encode($element, JSON_PRETTY_PRINT) }}</pre>
                                 </div>
