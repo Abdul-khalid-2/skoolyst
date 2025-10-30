@@ -18,7 +18,6 @@ class BranchController extends Controller
             $branches = $school->branches()->latest()->paginate(10);
             return view('dashboard.branches.index', compact('school', 'branches'));
         } catch (\Exception $e) {
-            Log::error('Error fetching branches: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load branches. Please try again.');
         }
     }
@@ -60,7 +59,6 @@ class BranchController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            Log::error('Error creating branch: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to create branch. Please try again.')->withInput();
         }
     }
@@ -127,7 +125,6 @@ class BranchController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
-            Log::error('Error updating branch: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to update branch. Please try again.')->withInput();
         }
     }
@@ -162,7 +159,6 @@ class BranchController extends Controller
             return redirect()->route('schools.branches.index', $school)
                 ->with('success', 'Branch deleted successfully.');
         } catch (\Exception $e) {
-            Log::error('Error deleting branch: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Failed to delete branch. Please try again.');
         }

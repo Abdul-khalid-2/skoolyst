@@ -364,7 +364,6 @@ class PageController extends Controller
 
             return $filePath;
         } catch (\Exception $e) {
-            \Log::error('Failed to save base64 image: ' . $e->getMessage());
             return null;
         }
     }
@@ -564,7 +563,8 @@ class PageController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to delete page images: ' . $e->getMessage());
+
+            return null;
         }
     }
 

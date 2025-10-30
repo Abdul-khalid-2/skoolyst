@@ -59,7 +59,6 @@ class SchoolController extends Controller
                 return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
             }
         } catch (\Exception $e) {
-            Log::error('Error fetching schools: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load schools. Please try again.');
         }
     }
@@ -292,7 +291,6 @@ class SchoolController extends Controller
         } catch (ModelNotFoundException $e) {
             return redirect()->route('schools')->with('error', 'School not found.');
         } catch (\Exception $e) {
-            Log::error('Error fetching school for edit: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Failed to load school for editing. Please try again.');
         }
     }
@@ -554,7 +552,7 @@ class SchoolController extends Controller
             return redirect()->back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating school: ' . $e->getMessage(), ['school_id' => $id]);
+
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
     }
@@ -571,7 +569,6 @@ class SchoolController extends Controller
             return redirect()->route('schools')
                 ->with('error', 'School not found.');
         } catch (\Exception $e) {
-            Log::error('Error deleting school: ' . $e->getMessage());
             return redirect()->back()
                 ->with('error', 'Failed to delete school. Please try again.');
         }
