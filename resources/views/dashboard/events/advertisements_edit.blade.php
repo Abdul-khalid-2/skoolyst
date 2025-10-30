@@ -1152,7 +1152,333 @@
 
         // Include the SchoolImageGalleryManager class from your original code
         class SchoolImageGalleryManager {
-            // ... (include the entire SchoolImageGalleryManager class from your original code)
+            constructor() {
+                this.currentSchoolId = $('#gallerySchoolId').val();
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // Upload form submission
+                $('#uploadImageForm').on('submit', (e) => this.uploadImage(e));
+                
+                // Edit form submission
+                $('#editImageForm').on('submit', (e) => this.updateImage(e));
+                
+                // Delete button
+                $('#deleteImageBtn').on('click', () => this.deleteImage());
+                
+                // Modal show events
+                $('#imageGalleryModal').on('show.bs.modal', () => this.loadImages());
+            }
+
+            async loadImages() {
+                $('#galleryLoading').show();
+                $('#galleryImages').hide();
+                $('#galleryEmpty').hide();
+
+                try {
+                    const response = await fetch(`/school-image-galleries?school_id=${this.currentSchoolId}`);
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.renderImages(result.images);
+                    } else {
+                        throw new Error('Failed to load images');
+                    }
+                } catch (error) {
+                    console.error('Error loading images:', error);
+                    $('#galleryLoading').hide();
+                    $('#galleryEmpty').show();
+                }
+            }
+
+            renderImages(images) {
+                const $gallery = $('#galleryImages');
+                $gallery.empty();
+
+                if (images.length === 0) {
+                    $('#galleryLoading').hide();
+                    $('#galleryEmpty').show();
+                    return;
+                }
+
+                images.forEach(image => {
+                    const imageCard = `
+                        <div class="col-md-4 col-lg-3">
+                            <div class="card image-card" data-image-id="${image.id}">
+                                <img src="${image.image_url}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="${image.image_name}">
+                                <div class="card-body">
+                                    <h6 class="card-title text-truncate">${image.image_name}</h6>
+                                    <span class="badge ${image.status === 'active' ? 'bg-success' : 'bg-warning'}">${image.status}</span>
+                                    <div class="mt-2 d-flex gap-1">
+                                        <button class="btn btn-sm btn-outline-primary edit-image" data-image='${JSON.stringify(image).replace(/'/g, "&#39;")}' title="Edit Image">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-info insert-image" data-image-url="${image.image_url}" title="Insert into HTML Editor">
+                                            <i class="fas fa-code"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary copy-url" data-image-url="${image.image_url}" title="Copy Image URL">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $gallery.append(imageCard);
+                });
+
+                // Add event listener for copy URL button
+                $gallery.find('.copy-url').on('click', (e) => {
+                    const imageUrl = $(e.currentTarget).data('image-url');
+                    this.copyImageUrlToClipboard(imageUrl);
+                });
+
+                // Attach event listeners to dynamically created buttons
+                $gallery.find('.edit-image').on('click', (e) => {
+                    const imageData = JSON.parse($(e.currentTarget).data('image').replace(/&#39;/g, "'"));
+                    this.openEditModal(imageData);
+                });
+
+                $gallery.find('.insert-image').on('click', (e) => {
+                    const imageUrl = $(e.currentTarget).data('image-url');
+                    this.insertImageToEditor(imageUrl);
+                });
+
+                $('#galleryLoading').hide();
+                $gallery.show();
+            }
+
+            async uploadImage(e) {
+                e.preventDefault();
+
+                const formData = new FormData();
+                formData.append('school_id', this.currentSchoolId);
+                formData.append('image_name', $('#imageName').val());
+                formData.append('image_file', $('#imageFile')[0].files[0]);
+                formData.append('_token', $('input[name="_token"]').val());
+
+                const $uploadBtn = $('#uploadBtn');
+                $uploadBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin me-1"></i>Uploading...');
+
+                try {
+                    const response = await fetch('/school-image-galleries', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#uploadResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                        $('#uploadImageForm')[0].reset();
+                        this.loadImages(); // Reload the gallery
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#uploadResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                } finally {
+                    $uploadBtn.prop('disabled', false).html('<i class="fas fa-upload me-1"></i>Upload Image');
+                }
+            }
+
+            openEditModal(image) {
+                $('#editImageId').val(image.id);
+                $('#editImageName').val(image.image_name);
+                $('#editImageStatus').val(image.status);
+                $('#editImagePreview').attr('src', image.image_url);
+                $('#editResult').empty();
+
+                const editModal = new bootstrap.Modal(document.getElementById('editImageModal'));
+                editModal.show();
+            }
+
+            async updateImage(e) {
+                e.preventDefault();
+
+                const imageId = $('#editImageId').val();
+                const formData = {
+                    image_name: $('#editImageName').val(),
+                    status: $('#editImageStatus').val(),
+                    _token: $('input[name="_token"]').val(),
+                    _method: 'PUT'
+                };
+
+                try {
+                    const response = await fetch(`/school-image-galleries/${imageId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': formData._token
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        $('#editResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                        
+                        // Reload gallery and close modal after delay
+                        setTimeout(() => {
+                            this.loadImages();
+                            bootstrap.Modal.getInstance(document.getElementById('editImageModal')).hide();
+                        }, 1000);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#editResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                }
+            }
+
+            async deleteImage() {
+                if (!confirm('Are you sure you want to delete this image? This action cannot be undone.')) {
+                    return;
+                }
+
+                const imageId = $('#editImageId').val();
+
+                try {
+                    const response = await fetch(`/school-image-galleries/${imageId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('input[name="_token"]').val()
+                        }
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // Close modals and reload gallery
+                        bootstrap.Modal.getInstance(document.getElementById('editImageModal')).hide();
+                        this.loadImages();
+                        
+                        // Show success message in main gallery
+                        $('#uploadResult').html(`
+                            <div class="alert alert-success">
+                                <strong>Success!</strong> ${result.message}
+                            </div>
+                        `);
+                    } else {
+                        throw new Error(result.message);
+                    }
+                } catch (error) {
+                    $('#editResult').html(`
+                        <div class="alert alert-danger">
+                            <strong>Error!</strong> ${error.message}
+                        </div>
+                    `);
+                }
+            }
+
+            insertImageToEditor(imageUrl) {
+                // Try multiple ways to find an active custom HTML element
+                let activeElement = null;
+                let $activeTextarea = null;
+
+                // Method 1: Find any visible HTML editor textarea
+                $activeTextarea = $('.html-editor-container:visible textarea').first();
+                
+                if ($activeTextarea.length > 0) {
+                    const elementId = $activeTextarea.closest('.canvas-element').data('id');
+                    activeElement = window.builder.elements.find(el => el.id === elementId);
+                }
+
+                // Method 2: If no visible editor, find the first custom HTML element
+                if (!activeElement) {
+                    activeElement = window.builder.elements.find(el => el.type === 'custom_html');
+                    if (activeElement) {
+                        $activeTextarea = $(`[data-id="${activeElement.id}"] .html-editor-container textarea`).first();
+                    }
+                }
+
+                if (activeElement && $activeTextarea.length > 0) {
+                    const imgHtml = `<img src="${imageUrl}" class="img-fluid" alt="Gallery Image" style="max-width: 100%; height: auto;">`;
+                    const currentValue = $activeTextarea.val();
+                    const cursorPos = $activeTextarea[0].selectionStart;
+                    
+                    const newValue = currentValue.substring(0, cursorPos) + 
+                                imgHtml + 
+                                currentValue.substring(cursorPos);
+                    
+                    $activeTextarea.val(newValue);
+                    
+                    // Trigger input event to update the element content
+                    $activeTextarea.trigger('input');
+                    
+                    // Close the gallery modal
+                    bootstrap.Modal.getInstance(document.getElementById('imageGalleryModal')).hide();
+                    
+                    // Switch to HTML tab and update preview
+                    window.builder.switchTab(activeElement.id, 'html');
+                    
+                    // Show success message
+                    alert('Image inserted successfully!');
+                } else {
+                    // If no custom HTML element exists, offer to create one
+                    if (confirm('No Custom HTML element found. Would you like to create one and insert the image?')) {
+                        // Add a new custom HTML element
+                        window.builder.addElement('custom_html');
+                        
+                        // Wait a bit for the element to render, then insert the image
+                        setTimeout(() => {
+                            const newElement = window.builder.elements.find(el => el.type === 'custom_html');
+                            if (newElement) {
+                                const $newTextarea = $(`[data-id="${newElement.id}"] .html-editor-container textarea`);
+                                const imgHtml = `<img src="${imageUrl}" class="img-fluid" alt="Gallery Image" style="max-width: 100%; height: auto;">`;
+                                $newTextarea.val(imgHtml);
+                                $newTextarea.trigger('input');
+                                
+                                // Close the gallery modal
+                                bootstrap.Modal.getInstance(document.getElementById('imageGalleryModal')).hide();
+                                
+                                alert('New Custom HTML element created with your image!');
+                            }
+                        }, 500);
+                    } else {
+                        // Copy image URL to clipboard as fallback
+                        this.copyImageUrlToClipboard(imageUrl);
+                    }
+                }
+            }
+
+            // Add this new method to copy image URL to clipboard
+            copyImageUrlToClipboard(imageUrl) {
+                navigator.clipboard.writeText(imageUrl).then(() => {
+                    alert('Image URL copied to clipboard! You can paste it manually in your HTML editor.\n\nURL: ' + imageUrl);
+                }).catch(() => {
+                    // Fallback for browsers that don't support clipboard API
+                    const tempInput = document.createElement('input');
+                    tempInput.value = imageUrl;
+                    document.body.appendChild(tempInput);
+                    tempInput.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempInput);
+                    alert('Image URL copied to clipboard! You can paste it manually in your HTML editor.\n\nURL: ' + imageUrl);
+                });
+            }
         }
 
         // Initialize the page builder when DOM is loaded

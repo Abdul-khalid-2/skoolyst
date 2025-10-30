@@ -34,8 +34,12 @@ class SchoolImageGalleryController extends Controller
 
         try {
 
-
-            $schoolId = $request->school_id;
+            if (auth()->user()->hasRole('school-admin')) {
+                $schoolId = auth()->user()->school_id;
+            } else {
+                $schoolId = $request->school_id;
+            }
+            // $schoolId = $request->school_id;
             $imageFile = $request->file('image_file');
 
             // Get school to create folder name
