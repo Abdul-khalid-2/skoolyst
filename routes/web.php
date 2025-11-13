@@ -21,6 +21,7 @@ use App\Http\Controllers\Website\AdvertisementPageController;
 use App\Http\Controllers\UserProfileController;
 
 use App\Http\Controllers\SchoolImageGalleryController;
+use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -136,7 +137,9 @@ Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
 
 
 
+Route::get('/announcement/{announcement}', [WebsiteAnnouncementController::class, 'show'])->name('website.announcements.show');
+Route::post('announcements/{uuid}/comments', [WebsiteAnnouncementController::class, 'storeComment'])->name('announcements.comments.store');
 Route::resource('announcements', AnnouncementController::class);
-Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
-    ->name('announcements.comments.store');
+// Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
+//     ->name('announcements.comments.store');
 require __DIR__ . '/auth.php';

@@ -511,6 +511,75 @@
         color: #ccc;
     }
 }
+
+/* New Announcement Badge */
+.new-announcement-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    z-index: 10;
+    animation: pulse 2s infinite;
+}
+
+.badge-pulse {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* School Image Container */
+.school-image {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Recent Announcements Section */
+
+
+.announcement-link {
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.85rem;
+    flex: 1;
+    transition: color 0.2s;
+}
+
+.announcement-link:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
 </style>
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
@@ -594,6 +663,15 @@
                         <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}" style="width: 100%; height: 200px; object-fit: cover;">
                         @else
                         <i class="fas fa-school"></i>
+                        @endif
+                        @if($school->hasNewAnnouncements())
+                            <div class="new-announcement-badge">
+                                <span class="badge-pulse"></span>
+                                <a href="{{ route('browseSchools.show', $school->uuid) }}#announcements" class="announcement-link">
+                                    <i class="fas fa-bullhorn"></i>
+                                    New Updates
+                                </a>
+                            </div>
                         @endif
                     </div>
                     <div class="school-content">

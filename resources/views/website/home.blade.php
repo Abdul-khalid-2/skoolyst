@@ -399,7 +399,7 @@
 </section>
 
 <!-- ==================== VIDEO SHOWCASE SECTION ==================== -->
-<section class="video-section" id="video-showcase">
+{{-- <section class="video-section" id="video-showcase">
     <div class="video-container">
         <div class="video-header">
             <h2 class="video-title">See SKOOLYST in Action</h2>
@@ -457,7 +457,7 @@
             </div>
         </div>
     </div>
-</section>
+</section> --}}
 
 <!-- ==================== FILTER SECTION ==================== -->
 <section class="filter-section">
