@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
@@ -133,4 +134,9 @@ Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
     Route::post('/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
 });
 
+
+
+Route::resource('announcements', AnnouncementController::class);
+Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
+    ->name('announcements.comments.store');
 require __DIR__ . '/auth.php';

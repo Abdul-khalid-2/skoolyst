@@ -118,4 +118,9 @@ class School extends Model
     {
         return $this->hasOne(SchoolProfile::class);
     }
+
+    public function announcements()
+    {
+        return $this->hasMany(Announcement::class);
+    }
 }

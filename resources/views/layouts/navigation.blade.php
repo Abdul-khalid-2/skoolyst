@@ -29,6 +29,17 @@
                 </a>
             </li>
 
+            {{-- Announcements --}}
+            <li class="nav-item">
+                <a href="{{ route('announcements.index') }}"
+                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Announcements</span>
+                </a>
+            </li>
+
+
+            @role('super-admin')
             {{-- Events --}}
             <li class="nav-item">
                 <a href="{{ route('events.index') }}"
@@ -37,6 +48,9 @@
                     <span>Events</span>
                 </a>
             </li>
+            @endrole
+
+            {{-- Contact Inquiries --}}
 
         </ul>
     </nav>
