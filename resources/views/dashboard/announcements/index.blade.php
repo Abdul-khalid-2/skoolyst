@@ -31,7 +31,7 @@
                                             <td>{{ $announcement->title }}</td>
                                             <td>{{ $announcement->branch ? $announcement->branch->name : 'All Branches' }}</td>
                                             <td>
-                                                <span class="badge badge-{{ $announcement->status === 'published' ? 'success' : ($announcement->status === 'draft' ? 'warning' : 'secondary') }}">
+                                                <span class="badge badge-{{ $announcement->status === 'published' ? 'success' : ($announcement->status === 'draft' ? 'warning' : 'secondary') }}" style="color: black">
                                                     {{ ucfirst($announcement->status) }}
                                                 </span>
                                             </td>

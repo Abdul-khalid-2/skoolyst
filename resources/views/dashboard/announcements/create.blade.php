@@ -1,4 +1,15 @@
 <x-app-layout>
+    @push('css')
+        <style>
+            .ck-editor__editable {
+                min-height: 400px;
+            }
+            .ck-content {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+    @endpush>
     <main class="main-content">
         <div class="container-fluid">
             <div class="row">
@@ -7,7 +18,7 @@
                         <div class="card-header">
                             <h3 class="card-title">Create Announcement</h3>
                         </div>
-                        <form action="{{ route('announcements.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('announcements.store') }}" method="POST" enctype="multipart/form-data" id="announcementForm">
                             @csrf
                             <div class="card-body">
                                 <div class="row">
@@ -24,7 +35,7 @@
                                         <div class="form-group">
                                             <label for="content">Content *</label>
                                             <textarea class="form-control @error('content') is-invalid @enderror" 
-                                                    id="content" name="content" rows="10" required>{{ old('content') }}</textarea>
+                                                    id="content" name="content" rows="10">{{ old('content') }}</textarea>
                                             @error('content')
                                                 <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -110,14 +121,81 @@
         </div>
     </main>
     @push('js')
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
     <script>
-        // Simple text editor initialization (you can replace with CKEditor or similar)
         document.addEventListener('DOMContentLoaded', function() {
-            const contentTextarea = document.getElementById('content');
-            if (contentTextarea) {
-                // You can integrate a rich text editor here
-                // Example: CKEditor, TinyMCE, or Summernote
+            let editor;
+            
+            // Initialize CKEditor
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading', '|',
+                            'bold', 'italic', 'underline', 'strikethrough', '|',
+                            'link', 'bulletedList', 'numberedList', '|',
+                            'outdent', 'indent', '|',
+                            'blockQuote', 'insertTable', '|',
+                            'undo', 'redo', '|',
+                            'alignment', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor'
+                        ],
+                        shouldNotGroupWhenFull: true
+                    },
+                    heading: {
+                        options: [
+                            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+                        ]
+                    },
+                    link: {
+                        addTargetToExternalLinks: true,
+                        defaultProtocol: 'https://'
+                    },
+                    table: {
+                        contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
+                    }
+                })
+                .then(editorInstance => {
+                    editor = editorInstance;
+                    console.log('Editor was initialized', editor);
+                })
+                .catch(error => {
+                    console.error('Error initializing CKEditor:', error);
+                });
+
+            // Form submission handling
+            const form = document.getElementById('announcementForm');
+            form.addEventListener('submit', function(e) {
+                // Ensure CKEditor content is copied to textarea
+                if (editor) {
+                    const editorData = editor.getData();
+                    document.querySelector('#content').value = editorData;
+                    
+                    // Client-side validation for empty content
+                    if (!editorData.trim()) {
+                        e.preventDefault();
+                        alert('Please enter announcement content.');
+                        editor.editing.view.focus();
+                        return false;
+                    }
+                }
+            });
+
+            // Auto-generate meta title and description
+            const titleInput = document.getElementById('title');
+            const metaTitleInput = document.getElementById('meta_title');
+            const metaDescriptionInput = document.getElementById('meta_description');
+
+            function generateMetaData() {
+                if (!metaTitleInput.value && titleInput.value) {
+                    metaTitleInput.value = titleInput.value;
+                }
             }
+
+            titleInput.addEventListener('blur', generateMetaData);
         });
     </script>
     @endpush

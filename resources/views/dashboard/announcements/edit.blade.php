@@ -1,4 +1,20 @@
 <x-app-layout>
+    @push('css')
+    <style>
+        .ck-editor__editable {
+            min-height: 400px;
+        }
+
+        .ck-content {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .border-right {
+            border-right: 1px solid #dee2e6 !important;
+        }
+    </style>
+    @endpush
     <main class="main-content">
         <div class="container-fluid">
             <div class="row">
@@ -142,12 +158,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="mt-2">
-                                                    <small class="text-muted">
-                                                        Created: {{ $announcement->created_at->format('M d, Y') }}<br>
-                                                        Updated: {{ $announcement->updated_at->format('M d, Y') }}
-                                                    </small>
-                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -159,8 +169,7 @@
                                             <label for="meta_title">Meta Title</label>
                                             <input type="text" class="form-control @error('meta_title') is-invalid @enderror"
                                                 id="meta_title" name="meta_title"
-                                                value="{{ old('meta_title', $announcement->meta_title) }}"
-                                                placeholder="Optional meta title for SEO">
+                                                value="{{ old('meta_title', $announcement->meta_title) }}">
                                             @error('meta_title')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -170,7 +179,7 @@
                                             <label for="meta_description">Meta Description</label>
                                             <textarea class="form-control @error('meta_description') is-invalid @enderror"
                                                 id="meta_description" name="meta_description"
-                                                rows="3" placeholder="Optional meta description for SEO">{{ old('meta_description', $announcement->meta_description) }}</textarea>
+                                                rows="3">{{ old('meta_description', $announcement->meta_description) }}</textarea>
                                             @error('meta_description')
                                             <span class="invalid-feedback">{{ $message }}</span>
                                             @enderror
@@ -179,22 +188,10 @@
                                 </div>
                             </div>
                             <div class="card-footer">
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-save"></i> Update Announcement
-                                        </button>
-                                        <a href="{{ route('announcements.index') }}" class="btn btn-default">
-                                            <i class="fas fa-times"></i> Cancel
-                                        </a>
-                                    </div>
-                                    <div class="col-md-4 text-right">
-                                        <a href="{{ route('announcements.show', $announcement->uuid) }}"
-                                            class="btn btn-info" target="_blank">
-                                            <i class="fas fa-external-link-alt"></i> Preview
-                                        </a>
-                                    </div>
-                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Update Announcement
+                                </button>
+                                <a href="{{ route('announcements.index') }}" class="btn btn-default">Cancel</a>
                             </div>
                         </form>
                     </div>
@@ -209,67 +206,6 @@
                             <h3 class="card-title">Comments Management ({{ $announcement->allComments->count() }})</h3>
                         </div>
                         <div class="card-body">
-                            @if($announcement->allComments->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Commenter</th>
-                                            <th>Comment</th>
-                                            <th>Status</th>
-                                            <th>Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($announcement->allComments as $comment)
-                                        <tr>
-                                            <td>
-                                                <strong>{{ $comment->getCommenterNameAttribute() }}</strong><br>
-                                                <small class="text-muted">{{ $comment->getCommenterEmailAttribute() }}</small>
-                                            </td>
-                                            <td>{{ Str::limit($comment->comment, 100) }}</td>
-                                            <td>
-                                                <span class="badge badge-{{ $comment->status === 'approved' ? 'success' : ($comment->status === 'pending' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($comment->status) }}
-                                                </span>
-                                            </td>
-                                            <td>{{ $comment->created_at->format('M d, Y') }}</td>
-                                            <td>
-                                                @if($comment->status === 'pending')
-                                                <form action="{{ route('announcements.comments.update', [$announcement->uuid, $comment->id]) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="status" value="approved">
-                                                    <button type="submit" class="btn btn-success btn-sm" title="Approve">
-                                                        <i class="fas fa-check"></i>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('announcements.comments.update', [$announcement->uuid, $comment->id]) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="status" value="rejected">
-                                                    <button type="submit" class="btn btn-danger btn-sm" title="Reject">
-                                                        <i class="fas fa-times"></i>
-                                                    </button>
-                                                </form>
-                                                @endif
-                                                <form action="{{ route('announcements.comments.destroy', [$announcement->uuid, $comment->id]) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this comment?')" title="Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                            @else
-                            <p class="text-muted text-center">No comments yet.</p>
-                            @endif
                         </div>
                     </div>
                 </div>
@@ -278,15 +214,80 @@
 
 
         @push('js')
-        <style>
-            .border-right {
-                border-right: 1px solid #dee2e6 !important;
-            }
-        </style>
-
+        <!-- Load CKEditor from CDN -->
+        <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                // Handle remove feature image checkbox
+                // Initialize CKEditor for edit page
+                ClassicEditor
+                    .create(document.querySelector('#content'), {
+                        toolbar: {
+                            items: [
+                                'heading', '|',
+                                'bold', 'italic', 'underline', 'strikethrough', '|',
+                                'link', 'bulletedList', 'numberedList', '|',
+                                'outdent', 'indent', '|',
+                                'blockQuote', 'insertTable', '|',
+                                'undo', 'redo', '|',
+                                'alignment', 'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor'
+                            ],
+                            shouldNotGroupWhenFull: true
+                        },
+                        heading: {
+                            options: [{
+                                    model: 'paragraph',
+                                    title: 'Paragraph',
+                                    class: 'ck-heading_paragraph'
+                                },
+                                {
+                                    model: 'heading1',
+                                    view: 'h1',
+                                    title: 'Heading 1',
+                                    class: 'ck-heading_heading1'
+                                },
+                                {
+                                    model: 'heading2',
+                                    view: 'h2',
+                                    title: 'Heading 2',
+                                    class: 'ck-heading_heading2'
+                                },
+                                {
+                                    model: 'heading3',
+                                    view: 'h3',
+                                    title: 'Heading 3',
+                                    class: 'ck-heading_heading3'
+                                },
+                                {
+                                    model: 'heading4',
+                                    view: 'h4',
+                                    title: 'Heading 4',
+                                    class: 'ck-heading_heading4'
+                                }
+                            ]
+                        },
+                        link: {
+                            addTargetToExternalLinks: true,
+                            defaultProtocol: 'https://'
+                        },
+                        table: {
+                            contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells']
+                        }
+                    })
+                    .then(editor => {
+                        console.log('Editor was initialized', editor);
+
+                        // Update form validation to work with CKEditor
+                        const form = document.querySelector('form');
+                        form.addEventListener('submit', function() {
+                            const editorData = editor.getData();
+                            document.querySelector('#content').value = editorData;
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error initializing CKEditor:', error);
+                    });
+
+                // Rest of your existing JavaScript code for the edit page
                 const removeImageCheckbox = document.getElementById('remove_feature_image');
                 const featureImageInput = document.getElementById('feature_image');
 
@@ -304,22 +305,8 @@
                     });
                 }
 
-                // Form validation
-                const form = document.querySelector('form');
-                form.addEventListener('submit', function(e) {
-                    const publishAt = document.getElementById('publish_at').value;
-                    const expireAt = document.getElementById('expire_at').value;
-
-                    if (publishAt && expireAt && new Date(publishAt) >= new Date(expireAt)) {
-                        e.preventDefault();
-                        alert('Expire date must be after publish date.');
-                        return false;
-                    }
-                });
-
-                // Auto-generate meta title and description if empty
+                // Auto-generate meta data
                 const titleInput = document.getElementById('title');
-                const contentInput = document.getElementById('content');
                 const metaTitleInput = document.getElementById('meta_title');
                 const metaDescriptionInput = document.getElementById('meta_description');
 
@@ -327,15 +314,9 @@
                     if (!metaTitleInput.value && titleInput.value) {
                         metaTitleInput.value = titleInput.value;
                     }
-
-                    if (!metaDescriptionInput.value && contentInput.value) {
-                        const content = contentInput.value.replace(/(<([^>]+)>)/gi, "");
-                        metaDescriptionInput.value = content.substring(0, 160) + (content.length > 160 ? '...' : '');
-                    }
                 }
 
                 titleInput.addEventListener('blur', generateMetaData);
-                contentInput.addEventListener('blur', generateMetaData);
             });
         </script>
         @endpush
