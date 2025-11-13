@@ -22,7 +22,7 @@
                             </div>
 
                             <div class="card-text">
-                                {!! nl2br(e($announcement->content)) !!}
+                                {!! $announcement->content !!}
                             </div>
                         </div>
                     </div>

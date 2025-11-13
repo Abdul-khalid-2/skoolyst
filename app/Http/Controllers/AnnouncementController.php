@@ -8,6 +8,7 @@ use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Mews\Purifier\Facades\Purifier;
 
 class AnnouncementController extends Controller
 {
@@ -46,6 +47,8 @@ class AnnouncementController extends Controller
 
         $data = $request->except('feature_image');
         $data['school_id'] = auth()->user()->school_id;
+
+        $data['content'] = Purifier::clean($request->content);
 
         if ($request->hasFile('feature_image')) {
             $path = $request->file('feature_image')->store('announcements', 'public');
@@ -106,6 +109,8 @@ class AnnouncementController extends Controller
             $path = $request->file('feature_image')->store('announcements', 'public');
             $data['feature_image'] = $path;
         }
+
+        $data['content'] = Purifier::clean($request->content);
 
         $announcement->update($data);
 

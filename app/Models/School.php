@@ -123,4 +123,39 @@ class School extends Model
     {
         return $this->hasMany(Announcement::class);
     }
+
+    public function recentAnnouncements()
+    {
+        return $this->hasMany(Announcement::class)
+            ->where('status', 'published')
+            ->where(function ($query) {
+                $query->whereNull('publish_at')
+                    ->orWhere('publish_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('expire_at')
+                    ->orWhere('expire_at', '>=', now());
+            })
+            ->orderBy('created_at', 'desc')
+            ->limit(5);
+    }
+
+    public function hasNewAnnouncements()
+    {
+        // Consider announcements as "new" if created within the last 7 days
+        return $this->announcements()
+            ->where('status', 'published')
+            ->where('created_at', '>=', now()->subDays(7))
+            ->exists();
+    }
+
+    public function getLatestAnnouncementDate()
+    {
+        $latestAnnouncement = $this->announcements()
+            ->where('status', 'published')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return $latestAnnouncement ? $latestAnnouncement->created_at : null;
+    }
 }

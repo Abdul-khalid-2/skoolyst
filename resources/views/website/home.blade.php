@@ -265,6 +265,76 @@
         font-size: 0.9rem;
     }
 }
+
+/* New Announcement Badge */
+.new-announcement-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    z-index: 10;
+    animation: pulse 2s infinite;
+}
+
+.badge-pulse {
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.6);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 107, 107, 0.4);
+    }
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* School Image Container */
+.school-image {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Recent Announcements Section */
+
+
+.announcement-link {
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.85rem;
+    flex: 1;
+    transition: color 0.2s;
+}
+
+.announcement-link:hover {
+    color: #007bff;
+    text-decoration: underline;
+}
+
 </style>
 @endpush
 @push('meta')
@@ -449,6 +519,16 @@
                         @else
                         <i class="fas fa-school"></i>
                         @endif
+                        <!-- New Announcement Badge -->
+                        @if($school->hasNewAnnouncements())
+                            <div class="new-announcement-badge">
+                                <span class="badge-pulse"></span>
+                                <a href="{{ route('browseSchools.show', $school->uuid) }}" class="announcement-link">
+                                    <i class="fas fa-bullhorn"></i>
+                                    New Updates
+                                </a>
+                            </div>
+                        @endif
                     </div>
                     <div class="school-content">
                         <div class="school-header">
@@ -463,36 +543,36 @@
                         </div>
                         <div class="school-rating">
                             @php
-                            $averageRating = $school->reviews->avg('rating') ?? 0;
-                            $fullStars = floor($averageRating);
-                            $hasHalfStar = $averageRating - $fullStars >= 0.5;
-                            $emptyStars = 5 - ceil($averageRating);
+                                $averageRating = $school->reviews->avg('rating') ?? 0;
+                                $fullStars = floor($averageRating);
+                                $hasHalfStar = $averageRating - $fullStars >= 0.5;
+                                $emptyStars = 5 - ceil($averageRating);
                             @endphp
 
                             @for($i = 0; $i < $fullStars; $i++)
                                 <i class="fas fa-star"></i>
-                                @endfor
+                            @endfor
 
-                                @if($hasHalfStar)
+                            @if($hasHalfStar)
                                 <i class="fas fa-star-half-alt"></i>
-                                @endif
+                            @endif
 
-                                @for($i = 0; $i < $emptyStars; $i++)
-                                    <i class="far fa-star"></i>
-                                    @endfor
+                            @for($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
 
-                                    <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
-                                    <small style="color: #888; margin-left: 0.5rem;">({{ $school->reviews->count() }} reviews)</small>
+                                <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
+                                <small style="color: #888; margin-left: 0.5rem;">({{ $school->reviews->count() }} reviews)</small>
                         </div>
                         <p class="school-description">
                             {{ Str::limit($school->description, 120) ?: 'No description available.' }}
                         </p>
                         <div class="school-features">
                             @if($school->curriculums->count() > 0)
-                            <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
+                                <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
                             @endif
                             @foreach($school->features->take(3) as $feature)
-                            <span class="feature-tag">{{ $feature->name }}</span>
+                                <span class="feature-tag">{{ $feature->name }}</span>
                             @endforeach
                         </div>
                         <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
