@@ -105,7 +105,7 @@ class Announcement extends Model
     public function getFeatureImageUrlAttribute()
     {
         return $this->feature_image
-            ? asset('storage/' . $this->feature_image)
+            ? asset('website/' . $this->feature_image)
             : asset('website/images/default-announcement.jpg');
     }
 

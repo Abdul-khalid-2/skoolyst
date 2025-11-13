@@ -45,14 +45,18 @@ class AnnouncementController extends Controller
             'meta_description' => 'nullable|string|max:500',
         ]);
 
-        $data = $request->except('feature_image');
-        $data['school_id'] = auth()->user()->school_id;
+        $school = auth()->user()->school; // assuming relation exists
+        $folderName = \Str::slug($school->name) ?? 'school-' . $school->id;
 
+        $data = $request->except('feature_image');
+        $data['school_id'] = $school->id;
         $data['content'] = Purifier::clean($request->content);
 
+        // ✅ Handle feature image upload (stored under website disk)
         if ($request->hasFile('feature_image')) {
-            $path = $request->file('feature_image')->store('announcements', 'public');
-            $data['feature_image'] = $path;
+            $imagePath = Storage::disk('website')
+                ->putFile("school/{$folderName}/announcements", $request->file('feature_image'));
+            $data['feature_image'] = $imagePath;
         }
 
         Announcement::create($data);
@@ -95,22 +99,24 @@ class AnnouncementController extends Controller
             'expire_at' => 'nullable|date|after:publish_at',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string|max:500',
-            'status' => 'required|in:draft,published,archived',
         ]);
 
+        $school = auth()->user()->school;
+        $folderName = \Str::slug($school->name) ?? 'school-' . $school->id;
+
         $data = $request->except('feature_image');
+        $data['content'] = Purifier::clean($request->content);
 
         if ($request->hasFile('feature_image')) {
             // Delete old image
-            if ($announcement->feature_image) {
-                Storage::disk('public')->delete($announcement->feature_image);
+            if ($announcement->feature_image && Storage::disk('website')->exists($announcement->feature_image)) {
+                Storage::disk('website')->delete($announcement->feature_image);
             }
 
-            $path = $request->file('feature_image')->store('announcements', 'public');
-            $data['feature_image'] = $path;
+            $imagePath = Storage::disk('website')
+                ->putFile("school/{$folderName}/announcements", $request->file('feature_image'));
+            $data['feature_image'] = $imagePath;
         }
-
-        $data['content'] = Purifier::clean($request->content);
 
         $announcement->update($data);
 
