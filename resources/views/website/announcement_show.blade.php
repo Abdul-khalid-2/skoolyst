@@ -773,10 +773,6 @@
                                         <span class="meta-bar-value">{{ $announcement->expire_at->format('M d, Y') }}</span>
                                     </div>
                                     @endif
-                                    <div class="meta-bar-item">
-                                        <span class="meta-bar-label">Status</span>
-                                        <span class="meta-bar-value">{{ ucfirst($announcement->status) }}</span>
-                                    </div>
                                 </div>
                             </div>
                             @endif

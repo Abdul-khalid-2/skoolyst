@@ -142,4 +142,19 @@ Route::post('announcements/{uuid}/comments', [WebsiteAnnouncementController::cla
 Route::resource('announcements', AnnouncementController::class);
 // Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
 //     ->name('announcements.comments.store');
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+    // Blog Categories
+    Route::resource('blog-categories', \App\Http\Controllers\BlogCategoryController::class);
+
+    // Blog Posts
+    Route::resource('blog-posts', \App\Http\Controllers\BlogPostController::class);
+
+    // Comments
+    Route::get('comments', [\App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
+    Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
+    Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+});
+
+
 require __DIR__ . '/auth.php';

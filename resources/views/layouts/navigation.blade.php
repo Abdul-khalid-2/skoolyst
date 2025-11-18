@@ -37,6 +37,13 @@
                     <span>Announcements</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.blog-posts.index') }}"
+                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Post</span>
+                </a>
+            </li>
 
 
             @role('super-admin')
@@ -73,15 +80,15 @@
                 <button class="btn btn-link position-relative" data-bs-toggle="dropdown" id="contactNotifications">
                     <i class="fas fa-bell text-gray-600"></i>
                     @php
-                        $newInquiriesCount = \App\Models\ContactInquiry::forSchool(auth()->user()->school_id)
-                            ->where('status', 'new')
-                            ->count();
+                    $newInquiriesCount = \App\Models\ContactInquiry::forSchool(auth()->user()->school_id)
+                    ->where('status', 'new')
+                    ->count();
                     @endphp
                     @if($newInquiriesCount > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                            style="font-size: 0.6rem;" id="notificationBadge">
-                            {{ $newInquiriesCount }}
-                        </span>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                        style="font-size: 0.6rem;" id="notificationBadge">
+                        {{ $newInquiriesCount }}
+                    </span>
                     @endif
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;" id="contactNotificationsDropdown">
@@ -89,53 +96,53 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <strong>Contact Inquiries</strong>
                             @if($newInquiriesCount > 0)
-                                <span class="badge bg-primary">{{ $newInquiriesCount }} new</span>
+                            <span class="badge bg-primary">{{ $newInquiriesCount }} new</span>
                             @endif
                         </div>
                     </li>
                     <li>
                         <div class="dropdown-item-text">
                             @php
-                                $recentInquiries = \App\Models\ContactInquiry::with(['user', 'branch'])
-                                    ->forSchool(auth()->user()->school_id)
-                                    ->latest()
-                                    ->limit(5)
-                                    ->get();
+                            $recentInquiries = \App\Models\ContactInquiry::with(['user', 'branch'])
+                            ->forSchool(auth()->user()->school_id)
+                            ->latest()
+                            ->limit(5)
+                            ->get();
                             @endphp
-                            
+
                             @if($recentInquiries->count() > 0)
-                                <div class="notification-list">
-                                    @foreach($recentInquiries as $inquiry)
-                                        <div class="notification-item p-2 border-bottom">
-                                            <div class="d-flex justify-content-between align-items-start">
-                                                <div class="flex-grow-1">
-                                                    <div class="fw-bold text-truncate" style="max-width: 200px;">
-                                                        {{ $inquiry->name }}
-                                                    </div>
-                                                    <small class="text-muted">
-                                                        {{ $inquiry->full_subject }}
-                                                    </small>
-                                                    <div class="text-truncate small" style="max-width: 250px;">
-                                                        {{ Str::limit($inquiry->message, 50) }}
-                                                    </div>
-                                                </div>
-                                                <div class="text-end">
-                                                    <span class="badge bg-{{ $inquiry->status === 'new' ? 'danger' : 'secondary' }} badge-sm">
-                                                        {{ ucfirst($inquiry->status) }}
-                                                    </span>
-                                                    <div class="text-muted small">
-                                                        {{ $inquiry->created_at->diffForHumans() }}
-                                                    </div>
-                                                </div>
+                            <div class="notification-list">
+                                @foreach($recentInquiries as $inquiry)
+                                <div class="notification-item p-2 border-bottom">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <div class="fw-bold text-truncate" style="max-width: 200px;">
+                                                {{ $inquiry->name }}
+                                            </div>
+                                            <small class="text-muted">
+                                                {{ $inquiry->full_subject }}
+                                            </small>
+                                            <div class="text-truncate small" style="max-width: 250px;">
+                                                {{ Str::limit($inquiry->message, 50) }}
                                             </div>
                                         </div>
-                                    @endforeach
+                                        <div class="text-end">
+                                            <span class="badge bg-{{ $inquiry->status === 'new' ? 'danger' : 'secondary' }} badge-sm">
+                                                {{ ucfirst($inquiry->status) }}
+                                            </span>
+                                            <div class="text-muted small">
+                                                {{ $inquiry->created_at->diffForHumans() }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                @endforeach
+                            </div>
                             @else
-                                <div class="text-center py-3 text-muted">
-                                    <i class="fas fa-inbox fa-2x mb-2"></i>
-                                    <p class="mb-0">No contact inquiries yet</p>
-                                </div>
+                            <div class="text-center py-3 text-muted">
+                                <i class="fas fa-inbox fa-2x mb-2"></i>
+                                <p class="mb-0">No contact inquiries yet</p>
+                            </div>
                             @endif
                         </div>
                     </li>
@@ -153,9 +160,9 @@
             <div class="dropdown">
                 <button class="btn btn-link d-flex align-items-center" data-bs-toggle="dropdown">
                     @if (auth()->user()->profile_picture_url)
-                        <img src="{{ auth()->user()->profile_picture_url }}" alt="{{ auth()->user()->name }}" class="rounded-circle me-2" width="32" height="32">
+                    <img src="{{ auth()->user()->profile_picture_url }}" alt="{{ auth()->user()->name }}" class="rounded-circle me-2" width="32" height="32">
                     @else
-                        <i class="fas fa-user me-2"></i>
+                    <i class="fas fa-user me-2"></i>
                     @endif
                     <span class="text-gray-700 d-none d-sm-inline">{{ auth()->user()->name }}</span>
                     <i class="fas fa-chevron-down ms-2 text-gray-500"></i>
