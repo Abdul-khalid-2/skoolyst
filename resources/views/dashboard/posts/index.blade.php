@@ -58,7 +58,7 @@
                                     <td>{{ $post->published_at?->format('M j, Y') ?? '-' }}</td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('blog.show', [$post->category?->slug, $post->slug]) }}" 
+                                            <a href="{{ route('admin.blog-posts.show', [$post->category?->slug, $post->slug]) }}" 
                                                class="btn btn-sm btn-outline-primary" target="_blank">
                                                 <i class="fas fa-eye"></i>
                                             </a>
