@@ -1,236 +1,297 @@
-<x-app-layout>
-    <main class="main-content">
-        <section id="blog-create" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="h4 mb-0">Create Blog Post</h2>
-                    <p class="mb-0 text-muted">Build your blog post with drag and drop elements</p>
-                </div>
-                <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Posts
-                </a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Blog Post - Skoolyst</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-school me-2"></i>Skoolyst
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">
+                            <i class="fas fa-blog me-1"></i>Blog Posts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-users me-1"></i>Users
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <i class="fas fa-cog me-1"></i>Settings
+                        </a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>Admin
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
+        </div>
+    </nav>
 
-            <div class="builder-container">
-                <div class="d-flex">
-                    <!-- Sidebar -->
-                    <div class="sidebar p-3">
-                        <h5 class="mb-3">Blog Elements</h5>
-                        
-                        <div class="widget-card p-3" draggable="true" data-type="heading">
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+        <div class="row">
+            <!-- Left Sidebar - Blog Elements (Fixed) -->
+            <div class="col-md-3 col-lg-2">
+                <div class="card sticky-top" style="top: 20px;">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="fas fa-shapes me-2"></i>Blog Elements</h6>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="widget-card p-3 mb-3" draggable="true" data-type="heading">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-heading text-primary me-2"></i>
                                 <span>Heading</span>
                             </div>
                         </div>
                         
-                        <div class="widget-card p-3" draggable="true" data-type="text">
+                        <div class="widget-card p-3 mb-3" draggable="true" data-type="text">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-paragraph text-primary me-2"></i>
                                 <span>Text Content</span>
                             </div>
                         </div>
                         
-                        <div class="widget-card p-3" draggable="true" data-type="image">
+                        <div class="widget-card p-3 mb-3" draggable="true" data-type="image">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-image text-primary me-2"></i>
                                 <span>Image</span>
                             </div>
                         </div>
                         
-                        <div class="widget-card p-3" draggable="true" data-type="banner">
+                        <div class="widget-card p-3 mb-3" draggable="true" data-type="banner">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-banner text-primary me-2"></i>
                                 <span>Banner</span>
                             </div>
                         </div>
                         
-                        <div class="widget-card p-3" draggable="true" data-type="columns">
+                        <div class="widget-card p-3 mb-3" draggable="true" data-type="columns">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-columns text-primary me-2"></i>
                                 <span>Two Columns</span>
                             </div>
                         </div>
 
-                        <hr>
+                        <hr class="my-3">
                         
-                        <div class="mt-3">
-                            <button class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="builder.previewPage()">
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary btn-sm" onclick="builder.previewPage()">
                                 <i class="fas fa-eye me-1"></i>Preview
                             </button>
-                            <button class="btn btn-outline-danger btn-sm w-100" onclick="builder.clearCanvas()">
+                            <button class="btn btn-outline-danger btn-sm" onclick="builder.clearCanvas()">
                                 <i class="fas fa-trash me-1"></i>Clear All
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Main Content Area -->
-                    <div class="flex-grow-1">
-                        <!-- Basic Information Card -->
-                        <div class="card basic-info-card">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+            <!-- Main Content Area -->
+            <div class="col-md-9 col-lg-10">
+                <!-- Page Header -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h2 class="h4 mb-0">Create Blog Post</h2>
+                        <p class="mb-0 text-muted">Build your blog post with drag and drop elements</p>
+                    </div>
+                    <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Posts
+                    </a>
+                </div>
+
+                <!-- Basic Information Card -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="blogPostForm">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="mb-3">
+                                        <label for="title" class="form-label">Post Title *</label>
+                                        <input type="text" class="form-control" id="title" name="title" required
+                                                placeholder="Enter your blog post title" value="{{ old('title') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="blog_category_id" class="form-label">Category</label>
+                                        <select class="form-select" id="blog_category_id" name="blog_category_id">
+                                            <option value="">Select Category</option>
+                                            @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ old('blog_category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <form id="blogPostForm">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <div class="mb-3">
-                                                <label for="title" class="form-label">Post Title *</label>
-                                                <input type="text" class="form-control" id="title" name="title" required
-                                                       placeholder="Enter your blog post title" value="{{ old('title') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="mb-3">
-                                                <label for="blog_category_id" class="form-label">Category</label>
-                                                <select class="form-select" id="blog_category_id" name="blog_category_id">
-                                                    <option value="">Select Category</option>
-                                                    @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ old('blog_category_id') == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
 
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="school_id" class="form-label">Associated School</label>
-                                                <select class="form-select" id="school_id" name="school_id">
-                                                    <option value="">General Post</option>
-                                                    @foreach($schools as $school)
-                                                    <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
-                                                        {{ $school->name }}
-                                                    </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="status" class="form-label">Status</label>
-                                                <select class="form-select" id="status" name="status">
-                                                    <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
-                                                    <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published</option>
-                                                    <option value="archived" {{ old('status') == 'archived' ? 'selected' : '' }}>Archived</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="featured_image" class="form-label">Featured Image</label>
-                                                <input type="file" class="form-control" id="featured_image" name="featured_image" accept="image/*">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="is_featured" class="form-label">Featured Post</label>
-                                                <select class="form-select" id="is_featured" name="is_featured">
-                                                    <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>No</option>
-                                                    <option value="1" {{ old('is_featured') == '1' ? 'selected' : '' }}>Yes</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-
+                            <div class="row">
+                                <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="excerpt" class="form-label">Excerpt</label>
-                                        <textarea class="form-control" id="excerpt" name="excerpt" rows="2" 
-                                                  placeholder="Brief description of your blog post">{{ old('excerpt') }}</textarea>
+                                        <label for="school_id" class="form-label">Associated School</label>
+                                        <select class="form-select" id="school_id" name="school_id">
+                                            <option value="">General Post</option>
+                                            @foreach($schools as $school)
+                                            <option value="{{ $school->id }}" {{ old('school_id') == $school->id ? 'selected' : '' }}>
+                                                {{ $school->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
-
+                                </div>
+                                <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="tags" class="form-label">Tags</label>
-                                        <div class="tags-container" id="tagsContainer">
-                                            <input type="text" class="tags-input" id="tagsInput" 
-                                                   placeholder="Type a tag and press Enter or Space">
-                                        </div>
-                                        <div class="tags-help-text">Press Enter, Space, or comma to add a tag. Click the X to remove.</div>
-                                        <input type="hidden" id="tags" name="tags">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-select" id="status" name="status">
+                                            <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                                            <option value="published" {{ old('status') == 'published' ? 'selected' : '' }}>Published</option>
+                                            <option value="archived" {{ old('status') == 'archived' ? 'selected' : '' }}>Archived</option>
+                                        </select>
                                     </div>
-
-                                    <!-- SEO Information -->
-                                    <div class="row mt-3">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="meta_title" class="form-label">Meta Title</label>
-                                                <input type="text" class="form-control" id="meta_title" name="meta_title" 
-                                                       placeholder="Meta title for SEO" value="{{ old('meta_title') }}">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="published_at" class="form-label">Publish Date & Time</label>
-                                                <input type="datetime-local" class="form-control" id="published_at" name="published_at" 
-                                                       value="{{ old('published_at') }}">
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label for="meta_description" class="form-label">Meta Description</label>
-                                        <textarea class="form-control" id="meta_description" name="meta_description" rows="2" 
-                                                  placeholder="Meta description for SEO">{{ old('meta_description') }}</textarea>
-                                    </div>
-                                </form>
+                                </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="featured_image" class="form-label">Featured Image</label>
+                                        <input type="file" class="form-control" id="featured_image" name="featured_image" accept="image/*">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="is_featured" class="form-label">Featured Post</label>
+                                        <select class="form-select" id="is_featured" name="is_featured">
+                                            <option value="0" {{ old('is_featured') == '0' ? 'selected' : '' }}>No</option>
+                                            <option value="1" {{ old('is_featured') == '1' ? 'selected' : '' }}>Yes</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="excerpt" class="form-label">Excerpt</label>
+                                <textarea class="form-control" id="excerpt" name="excerpt" rows="2" 
+                                            placeholder="Brief description of your blog post">{{ old('excerpt') }}</textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">Tags</label>
+                                <div class="tags-container" id="tagsContainer">
+                                    <input type="text" class="tags-input" id="tagsInput" 
+                                            placeholder="Type a tag and press Enter or Space">
+                                </div>
+                                <div class="tags-help-text">Press Enter, Space, or comma to add a tag. Click the X to remove.</div>
+                                <input type="hidden" id="tags" name="tags">
+                            </div>
+
+                            <!-- SEO Information -->
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="meta_title" class="form-label">Meta Title</label>
+                                        <input type="text" class="form-control" id="meta_title" name="meta_title" 
+                                                placeholder="Meta title for SEO" value="{{ old('meta_title') }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="published_at" class="form-label">Publish Date & Time</label>
+                                        <input type="datetime-local" class="form-control" id="published_at" name="published_at" 
+                                                value="{{ old('published_at') }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="meta_description" class="form-label">Meta Description</label>
+                                <textarea class="form-control" id="meta_description" name="meta_description" rows="2" 
+                                            placeholder="Meta description for SEO">{{ old('meta_description') }}</textarea>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Page Builder Canvas -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-pencil-alt me-2"></i>Content Builder</h5>
+                            <span class="badge bg-light text-dark" id="elementCount">0 elements</span>
                         </div>
-
-                        <!-- Page Builder Canvas -->
-                        <div class="card">
-                            <div class="card-header bg-success text-white">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <h5 class="mb-0"><i class="fas fa-pencil-alt me-2"></i>Content Builder</h5>
-                                    <span class="badge bg-light text-dark" id="elementCount">0 elements</span>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="canvas-area" id="canvas">
-                                    <div class="empty-canvas" id="emptyCanvas">
-                                        <i class="fas fa-arrow-left fa-2x mb-3"></i>
-                                        <h5>Drag elements here to build your blog post</h5>
-                                        <p class="text-muted">Select from the sidebar and drop in this area</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Save Section -->
-                        <div class="card mt-4">
-                            <div class="card-header bg-dark text-white">
-                                <h5 class="mb-0"><i class="fas fa-save me-2"></i>Save Blog Post</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="mb-1">Ready to publish your blog post?</h6>
-                                        <p class="text-muted mb-0">Review your content and save when ready</p>
-                                    </div>
-                                    <div class="d-flex gap-2">
-                                        <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-secondary">
-                                            <i class="fas fa-arrow-left me-2"></i>Back to Posts
-                                        </a>
-                                        <button type="button" class="btn btn-success" onclick="builder.saveBlogPost()">
-                                            <i class="fas fa-save me-2"></i>Save Blog Post
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="saveResult" class="mt-3"></div>
+                    </div>
+                    <div class="card-body">
+                        <div class="canvas-area" id="canvas">
+                            <div class="empty-canvas" id="emptyCanvas">
+                                <i class="fas fa-arrow-left fa-2x mb-3"></i>
+                                <h5>Drag elements here to build your blog post</h5>
+                                <p class="text-muted">Select from the sidebar and drop in this area</p>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Save Section -->
+                <div class="card">
+                    <div class="card-header bg-dark text-white">
+                        <h5 class="mb-0"><i class="fas fa-save me-2"></i>Save Blog Post</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-1">Ready to publish your blog post?</h6>
+                                <p class="text-muted mb-0">Review your content and save when ready</p>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Posts
+                                </a>
+                                <button type="button" class="btn btn-success" onclick="builder.saveBlogPost()">
+                                    <i class="fas fa-save me-2"></i>Save Blog Post
+                                </button>
+                            </div>
+                        </div>
+                        <div id="saveResult" class="mt-3"></div>
+                    </div>
+                </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </div>
 
     <!-- Preview Modal -->
     <div class="modal fade" id="previewModal" tabindex="-1">
@@ -249,30 +310,10 @@
 
     <!-- Styles -->
     <style>
-        .builder-container {
-            background: #f8f9fa;
-            min-height: 100vh;
-        }
-        
-        .sidebar {
-            background: white;
-            border-right: 1px solid #dee2e6;
-            height: 100vh;
-            overflow-y: auto;
-            position: fixed;
-            width: 300px;
-        }
-        
-        .main-content {
-            margin-left: 300px;
-            padding: 20px;
-        }
-        
         .widget-card {
             cursor: grab;
             border: 2px dashed #dee2e6;
             transition: all 0.3s;
-            margin-bottom: 10px;
             border-radius: 8px;
         }
         
@@ -287,7 +328,6 @@
             border: 2px dashed #ced4da;
             border-radius: 8px;
             padding: 20px;
-            margin-bottom: 20px;
         }
         
         .canvas-element {
@@ -390,10 +430,6 @@
         .cke_notification_warning{
             display: none;
         }
-
-        .basic-info-card {
-            margin-bottom: 20px;
-        }
         
         /* Tags Input Styles */
         .tags-container {
@@ -473,6 +509,17 @@
             color: #6c757d;
             margin-top: 4px;
         }
+
+        /* Sticky sidebar */
+        .sticky-top {
+            position: sticky;
+            z-index: 100;
+        }
+
+        /* Navbar styles */
+        .navbar-brand {
+            font-weight: 600;
+        }
     </style>
 
     <!-- Scripts -->
@@ -481,10 +528,7 @@
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
 
     <script>
-        // Include the exact same JavaScript code from your LegalConsultent app here
-        // The entire BlogPostBuilder and TagsManager classes with all methods
-        // Just update the form submission URL to match your Skoolyst routes
-
+        // File size validation for featured image
         document.getElementById('featured_image').addEventListener('change', function(e) {
             const file = e.target.files[0];
             const maxSize = 2000 * 1024;
@@ -511,8 +555,8 @@
             }
         });
 
+        // Tags Manager Class
         class TagsManager {
-            // ... Include the entire TagsManager class from your LegalConsultent app
             constructor() {
                 this.tags = [];
                 this.init();
@@ -641,6 +685,7 @@
             }
         }
 
+        // Blog Post Builder Class
         class BlogPostBuilder {
             constructor() {
                 this.elements = [];
@@ -1047,12 +1092,6 @@
                 
                 this.elements = [];
                 $('#canvas').empty().append($('#emptyCanvas').show());
-                $('#canvas').append(`
-                <div class="empty-canvas" id="emptyCanvas">
-                        <i class="fas fa-arrow-left fa-2x mb-3"></i>
-                        <h5>Drag elements here to build your blog post</h5>
-                        <p class="text-muted">Select from the sidebar and drop in this area</p>
-                    </div>`);
                 this.updateElementCount();
             }
 
@@ -1314,4 +1353,5 @@
             window.tagsManager = new TagsManager();
         });
     </script>
-</x-app-layout>
+</body>
+</html>
