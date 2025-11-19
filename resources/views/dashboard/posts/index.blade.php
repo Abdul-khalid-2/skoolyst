@@ -33,8 +33,8 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($post->featured_image)
-                                            <img src="{{ Storage::url($post->featured_image) }}" alt="{{ $post->title }}" 
-                                                 class="rounded me-3" style="width: 60px; height: 40px; object-fit: cover;">
+                                                <img src="{{ asset('website/' . $post->featured_image) }}" alt="{{ $post->title }}" 
+                                                    class="rounded me-3" style="width: 60px; height: 40px; object-fit: cover;">
                                             @endif
                                             <div>
                                                 <h6 class="mb-0">{{ Str::limit($post->title, 50) }}</h6>
