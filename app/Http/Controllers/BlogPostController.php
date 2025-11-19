@@ -93,7 +93,7 @@ class BlogPostController extends Controller
 
             // Handle featured image upload
             if ($request->hasFile('featured_image')) {
-                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'public');
+                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'website');
                 $blogData['featured_image'] = $featuredImagePath;
             }
 
@@ -221,9 +221,9 @@ class BlogPostController extends Controller
             if ($request->hasFile('featured_image')) {
                 // Delete old image
                 if ($blogPost->featured_image) {
-                    Storage::disk('public')->delete($blogPost->featured_image);
+                    Storage::disk('website')->delete($blogPost->featured_image);
                 }
-                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'public');
+                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'website');
                 $blogData['featured_image'] = $featuredImagePath;
             }
 
@@ -248,7 +248,7 @@ class BlogPostController extends Controller
     public function destroy(BlogPost $blogPost)
     {
         if ($blogPost->featured_image) {
-            Storage::disk('public')->delete($blogPost->featured_image);
+            Storage::disk('website')->delete($blogPost->featured_image);
         }
 
         $blogPost->delete();
@@ -317,7 +317,7 @@ class BlogPostController extends Controller
             $filename = Str::uuid() . '.' . $imageType;
             $filePath = "blog/images/{$folderName}/{$filename}";
 
-            Storage::disk('public')->put($filePath, $imageData);
+            Storage::disk('website')->put($filePath, $imageData);
 
             return $filePath;
         } catch (\Exception $e) {
