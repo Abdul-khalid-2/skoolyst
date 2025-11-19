@@ -40,7 +40,7 @@
             <li class="nav-item">
                 <a href="{{ route('admin.blog-posts.index') }}"
                     class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-bullhorn"></i>
+                    <i class="fas fa-blog me-1"></i>
                     <span>Post</span>
                 </a>
             </li>
