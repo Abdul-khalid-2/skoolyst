@@ -23,6 +23,8 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\SchoolImageGalleryController;
 use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
+use App\Http\Controllers\Website\WebsiteBlogPostController;
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -154,6 +156,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::get('comments', [\App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
     Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
     Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+});
+
+
+// Blog Routes
+Route::prefix('blog')->name('website.blog.')->group(function () {
+    Route::get('/', [WebsiteBlogPostController::class, 'index'])->name('index');
+    Route::get('/{slug}', [WebsiteBlogPostController::class, 'show'])->name('show');
+    Route::get('/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('category');
+    Route::get('/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('tag');
 });
 
 
