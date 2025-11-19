@@ -264,7 +264,7 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="d-flex align-items-center">
                                         @if($post->author && $post->author->profile_image)
-                                        <img src="{{ asset('storage/' . $post->author->profile_image) }}"
+                                        <img src="{{ asset('website/' . $post->author->profile_image) }}"
                                             alt="{{ $post->author->name }}"
                                             class="rounded-circle me-2"
                                             style="width: 32px; height: 32px; object-fit: cover;">
@@ -348,7 +348,7 @@
                         @foreach($popularPosts as $popularPost)
                         <div class="d-flex mb-3 pb-3 border-bottom">
                             @if($popularPost->featured_image)
-                            <img src="{{ asset('storage/' . $popularPost->featured_image) }}"
+                            <img src="{{ asset('website/' . $popularPost->featured_image) }}"
                                 alt="{{ $popularPost->title }}"
                                 class="flex-shrink-0 me-3 rounded"
                                 style="width: 60px; height: 60px; object-fit: cover;">
