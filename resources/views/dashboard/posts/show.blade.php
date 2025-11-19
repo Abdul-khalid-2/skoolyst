@@ -69,14 +69,14 @@
                         <p class="mb-0 text-muted">Blog post details and statistics</p>
                     </div>
                     <div class="btn-group">
-                        <a href="#" 
+                        <a href="{{ route('admin.blog-posts.show', [$blogPost->category?->slug, $blogPost->slug]) }}" 
                            class="btn btn-outline-primary" target="_blank">
                             <i class="fas fa-eye me-2"></i> View Live
                         </a>
-                        <a href="#" class="btn btn-primary">
+                        <a href="{{ route('admin.blog-posts.edit', $blogPost) }}" class="btn btn-primary">
                             <i class="fas fa-edit me-2"></i> Edit
                         </a>
-                        <a href="#" class="btn btn-secondary">
+                        <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i> Back to Posts
                         </a>
                     </div>
@@ -384,14 +384,14 @@
                             </div>
                             <div class="card-body">
                                 <div class="d-grid gap-2">
-                                    <a href="#" class="btn btn-primary">
+                                    <a href="{{ route('admin.blog-posts.edit', $blogPost) }}" class="btn btn-primary">
                                         <i class="fas fa-edit me-2"></i> Edit Post
                                     </a>
-                                    <a href="#" 
+                                    <a href="{{ route('admin.blog-posts.show', [$blogPost->category?->slug, $blogPost->slug]) }}" 
                                        class="btn btn-outline-primary" target="_blank">
                                         <i class="fas fa-external-link-alt me-2"></i> View Live
                                     </a>
-                                    <a href="#" class="btn btn-outline-secondary">
+                                    <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-outline-secondary">
                                         <i class="fas fa-arrow-left me-2"></i> Back to Posts
                                     </a>
                                 </div>

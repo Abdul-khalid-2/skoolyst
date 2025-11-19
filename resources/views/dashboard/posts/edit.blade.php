@@ -195,7 +195,7 @@
                                         @if($blogPost->featured_image)
                                         <div class="mt-2">
                                             <small class="text-muted">Current Image:</small>
-                                            <img src="{{ Storage::url($blogPost->featured_image) }}" alt="Current featured image" class="img-fluid rounded mt-1" style="max-height: 100px;">
+                                            <img src="{{ asset('website/'.$blogPost->featured_image) }}" alt="Current featured image" class="img-fluid rounded mt-1" style="max-height: 100px;">
                                         </div>
                                         @endif
                                     </div>
