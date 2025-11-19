@@ -134,6 +134,7 @@ class WebsiteBlogPostController extends Controller
      */
     public function category($slug)
     {
+        abort(503); // Disable category view
         $category = BlogCategory::where('slug', $slug)->firstOrFail();
 
         $posts = BlogPost::with(['author', 'category'])
@@ -173,6 +174,7 @@ class WebsiteBlogPostController extends Controller
      */
     public function tag($tag)
     {
+        abort(503);
         $posts = BlogPost::with(['author', 'category'])
             ->where('status', 'published')
             ->where('published_at', '<=', now())
