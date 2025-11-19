@@ -442,15 +442,29 @@ class BlogPostController extends Controller
             'heading' => fn($el) => "<{$el['content']['level']}>{$el['content']['text']}</{$el['content']['level']}>",
             'text' => fn($el) => $el['content']['content'],
             'image' => fn($el) => $el['content']['src'] ?
-                "<figure><img src=\"" . asset('website/' . $el['content']['src']) . "\" alt=\"{$el['content']['alt']}\">" .
+                "<figure><img src=\"" . $this->getImageUrlForContent($el['content']['src']) . "\" alt=\"{$el['content']['alt']}\">" .
                 ($el['content']['caption'] ? "<figcaption>{$el['content']['caption']}</figcaption>" : "") . "</figure>" : '',
             'banner' => fn($el) => $el['content']['src'] ?
-                "<div class=\"banner\"><img src=\"" . asset('website/' . $el['content']['src']) . "\" alt=\"Banner\">" .
+                "<div class=\"banner\"><img src=\"" . $this->getImageUrlForContent($el['content']['src']) . "\" alt=\"Banner\">" .
                 "<div class=\"banner-content\"><h2>{$el['content']['title']}</h2><p>{$el['content']['subtitle']}</p></div></div>" : '',
             'columns' => fn($el) => "<div class=\"row\"><div class=\"col-md-6\">{$el['content']['left']}</div><div class=\"col-md-6\">{$el['content']['right']}</div></div>"
         ];
 
         return $templates[$element['type']]($element) ?? '';
+    }
+
+    /**
+     * Get correct image URL for content - only add asset path if it's a storage path
+     */
+    private function getImageUrlForContent($path)
+    {
+        // If it's already a full URL, return as is
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        // If it's a storage path, add the asset path
+        return asset('website/' . $path);
     }
 
     /**
