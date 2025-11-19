@@ -165,6 +165,9 @@ Route::prefix('blog')->name('website.blog.')->group(function () {
     Route::get('/{slug}', [WebsiteBlogPostController::class, 'show'])->name('show');
     Route::get('/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('category');
     Route::get('/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('tag');
+
+
+    Route::post('/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('comment.store');
 });
 
 

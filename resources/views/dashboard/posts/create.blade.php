@@ -308,6 +308,34 @@
         </div>
     </div>
 
+    <!-- Language Direction Modal -->
+    <div class="modal fade" id="languageDirectionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select Text Direction</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-outline-primary text-start" onclick="builder.setLanguageDirection('ltr')">
+                            <i class="fas fa-align-left me-2"></i>
+                            <strong>English (LTR)</strong>
+                            <br>
+                            <small class="text-muted">Left to Right - For English content</small>
+                        </button>
+                        <button type="button" class="btn btn-outline-primary text-start" onclick="builder.setLanguageDirection('rtl')">
+                            <i class="fas fa-align-right me-2"></i>
+                            <strong>اردو (RTL)</strong>
+                            <br>
+                            <small class="text-muted">Right to Left - For Urdu content</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Styles -->
     <style>
         .widget-card {
@@ -430,6 +458,49 @@
         .cke_notification_warning{
             display: none;
         }
+
+        /* RTL Support for CKEditor */
+        .ckeditor-rtl {
+            direction: rtl;
+            text-align: right;
+        }
+        
+        .ckeditor-rtl .cke_contents {
+            direction: rtl;
+            text-align: right;
+        }
+
+        /* Language Direction Button */
+        .language-direction-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .language-direction-btn:hover {
+            background: #0056b3;
+            transform: scale(1.1);
+        }
+
+        .language-direction-btn.rtl {
+            background: #28a745;
+        }
+
+        .language-direction-btn.rtl:hover {
+            background: #1e7e34;
+        }
         
         /* Tags Input Styles */
         .tags-container {
@@ -519,6 +590,18 @@
         /* Navbar styles */
         .navbar-brand {
             font-weight: 600;
+        }
+
+        /* RTL Text Elements */
+        .rtl-text {
+            direction: rtl;
+            text-align: right;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .ltr-text {
+            direction: ltr;
+            text-align: left;
         }
     </style>
 
@@ -691,6 +774,7 @@
                 this.elements = [];
                 this.nextId = 1;
                 this.ckEditors = new Map();
+                this.languageDirection = 'ltr'; // Default to LTR
                 this.init();
             }
 
@@ -740,7 +824,8 @@
                     id: id,
                     type: type,
                     content: this.getDefaultContent(type),
-                    position: this.elements.length
+                    position: this.elements.length,
+                    languageDirection: this.languageDirection
                 };
 
                 this.elements.push(element);
@@ -752,13 +837,28 @@
 
             getDefaultContent(type) {
                 const defaults = {
-                    heading: { text: 'New Heading', level: 'h2' },
-                    text: { content: '<p>Enter your text content here...</p>' },
+                    heading: { 
+                        text: this.languageDirection === 'rtl' ? 'عنوان' : 'New Heading', 
+                        level: 'h2' 
+                    },
+                    text: { 
+                        content: this.languageDirection === 'rtl' ? 
+                            '<p>اپنا متن یہاں درج کریں...</p>' : 
+                            '<p>Enter your text content here...</p>' 
+                    },
                     image: { src: '', alt: 'Image', caption: '' },
-                    banner: { src: '', title: 'Banner Title', subtitle: 'Banner subtitle' },
+                    banner: { 
+                        src: '', 
+                        title: this.languageDirection === 'rtl' ? 'بینر کا عنوان' : 'Banner Title', 
+                        subtitle: this.languageDirection === 'rtl' ? 'بینر کی ذیلی عنوان' : 'Banner subtitle' 
+                    },
                     columns: { 
-                        left: '<p>Left column content...</p>', 
-                        right: '<p>Right column content...</p>' 
+                        left: this.languageDirection === 'rtl' ? 
+                            '<p>بائیں کالم کا مواد...</p>' : 
+                            '<p>Left column content...</p>', 
+                        right: this.languageDirection === 'rtl' ? 
+                            '<p>دائیں کالم کا مواد...</p>' : 
+                            '<p>Right column content...</p>' 
                     }
                 };
                 return defaults[type] || {};
@@ -768,7 +868,7 @@
                 const html = this.getElementHTML(element);
                 $('#canvas').append(html);
                 this.attachElementEvents(element.id);
-                this.initCKEditor(element.id, element.type);
+                this.initCKEditor(element.id, element.type, element.languageDirection);
             }
 
             getElementHTML(element) {
@@ -789,6 +889,9 @@
                                     <span class="element-type-badge">${el.content.level || 'h2'}</span>
                                 </div>
                                 <div class="position-controls">
+                                    <button type="button" class="position-btn language-direction" title="Change Language Direction" onclick="builder.showLanguageDirectionModal('${el.id}')">
+                                        <i class="fas fa-language"></i>
+                                    </button>
                                     <button type="button" class="position-btn move-up" title="Move Up" onclick="builder.moveElementUp('${el.id}')">
                                         <i class="fas fa-arrow-up"></i>
                                     </button>
@@ -800,9 +903,10 @@
                                     </button>
                                 </div>
                             </div>
-                            <input type="text" class="form-control heading-input" 
+                            <input type="text" class="form-control heading-input ${el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text'}" 
                                 value="${el.content.text}" 
-                                placeholder="Enter heading text">
+                                placeholder="${el.languageDirection === 'rtl' ? 'عنوان درج کریں' : 'Enter heading text'}"
+                                style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
                             <select class="form-select mt-2 heading-level">
                                 <option value="h1" ${el.content.level === 'h1' ? 'selected' : ''}>H1</option>
                                 <option value="h2" ${el.content.level === 'h2' || !el.content.level ? 'selected' : ''}>H2</option>
@@ -819,6 +923,9 @@
                                     <span class="element-type-badge">Text</span>
                                 </div>
                                 <div class="position-controls">
+                                    <button type="button" class="position-btn language-direction" title="Change Language Direction" onclick="builder.showLanguageDirectionModal('${el.id}')">
+                                        <i class="fas fa-language"></i>
+                                    </button>
                                     <button type="button" class="position-btn move-up" title="Move Up" onclick="builder.moveElementUp('${el.id}')">
                                         <i class="fas fa-arrow-up"></i>
                                     </button>
@@ -830,7 +937,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="ckeditor-container">
+                            <div class="ckeditor-container ${el.languageDirection === 'rtl' ? 'ckeditor-rtl' : ''}">
                                 <textarea class="form-control ckeditor-text" id="ckeditor-text-${el.id}" rows="6">${el.content.content}</textarea>
                             </div>
                         </div>
@@ -858,8 +965,10 @@
                             <div class="mb-3">
                                 <input type="file" class="form-control image-upload" accept="image/*">
                             </div>
-                            <input type="text" class="form-control mb-2 image-caption" 
-                                value="${el.content.caption}" placeholder="Image caption">
+                            <input type="text" class="form-control mb-2 image-caption ${el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text'}" 
+                                value="${el.content.caption}" 
+                                placeholder="${el.languageDirection === 'rtl' ? 'تصویر کی کیپشن' : 'Image caption'}"
+                                style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
                             ${el.content.src ? `<img src="${el.content.src}" class="img-fluid mt-2" style="max-height: 200px;">` : ''}
                         </div>
                     `,
@@ -886,10 +995,14 @@
                             <div class="mb-3">
                                 <input type="file" class="form-control image-upload" accept="image/*">
                             </div>
-                            <input type="text" class="form-control mb-2 banner-title" 
-                                value="${el.content.title}" placeholder="Banner title">
-                            <input type="text" class="form-control mb-2 banner-subtitle" 
-                                value="${el.content.subtitle}" placeholder="Banner subtitle">
+                            <input type="text" class="form-control mb-2 banner-title ${el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text'}" 
+                                value="${el.content.title}" 
+                                placeholder="${el.languageDirection === 'rtl' ? 'بینر کا عنوان' : 'Banner title'}"
+                                style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
+                            <input type="text" class="form-control mb-2 banner-subtitle ${el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text'}" 
+                                value="${el.content.subtitle}" 
+                                placeholder="${el.languageDirection === 'rtl' ? 'بینر کی ذیلی عنوان' : 'Banner subtitle'}"
+                                style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
                             ${el.content.src ? `<img src="${el.content.src}" class="img-fluid mt-2" style="max-height: 200px;">` : ''}
                         </div>
                     `,
@@ -902,6 +1015,9 @@
                                     <span class="element-type-badge">Columns</span>
                                 </div>
                                 <div class="position-controls">
+                                    <button type="button" class="position-btn language-direction" title="Change Language Direction" onclick="builder.showLanguageDirectionModal('${el.id}')">
+                                        <i class="fas fa-language"></i>
+                                    </button>
                                     <button type="button" class="position-btn move-up" title="Move Up" onclick="builder.moveElementUp('${el.id}')">
                                         <i class="fas fa-arrow-up"></i>
                                     </button>
@@ -915,14 +1031,14 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-6 ckeditor-column">
-                                    <label class="form-label">Left Column</label>
-                                    <div class="ckeditor-container">
+                                    <label class="form-label">${el.languageDirection === 'rtl' ? 'بائیں کالم' : 'Left Column'}</label>
+                                    <div class="ckeditor-container ${el.languageDirection === 'rtl' ? 'ckeditor-rtl' : ''}">
                                         <textarea class="form-control ckeditor-column-left" id="ckeditor-left-${el.id}" rows="6">${el.content.left}</textarea>
                                     </div>
                                 </div>
                                 <div class="col-md-6 ckeditor-column">
-                                    <label class="form-label">Right Column</label>
-                                    <div class="ckeditor-container">
+                                    <label class="form-label">${el.languageDirection === 'rtl' ? 'دائیں کالم' : 'Right Column'}</label>
+                                    <div class="ckeditor-container ${el.languageDirection === 'rtl' ? 'ckeditor-rtl' : ''}">
                                         <textarea class="form-control ckeditor-column-right" id="ckeditor-right-${el.id}" rows="6">${el.content.right}</textarea>
                                     </div>
                                 </div>
@@ -1129,38 +1245,90 @@
 
             renderPreviewElement(element) {
                 const templates = {
-                    heading: (el) => `<${el.content.level} class="mb-3">${el.content.text}</${el.content.level}>`,
-                    text: (el) => `<div class="mb-3">${el.content.content}</div>`,
+                    heading: (el) => {
+                        const directionClass = el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text';
+                        return `<${el.content.level} class="mb-3 ${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">${el.content.text}</${el.content.level}>`;
+                    },
+                    text: (el) => {
+                        const directionClass = el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text';
+                        return `<div class="mb-3 ${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">${el.content.content}</div>`;
+                    },
                     image: (el) => `
                         <div class="mb-4">
                             ${el.content.src ? `<img src="${el.content.src}" class="img-fluid rounded mb-2" style="max-height: 300px;">` : '<div class="bg-light text-center py-5 rounded text-muted">No image</div>'}
                             ${el.content.caption ? `<p class="text-muted text-center mt-2">${el.content.caption}</p>` : ''}
                         </div>
                     `,
-                    banner: (el) => `
+                    banner: (el) => {
+                        const directionClass = el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text';
+                        return `
                         <div class="bg-light p-5 mb-4 text-center rounded">
                             ${el.content.src ? `<img src="${el.content.src}" class="img-fluid mb-3" style="max-height: 200px;">` : ''}
-                            <h2>${el.content.title || 'Banner Title'}</h2>
-                            <p class="lead">${el.content.subtitle || 'Banner subtitle'}</p>
+                            <h2 class="${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">${el.content.title || 'Banner Title'}</h2>
+                            <p class="lead ${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">${el.content.subtitle || 'Banner subtitle'}</p>
                         </div>
-                    `,
-                    columns: (el) => `
+                    `;
+                    },
+                    columns: (el) => {
+                        const directionClass = el.languageDirection === 'rtl' ? 'rtl-text' : 'ltr-text';
+                        return `
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <div class="bg-light p-3 rounded">
+                                <div class="bg-light p-3 rounded ${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
                                     ${el.content.left}
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="bg-light p-3 rounded">
+                                <div class="bg-light p-3 rounded ${directionClass}" style="direction: ${el.languageDirection}; text-align: ${el.languageDirection === 'rtl' ? 'right' : 'left'};">
                                     ${el.content.right}
                                 </div>
                             </div>
                         </div>
-                    `
+                    `;
+                    }
                 };
 
                 return templates[element.type] ? templates[element.type](element) : '';
+            }
+
+            // Language Direction Methods
+            showLanguageDirectionModal(elementId) {
+                this.currentElementId = elementId;
+                const modal = new bootstrap.Modal(document.getElementById('languageDirectionModal'));
+                modal.show();
+            }
+
+            setLanguageDirection(direction) {
+                if (!this.currentElementId) return;
+
+                const element = this.elements.find(el => el.id === this.currentElementId);
+                if (element) {
+                    element.languageDirection = direction;
+                    
+                    // Update default content based on language direction
+                    if (element.type === 'heading') {
+                        element.content.text = direction === 'rtl' ? 'عنوان' : 'New Heading';
+                    } else if (element.type === 'text') {
+                        element.content.content = direction === 'rtl' ? 
+                            '<p>اپنا متن یہاں درج کریں...</p>' : 
+                            '<p>Enter your text content here...</p>';
+                    } else if (element.type === 'banner') {
+                        element.content.title = direction === 'rtl' ? 'بینر کا عنوان' : 'Banner Title';
+                        element.content.subtitle = direction === 'rtl' ? 'بینر کی ذیلی عنوان' : 'Banner subtitle';
+                    } else if (element.type === 'columns') {
+                        element.content.left = direction === 'rtl' ? 
+                            '<p>بائیں کالم کا مواد...</p>' : 
+                            '<p>Left column content...</p>';
+                        element.content.right = direction === 'rtl' ? 
+                            '<p>دائیں کالم کا مواد...</p>' : 
+                            '<p>Right column content...</p>';
+                    }
+                    
+                    this.updateElementDisplay(this.currentElementId);
+                }
+                
+                bootstrap.Modal.getInstance(document.getElementById('languageDirectionModal')).hide();
+                this.currentElementId = null;
             }
 
             async saveBlogPost() {
@@ -1248,21 +1416,29 @@
                 }
             }
 
-            // CKEditor Methods
-            initCKEditor(elementId, elementType) {
+            // CKEditor Methods with RTL Support
+            initCKEditor(elementId, elementType, languageDirection) {
                 try {
+                    const config = {
+                        toolbar: [
+                            { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
+                            { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
+                            { name: 'links', items: ['Link', 'Unlink'] },
+                            { name: 'insert', items: ['Image', 'Table'] },
+                            { name: 'tools', items: ['Maximize'] },
+                            { name: 'document', items: ['Source'] }
+                        ],
+                        height: 200,
+                        contentsLangDirection: languageDirection === 'rtl' ? 'rtl' : 'ltr',
+                        contentsLanguage: languageDirection === 'rtl' ? 'ur' : 'en'
+                    };
+
+                    if (languageDirection === 'rtl') {
+                        config.contentsCss = ['body { direction: rtl; text-align: right; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }'];
+                    }
+
                     if (elementType === 'text') {
-                        const editor = CKEDITOR.replace(`ckeditor-text-${elementId}`, {
-                            toolbar: [
-                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
-                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
-                                { name: 'links', items: ['Link', 'Unlink'] },
-                                { name: 'insert', items: ['Image', 'Table'] },
-                                { name: 'tools', items: ['Maximize'] },
-                                { name: 'document', items: ['Source'] }
-                            ],
-                            height: 200
-                        });
+                        const editor = CKEDITOR.replace(`ckeditor-text-${elementId}`, config);
                         
                         this.ckEditors.set(elementId, editor);
                         
@@ -1274,29 +1450,8 @@
                         });
                         
                     } else if (elementType === 'columns') {
-                        const leftEditor = CKEDITOR.replace(`ckeditor-left-${elementId}`, {
-                            toolbar: [
-                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
-                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
-                                { name: 'links', items: ['Link', 'Unlink'] },
-                                { name: 'insert', items: ['Image', 'Table'] },
-                                { name: 'tools', items: ['Maximize'] },
-                                { name: 'document', items: ['Source'] }
-                            ],
-                            height: 200
-                        });
-                        
-                        const rightEditor = CKEDITOR.replace(`ckeditor-right-${elementId}`, {
-                            toolbar: [
-                                { name: 'basicstyles', items: ['Bold', 'Italic', 'Underline', 'Strike', 'RemoveFormat'] },
-                                { name: 'paragraph', items: ['NumberedList', 'BulletedList', '-', 'Blockquote'] },
-                                { name: 'links', items: ['Link', 'Unlink'] },
-                                { name: 'insert', items: ['Image', 'Table'] },
-                                { name: 'tools', items: ['Maximize'] },
-                                { name: 'document', items: ['Source'] }
-                            ],
-                            height: 200
-                        });
+                        const leftEditor = CKEDITOR.replace(`ckeditor-left-${elementId}`, config);
+                        const rightEditor = CKEDITOR.replace(`ckeditor-right-${elementId}`, config);
                         
                         this.ckEditors.set(`${elementId}-left`, leftEditor);
                         this.ckEditors.set(`${elementId}-right`, rightEditor);
