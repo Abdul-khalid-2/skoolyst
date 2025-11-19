@@ -10,13 +10,13 @@ class BlogCategoryController extends Controller
 {
     public function index()
     {
-        $categories = BlogCategory::latest()->paginate(10);
-        return view('admin.blog.categories.index', compact('categories'));
+        $categories = BlogCategory::withCount('blogPosts')->latest()->paginate(10);
+        return view('dashboard.blog.index', compact('categories'));
     }
 
     public function create()
     {
-        return view('admin.blog.categories.create');
+        return view('dashboard.blog.create');
     }
 
     public function store(Request $request)
@@ -43,7 +43,8 @@ class BlogCategoryController extends Controller
 
     public function edit(BlogCategory $blogCategory)
     {
-        return view('admin.blog.categories.edit', compact('blogCategory'));
+        $blogCategory->loadCount('blogPosts');
+        return view('dashboard.blog.edit', compact('blogCategory'));
     }
 
     public function update(Request $request, BlogCategory $blogCategory)

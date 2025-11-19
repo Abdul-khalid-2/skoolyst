@@ -44,6 +44,13 @@
                     <span>Post</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.blog-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                    <i class="fas fa-blog me-1"></i>
+                    <span>Blogs</span>
+                </a>
+            </li>
 
 
             @role('super-admin')
