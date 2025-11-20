@@ -114,7 +114,7 @@
                         <div class="form-check">
                             <input id="agree_terms" type="checkbox" class="form-check-input" name="agree_terms" required>
                             <label for="agree_terms" class="form-check-label">
-                                I agree to the <a href="#" style="color: #4361ee;">Terms of Service</a> and <a href="#" style="color: #4361ee;">Privacy Policy</a>
+                                I agree to the <a href="{{ route('website.terms') }}" style="color: #4361ee;">Terms of Service</a> and <a href="{{ route('website.privacy') }}" style="color: #4361ee;">Privacy Policy</a>
                             </label>
                         </div>
 

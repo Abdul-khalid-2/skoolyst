@@ -1,13 +1,13 @@
     <footer>
         <div class="container">
             <nav class="footer-nav">
-                <a href="#home">Home</a>
-                <a href="#directory">Browse Schools</a>
-                <a href="#how-it-works">How It Works</a>
-                <a href="#testimonials">Testimonials</a>
-                <a href="#about">About</a>
-                <a href="#">Terms</a>
-                <a href="#">Privacy</a>
+                <a href="{{ route('website.home') }}">Home</a>
+                <a href="{{ route('browseSchools.index') }}">Browse Schools</a>
+                <a href="{{ route('website.how_it_works') }}">How It Works</a>
+                <a href="{{ route('website.home') }}">Testimonials</a>
+                <a href="{{ url('/about') }}">About</a>
+                <a href="{{ route('website.terms') }}">Terms</a>
+                <a href="{{ route('website.privacy') }}">Privacy</a>
             </nav>
 
             <div class="social-icons">

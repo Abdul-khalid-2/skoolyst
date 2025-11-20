@@ -170,5 +170,7 @@ Route::prefix('blog')->name('website.blog.')->group(function () {
     Route::post('/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('comment.store');
 });
 
+Route::view('privacy', 'website.privacy')->name('website.privacy');
+Route::view('terms', 'website.terms')->name('website.terms');
 
 require __DIR__ . '/auth.php';
