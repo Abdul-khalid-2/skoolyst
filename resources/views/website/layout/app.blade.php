@@ -24,6 +24,8 @@
     <meta property="twitter:description" content="Explore and compare the best schools across Pakistan. Find by city, curriculum, or fee structure.">
     <meta property="twitter:image" content="{{ asset('assets/assets/hero.png') }}">
 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3104637221187005"
+     crossorigin="anonymous"></script>
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
 
