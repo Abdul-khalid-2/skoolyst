@@ -24,7 +24,7 @@
                             <div class="row align-items-center">
                                 <div class="col-auto">
                                     @if($shop->logo_url)
-                                    <img src="{{ asset('storage/' . $shop->logo_url) }}" alt="{{ $shop->name }}" 
+                                    <img src="{{ $shop->logo_url }}" alt="{{ $shop->name }}" 
                                          class="rounded" style="width: 80px; height: 80px; object-fit: cover;">
                                     @else
                                     <div class="bg-light rounded d-flex align-items-center justify-content-center" 
@@ -133,7 +133,7 @@
                                     <div class="mt-4">
                                         <label class="form-label text-muted small mb-2">Shop Banner</label>
                                         <div class="border rounded p-3 bg-light">
-                                            <img src="{{ asset('storage/' . $shop->banner_url) }}" 
+                                            <img src="{{  $shop->banner_url }}" 
                                                  alt="Shop Banner" class="img-fluid rounded">
                                         </div>
                                     </div>
@@ -161,7 +161,7 @@
                                                         <td>
                                                             <div class="d-flex align-items-center">
                                                                 @if($product->main_image_url)
-                                                                <img src="{{ asset('storage/' . $product->main_image_url) }}" 
+                                                                <img src="{{ $product->main_image_url }}" 
                                                                      alt="{{ $product->name }}" class="rounded me-2" 
                                                                      style="width: 40px; height: 40px; object-fit: cover;">
                                                                 @else

@@ -85,4 +85,29 @@ class User extends Authenticatable
 
         return null;
     }
+
+    /**
+     * Get the shops owned by the user.
+     */
+    public function shops()
+    {
+        return $this->hasMany(Shop::class);
+    }
+
+
+    /**
+     * Check if the user is a shop owner.
+     */
+    public function isShopOwner(): bool
+    {
+        return $this->shops()->exists();
+    }
+
+    /**
+     * Check if the user owns a specific shop.
+     */
+    public function ownsShop(Shop $shop): bool
+    {
+        return $this->id === $shop->user_id;
+    }
 }

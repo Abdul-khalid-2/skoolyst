@@ -183,7 +183,7 @@
                                                 @if($shop->logo_url)
                                                 <div class="mt-2">
                                                     <p class="small text-muted mb-1">Current Logo:</p>
-                                                    <img src="{{ asset('storage/' . $shop->logo_url) }}" alt="Current Logo" 
+                                                    <img src="{{  $shop->logo_url }}" alt="Current Logo" 
                                                          class="img-thumbnail" style="max-height: 100px;">
                                                 </div>
                                                 @endif
@@ -202,7 +202,7 @@
                                                 @if($shop->banner_url)
                                                 <div class="mt-2">
                                                     <p class="small text-muted mb-1">Current Banner:</p>
-                                                    <img src="{{ asset('storage/' . $shop->banner_url) }}" alt="Current Banner" 
+                                                    <img src="{{  $shop->banner_url }}" alt="Current Banner" 
                                                          class="img-thumbnail" style="max-height: 100px;">
                                                 </div>
                                                 @endif
