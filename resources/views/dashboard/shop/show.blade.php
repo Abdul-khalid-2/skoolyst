@@ -1,4 +1,11 @@
 <x-app-layout>
+    <style>
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #000000 !important;
+            transform: translateX(5px);
+        }
+    </style>
     <main class="main-content">
         <section id="shop-show" class="page-section">
             <div class="d-flex justify-content-between align-items-center mb-4">

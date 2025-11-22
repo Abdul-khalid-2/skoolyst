@@ -51,6 +51,20 @@
                     <span>Shop</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.products.index') }}"
+                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
+                    <i class="fas fa-blog me-1"></i>
+                    <span>Product </span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.product-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
+                    <i class="fas fa-blog me-1"></i>
+                    <span>Product Category</span>
+                </a>
+            </li>
 
 
 
