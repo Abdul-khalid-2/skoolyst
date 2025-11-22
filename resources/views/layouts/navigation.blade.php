@@ -4,7 +4,7 @@
             <h4 class="text-white mb-0">
                 <a class="navbar-brand" href="{{ url('/') }}">SKOOLYST</a>
             </h4>
-            <button class="btn btn-link d-md-none p-0" style="color: white;">
+            <button class="btn btn-link d-md-none p-0" style="color: white;" aria-label="Close sidebar">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -39,37 +39,49 @@
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.blog-posts.index') }}"
-                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Post</span>
+                    class="nav-link {{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}">
+                    <i class="fas fa-newspaper"></i>
+                    <span>Posts</span>
                 </a>
             </li>
+
+            {{-- Blog Categories --}}
+            @role('super-admin')
+            <li class="nav-item">
+                <a href="{{ route('admin.blog-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.blog-categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-folder"></i>
+                    <span>Blog Categories</span>
+                </a>
+            </li>
+            @endrole
+
+            {{-- Shop Management --}}
             <li class="nav-item">
                 <a href="{{ route('admin.shops.index') }}"
-                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Shop</span>
+                    class="nav-link {{ request()->routeIs('admin.shops.*') ? 'active' : '' }}">
+                    <i class="fas fa-store"></i>
+                    <span>Shops</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.products.index') }}"
-                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Product </span>
+                    class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a href="{{ route('admin.product-categories.index') }}"
-                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Product Category</span>
+                    class="nav-link {{ request()->routeIs('admin.product-categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i>
+                    <span>Product Categories</span>
                 </a>
             </li>
 
 
 
             @role('super-admin')
-            {{-- Events --}}
             <li class="nav-item">
                 <a href="{{ route('events.index') }}"
                     class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
@@ -77,20 +89,18 @@
                     <span>Events</span>
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.blog-categories.index') }}"
-                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Blogs</span>
-                </a>
-            </li>
             @endrole
 
             {{-- Contact Inquiries --}}
-
+            <li class="nav-item">
+                <a href="{{ route('admin.inquiries.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.inquiries.*') ? 'active' : '' }}">
+                    <i class="fas fa-envelope"></i>
+                    <span>Contact Inquiries</span>
+                </a>
+            </li>
         </ul>
     </nav>
-
 
     <!-- Sidebar Overlay for Mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -98,7 +108,7 @@
     <!-- Header -->
     <header class="header d-flex align-items-center justify-content-between px-4">
         <div class="d-flex align-items-center">
-            <button class="btn btn-link me-3" onclick="toggleSidebar()" id="sidebarToggle">
+            <button class="btn btn-link me-3" onclick="toggleSidebar()" id="sidebarToggle" aria-label="Toggle sidebar">
                 <i class="fas fa-bars text-gray-600"></i>
             </button>
             <h5 class="mb-0 text-gray-800" id="pageTitle">Dashboard</h5>
@@ -106,7 +116,7 @@
 
         <div class="d-flex align-items-center">
             <div class="dropdown me-3">
-                <button class="btn btn-link position-relative" data-bs-toggle="dropdown" id="contactNotifications">
+                <button class="btn btn-link position-relative" data-bs-toggle="dropdown" id="contactNotifications" aria-label="Notifications">
                     <i class="fas fa-bell text-gray-600"></i>
                     @php
                     $newInquiriesCount = \App\Models\ContactInquiry::forSchool(auth()->user()->school_id)
@@ -187,7 +197,7 @@
             </div>
 
             <div class="dropdown">
-                <button class="btn btn-link d-flex align-items-center" data-bs-toggle="dropdown">
+                <button class="btn btn-link d-flex align-items-center" data-bs-toggle="dropdown" aria-label="User menu">
                     @if (auth()->user()->profile_picture_url)
                     <img src="{{ auth()->user()->profile_picture_url }}" alt="{{ auth()->user()->name }}" class="rounded-circle me-2" width="32" height="32">
                     @else
@@ -205,15 +215,12 @@
                     <li>
                         <form class="dropdown-item" method="POST" action="{{ route('logout') }}">
                             @csrf
-
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault();
                                                 this.closest('form').submit();">
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
-
-                        <!-- <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a> -->
                     </li>
                 </ul>
             </div>
