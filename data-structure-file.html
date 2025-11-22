@@ -878,3 +878,193 @@
             $table->enum('status', ['active', 'pending', 'inactive'])->default('pending')->after('end_date');
         });
     }
+
+
+
+
+
+    New Feature Added Ecommers 
+    
+        Schema::create('shops', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('school_id')->nullable()->constrained()->onDelete('set null');
+            
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->string('email')->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->text('address')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state')->nullable();
+            $table->string('country')->default('Pakistan');
+            
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
+            
+            $table->enum('shop_type', ['stationery', 'book_store', 'mixed', 'school_affiliated'])->default('mixed');
+            $table->text('description')->nullable();
+            
+            $table->string('logo_url')->nullable();
+            $table->string('banner_url')->nullable();
+            
+            $table->boolean('is_verified')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->decimal('rating', 3, 2)->default(0.00);
+            $table->integer('total_reviews')->default(0);
+            
+            $table->timestamps();
+
+            // Indexes
+            $table->index(['city', 'state']);
+            $table->index('shop_type');
+            $table->index(['is_verified', 'is_active']);
+            $table->index('school_id');
+        });
+   
+        Schema::create('product_categories', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->string('name');
+            $table->string('slug')->unique();
+            $table->foreignId('parent_id')->nullable()->constrained('product_categories')->onDelete('set null');
+            
+            $table->text('description')->nullable();
+            $table->string('image_url')->nullable();
+            $table->string('icon')->nullable();
+            $table->integer('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
+            
+            $table->timestamps();
+
+            // Indexes
+            $table->index('parent_id');
+            $table->index(['is_active', 'sort_order']);
+            $table->index('slug');
+        });
+    
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->constrained('product_categories')->onDelete('restrict');
+            $table->foreignId('school_id')->nullable()->constrained()->onDelete('set null');
+            
+            $table->string('name');
+            $table->string('slug');
+            $table->string('sku')->unique()->nullable();
+            $table->text('description')->nullable();
+            $table->text('short_description')->nullable();
+            
+            $table->enum('product_type', ['book', 'copy', 'stationery', 'bag', 'uniform', 'other'])->default('other');
+            
+            // Common product attributes
+            $table->string('brand')->nullable();
+            $table->string('material')->nullable();
+            $table->string('color')->nullable();
+            $table->string('size')->nullable();
+            
+            // Pricing
+            $table->decimal('base_price', 10, 2);
+            $table->decimal('sale_price', 10, 2)->nullable();
+            $table->decimal('cost_price', 10, 2)->nullable();
+            $table->decimal('profit_margin', 5, 2)->nullable();
+            
+            // Inventory
+            $table->integer('stock_quantity')->default(0);
+            $table->integer('low_stock_threshold')->default(5);
+            $table->boolean('manage_stock')->default(true);
+            $table->boolean('is_in_stock')->default(true);
+            
+            // Product status
+            $table->boolean('is_featured')->default(false);
+            $table->boolean('is_active')->default(true);
+            $table->boolean('is_approved')->default(false);
+            
+            // SEO
+            $table->string('meta_title')->nullable();
+            $table->text('meta_description')->nullable();
+            $table->text('meta_keywords')->nullable();
+            
+            // Media
+            $table->string('main_image_url')->nullable();
+            $table->json('image_gallery')->nullable();
+            
+            $table->timestamps();
+
+            // Indexes
+            $table->unique(['shop_id', 'slug']);
+            $table->index('product_type');
+            $table->index(['is_active', 'is_approved']);
+            $table->index('base_price');
+            $table->index(['is_in_stock', 'stock_quantity']);
+            $table->index('school_id');
+            $table->index('sku');
+        });
+    
+        Schema::create('product_attributes', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            
+            $table->enum('attribute_type', ['book', 'copy', 'bag', 'uniform'])->default('book');
+            
+            // Book specific attributes
+            $table->string('book_author')->nullable();
+            $table->string('book_publisher')->nullable();
+            $table->string('book_isbn', 20)->nullable();
+            $table->string('book_edition', 50)->nullable();
+            $table->year('book_publication_year')->nullable();
+            $table->enum('education_board', [
+                'federal', 'punjab', 'sindh', 'kpk', 'balochistan', 'ajk', 'cambridge', 'ib', 'other'
+            ])->nullable();
+            $table->string('school_name')->nullable();
+            $table->string('class_level', 50)->nullable(); // e.g., "Class 1", "Grade 5", "O-Levels"
+            $table->string('subject', 100)->nullable();
+            $table->enum('medium', ['english', 'urdu', 'bilingual', 'other'])->nullable();
+            
+            // Copy specific attributes
+            $table->integer('copy_pages')->nullable();
+            $table->enum('copy_quality', ['premium', 'standard', 'economy'])->nullable();
+            $table->enum('copy_size', ['a4', 'a5', 'quarter', 'half', 'other'])->nullable();
+            $table->enum('copy_type', ['single_line', 'double_line', 'four_line', 'plain', 'graph'])->nullable();
+            
+            // Bag specific attributes
+            $table->enum('bag_type', ['school_bag', 'backpack', 'satchel', 'lunch_bag', 'other'])->nullable();
+            $table->integer('bag_compartments')->nullable();
+            $table->boolean('bag_water_resistant')->default(false);
+            $table->boolean('bag_wheels')->default(false);
+            
+            // Common measurements
+            $table->decimal('weight_grams', 8, 2)->nullable();
+            $table->string('dimensions', 100)->nullable(); // "LxWxH" format
+            
+            $table->timestamps();
+
+            // Indexes
+            $table->index('attribute_type');
+            $table->index(['education_board', 'class_level']);
+            $table->index(['book_author', 'book_publisher']);
+            $table->index('class_level');
+            $table->index('subject');
+        });
+
+
+        Schema::create('shop_school_associations', function (Blueprint $table) {
+            $table->id();
+            $table->uuid('uuid')->unique();
+            $table->foreignId('shop_id')->constrained()->onDelete('cascade');
+            $table->foreignId('school_id')->constrained()->onDelete('cascade');
+            
+            $table->enum('association_type', ['preferred', 'official', 'affiliated', 'general'])->default('general');
+            $table->decimal('discount_percentage', 5, 2)->default(0);
+            $table->boolean('is_active')->default(true);
+            
+            $table->timestamps();
+
+            // Indexes
+            $table->unique(['shop_id', 'school_id']);
+            $table->index(['school_id', 'is_active']);
+            $table->index('association_type');
+        });
