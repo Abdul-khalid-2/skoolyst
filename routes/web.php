@@ -24,6 +24,8 @@ use App\Http\Controllers\SchoolImageGalleryController;
 use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 use App\Http\Controllers\Website\WebsiteBlogPostController;
+use App\Http\Controllers\Website\WebsiteCartController;
+use App\Http\Controllers\Website\WebsiteProductController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -172,5 +174,15 @@ Route::prefix('blog')->name('website.blog.')->group(function () {
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');
+
+// Website Product Routes
+Route::view('shops', 'website.shops.index')->name('website.shops');
+Route::view('shops/test', 'website.shops.index')->name('shops.index');
+Route::get('/products', [WebsiteProductController::class, 'index'])->name('products.index');
+Route::get('/products/{id}', [WebsiteProductController::class, 'show'])->name('products.show');
+Route::post('/cart/add', [WebsiteCartController::class, 'add'])->name('cart.add'); //add to session cart
+Route::post('/favorites/toggle', function () {
+    return redirect()->back();
+})->name('favorites.toggle'); //add to session favorites
 
 require __DIR__ . '/auth.php';
