@@ -44,6 +44,13 @@
                     <span>Post</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.shops.index') }}"
+                    class="nav-link {{ request()->routeIs('shop.*') ? 'active' : '' }}">
+                    <i class="fas fa-blog me-1"></i>
+                    <span>Shop</span>
+                </a>
+            </li>
 
 
 
