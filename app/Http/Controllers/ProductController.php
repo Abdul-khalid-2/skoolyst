@@ -15,6 +15,24 @@ class ProductController extends Controller
     {
         $query = Product::with(['shop', 'category']);
 
+        // Apply role-based filtering
+        if (auth()->user()->hasRole('super-admin')) {
+            // Super admin can see all products
+            // No additional filtering needed
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            // School admin can only see products from their school's shops
+            $query->whereHas('shop', function ($q) {
+                $q->where('school_id', auth()->user()->school_id);
+            });
+        } elseif (auth()->user()->hasRole('shop_owner')) {
+            // Shop owner can only see products from their own shops
+            $query->whereHas('shop', function ($q) {
+                $q->where('user_id', auth()->id());
+            });
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
+
         // Apply filters
         if ($request->has('shop_id') && $request->shop_id) {
             $query->where('shop_id', $request->shop_id);
@@ -65,23 +83,10 @@ class ProductController extends Controller
             });
         }
 
-        // School admin can only see their school's products
-        if (auth()->user()->hasRole('school_admin') && auth()->user()->school_id) {
-            $query->whereHas('shop', function ($q) {
-                $q->where('school_id', auth()->user()->school_id);
-            });
-        }
-
-        // Shop owner can only see their products
-        if (auth()->user()->hasRole('shop_owner')) {
-            $query->whereHas('shop', function ($q) {
-                $q->where('user_id', auth()->id());
-            });
-        }
-
         $products = $query->latest()->paginate(15);
 
-        $shops = Shop::when(auth()->user()->hasRole('school_admin'), function ($q) {
+        // Get shops based on user role
+        $shops = Shop::when(auth()->user()->hasRole('school-admin'), function ($q) {
             $q->where('school_id', auth()->user()->school_id);
         })->when(auth()->user()->hasRole('shop_owner'), function ($q) {
             $q->where('user_id', auth()->id());
@@ -94,11 +99,17 @@ class ProductController extends Controller
 
     public function create()
     {
-        $shops = Shop::when(auth()->user()->hasRole('school_admin'), function ($q) {
+        $shops = Shop::when(auth()->user()->hasRole('school-admin'), function ($q) {
             $q->where('school_id', auth()->user()->school_id);
         })->when(auth()->user()->hasRole('shop_owner'), function ($q) {
             $q->where('user_id', auth()->id());
         })->get();
+
+        // If no shops available, redirect with message
+        if ($shops->isEmpty()) {
+            return redirect()->route('admin.shops.create')
+                ->with('warning', 'Please create a shop first before adding products.');
+        }
 
         $categories = ProductCategory::where('is_active', true)->get();
 
@@ -136,7 +147,12 @@ class ProductController extends Controller
             'is_approved' => 'boolean',
         ]);
 
+        // Check if user is authorized to create product in this shop
+        $shop = Shop::findOrFail($validated['shop_id']);
+        $this->checkShopAuthorization($shop);
+
         $validated['uuid'] = Str::uuid();
+
         // Generate SKU if not provided
         if (empty($validated['sku'])) {
             $validated['sku'] = 'PROD-' . Str::upper(Str::random(8));
@@ -183,7 +199,8 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
-        // $this->authorize('view', $product);
+        // Check authorization through shop
+        $this->checkShopAuthorization($product->shop);
 
         $product->load(['shop', 'category', 'attributes']);
 
@@ -192,9 +209,10 @@ class ProductController extends Controller
 
     public function edit(Product $product)
     {
-        // $this->authorize('update', $product);
+        // Check authorization through shop
+        $this->checkShopAuthorization($product->shop);
 
-        $shops = Shop::when(auth()->user()->hasRole('school_admin'), function ($q) {
+        $shops = Shop::when(auth()->user()->hasRole('school-admin'), function ($q) {
             $q->where('school_id', auth()->user()->school_id);
         })->when(auth()->user()->hasRole('shop_owner'), function ($q) {
             $q->where('user_id', auth()->id());
@@ -207,7 +225,8 @@ class ProductController extends Controller
 
     public function update(Request $request, Product $product)
     {
-        // $this->authorize('update', $product);
+        // Check authorization through shop
+        $this->checkShopAuthorization($product->shop);
 
         $validated = $request->validate([
             'shop_id' => 'required|exists:shops,id',
@@ -237,6 +256,12 @@ class ProductController extends Controller
             'is_active' => 'boolean',
             'is_approved' => 'boolean',
         ]);
+
+        // Check if user is authorized to update product in the new shop (if changed)
+        if ($validated['shop_id'] != $product->shop_id) {
+            $newShop = Shop::findOrFail($validated['shop_id']);
+            $this->checkShopAuthorization($newShop);
+        }
 
         // Update slug if name changed
         if ($product->name !== $validated['name']) {
@@ -293,7 +318,8 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // $this->authorize('delete', $product);
+        // Check authorization through shop
+        $this->checkShopAuthorization($product->shop);
 
         // Delete associated files
         if ($product->main_image_url) {
@@ -311,5 +337,34 @@ class ProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product deleted successfully!');
+    }
+
+    /**
+     * Check if user is authorized to access the shop
+     * Reused from ShopController
+     */
+    private function checkShopAuthorization(Shop $shop)
+    {
+        if (auth()->user()->hasRole('super-admin')) {
+            return true; // Super admin can access all shops
+        }
+
+        if (auth()->user()->hasRole('school-admin')) {
+            // School admin can only access shops from their school
+            if ($shop->school_id !== auth()->user()->school_id) {
+                abort(403, 'Unauthorized access to this shop.');
+            }
+            return true;
+        }
+
+        if (auth()->user()->hasRole('shop_owner')) {
+            // Shop owner can only access their own shops
+            if ($shop->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this shop.');
+            }
+            return true;
+        }
+
+        abort(403, 'Unauthorized access.');
     }
 }

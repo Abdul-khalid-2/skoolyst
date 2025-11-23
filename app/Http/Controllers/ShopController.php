@@ -15,6 +15,20 @@ class ShopController extends Controller
         $query = Shop::with(['school', 'products'])
             ->withCount('products');
 
+        // Apply role-based filtering
+        if (auth()->user()->hasRole('super-admin')) {
+            // Super admin can see all shops
+            // No additional filtering needed
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            // School admin can only see shops from their school
+            $query->where('school_id', auth()->user()->school_id);
+        } elseif (auth()->user()->hasRole('shop-owner')) {
+            // Shop owner can only see their own shops
+            $query->where('user_id', auth()->id());
+        } else {
+            return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
+        }
+
         // Apply filters
         if ($request->has('type') && $request->type) {
             $query->where('shop_type', $request->type);
@@ -46,11 +60,6 @@ class ShopController extends Controller
             });
         }
 
-        // School admin can only see their school's shops
-        if (auth()->user()->hasRole('school_admin') && auth()->user()->school_id) {
-            $query->where('school_id', auth()->user()->school_id);
-        }
-
         $shops = $query->latest()->paginate(10);
 
         return view('dashboard.shop.index', compact('shops'));
@@ -59,8 +68,11 @@ class ShopController extends Controller
     public function create()
     {
         $schools = [];
-        if (auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super-admin')) {
             $schools = School::where('is_active', true)->get();
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            // School admin can only create shops for their school
+            $schools = School::where('id', auth()->user()->school_id)->get();
         }
 
         return view('dashboard.shop.create', compact('schools'));
@@ -84,6 +96,11 @@ class ShopController extends Controller
             'is_verified' => 'boolean',
             'school_id' => 'nullable|exists:schools,id',
         ]);
+
+        // Auto-set school_id for school admins
+        if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id) {
+            $validated['school_id'] = auth()->user()->school_id;
+        }
 
         // Generate slug from name
         $validated['slug'] = Str::slug($validated['name']);
@@ -122,7 +139,8 @@ class ShopController extends Controller
 
     public function show(Shop $shop)
     {
-        // $this->authorize('view', $shop);
+        // Check authorization
+        $this->checkShopAuthorization($shop);
 
         $shop->load(['school', 'products.category', 'user']);
 
@@ -131,11 +149,14 @@ class ShopController extends Controller
 
     public function edit(Shop $shop)
     {
-        // $this->authorize('update', $shop);
+        // Check authorization
+        $this->checkShopAuthorization($shop);
 
         $schools = [];
-        if (auth()->user()->hasRole('super_admin')) {
+        if (auth()->user()->hasRole('super-admin')) {
             $schools = School::where('is_active', true)->get();
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            $schools = School::where('id', auth()->user()->school_id)->get();
         }
 
         return view('dashboard.shop.edit', compact('shop', 'schools'));
@@ -143,7 +164,8 @@ class ShopController extends Controller
 
     public function update(Request $request, Shop $shop)
     {
-        // $this->authorize('update', $shop);
+        // Check authorization
+        $this->checkShopAuthorization($shop);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -162,6 +184,11 @@ class ShopController extends Controller
             'school_id' => 'nullable|exists:schools,id',
         ]);
 
+        // Auto-set school_id for school admins (can't change school)
+        if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id) {
+            $validated['school_id'] = auth()->user()->school_id;
+        }
+
         // Update slug if name changed
         if ($shop->name !== $validated['name']) {
             $validated['slug'] = Str::slug($validated['name']);
@@ -179,17 +206,23 @@ class ShopController extends Controller
         if ($request->hasFile('logo')) {
             // Delete old logo
             if ($shop->logo_url) {
-                Storage::disk('public')->delete($shop->logo_url);
+                Storage::disk('website')->delete($shop->logo_url);
             }
-            $validated['logo_url'] = $request->file('logo')->store('shops/logo', 'public');
+
+            $logoPath = Storage::disk('website')
+                ->putFile("shops/logo", $request->file('logo'));
+            $validated['logo_url'] = $logoPath;
         }
 
         if ($request->hasFile('banner')) {
             // Delete old banner
             if ($shop->banner_url) {
-                Storage::disk('public')->delete($shop->banner_url);
+                Storage::disk('website')->delete($shop->banner_url);
             }
-            $validated['banner_url'] = $request->file('banner')->store('shops/banner', 'public');
+
+            $bannerPath = Storage::disk('website')
+                ->putFile("shops/banner", $request->file('banner'));
+            $validated['banner_url'] = $bannerPath;
         }
 
         $shop->update($validated);
@@ -200,19 +233,48 @@ class ShopController extends Controller
 
     public function destroy(Shop $shop)
     {
-        // $this->authorize('delete', $shop);
+        // Check authorization
+        $this->checkShopAuthorization($shop);
 
         // Delete associated files
         if ($shop->logo_url) {
-            Storage::disk('public')->delete($shop->logo_url);
+            Storage::disk('website')->delete($shop->logo_url);
         }
         if ($shop->banner_url) {
-            Storage::disk('public')->delete($shop->banner_url);
+            Storage::disk('website')->delete($shop->banner_url);
         }
 
         $shop->delete();
 
         return redirect()->route('admin.shops.index')
             ->with('success', 'Shop deleted successfully!');
+    }
+
+    /**
+     * Check if user is authorized to access the shop
+     */
+    private function checkShopAuthorization(Shop $shop)
+    {
+        if (auth()->user()->hasRole('super-admin')) {
+            return true; // Super admin can access all shops
+        }
+
+        if (auth()->user()->hasRole('school-admin')) {
+            // School admin can only access shops from their school
+            if ($shop->school_id !== auth()->user()->school_id) {
+                abort(403, 'Unauthorized access to this shop.');
+            }
+            return true;
+        }
+
+        if (auth()->user()->hasRole('shop-owner')) {
+            // Shop owner can only access their own shops
+            if ($shop->user_id !== auth()->id()) {
+                abort(403, 'Unauthorized access to this shop.');
+            }
+            return true;
+        }
+
+        abort(403, 'Unauthorized access.');
     }
 }
