@@ -15,9 +15,24 @@ class BlogPostController extends Controller
 {
     public function index()
     {
-        $posts = BlogPost::with(['category', 'user', 'school'])
-            ->latest()
-            ->paginate(10);
+        $query = BlogPost::with(['category', 'user', 'school']);
+
+        // Apply role-based filtering
+        if (auth()->user()->hasRole('super-admin')) {
+            // Super admin can see all blog posts
+            // No additional filtering needed
+        } elseif (auth()->user()->hasRole('school-admin')) {
+            // School admin can only see blog posts from their school
+            $query->where('user_id', auth()->id());
+        } elseif (auth()->user()->hasRole('shop-owner')) {
+            // Shop owner can only see their own blog posts
+            $query->where('user_id', auth()->id());
+        } else {
+            // Other users can only see their own blog posts
+            $query->where('user_id', auth()->id());
+        }
+
+        $posts = $query->latest()->paginate(10);
 
         return view('dashboard.posts.index', compact('posts'));
     }
@@ -25,7 +40,16 @@ class BlogPostController extends Controller
     public function create()
     {
         $categories = BlogCategory::where('is_active', true)->get();
-        $schools = School::where('status', 'active')->get();
+
+        if (auth()->user()->hasRole('super-admin')) {
+            $schools = School::where('status', 'active')->get();
+        } else {
+            $schools = School::when(auth()->user()->hasRole('super-admin'), function ($q) {
+                $q->where('status', 'active');
+            })->when(auth()->user()->hasRole('school-admin'), function ($q) {
+                $q->where('id', auth()->user()->school_id)->where('status', 'active');
+            })->get();
+        }
 
         return view('dashboard.posts.create', compact('categories', 'schools'));
     }
@@ -57,6 +81,11 @@ class BlogPostController extends Controller
         }
 
         try {
+            // Auto-set school_id for school admins if not provided
+            $schoolId = $request->school_id;
+            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && !$schoolId) {
+                $schoolId = auth()->user()->school_id;
+            }
             $structureData = json_decode($request->structure, true);
 
             // Process images from base64 to file storage
@@ -71,7 +100,7 @@ class BlogPostController extends Controller
             $blogData = [
                 'uuid' => Str::uuid(),
                 'user_id' => Auth::id(),
-                'school_id' => $request->school_id,
+                'school_id' => $schoolId,
                 'blog_category_id' => $request->blog_category_id,
                 'title' => $request->title,
                 'slug' => $slug,
@@ -117,6 +146,9 @@ class BlogPostController extends Controller
 
     public function show(BlogPost $blogPost)
     {
+        // Check authorization
+        $this->checkBlogPostAuthorization($blogPost);
+
         $blogPost->load(['category', 'user', 'school', 'comments' => function ($query) {
             $query->where('status', 'approved')->with('replies');
         }]);
@@ -133,8 +165,19 @@ class BlogPostController extends Controller
 
     public function edit(BlogPost $blogPost)
     {
+        // Check authorization
+        $this->checkBlogPostAuthorization($blogPost);
+
         $categories = BlogCategory::where('is_active', true)->get();
-        $schools = School::where('status', 'active')->get();
+
+        // Get schools based on user role
+        $schools = School::when(auth()->user()->hasRole('super-admin'), function ($q) {
+            $q->where('status', 'active');
+        })->when(auth()->user()->hasRole('school-admin'), function ($q) {
+            $q->where('id', auth()->user()->school_id)->where('status', 'active');
+        })->when(auth()->user()->hasRole('shop-owner'), function ($q) {
+            $q->where('status', 'active');
+        })->get();
 
         // Prepare structure for editing
         if (!$blogPost->structure) {
@@ -148,6 +191,9 @@ class BlogPostController extends Controller
 
     public function update(Request $request, BlogPost $blogPost)
     {
+        // Check authorization
+        $this->checkBlogPostAuthorization($blogPost);
+
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
             'blog_category_id' => 'nullable|exists:blog_categories,id',
@@ -172,6 +218,17 @@ class BlogPostController extends Controller
         }
 
         try {
+            // Auto-set school_id for school admins if not provided
+            $schoolId = $request->school_id;
+            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && !$schoolId) {
+                $schoolId = auth()->user()->school_id;
+            }
+
+            // For shop owners and other users, don't force school_id
+            if (auth()->user()->hasRole('shop-owner') && !$schoolId) {
+                $schoolId = null;
+            }
+
             $structureData = json_decode($request->structure, true);
 
             // Process images from base64 to file storage
@@ -188,7 +245,7 @@ class BlogPostController extends Controller
 
             $blogData = [
                 'title' => $request->title,
-                'school_id' => $request->school_id,
+                'school_id' => $schoolId,
                 'blog_category_id' => $request->blog_category_id,
                 'slug' => $slug,
                 'excerpt' => $request->excerpt,
@@ -247,15 +304,98 @@ class BlogPostController extends Controller
 
     public function destroy(BlogPost $blogPost)
     {
+        // Check authorization
+        $this->checkBlogPostAuthorization($blogPost);
+
+        // Delete featured image if exists
         if ($blogPost->featured_image) {
             Storage::disk('website')->delete($blogPost->featured_image);
         }
+
+        // Delete any associated images from structure
+        $this->deleteStructureImages($blogPost->structure);
 
         $blogPost->delete();
 
         return redirect()->route('admin.blog-posts.index')
             ->with('success', 'Blog post deleted successfully.');
     }
+
+    /**
+     * Check if user is authorized to access the blog post
+     */
+    private function checkBlogPostAuthorization(BlogPost $blogPost)
+    {
+        if (auth()->user()->hasRole('super-admin')) {
+            return true; // Super admin can access all blog posts
+        }
+
+        if (auth()->user()->hasRole('school-admin')) {
+            // School admin can only access blog posts from their school
+            if ($blogPost->school_id !== auth()->user()->school_id) {
+                abort(403, 'Unauthorized access to this blog post.');
+            }
+            return true;
+        }
+
+        // All other users (including shop-owner) can only access their own blog posts
+        if ($blogPost->user_id !== auth()->id()) {
+            abort(403, 'Unauthorized access to this blog post.');
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete images associated with blog post structure
+     */
+    private function deleteStructureImages($structure)
+    {
+        if (!isset($structure['elements']) || !is_array($structure['elements'])) {
+            return;
+        }
+
+        foreach ($structure['elements'] as $element) {
+            if (in_array($element['type'], ['image', 'banner']) && isset($element['content']['src'])) {
+                $imagePath = $element['content']['src'];
+                // Only delete if it's a storage path (not external URL)
+                if (!filter_var($imagePath, FILTER_VALIDATE_URL) && strpos($imagePath, 'blog/') === 0) {
+                    Storage::disk('website')->delete($imagePath);
+                }
+            }
+
+            // Also check HTML content for embedded images
+            if (isset($element['content']) && is_array($element['content'])) {
+                foreach ($element['content'] as $value) {
+                    if (is_string($value)) {
+                        $this->deleteImagesFromHtml($value);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete images from HTML content
+     */
+    private function deleteImagesFromHtml($html)
+    {
+        if (empty($html) || !is_string($html)) {
+            return;
+        }
+
+        preg_match_all('/src=(["\'])(blog\/[^\1]+?\.(jpg|jpeg|png|gif|webp))\1/i', $html, $matches);
+
+        if (!empty($matches[2])) {
+            foreach ($matches[2] as $imagePath) {
+                // Only delete if it's a storage path (not external URL)
+                if (!filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                    Storage::disk('website')->delete($imagePath);
+                }
+            }
+        }
+    }
+
 
     /**
      * Process images from base64 to file storage
