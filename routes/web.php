@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\Website\AboutController;
 use App\Http\Controllers\Website\BrowseSchoolController;
 use App\Http\Controllers\Website\HomeController;
@@ -21,6 +23,7 @@ use App\Http\Controllers\Website\AdvertisementPageController;
 use App\Http\Controllers\UserProfileController;
 
 use App\Http\Controllers\SchoolImageGalleryController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 use App\Http\Controllers\Website\WebsiteBlogPostController;
@@ -139,6 +142,21 @@ Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
     Route::post('/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
 });
 
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+    // Shops Management
+    Route::resource('shops', ShopController::class)->except(['show']);
+    Route::get('shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+
+    // Additional shop routes
+    Route::post('shops/{shop}/toggle-status', [ShopController::class, 'toggleStatus'])->name('shops.toggle-status');
+    Route::post('shops/{shop}/toggle-verification', [ShopController::class, 'toggleVerification'])->name('shops.toggle-verification');
+
+    // Products Management
+    Route::resource('products', ProductController::class);
+
+    // Product Categories Management
+    Route::resource('product-categories', ProductCategoryController::class);
+});
 
 
 Route::get('/announcement/{announcement}', [WebsiteAnnouncementController::class, 'show'])->name('website.announcements.show');
