@@ -2,77 +2,128 @@
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header d-flex justify-content-between align-items-center">
             <h4 class="text-white mb-0">
-                <a class="navbar-brand" href="{{ url('/') }}">SKOOLYST</a>
+                <a class="navbar-brand text-white" href="{{ url('/') }}">SKOOLYST</a>
             </h4>
-            <button class="btn btn-link d-md-none p-0" style="color: white;">
+            <button class="btn btn-link d-md-none p-0 text-white">
                 <i class="fas fa-times"></i>
             </button>
         </div>
 
         <ul class="sidebar-nav list-unstyled">
 
-            {{-- Dashboard --}}
+            {{-- ===================== COMMON ITEMS FOR ALL ROLES ===================== --}}
             <li class="nav-item">
-                <a href="{{ route('dashboard') }}"
-                    class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard') }}" 
+                class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
             </li>
 
-            {{-- Schools --}}
-            <li class="nav-item">
-                <a href="{{ route('schools.index') }}"
-                    class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
-                    <i class="fas fa-school"></i>
-                    <span>Schools</span>
-                </a>
-            </li>
-
-            {{-- Announcements --}}
-            <li class="nav-item">
-                <a href="{{ route('announcements.index') }}"
-                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-bullhorn"></i>
-                    <span>Announcements</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.blog-posts.index') }}"
-                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Post</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('shops.index') }}"
-                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Shop</span>
-                </a>
-            </li>
-
-
-
+            {{-- ===================== SUPER ADMIN MENU ===================== --}}
             @role('super-admin')
-            {{-- Events --}}
-            <li class="nav-item">
-                <a href="{{ route('events.index') }}"
-                    class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Events</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="{{ route('admin.blog-categories.index') }}"
+
+                <li class="nav-item">
+                    <a href="{{ route('schools.index') }}" 
+                    class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+                        <i class="fas fa-school"></i>
+                        <span>Schools</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('announcements.index') }}"
                     class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
-                    <i class="fas fa-blog me-1"></i>
-                    <span>Blogs</span>
-                </a>
-            </li>
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.blog-posts.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}">
+                        <i class="fas fa-blog me-1"></i>
+                        <span>Posts</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('shops.index') }}"
+                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
+                        <i class="fas fa-store me-1"></i>
+                        <span>Shops</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('events.index') }}"
+                    class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Events</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.blog-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.blog-categories.*') ? 'active' : '' }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Blog Categories</span>
+                    </a>
+                </li>
+
             @endrole
 
-            {{-- Contact Inquiries --}}
+
+            {{-- ===================== SCHOOL ADMIN MENU ===================== --}}
+            @role('school-admin')
+
+                <li class="nav-item">
+                    <a href="{{ route('schools.index') }}"
+                    class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
+                        <i class="fas fa-school"></i>
+                        <span>Schools</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('announcements.index') }}"
+                    class="nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('admin.blog-posts.index') }}"
+                    class="nav-link {{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}">
+                        <i class="fas fa-blog"></i>
+                        <span>Posts</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('shops.index') }}"
+                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Shops</span>
+                    </a>
+                </li>
+
+            @endrole
+
+
+            {{-- ===================== SHOP OWNER MENU ===================== --}}
+            @role('shop-owner')
+
+                <li class="nav-item">
+                    <a href="{{ route('shops.index') }}"
+                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>My Shop</span>
+                    </a>
+                </li>
+
+            @endrole
 
         </ul>
     </nav>
