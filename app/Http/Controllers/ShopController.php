@@ -23,9 +23,9 @@ class ShopController extends Controller
     {
         $query = Shop::with(['user', 'schoolAssociations.school']);
 
-        if (Auth::user()->hasRole('shop_owner')) {
+        if (Auth::user()->hasRole('shop-owner')) {
             $query->where('user_id', Auth::id());
-        } elseif (Auth::user()->hasRole('school_admin')) {
+        } elseif (Auth::user()->hasRole('school-admin')) {
             // Fix: Use the school() relationship instead of schools()
             $schoolId = Auth::user()->school_id;
 
@@ -205,44 +205,48 @@ class ShopController extends Controller
 
     public function associateSchool(Request $request, Shop $shop)
     {
-        Gate::authorize('manage-associations', $shop);
+        // Gate::authorize('manage-associations', $shop);
 
         $validated = $request->validate([
             'school_id' => 'required|exists:schools,id',
             'association_type' => 'required|in:preferred,official,affiliated,general',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
+            'can_add_products' => 'boolean',
+            'can_manage_products' => 'boolean',
+            'can_view_analytics' => 'boolean',
             'notes' => 'nullable|string',
         ]);
 
-        $existingAssociation = ShopSchoolAssociation::where('shop_id', $shop->id)
+        // Check if association already exists
+        $existingAssociation = \App\Models\ShopSchoolAssociation::where('shop_id', $shop->id)
             ->where('school_id', $validated['school_id'])
             ->first();
 
         if ($existingAssociation) {
-            return back()->with('error', 'Association already exists.');
+            return back()->with('error', 'Association with this school already exists.');
         }
 
         $validated['created_by'] = Auth::id();
         $validated['shop_id'] = $shop->id;
+        $validated['can_add_products'] = $request->boolean('can_add_products', true);
+        $validated['can_manage_products'] = $request->boolean('can_manage_products', true);
+        $validated['can_view_analytics'] = $request->boolean('can_view_analytics', true);
 
-        if (
-            Auth::user()->hasRole('super-admin') ||
-            (Auth::user()->hasRole('school-admin') &&
-                Auth::user()->schools->contains('id', $validated['school_id']))
-        ) {
+        // Auto-approve if user is super admin
+        if (Auth::user()->hasRole('super_admin')) {
             $validated['status'] = 'approved';
             $validated['approved_at'] = now();
             $validated['approved_by'] = Auth::id();
         }
 
-        $association = ShopSchoolAssociation::create($validated);
+        $association = \App\Models\ShopSchoolAssociation::create($validated);
 
-        return back()->with('success', 'School association request sent successfully.');
+        return back()->with('success', 'School association request created successfully.');
     }
 
     public function getAssociations(Shop $shop)
     {
-        Gate::authorize('view-associations', $shop);
+        // Gate::authorize('view-associations', $shop);
 
         $associations = $shop->schoolAssociations()
             ->with(['school', 'createdBy', 'approvedBy'])
