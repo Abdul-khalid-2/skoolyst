@@ -68,6 +68,13 @@ class RolePermissionSeeder extends Seeder
             'reviews.view',
             'reviews.create',
         ]);
+        $shopOwner = Role::create(['name' => 'shop-owner']);
+        $shopOwner->givePermissionTo([
+            'branches.view',
+            'events.view',
+            'reviews.view',
+            'reviews.create',
+        ]);
 
         // Create a super admin user
         $user = User::create([

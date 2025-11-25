@@ -25,6 +25,11 @@ use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 use App\Http\Controllers\Website\WebsiteBlogPostController;
 
+use App\Http\Controllers\ShopController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\ShopSchoolAssociationController;
+
 // Route::get('/', function () {
 //     return view('welcome');
 // });
@@ -158,6 +163,26 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(
     Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
+
+Route::middleware(['auth'])->group(function () {
+
+    // Shop Routes
+    Route::resource('shops', ShopController::class);
+    Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
+    Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
+
+    // Product Routes
+    Route::resource('products', ProductController::class);
+    Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
+
+    // Product Category Routes
+    Route::resource('product-categories', ProductCategoryController::class);
+
+    // Shop School Association Routes
+    Route::resource('shop-school-associations', ShopSchoolAssociationController::class)->except(['store']);
+    Route::post('shop-school-associations/{association}/approve', [ShopSchoolAssociationController::class, 'approve'])->name('shop-school-associations.approve');
+    Route::post('shop-school-associations/{association}/reject', [ShopSchoolAssociationController::class, 'reject'])->name('shop-school-associations.reject');
+});
 
 // Blog Routes
 Route::prefix('blog')->name('website.blog.')->group(function () {
