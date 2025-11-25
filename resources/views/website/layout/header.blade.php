@@ -28,11 +28,9 @@
             <div class="auth-buttons d-flex gap-2">
                 @if (Route::has('login'))
                 @auth
-                @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin'))
-                {{-- Show Dashboard Button --}}
+                @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
                 <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
                 @else
-                {{-- Show Logout Button --}}
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn btn-danger btn-global-style">Logout</button>

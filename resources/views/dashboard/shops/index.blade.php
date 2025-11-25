@@ -49,7 +49,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($shop->logo_url)
-                                            <img src="{{ $shop->logo_url }}" alt="{{ $shop->name }}" 
+                                            <img src="{{ asset('website/'. $shop->logo_url) }}" alt="{{ $shop->name }}" 
                                                  class="rounded me-3" width="40" height="40">
                                             @else
                                             <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" 
