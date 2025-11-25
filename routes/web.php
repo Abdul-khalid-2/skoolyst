@@ -72,6 +72,38 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
     Route::get('/api/schools/{school}/branches', function (School $school) {
         return $school->branches()->where('status', 'active')->get();
     });
+
+    // Shop Routes
+    Route::resource('shops', ShopController::class);
+    Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
+    Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
+
+    // Product Routes
+    Route::resource('products', ProductController::class);
+    Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
+
+    // Product Category Routes
+    Route::resource('product-categories', ProductCategoryController::class);
+
+    // Shop School Association Routes
+    Route::resource('shop-school-associations', ShopSchoolAssociationController::class)->except(['store']);
+    Route::post('shop-school-associations/{association}/approve', [ShopSchoolAssociationController::class, 'approve'])->name('shop-school-associations.approve');
+    Route::post('shop-school-associations/{association}/reject', [ShopSchoolAssociationController::class, 'reject'])->name('shop-school-associations.reject');
+
+    Route::resource('announcements', AnnouncementController::class);
+
+    Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
+        // Blog Categories
+        Route::resource('blog-categories', \App\Http\Controllers\BlogCategoryController::class);
+
+        // Blog Posts
+        Route::resource('blog-posts', \App\Http\Controllers\BlogPostController::class);
+
+        // Comments
+        Route::get('comments', [\App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
+        Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
+        Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
+    });
 });
 
 Route::middleware('guest')->group(function () {
@@ -146,43 +178,13 @@ Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
 
 Route::get('/announcement/{announcement}', [WebsiteAnnouncementController::class, 'show'])->name('website.announcements.show');
 Route::post('announcements/{uuid}/comments', [WebsiteAnnouncementController::class, 'storeComment'])->name('announcements.comments.store');
-Route::resource('announcements', AnnouncementController::class);
+
 // Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
 //     ->name('announcements.comments.store');
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
-    // Blog Categories
-    Route::resource('blog-categories', \App\Http\Controllers\BlogCategoryController::class);
-
-    // Blog Posts
-    Route::resource('blog-posts', \App\Http\Controllers\BlogPostController::class);
-
-    // Comments
-    Route::get('comments', [\App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
-    Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
-    Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
-});
 
 
-Route::middleware(['auth'])->group(function () {
 
-    // Shop Routes
-    Route::resource('shops', ShopController::class);
-    Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
-    Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
-
-    // Product Routes
-    Route::resource('products', ProductController::class);
-    Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
-
-    // Product Category Routes
-    Route::resource('product-categories', ProductCategoryController::class);
-
-    // Shop School Association Routes
-    Route::resource('shop-school-associations', ShopSchoolAssociationController::class)->except(['store']);
-    Route::post('shop-school-associations/{association}/approve', [ShopSchoolAssociationController::class, 'approve'])->name('shop-school-associations.approve');
-    Route::post('shop-school-associations/{association}/reject', [ShopSchoolAssociationController::class, 'reject'])->name('shop-school-associations.reject');
-});
 
 // Blog Routes
 Route::prefix('blog')->name('website.blog.')->group(function () {
