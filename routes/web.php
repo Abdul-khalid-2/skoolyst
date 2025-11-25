@@ -33,7 +33,7 @@ use App\Http\Controllers\ShopSchoolAssociationController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner'])->group(function () {
 
     Route::get('/dashboard', [DashboardControlle::class, 'index'])->name('dashboard');
 
