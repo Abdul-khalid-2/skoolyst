@@ -31,7 +31,7 @@ use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ShopSchoolAssociationController;
 use App\Http\Controllers\Website\BlogCommentController;
 use App\Http\Controllers\Website\WebsiteShopController;
-use App\Http\Controllers\Website\WebsiteStationaryController;
+use App\Http\Controllers\Website\WebsiteProductsController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -216,7 +216,7 @@ Route::prefix('shop')->name('website.shop.')->group(function () {
     Route::get('/', [WebsiteShopController::class, 'index'])->name('index');
 });
 Route::prefix('products')->name('website.stationary.')->group(function () {
-    Route::get('/', [WebsiteStationaryController::class, 'index'])->name('index');
+    Route::get('/', [WebsiteProductsController::class, 'index'])->name('index');
 });
 
 
