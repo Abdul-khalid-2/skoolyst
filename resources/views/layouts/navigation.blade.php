@@ -70,6 +70,13 @@
                         <span>Blog Categories</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('product-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('product-categories.*') ? 'active' : '' }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Productes Categories</span>
+                    </a>
+                </li>
 
             @endrole
 
@@ -120,6 +127,13 @@
                     class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
                         <i class="fas fa-store"></i>
                         <span>My Shop</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('products.index') }}"
+                    class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Productcs</span>
                     </a>
                 </li>
 

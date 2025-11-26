@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\Shop;
+use App\Models\School;
 use App\Models\ProductCategory;
 use App\Models\ShopSchoolAssociation;
 use Illuminate\Http\Request;
@@ -22,12 +23,24 @@ class ProductController extends Controller
     {
         $query = Product::with(['shop', 'category', 'school', 'association', 'attributes']);
 
-        if (Auth::user()->hasRole('shop_owner')) {
-            $shopIds = Auth::user()->shops->pluck('id');
-            $query->whereIn('shop_id', $shopIds);
-        } elseif (Auth::user()->hasRole('school_admin')) {
-            $schoolIds = Auth::user()->schools->pluck('id');
-            $query->whereIn('school_id', $schoolIds);
+        if (Auth::user()->hasRole('shop-owner')) {
+            // Get shops owned by the user
+            $shopIds = Shop::where('user_id', Auth::id())->pluck('id');
+            if ($shopIds->isNotEmpty()) {
+                $query->whereIn('shop_id', $shopIds);
+            } else {
+                // If user has no shops, return empty results
+                $query->where('shop_id', 0);
+            }
+        } elseif (Auth::user()->hasRole('school-admin')) {
+            // Get the school ID from user's school_id
+            $schoolId = Auth::user()->school_id;
+            if ($schoolId) {
+                $query->where('school_id', $schoolId);
+            } else {
+                // If user has no school, return empty results
+                $query->where('school_id', 0);
+            }
         }
 
         if ($request->has('search')) {
@@ -47,16 +60,23 @@ class ProductController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        $products = $query->paginate(20);
+        $products = $query->latest()->paginate(20);
 
-        return view('products.index', compact('products'));
+        return view('dashboard.products.index', compact('products'));
     }
 
     public function create()
     {
         $shops = Shop::where('user_id', Auth::id())->get();
         $categories = ProductCategory::where('is_active', true)->get();
-        return view('products.create', compact('shops', 'categories'));
+
+        // Check if user has shops before allowing creation
+        if ($shops->isEmpty() && Auth::user()->hasRole('shop-owner')) {
+            return redirect()->route('shops.create')
+                ->with('error', 'You need to create a shop first before adding products.');
+        }
+
+        return view('dashboard.products.create', compact('shops', 'categories'));
     }
 
     public function store(Request $request)
@@ -79,14 +99,26 @@ class ProductController extends Controller
             'cost_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            'manage_stock' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'manage_stock' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'is_active' => 'sometimes|boolean',
             'attributes' => 'nullable|array',
         ]);
 
-        $shop = Shop::findOrFail($validated['shop_id']);
-        Gate::authorize('manage-products', $shop);
+        // Check if user owns the shop they're trying to add product to
+        if (Auth::user()->hasRole('shop-owner')) {
+            $userShopIds = Shop::where('user_id', Auth::id())->pluck('id');
+            if (!$userShopIds->contains($validated['shop_id'])) {
+                return back()->with('error', 'You can only add products to your own shops.');
+            }
+        }
+
+        // Check if school-admin is trying to add product to their school
+        if (Auth::user()->hasRole('school-admin') && isset($validated['school_id'])) {
+            if ($validated['school_id'] != Auth::user()->school_id) {
+                return back()->with('error', 'You can only add products to your own school.');
+            }
+        }
 
         if (isset($validated['school_id']) && isset($validated['association_id'])) {
             $association = ShopSchoolAssociation::where('id', $validated['association_id'])
@@ -105,10 +137,20 @@ class ProductController extends Controller
 
         try {
             $validated['slug'] = $this->generateSlug($validated['name'], $validated['shop_id']);
-            $validated['sku'] = $request->sku ?? null;
+            $validated['sku'] = $request->sku ?? $this->generateSKU();
 
             if (isset($validated['cost_price']) && $validated['cost_price'] > 0) {
                 $validated['profit_margin'] = (($validated['base_price'] - $validated['cost_price']) / $validated['cost_price']) * 100;
+            }
+
+            // Set default values for checkboxes
+            $validated['manage_stock'] = $request->has('manage_stock') ? true : false;
+            $validated['is_featured'] = $request->has('is_featured') ? true : false;
+            $validated['is_active'] = $request->has('is_active') ? true : false;
+
+            // Auto-approve for shop owners and school admins
+            if (Auth::user()->hasRole('shop-owner') || Auth::user()->hasRole('school-admin')) {
+                $validated['is_approved'] = true;
             }
 
             $product = Product::create($validated);
@@ -122,25 +164,34 @@ class ProductController extends Controller
             return redirect()->route('products.show', $product)->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create product.');
+            return back()->with('error', 'Failed to create product: ' . $e->getMessage());
         }
     }
 
     public function show(Product $product)
     {
+        // Authorization check
+        $this->authorizeProductAccess($product);
+
         $product->load(['shop', 'category', 'school', 'association', 'attributes']);
-        return view('products.show', compact('product'));
+        return view('dashboard.products.show', compact('product'));
     }
 
     public function edit(Product $product)
     {
+        // Authorization check
+        $this->authorizeProductAccess($product);
+
         $shops = Shop::where('user_id', Auth::id())->get();
         $categories = ProductCategory::where('is_active', true)->get();
-        return view('products.edit', compact('product', 'shops', 'categories'));
+        return view('dashboard.products.edit', compact('product', 'shops', 'categories'));
     }
 
     public function update(Request $request, Product $product)
     {
+        // Authorization check
+        $this->authorizeProductAccess($product);
+
         $validated = $request->validate([
             'category_id' => 'sometimes|exists:product_categories,id',
             'school_id' => 'nullable|exists:schools,id',
@@ -158,11 +209,18 @@ class ProductController extends Controller
             'cost_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'sometimes|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
-            'manage_stock' => 'boolean',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'manage_stock' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'is_active' => 'sometimes|boolean',
             'attributes' => 'nullable|array',
         ]);
+
+        // Check if school-admin is trying to update product for their school
+        if (Auth::user()->hasRole('school-admin') && isset($validated['school_id'])) {
+            if ($validated['school_id'] != Auth::user()->school_id) {
+                return back()->with('error', 'You can only update products for your own school.');
+            }
+        }
 
         DB::beginTransaction();
 
@@ -179,6 +237,11 @@ class ProductController extends Controller
                 $validated['profit_margin'] = (($basePrice - $costPrice) / $costPrice) * 100;
             }
 
+            // Set checkbox values
+            $validated['manage_stock'] = $request->has('manage_stock');
+            $validated['is_featured'] = $request->has('is_featured');
+            $validated['is_active'] = $request->has('is_active');
+
             $product->update($validated);
 
             if (isset($validated['attributes'])) {
@@ -194,12 +257,15 @@ class ProductController extends Controller
             return redirect()->route('products.show', $product)->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update product.');
+            return back()->with('error', 'Failed to update product: ' . $e->getMessage());
         }
     }
 
     public function destroy(Product $product)
     {
+        // Authorization check
+        $this->authorizeProductAccess($product);
+
         DB::beginTransaction();
 
         try {
@@ -214,13 +280,14 @@ class ProductController extends Controller
             return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to delete product.');
+            return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
         }
     }
 
     public function updateStock(Request $request, Product $product)
     {
-        Gate::authorize('update-stock', $product);
+        // Authorization check
+        $this->authorizeProductAccess($product);
 
         $validated = $request->validate([
             'stock_quantity' => 'required|integer|min:0',
@@ -255,8 +322,27 @@ class ProductController extends Controller
             return back()->with('success', 'Stock updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update stock.');
+            return back()->with('error', 'Failed to update stock: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Authorize product access based on user role
+     */
+    private function authorizeProductAccess(Product $product)
+    {
+        if (Auth::user()->hasRole('shop-owner')) {
+            $userShopIds = Shop::where('user_id', Auth::id())->pluck('id');
+            if (!$userShopIds->contains($product->shop_id)) {
+                abort(403, 'Unauthorized action.');
+            }
+        } elseif (Auth::user()->hasRole('school-admin')) {
+            // School admin can only access products for their school
+            if ($product->school_id != Auth::user()->school_id) {
+                abort(403, 'Unauthorized action.');
+            }
+        }
+        // Super admin has access to all products
     }
 
     private function generateSlug($name, $shopId)
@@ -266,5 +352,10 @@ class ProductController extends Controller
             ->where('slug', 'LIKE', "{$slug}%")
             ->count();
         return $count ? "{$slug}-{$count}" : $slug;
+    }
+
+    private function generateSKU()
+    {
+        return 'SKU-' . strtoupper(uniqid());
     }
 }
