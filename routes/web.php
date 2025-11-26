@@ -29,6 +29,9 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ShopSchoolAssociationController;
+use App\Http\Controllers\Website\BlogCommentController;
+use App\Http\Controllers\Website\WebsiteShopController;
+use App\Http\Controllers\Website\WebsiteStationaryController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -73,13 +76,29 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
         return $school->branches()->where('status', 'active')->get();
     });
 
-    // Shop Routes
-    Route::resource('shops', ShopController::class);
+    // Dashboard Shop Routes
+    // Route::resource('shops', ShopController::class);
+    Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
+    Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
+    Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
     Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
     Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
 
-    // Product Routes
-    Route::resource('products', ProductController::class);
+    // Dashboard Product Routes
+    // Route::resource('products', ProductController::class);
+    Route::get('dashboard/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('dashboard/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('dashboard/products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('dashboard/products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('dashboard/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::patch('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('dashboard/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
 
     // Product Category Routes
@@ -133,17 +152,15 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::middleware(['auth'])->group(function () {
-    Route::prefix('school-image-galleries')->group(function () {
-        Route::get('/', [SchoolImageGalleryController::class, 'index'])->name('school-image-galleries.index');
-        Route::post('/', [SchoolImageGalleryController::class, 'store'])->name('school-image-galleries.store');
-        Route::get('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'show'])->name('school-image-galleries.show');
-        Route::put('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'update'])->name('school-image-galleries.update');
-        Route::delete('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'destroy'])->name('school-image-galleries.destroy');
-    });
-});
-
-
+// Route::middleware(['auth'])->group(function () {
+//     Route::prefix('school-image-galleries')->group(function () {
+//         Route::get('/', [SchoolImageGalleryController::class, 'index'])->name('school-image-galleries.index');
+//         Route::post('/', [SchoolImageGalleryController::class, 'store'])->name('school-image-galleries.store');
+//         Route::get('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'show'])->name('school-image-galleries.show');
+//         Route::put('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'update'])->name('school-image-galleries.update');
+//         Route::delete('/{schoolImageGallery}', [SchoolImageGalleryController::class, 'destroy'])->name('school-image-galleries.destroy');
+//     });
+// });
 
 // User Profile Routes
 Route::middleware(['auth'])->group(function () {
@@ -178,17 +195,11 @@ Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
     Route::post('/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
 });
 
-
-
 Route::get('/announcement/{announcement}', [WebsiteAnnouncementController::class, 'show'])->name('website.announcements.show');
 Route::post('announcements/{uuid}/comments', [WebsiteAnnouncementController::class, 'storeComment'])->name('announcements.comments.store');
 
 // Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
 //     ->name('announcements.comments.store');
-
-
-
-
 
 // Blog Routes
 Route::prefix('blog')->name('website.blog.')->group(function () {
@@ -200,6 +211,14 @@ Route::prefix('blog')->name('website.blog.')->group(function () {
 
     Route::post('/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('comment.store');
 });
+
+Route::prefix('shop')->name('website.shop.')->group(function () {
+    Route::get('/', [WebsiteShopController::class, 'index'])->name('index');
+});
+Route::prefix('products')->name('website.stationary.')->group(function () {
+    Route::get('/', [WebsiteStationaryController::class, 'index'])->name('index');
+});
+
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');

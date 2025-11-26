@@ -23,6 +23,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('blog') ? 'active' : '' }}" href="{{ url('/blog') }}">Blog</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('shop') ? 'active' : '' }}" href="{{ route('website.shop.index') }}">Shop</a>
+                </li>
             </ul>
 
             <div class="auth-buttons d-flex gap-2">
