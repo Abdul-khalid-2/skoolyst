@@ -531,7 +531,176 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
+    /* ==================== FILTERS SECTION ==================== */
+    .filters-section {
+        background: white;
+        padding: 2rem 0;
+        border-bottom: 1px solid #e0e0e0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .filters-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .filter-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    .filter-select,
+    .filter-input {
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-select:focus,
+    .filter-input:focus {
+        outline: none;
+        border-color: #4361ee;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .filter-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .btn-filter {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        flex: 1;
+    }
+
+    .btn-apply {
+        background: #4361ee;
+        color: white;
+    }
+
+    .btn-reset {
+        background: #f8f9fa;
+        color: #666;
+        border: 2px solid #e0e0e0;
+    }
+
+    .btn-filter:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ==================== SCHOOL ASSOCIATIONS SECTION ==================== */
+    .school-associations {
+        background: #f8f9fa;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .school-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+
+    .school-tag {
+        background: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        border: 2px solid #4361ee;
+        color: #4361ee;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+    }
+
+    .school-tag:hover {
+        background: #4361ee;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* ==================== DYNAMIC CONTENT STYLES ==================== */
+    .no-results {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: white;
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+
+    .no-results-icon {
+        font-size: 4rem;
+        color: #ccc;
+        margin-bottom: 1rem;
+    }
+
+    .no-results-title {
+        font-size: 1.5rem;
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    /* Update existing styles for dynamic content */
+    .shop-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* Association badge */
+    .association-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #38b000;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        z-index: 2;
+    }
+
     /* ==================== RESPONSIVE DESIGN ==================== */
+    @media (max-width: 768px) {
+        .filters-container {
+            grid-template-columns: 1fr;
+        }
+        
+        .filter-actions {
+            flex-direction: column;
+        }
+        
+        .school-tags {
+            justify-content: flex-start;
+        }
+    }
     @media (max-width: 768px) {
         .hero-title {
             font-size: 2.5rem;
@@ -591,6 +760,69 @@
     </div>
 </section>
 
+<!-- ==================== FILTERS SECTION ==================== -->
+<section class="filters-section">
+    <div class="container">
+        <form action="{{ route('website.shop.index') }}" method="GET" id="shop-filters">
+            <div class="filters-container">
+                <!-- Search Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Search</label>
+                    <input type="text" 
+                           name="search" 
+                           class="filter-input" 
+                           placeholder="Search shops or products..."
+                           value="{{ $search }}">
+                </div>
+
+                <!-- School Type Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">School Type</label>
+                    <select name="school_type" class="filter-select">
+                        <option value="">All School Types</option>
+                        @foreach($schoolTypes as $type)
+                            <option value="{{ $type }}" {{ $schoolType == $type ? 'selected' : '' }}>
+                                {{ $type }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- City Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">City</label>
+                    <select name="city" class="filter-select">
+                        <option value="">All Cities</option>
+                        @foreach($cities as $cityItem)
+                            <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>
+                                {{ $cityItem }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Shop Type Filter -->
+                <div class="filter-group">
+                    <label class="filter-label">Shop Type</label>
+                    <select name="shop_type" class="filter-select">
+                        <option value="">All Shop Types</option>
+                        <option value="stationery" {{ $shopType == 'stationery' ? 'selected' : '' }}>Stationery</option>
+                        <option value="book_store" {{ $shopType == 'book_store' ? 'selected' : '' }}>Book Store</option>
+                        <option value="school_affiliated" {{ $shopType == 'school_affiliated' ? 'selected' : '' }}>School Affiliated</option>
+                        <option value="mixed" {{ $shopType == 'mixed' ? 'selected' : '' }}>Mixed</option>
+                    </select>
+                </div>
+
+                <!-- Filter Actions -->
+                <div class="filter-actions">
+                    <button type="submit" class="btn-filter btn-apply">Apply Filters</button>
+                    <a href="{{ route('website.shop.index') }}" class="btn-filter btn-reset">Reset</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
 <!-- ==================== FEATURED SHOPS SECTION ==================== -->
 <section class="shops-section">
     <div class="container">
@@ -599,109 +831,86 @@
             Browse through verified shops specializing in educational materials, school supplies, and academic resources
         </p>
 
-        <div class="shops-grid">
-            <!-- Shop Card 1 -->
-            <div class="shop-card">
-                <div class="shop-banner">
-                    <div class="shop-logo">
-                        <img src="https://via.placeholder.com/80" alt="Book Haven">
-                    </div>
-                </div>
-                <div class="shop-content">
-                    <h3 class="shop-name">Book Haven</h3>
-                    <span class="shop-type">Book Store</span>
-                    <div class="shop-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Lahore, Punjab</span>
-                    </div>
-                    <div class="shop-rating">
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star-half-alt"></i>
+        @if($shops->count() > 0)
+            <div class="shops-grid">
+                @foreach($shops as $shop)
+                    <div class="shop-card">
+                        <div class="shop-banner" style="background: linear-gradient(135deg, #4361ee, #38b000);">
+                            <div class="shop-logo">
+                                @if($shop->logo_url)
+                                    <img src="{{ asset('storage/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+                                @else
+                                    <img src="https://via.placeholder.com/80" alt="{{ $shop->name }}">
+                                @endif
+                            </div>
                         </div>
-                        <span class="rating-value">4.5 (128 reviews)</span>
+                        <div class="shop-content">
+                            <h3 class="shop-name">{{ $shop->name }}</h3>
+                            <span class="shop-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+                            
+                            <div class="shop-location">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>{{ $shop->city }}, {{ $shop->state }}</span>
+                            </div>
+                            
+                            <div class="shop-rating">
+                                <div class="rating-stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($shop->rating))
+                                            <i class="fas fa-star"></i>
+                                        @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="rating-value">{{ number_format($shop->rating, 1) }} ({{ $shop->total_reviews }} reviews)</span>
+                            </div>
+                            
+                            <p class="shop-description">
+                                {{ Str::limit($shop->description, 120) }}
+                            </p>
+
+                            <!-- School Associations -->
+                            @if($shop->schoolAssociations->count() > 0)
+                                <div class="school-associations">
+                                    <div class="school-tags">
+                                        @foreach($shop->schoolAssociations->take(3) as $association)
+                                            <span class="school-tag">{{ $association->school->name }}</span>
+                                        @endforeach
+                                        @if($shop->schoolAssociations->count() > 3)
+                                            <span class="school-tag">+{{ $shop->schoolAssociations->count() - 3 }} more</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div class="shop-actions">
+                                <a href="{{ route('website.shop.show', $shop->uuid) }}" class="btn btn-primary">Visit Shop</a>
+                                <a href="{{ route('website.stationary.index') }}?shop={{ $shop->id }}" class="btn btn-secondary">View Products</a>
+                            </div>
+                        </div>
                     </div>
-                    <p class="shop-description">
-                        Your one-stop destination for textbooks, reference books, and educational materials for all classes and boards.
-                    </p>
-                    <div class="shop-actions">
-                        <a href="#" class="btn btn-primary">Visit Shop</a>
-                        <a href="#" class="btn btn-secondary">View Products</a>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
-            <!-- Shop Card 2 -->
-            <div class="shop-card">
-                <div class="shop-banner">
-                    <div class="shop-logo">
-                        <img src="https://via.placeholder.com/80" alt="Scholar's Stationery">
-                    </div>
+            <!-- Pagination -->
+            @if($shops->hasPages())
+                <div class="pagination-container">
+                    {{ $shops->appends(request()->query())->links() }}
                 </div>
-                <div class="shop-content">
-                    <h3 class="shop-name">Scholar's Stationery</h3>
-                    <span class="shop-type">Stationery</span>
-                    <div class="shop-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Karachi, Sindh</span>
-                    </div>
-                    <div class="shop-rating">
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="far fa-star"></i>
-                        </div>
-                        <span class="rating-value">4.0 (95 reviews)</span>
-                    </div>
-                    <p class="shop-description">
-                        Premium quality stationery items including pens, notebooks, art supplies, and school essentials.
-                    </p>
-                    <div class="shop-actions">
-                        <a href="#" class="btn btn-primary">Visit Shop</a>
-                        <a href="#" class="btn btn-secondary">View Products</a>
-                    </div>
+            @endif
+        @else
+            <div class="no-results">
+                <div class="no-results-icon">
+                    <i class="fas fa-store-slash"></i>
                 </div>
+                <h3 class="no-results-title">No shops found</h3>
+                <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+                <a href="{{ route('website.shop.index') }}" class="btn btn-primary mt-3">Clear Filters</a>
             </div>
-
-            <!-- Shop Card 3 -->
-            <div class="shop-card">
-                <div class="shop-banner">
-                    <div class="shop-logo">
-                        <img src="https://via.placeholder.com/80" alt="Uniform Center">
-                    </div>
-                </div>
-                <div class="shop-content">
-                    <h3 class="shop-name">Uniform Center</h3>
-                    <span class="shop-type">School Affiliated</span>
-                    <div class="shop-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Islamabad</span>
-                    </div>
-                    <div class="shop-rating">
-                        <div class="rating-stars">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <span class="rating-value">5.0 (67 reviews)</span>
-                    </div>
-                    <p class="shop-description">
-                        Official school uniforms, sports kits, and accessories for various educational institutions.
-                    </p>
-                    <div class="shop-actions">
-                        <a href="#" class="btn btn-primary">Visit Shop</a>
-                        <a href="#" class="btn btn-secondary">View Products</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        @endif
     </div>
 </section>
 
@@ -713,79 +922,22 @@
             Explore our wide range of educational products organized by categories
         </p>
 
-        <div class="categories-grid">
-            <!-- Category Card 1 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-book"></i>
-                </div>
-                <h3 class="category-name">Textbooks & Books</h3>
-                <p class="category-description">
-                    Curriculum books, reference materials, story books, and educational publications for all levels.
-                </p>
-                <div class="category-count">245 Products</div>
+        @if($categories->count() > 0)
+            <div class="categories-grid">
+                @foreach($categories as $category)
+                    <div class="category-card">
+                        <div class="category-icon">
+                            <i class="fas fa-{{ $category->icon ?? 'shopping-bag' }}"></i>
+                        </div>
+                        <h3 class="category-name">{{ $category->name }}</h3>
+                        <p class="category-description">
+                            {{ Str::limit($category->description ?? 'Various products in this category', 100) }}
+                        </p>
+                        <div class="category-count">{{ $category->products_count }} Products</div>
+                    </div>
+                @endforeach
             </div>
-
-            <!-- Category Card 2 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-pencil-alt"></i>
-                </div>
-                <h3 class="category-name">Stationery</h3>
-                <p class="category-description">
-                    Pens, pencils, notebooks, art supplies, and all essential writing materials.
-                </p>
-                <div class="category-count">189 Products</div>
-            </div>
-
-            <!-- Category Card 3 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-tshirt"></i>
-                </div>
-                <h3 class="category-name">School Uniforms</h3>
-                <p class="category-description">
-                    Complete uniform sets, shirts, trousers, skirts, and accessories for various schools.
-                </p>
-                <div class="category-count">78 Products</div>
-            </div>
-
-            <!-- Category Card 4 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-briefcase"></i>
-                </div>
-                <h3 class="category-name">Bags & Backpacks</h3>
-                <p class="category-description">
-                    School bags, backpacks, lunch bags, and carrying solutions for students.
-                </p>
-                <div class="category-count">45 Products</div>
-            </div>
-
-            <!-- Category Card 5 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-copy"></i>
-                </div>
-                <h3 class="category-name">Copies & Notebooks</h3>
-                <p class="category-description">
-                    Various types of copies, registers, notebooks, and writing pads for different needs.
-                </p>
-                <div class="category-count">156 Products</div>
-            </div>
-
-            <!-- Category Card 6 -->
-            <div class="category-card">
-                <div class="category-icon">
-                    <i class="fas fa-futbol"></i>
-                </div>
-                <h3 class="category-name">Sports Equipment</h3>
-                <p class="category-description">
-                    Sports gear, games equipment, and physical education necessities.
-                </p>
-                <div class="category-count">67 Products</div>
-            </div>
-        </div>
+        @endif
     </div>
 </section>
 
@@ -797,96 +949,68 @@
             Discover popular and essential educational products from our trusted shops
         </p>
 
-        <div class="products-grid">
-            <!-- Product Card 1 -->
-            <div class="product-card">
-                <div class="product-badge">Bestseller</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200" alt="Mathematics Textbook">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Textbook</div>
-                    <h3 class="product-name">Mathematics for Class 9 - Federal Board</h3>
-                    <div class="product-shop">Book Haven</div>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Federal Board</span>
-                        <span class="attribute-tag">Class 9</span>
-                        <span class="attribute-tag">2024 Edition</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 850</span>
-                            <span class="price-original">Rs. 950</span>
-                        </div>
-                        <div class="stock-status in-stock">In Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success btn-sm">Add to Cart</button>
-                        <button class="btn btn-secondary btn-sm">Quick View</button>
-                    </div>
-                </div>
-            </div>
+        @if($featuredProducts->count() > 0)
+            <div class="products-grid">
+                @foreach($featuredProducts as $product)
+                    <div class="product-card">
+                        @if($product->sale_price && $product->sale_price < $product->base_price)
+                            <div class="product-badge">Sale</div>
+                        @elseif($product->is_featured)
+                            <div class="product-badge">Featured</div>
+                        @endif
 
-            <!-- Product Card 2 -->
-            <div class="product-card">
-                <div class="product-badge">New</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200" alt="School Bag">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">School Bag</div>
-                    <h3 class="product-name">Premium Waterproof School Backpack</h3>
-                    <div class="product-shop">Scholar's Stationery</div>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Waterproof</span>
-                        <span class="attribute-tag">3 Compartments</span>
-                        <span class="attribute-tag">Blue Color</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 2,500</span>
+                        <div class="product-image">
+                            @if($product->main_image_url)
+                                <img src="{{ asset('storage/' . $product->main_image_url) }}" alt="{{ $product->name }}">
+                            @else
+                                <img src="https://via.placeholder.com/300x200" alt="{{ $product->name }}">
+                            @endif
                         </div>
-                        <div class="stock-status in-stock">In Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success btn-sm">Add to Cart</button>
-                        <button class="btn btn-secondary btn-sm">Quick View</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Card 3 -->
-            <div class="product-card">
-                <div class="product-badge">Sale</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200" alt="School Uniform">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Uniform</div>
-                    <h3 class="product-name">Complete School Uniform Set - Beaconhouse</h3>
-                    <div class="product-shop">Uniform Center</div>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Beaconhouse</span>
-                        <span class="attribute-tag">Size: Medium</span>
-                        <span class="attribute-tag">Summer Edition</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 3,200</span>
-                            <span class="price-original">Rs. 3,800</span>
+                        
+                        <div class="product-content">
+                            <div class="product-category">{{ $product->category->name }}</div>
+                            <h3 class="product-name">{{ $product->name }}</h3>
+                            <div class="product-shop">{{ $product->shop->name }}</div>
+                            
+                            <div class="product-attributes">
+                                @if($product->productAttributes)
+                                    @if($product->productAttributes->education_board)
+                                        <span class="attribute-tag">{{ ucfirst($product->productAttributes->education_board) }}</span>
+                                    @endif
+                                    @if($product->productAttributes->class_level)
+                                        <span class="attribute-tag">{{ $product->productAttributes->class_level }}</span>
+                                    @endif
+                                    @if($product->productAttributes->subject)
+                                        <span class="attribute-tag">{{ $product->productAttributes->subject }}</span>
+                                    @endif
+                                @endif
+                            </div>
+                            
+                            <div class="product-pricing">
+                                <div>
+                                    <span class="price-current">Rs. {{ number_format($product->sale_price ?? $product->base_price) }}</span>
+                                    @if($product->sale_price && $product->sale_price < $product->base_price)
+                                        <span class="price-original">Rs. {{ number_format($product->base_price) }}</span>
+                                    @endif
+                                </div>
+                                <div class="stock-status {{ $product->is_in_stock ? 'in-stock' : 'low-stock' }}">
+                                    {{ $product->is_in_stock ? 'In Stock' : 'Low Stock' }}
+                                </div>
+                            </div>
+                            
+                            <div class="product-actions">
+                                <button class="btn btn-success btn-sm">Add to Cart</button>
+                                <button class="btn btn-secondary btn-sm">Quick View</button>
+                            </div>
                         </div>
-                        <div class="stock-status low-stock">Low Stock</div>
                     </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success btn-sm">Add to Cart</button>
-                        <button class="btn btn-secondary btn-sm">Quick View</button>
-                    </div>
-                </div>
+                @endforeach
             </div>
-        </div>
+        @endif
     </div>
 </section>
 
+<!-- Rest of the sections (How It Works, CTA) remain the same -->
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
 <section class="how-it-works">
     <div class="container">
@@ -936,7 +1060,7 @@
         </p>
 
         <div class="cta-buttons">
-            <a href="#" class="cta-btn primary">
+            <a href="{{ route('website.shop.index') }}" class="cta-btn primary">
                 <i class="fas fa-store me-2"></i> Explore All Shops
             </a>
             <a href="{{ route('website.stationary.index') }}" class="cta-btn secondary">
@@ -947,3 +1071,26 @@
 </section>
 
 @endsection
+
+@push('scripts')
+<script>
+    // Auto-submit form when filter values change
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterSelects = document.querySelectorAll('.filter-select');
+        
+        filterSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                document.getElementById('shop-filters').submit();
+            });
+        });
+
+        // Add loading state to form submission
+        const form = document.getElementById('shop-filters');
+        form.addEventListener('submit', function() {
+            const applyBtn = form.querySelector('.btn-apply');
+            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+            applyBtn.disabled = true;
+        });
+    });
+</script>
+@endpush

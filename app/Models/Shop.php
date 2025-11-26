@@ -1,5 +1,4 @@
 <?php
-// app/Models/Shop.php
 
 namespace App\Models;
 
@@ -7,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Shop extends Model
 {
@@ -55,14 +55,23 @@ class Shop extends Model
 
     public function schoolAssociations(): HasMany
     {
-        return $this->hasMany(ShopSchoolAssociation::class);
+        return $this->hasMany(ShopSchoolAssociation::class, 'shop_id');
     }
 
-    public function associatedSchools()
+    public function associatedSchools(): BelongsToMany
     {
         return $this->belongsToMany(School::class, 'shop_school_associations')
             ->withPivot('association_type', 'discount_percentage', 'is_active', 'status')
             ->withTimestamps();
+    }
+
+    // Scope for shops with active school associations
+    public function scopeWithActiveSchoolAssociations($query)
+    {
+        return $query->whereHas('schoolAssociations', function ($q) {
+            $q->where('is_active', true)
+                ->where('status', 'approved');
+        });
     }
 
     public function isOwner(User $user): bool

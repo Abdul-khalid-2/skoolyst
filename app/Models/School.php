@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 class School extends Model
@@ -78,6 +79,38 @@ class School extends Model
     {
         return $this->hasOne(User::class, 'school_id');
     }
+
+    // Add shop associations relationship
+    public function shopAssociations(): HasMany
+    {
+        return $this->hasMany(ShopSchoolAssociation::class, 'school_id');
+    }
+
+    public function associatedShops(): BelongsToMany
+    {
+        return $this->belongsToMany(Shop::class, 'shop_school_associations')
+            ->withPivot('association_type', 'discount_percentage', 'is_active', 'status')
+            ->withTimestamps();
+    }
+
+    // Scope for active shop associations
+    public function scopeWithActiveShopAssociations($query)
+    {
+        return $query->whereHas('shopAssociations', function ($q) {
+            $q->where('is_active', true)
+                ->where('status', 'approved');
+        });
+    }
+
+    // Check if school has active shop associations
+    public function hasActiveShopAssociations(): bool
+    {
+        return $this->shopAssociations()
+            ->where('is_active', true)
+            ->where('status', 'approved')
+            ->exists();
+    }
+
     // Scope for school admins to see only their schools
     public function scopeForUser($query, $user)
     {

@@ -1,5 +1,4 @@
 <?php
-// app/Models/ShopSchoolAssociation.php
 
 namespace App\Models;
 

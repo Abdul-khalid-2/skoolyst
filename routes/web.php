@@ -214,6 +214,7 @@ Route::prefix('blog')->name('website.blog.')->group(function () {
 
 Route::prefix('shop')->name('website.shop.')->group(function () {
     Route::get('/', [WebsiteShopController::class, 'index'])->name('index');
+    Route::get('/{uuid}', [WebsiteShopController::class, 'show'])->name('show'); // Add this line
 });
 Route::prefix('products')->name('website.stationary.')->group(function () {
     Route::get('/', [WebsiteProductsController::class, 'index'])->name('index');
