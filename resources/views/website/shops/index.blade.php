@@ -838,7 +838,7 @@
                         <div class="shop-banner" style="background: linear-gradient(135deg, #4361ee, #38b000);">
                             <div class="shop-logo">
                                 @if($shop->logo_url)
-                                    <img src="{{ asset('storage/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+                                    <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
                                 @else
                                     <img src="https://via.placeholder.com/80" alt="{{ $shop->name }}">
                                 @endif
@@ -961,7 +961,7 @@
 
                         <div class="product-image">
                             @if($product->main_image_url)
-                                <img src="{{ asset('storage/' . $product->main_image_url) }}" alt="{{ $product->name }}">
+                                <img src="{{ asset('website/' . $product->main_image_url) }}" alt="{{ $product->name }}">
                             @else
                                 <img src="https://via.placeholder.com/300x200" alt="{{ $product->name }}">
                             @endif
