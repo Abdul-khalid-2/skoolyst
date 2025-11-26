@@ -104,6 +104,10 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
         Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
         Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
     });
+
+
+    // access to update status of school
+    Route::put('/shop-school-associations/{association}/status', [ShopSchoolAssociationController::class, 'updateStatus'])->name('shop-school-associations.update-status');
 });
 
 Route::middleware('guest')->group(function () {

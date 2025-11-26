@@ -249,7 +249,7 @@
             @endif
 
             <!-- Quick Actions -->
-            <div class="row">
+            <!-- <div class="row">
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header bg-white border-0">
@@ -304,7 +304,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </section>
     </main>
 </x-app-layout>

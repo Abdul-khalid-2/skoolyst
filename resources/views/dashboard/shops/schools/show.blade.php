@@ -1,5 +1,6 @@
 <x-app-layout>
     <main class="main-content">
+        <div id="toast-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
         <section id="shop-details" class="page-section">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
@@ -7,9 +8,7 @@
                     <p class="mb-0 text-muted">View and manage shop information</p>
                 </div>
                 <div class="btn-group">
-                    <a href="{{ route('shops.edit', $shop) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-edit me-2"></i> Edit
-                    </a>
+
                     <a href="{{ route('shops.index') }}" class="btn btn-outline-primary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Shops
                     </a>
@@ -177,34 +176,70 @@
                         <div class="card-body">
                             @if($shop->schoolAssociations->count() > 0)
                                 @foreach($shop->schoolAssociations->take(3) as $association)
-                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded">
+                                <div class="d-flex justify-content-between align-items-center mb-2 p-2 bg-light rounded association-item" data-association-id="{{ $association->id }}">
                                     <div>
                                         <strong>{{ $association->school->name }}</strong>
                                         <br>
                                         <small class="text-muted text-capitalize">
                                             {{ str_replace('_', ' ', $association->association_type) }}
                                         </small>
+                                        @if($association->approved_at)
+                                            <br>
+                                            <small class="text-muted">
+                                                Approved: {{ $association->approved_at->format('M j, Y') }}
+                                            </small>
+                                        @endif
                                     </div>
-                                    <span class="badge bg-{{ $association->status == 'approved' ? 'success' : 'warning' }}">
-                                        {{ $association->status }}
-                                    </span>
+                                    
+                                    @if (Auth::user()->school_id === $association->school_id)
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                                                    type="button" 
+                                                    id="statusDropdown{{ $association->id }}" 
+                                                    data-bs-toggle="dropdown" 
+                                                    aria-expanded="false">
+                                                <span class="status-badge badge {{ $association->status == 'approved' ? 'bg-success' : ($association->status == 'rejected' ? 'bg-danger' : 'bg-warning') }}">
+                                                    {{ ucfirst($association->status) }}
+                                                </span>
+                                            </button>
+                                            <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ $association->id }}">
+                                                <li>
+                                                    <a class="dropdown-item status-option" href="#" data-status="pending">
+                                                        <span class="badge bg-warning me-2">Pending</span> Set as Pending
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item status-option" href="#" data-status="approved">
+                                                        <span class="badge bg-success me-2">Approved</span> Approve Association
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item status-option" href="#" data-status="rejected">
+                                                        <span class="badge bg-danger me-2">Rejected</span> Reject Association
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    @else
+                                        <span class="badge {{ $association->status == 'approved' ? 'bg-success' : ($association->status == 'rejected' ? 'bg-danger' : 'bg-warning') }}">
+                                            {{ ucfirst($association->status) }}
+                                        </span>
+                                    @endif
                                 </div>
                                 @endforeach
                                 
-                                @if($shop->schoolAssociations->count() > 3)
-                                <div class="text-center mt-2">
+                                {{-- <div class="text-center mt-2">
                                     <a href="{{ route('shops.associations', $shop) }}" class="btn btn-sm btn-outline-primary">
                                         View All ({{ $shop->schoolAssociations->count() }})
                                     </a>
-                                </div>
-                                @endif
+                                </div> --}}
                             @else
                                 <p class="text-muted text-center mb-0">No school associations</p>
-                                <div class="text-center mt-2">
+                                {{-- <div class="text-center mt-2">
                                     <a href="{{ route('shops.associations', $shop) }}" class="btn btn-sm btn-primary">
                                         Associate School
                                     </a>
-                                </div>
+                                </div> --}}
                             @endif
                         </div>
                     </div>
@@ -212,4 +247,160 @@
             </div>
         </section>
     </main>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Status update handler
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('status-option') || e.target.closest('.status-option')) {
+                    e.preventDefault();
+                    
+                    const statusOption = e.target.classList.contains('status-option') ? e.target : e.target.closest('.status-option');
+                    const associationItem = statusOption.closest('.association-item');
+                    const associationId = associationItem.dataset.associationId;
+                    const newStatus = statusOption.dataset.status;
+                    const dropdownButton = associationItem.querySelector('.dropdown-toggle');
+                    const statusBadge = associationItem.querySelector('.status-badge');
+                    
+                    // Show loading state
+                    const originalHTML = dropdownButton.innerHTML;
+                    dropdownButton.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Updating...';
+                    dropdownButton.disabled = true;
+                    
+                    // Get CSRF token safely
+                    let csrfToken = '';
+                    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+                    if (csrfMeta) {
+                        csrfToken = csrfMeta.getAttribute('content');
+                    } else {
+                        console.error('CSRF token not found');
+                        showToast('Error', 'Security token missing. Please refresh the page.', 'error');
+                        dropdownButton.innerHTML = originalHTML;
+                        dropdownButton.disabled = false;
+                        return;
+                    }
+                    
+                    // Make API request
+                    fetch(`/shop-school-associations/${associationId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: JSON.stringify({
+                            status: newStatus
+                        })
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            if (response.status === 403) {
+                                throw new Error('You are not authorized to perform this action.');
+                            }
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Update the badge
+                            statusBadge.className = 'status-badge badge ' + getStatusBadgeClass(data.data.status);
+                            statusBadge.textContent = data.data.status.charAt(0).toUpperCase() + data.data.status.slice(1);
+                            
+                            // Show success message
+                            showToast('Success', data.message, 'success');
+                            
+                            // Update any additional data if shown
+                            updateAssociationDetails(associationItem, data.data);
+                        } else {
+                            showToast('Error', data.message, 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error updating status:', error);
+                        showToast('Error', error.message || 'Failed to update status. Please try again.', 'error');
+                    })
+                    .finally(() => {
+                        // Restore button state
+                        dropdownButton.innerHTML = originalHTML;
+                        dropdownButton.disabled = false;
+                        
+                        // Close dropdown
+                        const dropdownMenu = associationItem.querySelector('.dropdown-menu');
+                        if (dropdownMenu) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    });
+                }
+            });
+            
+            // Helper function to get badge class based on status
+            function getStatusBadgeClass(status) {
+                const badgeClasses = {
+                    'pending': 'bg-warning',
+                    'approved': 'bg-success',
+                    'rejected': 'bg-danger'
+                };
+                return badgeClasses[status] || 'bg-secondary';
+            }
+            
+            // Helper function to update association details
+            function updateAssociationDetails(associationItem, data) {
+                // Update approved date if it exists in the data
+                if (data.approved_at) {
+                    let approvedDateElement = associationItem.querySelector('.approved-date');
+                    if (!approvedDateElement) {
+                        // Create the element if it doesn't exist
+                        const small = document.createElement('small');
+                        small.className = 'text-muted approved-date';
+                        associationItem.querySelector('div').appendChild(small);
+                        approvedDateElement = associationItem.querySelector('.approved-date');
+                    }
+                    approvedDateElement.textContent = 'Approved: ' + data.approved_at;
+                } else {
+                    // Remove approved date if status changed from approved
+                    const approvedDateElement = associationItem.querySelector('.approved-date');
+                    if (approvedDateElement) {
+                        approvedDateElement.remove();
+                    }
+                }
+            }
+            
+            // Toast notification function
+            function showToast(title, message, type = 'info') {
+                // Create toast container if it doesn't exist
+                let toastContainer = document.getElementById('toast-container');
+                if (!toastContainer) {
+                    toastContainer = document.createElement('div');
+                    toastContainer.id = 'toast-container';
+                    toastContainer.className = 'toast-container position-fixed top-0 end-0 p-3';
+                    toastContainer.style.zIndex = '1055';
+                    document.body.appendChild(toastContainer);
+                }
+                
+                const toastId = 'toast-' + Date.now();
+                const bgClass = type === 'error' ? 'text-bg-danger' : type === 'success' ? 'text-bg-success' : 'text-bg-info';
+                
+                const toastHtml = `
+                    <div id="${toastId}" class="toast align-items-center ${bgClass} border-0" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">
+                                <strong>${title}:</strong> ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                `;
+                
+                toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+                
+                const toastElement = new bootstrap.Toast(document.getElementById(toastId));
+                toastElement.show();
+                
+                // Remove toast after it's hidden
+                document.getElementById(toastId).addEventListener('hidden.bs.toast', function() {
+                    this.remove();
+                });
+            }
+        });
+    </script>
 </x-app-layout>

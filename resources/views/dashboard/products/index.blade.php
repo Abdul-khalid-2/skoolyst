@@ -81,7 +81,7 @@
                                     <tr>
                                         <td>
                                             @if($product->main_image_url)
-                                                <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" 
+                                                <img src="{{ asset('website/'.$product->main_image_url) }}" alt="{{ $product->name }}" 
                                                      class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
                                             @else
                                                 <div class="bg-light d-flex align-items-center justify-content-center rounded" 

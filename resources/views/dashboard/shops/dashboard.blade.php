@@ -336,7 +336,7 @@
                                 <div class="list-group-item d-flex align-items-center">
                                     <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
                                         @if($product->main_image_url)
-                                        <img src="{{ Storage::disk('website')->url($product->main_image_url) }}" 
+                                        <img src="{{ asset('website/'.$product->main_image_url) }}" 
                                              alt="{{ $product->name }}" class="rounded" width="40" height="40">
                                         @else
                                         <i class="fas fa-box text-primary"></i>

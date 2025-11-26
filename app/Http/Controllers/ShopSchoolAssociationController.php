@@ -11,7 +11,7 @@ class ShopSchoolAssociationController extends Controller
 {
     public function __construct()
     {
-        $this->authorizeResource(ShopSchoolAssociation::class, 'shop-school-association');
+        // $this->authorizeResource(ShopSchoolAssociation::class, 'shop-school-association');
     }
 
     public function index()
@@ -89,5 +89,61 @@ class ShopSchoolAssociationController extends Controller
         ]);
 
         return back()->with('success', 'Association rejected successfully.');
+    }
+
+
+    public function updateStatus(Request $request, ShopSchoolAssociation $association)
+    {
+        // Authorization - only school admin of the associated school can update
+        if (Auth::user()->school_id !== $association->school_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized action.'
+            ], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        // DB::beginTransaction();
+
+        try {
+            $association->update([
+                'status' => $validated['status'],
+                'approved_at' => $validated['status'] === 'approved' ? now() : null,
+                'approved_by' => $validated['status'] === 'approved' ? Auth::id() : null
+            ]);
+
+            // DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Association status updated successfully.',
+                'data' => [
+                    'status' => $association->status,
+                    'status_badge' => $this->getStatusBadge($association->status),
+                    'approved_at' => $association->approved_at?->format('M j, Y'),
+                    'approved_by' => $association->approved_by_user?->name
+                ]
+            ]);
+        } catch (\Exception $e) {
+            // DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    private function getStatusBadge($status)
+    {
+        $badges = [
+            'pending' => 'bg-warning',
+            'approved' => 'bg-success',
+            'rejected' => 'bg-danger'
+        ];
+
+        return $badges[$status] ?? 'bg-secondary';
     }
 }
