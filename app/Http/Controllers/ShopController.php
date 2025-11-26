@@ -97,7 +97,13 @@ class ShopController extends Controller
 
     public function create()
     {
-        return view('dashboard.shops.create');
+        if (Auth::user()->hasRole('shop-owner')) {
+            return view('dashboard.shops.create');
+        } elseif (Auth::user()->hasRole('super-admin')) {
+            return view('dashboard.shops.create');
+        } elseif (Auth::user()->hasRole('school-admin')) {
+            return view('dashboard.shops.create');
+        }
     }
 
     public function store(Request $request)
