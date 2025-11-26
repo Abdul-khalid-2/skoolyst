@@ -61,15 +61,15 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
     Route::get('/pages/{slug}/{page_uuid}', [PageController::class, 'show'])->name('pages.show');
 
     // Branch Routes within School context
-    Route::prefix('schools/{school}')->group(function () {
-        Route::get('branches', [BranchController::class, 'index'])->name('schools.branches.index');
-        Route::get('branches/create', [BranchController::class, 'create'])->name('schools.branches.create');
-        Route::post('branches', [BranchController::class, 'store'])->name('schools.branches.store');
-        Route::get('branches/{branch}', [BranchController::class, 'show'])->name('schools.branches.show');
-        Route::get('branches/{branch}/edit', [BranchController::class, 'edit'])->name('schools.branches.edit');
-        Route::put('branches/{branch}', [BranchController::class, 'update'])->name('schools.branches.update');
-        Route::delete('branches/{branch}', [BranchController::class, 'destroy'])->name('schools.branches.destroy');
-    });
+    // Route::prefix('schools/{school}')->group(function () {
+    Route::get('schools/{school}/branches', [BranchController::class, 'index'])->name('schools.branches.index');
+    Route::get('schools/{school}/branches/create', [BranchController::class, 'create'])->name('schools.branches.create');
+    Route::post('schools/{school}/branches', [BranchController::class, 'store'])->name('schools.branches.store');
+    Route::get('schools/{school}/branches/{branch}', [BranchController::class, 'show'])->name('schools.branches.show');
+    Route::get('schools/{school}/branches/{branch}/edit', [BranchController::class, 'edit'])->name('schools.branches.edit');
+    Route::put('schools/{school}/branches/{branch}', [BranchController::class, 'update'])->name('schools.branches.update');
+    Route::delete('schools/{school}/branches/{branch}', [BranchController::class, 'destroy'])->name('schools.branches.destroy');
+    // });
 
     // // API route for fetching branches (for event forms)
     Route::get('/api/schools/{school}/branches', function (School $school) {
