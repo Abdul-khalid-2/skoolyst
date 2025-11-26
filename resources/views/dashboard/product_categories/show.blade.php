@@ -128,6 +128,30 @@
                         </div>
                     </div>
                     @endif
+
+                    @if($productCategory->image_url)
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Category Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ asset('website/'. $productCategory->image_url) }}" alt="{{ $productCategory->name }}" 
+                                class="img-fluid rounded" style="max-height: 300px;">
+                        </div>
+                    </div>
+                    @endif
+
+                    @if($productCategory->icon)
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Category Icon</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <i class="{{ $productCategory->icon }} fa-3x text-primary"></i>
+                            <p class="mt-2 mb-0"><code>{{ $productCategory->icon }}</code></p>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </section>

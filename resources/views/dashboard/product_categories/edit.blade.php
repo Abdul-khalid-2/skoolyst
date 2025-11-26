@@ -55,7 +55,7 @@
                                         <!-- Current Image -->
                                         @if($productCategory->image_url)
                                         <div class="text-center mb-3">
-                                            <img src="{{ $productCategory->image_url }}" alt="{{ $productCategory->name }}" 
+                                            <img src="{{ asset('website/'. $productCategory->image_url) }}" alt="{{ $productCategory->name }}" 
                                                  class="img-thumbnail mb-2" style="max-height: 150px;">
                                             <div class="form-check">
                                                 <input type="checkbox" class="form-check-input" id="remove_image" name="remove_image" value="1">
