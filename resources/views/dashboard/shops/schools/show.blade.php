@@ -198,11 +198,6 @@
                                     </a>
                                 </div>
                                 @endif
-                                <div class="text-center mt-2">
-                                    <a href="{{ route('shops.associations', $shop) }}" class="btn btn-sm btn-primary">
-                                        Associate School
-                                    </a>
-                                </div>
                             @else
                                 <p class="text-muted text-center mb-0">No school associations</p>
                                 <div class="text-center mt-2">

@@ -25,6 +25,41 @@ class ShopController extends Controller
 
         if (Auth::user()->hasRole('shop-owner')) {
             $query->where('user_id', Auth::id());
+
+            // Apply filters
+            if ($request->has('city')) {
+                $query->where('city', $request->city);
+            }
+
+            if ($request->has('shop_type')) {
+                $query->where('shop_type', $request->shop_type);
+            }
+
+            if ($request->has('is_verified')) {
+                $query->where('is_verified', $request->boolean('is_verified'));
+            }
+
+            $shops = $query->paginate(15);
+
+            return view('dashboard.shops.index', compact('shops'));
+        } elseif (Auth::user()->hasRole('super-admin')) {
+
+            // Apply filters
+            if ($request->has('city')) {
+                $query->where('city', $request->city);
+            }
+
+            if ($request->has('shop_type')) {
+                $query->where('shop_type', $request->shop_type);
+            }
+
+            if ($request->has('is_verified')) {
+                $query->where('is_verified', $request->boolean('is_verified'));
+            }
+
+            $shops = $query->paginate(15);
+
+            return view('dashboard.shops.index', compact('shops'));
         } elseif (Auth::user()->hasRole('school-admin')) {
             // Fix: Use the school() relationship instead of schools()
             $schoolId = Auth::user()->school_id;
@@ -32,31 +67,30 @@ class ShopController extends Controller
             if ($schoolId) {
                 $query->whereHas('schoolAssociations', function ($q) use ($schoolId) {
                     $q->where('school_id', $schoolId)
-                        ->where('status', 'approved')
                         ->where('is_active', true);
                 });
             } else {
-                // If user has no school assigned, return empty results
                 $query->where('id', 0);
             }
+
+
+            // Apply filters
+            if ($request->has('city')) {
+                $query->where('city', $request->city);
+            }
+
+            if ($request->has('shop_type')) {
+                $query->where('shop_type', $request->shop_type);
+            }
+
+            if ($request->has('is_verified')) {
+                $query->where('is_verified', $request->boolean('is_verified'));
+            }
+
+            $shops = $query->paginate(15);
+
+            return view('dashboard.shops.schools.index', compact('shops'));
         }
-
-        // Apply filters
-        if ($request->has('city')) {
-            $query->where('city', $request->city);
-        }
-
-        if ($request->has('shop_type')) {
-            $query->where('shop_type', $request->shop_type);
-        }
-
-        if ($request->has('is_verified')) {
-            $query->where('is_verified', $request->boolean('is_verified'));
-        }
-
-        $shops = $query->paginate(15);
-
-        return view('dashboard.shops.index', compact('shops'));
     }
 
     public function create()
@@ -141,8 +175,18 @@ class ShopController extends Controller
 
     public function show(Shop $shop)
     {
-        $shop->load(['user', 'schoolAssociations.school', 'products.category']);
-        return view('dashboard.shops.show', compact('shop'));
+
+        if (Auth::user()->hasRole('shop-owner')) {
+            $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+            return view('dashboard.shops.show', compact('shop'));
+        } elseif (Auth::user()->hasRole('super-admin')) {
+
+            $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+            return view('dashboard.shops.show', compact('shop'));
+        } elseif (Auth::user()->hasRole('school-admin')) {
+            $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+            return view('dashboard.shops.schools.show', compact('shop'));
+        }
     }
 
     public function edit(Shop $shop)
