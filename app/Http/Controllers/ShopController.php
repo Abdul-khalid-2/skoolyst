@@ -68,6 +68,7 @@ class ShopController extends Controller
                 $query->whereHas('schoolAssociations', function ($q) use ($schoolId) {
                     $q->where('school_id', $schoolId)
                         // ->where('status', 'approved')
+                        ->where('association_type', 'affiliated')
                         ->where('is_active', true);
                 });
             } else {
