@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -102,6 +103,9 @@ class ProductController extends Controller
             'manage_stock' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image_gallery' => 'nullable|array',
+            'image_gallery.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'attributes' => 'nullable|array',
         ]);
 
@@ -155,6 +159,24 @@ class ProductController extends Controller
 
             $product = Product::create($validated);
 
+            // Handle main image upload
+            if ($request->hasFile('main_image')) {
+                $mainImagePath = Storage::disk('website')
+                    ->putFile("products/{$product->id}/main", $request->file('main_image'));
+                $product->update(['main_image_url' => $mainImagePath]);
+            }
+
+            // Handle image gallery upload
+            if ($request->hasFile('image_gallery')) {
+                $galleryPaths = [];
+                foreach ($request->file('image_gallery') as $image) {
+                    $galleryPath = Storage::disk('website')
+                        ->putFile("products/{$product->id}/gallery", $image);
+                    $galleryPaths[] = $galleryPath;
+                }
+                $product->update(['image_gallery' => $galleryPaths]);
+            }
+
             if (isset($validated['attributes'])) {
                 $product->attributes()->create($validated['attributes']);
             }
@@ -193,25 +215,34 @@ class ProductController extends Controller
         $this->authorizeProductAccess($product);
 
         $validated = $request->validate([
-            'category_id' => 'sometimes|exists:product_categories,id',
+            'shop_id' => 'required|exists:shops,id',
+            'category_id' => 'required|exists:product_categories,id',
             'school_id' => 'nullable|exists:schools,id',
             'association_id' => 'nullable|exists:shop_school_associations,id',
-            'name' => 'sometimes|string|max:255',
+            'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'short_description' => 'nullable|string|max:500',
-            'product_type' => 'sometimes|in:book,copy,stationery,bag,uniform,other',
+            'product_type' => 'required|in:book,copy,stationery,bag,uniform,other',
             'brand' => 'nullable|string|max:100',
             'material' => 'nullable|string|max:100',
             'color' => 'nullable|string|max:50',
             'size' => 'nullable|string|max:50',
-            'base_price' => 'sometimes|numeric|min:0',
+            'base_price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0',
             'cost_price' => 'nullable|numeric|min:0',
-            'stock_quantity' => 'sometimes|integer|min:0',
+            'stock_quantity' => 'required|integer|min:0',
             'low_stock_threshold' => 'nullable|integer|min:0',
             'manage_stock' => 'sometimes|boolean',
             'is_featured' => 'sometimes|boolean',
             'is_active' => 'sometimes|boolean',
+            'main_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'image_gallery' => 'nullable|array',
+            'image_gallery.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'remove_main_image' => 'sometimes|boolean',
+            'remove_gallery_images' => 'sometimes|boolean',
+            // 'meta_title' => 'nullable|string|max:255',
+            // 'meta_description' => 'nullable|string|max:500',
+            // 'meta_keywords' => 'nullable|string|max:255',
             'attributes' => 'nullable|array',
         ]);
 
@@ -242,8 +273,95 @@ class ProductController extends Controller
             $validated['is_featured'] = $request->has('is_featured');
             $validated['is_active'] = $request->has('is_active');
 
-            $product->update($validated);
+            // Prepare data for update (exclude files and special fields)
+            $updateData = [
+                'shop_id' => $validated['shop_id'],
+                'category_id' => $validated['category_id'],
+                'school_id' => $validated['school_id'] ?? null,
+                'association_id' => $validated['association_id'] ?? null,
+                'name' => $validated['name'],
+                'description' => $validated['description'] ?? null,
+                'short_description' => $validated['short_description'] ?? null,
+                'product_type' => $validated['product_type'],
+                'brand' => $validated['brand'] ?? null,
+                'material' => $validated['material'] ?? null,
+                'color' => $validated['color'] ?? null,
+                'size' => $validated['size'] ?? null,
+                'base_price' => $validated['base_price'],
+                'sale_price' => $validated['sale_price'] ?? null,
+                'cost_price' => $validated['cost_price'] ?? null,
+                'stock_quantity' => $validated['stock_quantity'],
+                'low_stock_threshold' => $validated['low_stock_threshold'] ?? 5,
+                'manage_stock' => $validated['manage_stock'],
+                'is_featured' => $validated['is_featured'],
+                'is_active' => $validated['is_active'],
+                // 'meta_title' => $validated['meta_title'] ?? null,
+                // 'meta_description' => $validated['meta_description'] ?? null,
+                // 'meta_keywords' => $validated['meta_keywords'] ?? null,
+            ];
 
+            // Add slug if it was generated
+            if (isset($validated['slug'])) {
+                $updateData['slug'] = $validated['slug'];
+            }
+
+            // Add profit margin if it was calculated
+            if (isset($validated['profit_margin'])) {
+                $updateData['profit_margin'] = $validated['profit_margin'];
+            }
+
+            // Update the product with basic data first
+            $product->update($updateData);
+
+            // Handle main image removal
+            if ($request->has('remove_main_image') && $product->main_image_url) {
+                if (Storage::disk('website')->exists($product->main_image_url)) {
+                    Storage::disk('website')->delete($product->main_image_url);
+                }
+                $product->update(['main_image_url' => null]);
+            }
+
+            // Handle new main image upload
+            if ($request->hasFile('main_image')) {
+                // Delete old main image if exists
+                if ($product->main_image_url && Storage::disk('website')->exists($product->main_image_url)) {
+                    Storage::disk('website')->delete($product->main_image_url);
+                }
+
+                $mainImagePath = Storage::disk('website')
+                    ->putFile("products/{$product->id}/main", $request->file('main_image'));
+                $product->update(['main_image_url' => $mainImagePath]);
+            }
+
+            // Handle gallery images removal
+            if ($request->has('remove_gallery_images') && $product->image_gallery) {
+                foreach ($product->image_gallery as $galleryImage) {
+                    if (Storage::disk('website')->exists($galleryImage)) {
+                        Storage::disk('website')->delete($galleryImage);
+                    }
+                }
+                $product->update(['image_gallery' => null]);
+            }
+
+            // Handle new gallery images upload
+            if ($request->hasFile('image_gallery')) {
+                $galleryPaths = $product->image_gallery ?? [];
+
+                foreach ($request->file('image_gallery') as $image) {
+                    if ($image->isValid()) {
+                        $galleryPath = Storage::disk('website')
+                            ->putFile("products/{$product->id}/gallery", $image);
+                        $galleryPaths[] = $galleryPath;
+                    }
+                }
+
+                // Filter out any empty values and ensure unique paths
+                $galleryPaths = array_values(array_unique(array_filter($galleryPaths)));
+
+                $product->update(['image_gallery' => $galleryPaths]);
+            }
+
+            // Handle product attributes
             if (isset($validated['attributes'])) {
                 if ($product->attributes) {
                     $product->attributes()->update($validated['attributes']);
@@ -269,6 +387,26 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         try {
+            // Delete main image if exists
+            if ($product->main_image_url && Storage::disk('website')->exists($product->main_image_url)) {
+                Storage::disk('website')->delete($product->main_image_url);
+            }
+
+            // Delete gallery images if exist
+            if ($product->image_gallery) {
+                foreach ($product->image_gallery as $galleryImage) {
+                    if (Storage::disk('website')->exists($galleryImage)) {
+                        Storage::disk('website')->delete($galleryImage);
+                    }
+                }
+            }
+
+            // Delete product directory if exists
+            $productDirectory = "products/{$product->id}";
+            if (Storage::disk('website')->exists($productDirectory)) {
+                Storage::disk('website')->deleteDirectory($productDirectory);
+            }
+
             if ($product->attributes) {
                 $product->attributes()->delete();
             }

@@ -22,19 +22,20 @@
                     <div class="card mb-4">
                         <div class="card-body text-center">
                             @if($product->main_image_url)
-                                <img src="{{ $product->main_image_url }}" alt="{{ $product->name }}" 
-                                     class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: cover;">
+                                <img src="{{ asset('website/'. $product->main_image_url) }}" alt="{{ $product->name }}" 
+                                    class="img-fluid rounded mb-3" style="max-height: 300px; object-fit: cover;">
                             @else
                                 <div class="bg-light rounded d-flex align-items-center justify-content-center mb-3" style="height: 300px;">
                                     <i class="fas fa-image fa-3x text-muted"></i>
                                 </div>
                             @endif
                             
-                            @if($product->image_gallery && count($product->image_gallery) > 0)
+                            @if($product->hasGalleryImages())
                                 <div class="row g-2">
-                                    @foreach($product->image_gallery as $image)
+                                    @foreach($product->image_gallery as $imagePath)
                                         <div class="col-4">
-                                            <img src="{{ $image }}" class="img-thumbnail" style="height: 80px; object-fit: cover;">
+                                            <img src="{{ asset('website/'. $imagePath) }}" 
+                                                class="img-thumbnail" style="height: 80px; object-fit: cover;">
                                         </div>
                                     @endforeach
                                 </div>

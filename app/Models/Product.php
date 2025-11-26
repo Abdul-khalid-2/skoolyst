@@ -138,4 +138,66 @@ class Product extends Model
             }
         });
     }
+
+    // In your Product model, update the getImageGalleryAttribute method:
+    public function getImageGalleryAttribute($value)
+    {
+        if (empty($value)) {
+            return [];
+        }
+
+        // If it's already an array, return it (but filter it)
+        if (is_array($value)) {
+            return $this->filterGalleryArray($value);
+        }
+
+        // Try to decode JSON
+        $decoded = json_decode($value, true);
+
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+            return $this->filterGalleryArray($decoded);
+        }
+
+        // If JSON decoding fails, try to handle malformed data
+        if (is_string($value)) {
+            // Remove any malformed array syntax and extract paths
+            $cleaned = str_replace(['[[],', '"]', '"'], '', $value);
+            $paths = array_filter(explode(',', $cleaned));
+
+            return $this->filterGalleryArray(array_map('trim', $paths));
+        }
+
+        // Return empty array as fallback
+        return [];
+    }
+
+    // Add this helper method to filter the gallery array
+    protected function filterGalleryArray(array $gallery): array
+    {
+        return array_filter($gallery, function ($item) {
+            // Remove empty arrays, null values, and empty strings
+            if (is_array($item) && empty($item)) {
+                return false;
+            }
+
+            if ($item === null || $item === '' || $item === []) {
+                return false;
+            }
+
+            return true;
+        });
+    }
+
+    // Also update the hasGalleryImages method to be more robust
+    public function hasGalleryImages(): bool
+    {
+        $gallery = $this->image_gallery ?? [];
+        return !empty($gallery) && count($gallery) > 0;
+    }
+
+    // Simple helper method to check if main image exists
+    public function hasMainImage(): bool
+    {
+        return !empty($this->main_image_url);
+    }
 }

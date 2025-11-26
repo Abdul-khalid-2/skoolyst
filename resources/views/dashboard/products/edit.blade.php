@@ -68,6 +68,85 @@
                                     </div>
                                 </div>
 
+                                <!-- Product Images -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Product Images</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Current Main Image -->
+                                        @if($product->main_image_url)
+                                        <div class="text-center mb-4">
+                                            <p class="fw-bold">Current Main Image:</p>
+                                            <img src="{{ asset('website/'. $product->main_image_url) }}" 
+                                                 alt="{{ $product->name }}" class="img-thumbnail mb-2" style="max-height: 200px;">
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="remove_main_image" name="remove_main_image" value="1">
+                                                <label class="form-check-label text-danger" for="remove_main_image">
+                                                    Remove current main image
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        <!-- New Main Image -->
+                                        <div class="form-group">
+                                            <label for="main_image" class="form-label">
+                                                {{ $product->main_image_url ? 'Change Main Image' : 'Upload Main Image' }}
+                                            </label>
+                                            <input type="file" class="form-control @error('main_image') is-invalid @enderror" 
+                                                   id="main_image" name="main_image" accept="image/*">
+                                            @error('main_image')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <!-- New Main Image Preview -->
+                                        <div id="mainImagePreview" class="mt-3 text-center d-none">
+                                            <img id="previewMainImage" class="img-thumbnail" style="max-height: 200px;">
+                                            <button type="button" id="removeMainImage" class="btn btn-sm btn-danger mt-2">
+                                                <i class="fas fa-times me-1"></i>Remove New Image
+                                            </button>
+                                        </div>
+
+                                        <!-- Current Gallery Images -->
+                                        @if($product->hasGalleryImages())
+                                        <div class="mt-4">
+                                            <p class="fw-bold">Current Gallery Images:</p>
+                                            <div class="row g-2 mb-3">
+                                                @foreach($product->image_gallery as $imagePath)
+                                                <div class="col-3">
+                                                    <img src="{{ asset('website/'. $imagePath) }}" 
+                                                        class="img-thumbnail" style="height: 80px; object-fit: cover;">
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="remove_gallery_images" name="remove_gallery_images" value="1">
+                                                <label class="form-check-label text-danger" for="remove_gallery_images">
+                                                    Remove all gallery images
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endif
+
+                                        <!-- New Gallery Images -->
+                                        <div class="form-group mt-4">
+                                            <label for="image_gallery" class="form-label">
+                                                {{ $product->hasGalleryImages() ? 'Add More Gallery Images' : 'Upload Gallery Images' }}
+                                            </label>
+                                            <input type="file" class="form-control @error('image_gallery') is-invalid @enderror" 
+                                                id="image_gallery" name="image_gallery[]" multiple accept="image/*">
+                                            @error('image_gallery')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <!-- New Gallery Preview -->
+                                        <div id="galleryPreview" class="mt-3 row g-2 d-none"></div>
+                                    </div>
+                                </div>
+
                                 <!-- Product Attributes -->
                                 <div class="card mb-4">
                                     <div class="card-header">
@@ -137,8 +216,57 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <!-- Dynamic Attributes based on Product Type -->
+                                        <div id="productAttributes" class="mt-4">
+                                            @if($product->attributes)
+                                                <!-- You can load existing attributes here -->
+                                                <div class="alert alert-info">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    Product attributes are loaded. You can update them in the form below.
+                                                </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
+
+                                <!-- SEO Information -->
+                                {{-- <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">SEO Information</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <label for="meta_title" class="form-label">Meta Title</label>
+                                            <input type="text" class="form-control @error('meta_title') is-invalid @enderror" 
+                                                   id="meta_title" name="meta_title" value="{{ old('meta_title', $product->meta_title) }}">
+                                            @error('meta_title')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group mt-3">
+                                            <label for="meta_description" class="form-label">Meta Description</label>
+                                            <textarea class="form-control @error('meta_description') is-invalid @enderror" 
+                                                      id="meta_description" name="meta_description" rows="2">{{ old('meta_description', $product->meta_description) }}</textarea>
+                                            @error('meta_description')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+
+                                        <div class="form-group mt-3">
+                                            <label for="meta_keywords" class="form-label">Meta Keywords</label>
+                                            <input type="text" class="form-control @error('meta_keywords') is-invalid @enderror" 
+                                                   id="meta_keywords" name="meta_keywords" value="{{ old('meta_keywords', $product->meta_keywords) }}">
+                                            @error('meta_keywords')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">
+                                                Separate keywords with commas (e.g., book, school, education)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div> --}}
                             </div>
 
                             <!-- Sidebar -->
@@ -285,4 +413,65 @@
             </div>
         </section>
     </main>
+
+    @push('scripts')
+    <script>
+        // Main image preview
+        document.getElementById('main_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('previewMainImage');
+            const previewContainer = document.getElementById('mainImagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove main image
+        document.getElementById('removeMainImage').addEventListener('click', function() {
+            document.getElementById('main_image').value = '';
+            document.getElementById('mainImagePreview').classList.add('d-none');
+        });
+
+        // Gallery images preview
+        document.getElementById('image_gallery').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const previewContainer = document.getElementById('galleryPreview');
+            
+            previewContainer.innerHTML = '';
+            previewContainer.classList.remove('d-none');
+            
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const col = document.createElement('div');
+                        col.className = 'col-4';
+                        col.innerHTML = `
+                            <div class="position-relative">
+                                <img src="${e.target.result}" class="img-thumbnail" style="height: 80px; object-fit: cover;">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeGalleryImage(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                        previewContainer.appendChild(col);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        function removeGalleryImage(button) {
+            button.closest('.col-4').remove();
+        }
+    </script>
+    @endpush
 </x-app-layout>

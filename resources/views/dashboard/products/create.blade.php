@@ -67,6 +67,51 @@
                                     </div>
                                 </div>
 
+                                <!-- Product Images -->
+                                <div class="card mb-4">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">Product Images</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Main Image -->
+                                        <div class="form-group">
+                                            <label for="main_image" class="form-label">Main Product Image</label>
+                                            <input type="file" class="form-control @error('main_image') is-invalid @enderror" 
+                                                   id="main_image" name="main_image" accept="image/*">
+                                            @error('main_image')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">
+                                                Recommended size: 800x600px. This will be the primary display image.
+                                            </div>
+                                        </div>
+
+                                        <!-- Main Image Preview -->
+                                        <div id="mainImagePreview" class="mt-3 text-center d-none">
+                                            <img id="previewMainImage" class="img-thumbnail" style="max-height: 200px;">
+                                            <button type="button" id="removeMainImage" class="btn btn-sm btn-danger mt-2">
+                                                <i class="fas fa-times me-1"></i>Remove Image
+                                            </button>
+                                        </div>
+
+                                        <!-- Image Gallery -->
+                                        <div class="form-group mt-4">
+                                            <label for="image_gallery" class="form-label">Additional Images (Gallery)</label>
+                                            <input type="file" class="form-control @error('image_gallery') is-invalid @enderror" 
+                                                   id="image_gallery" name="image_gallery[]" multiple accept="image/*">
+                                            @error('image_gallery')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <div class="form-text">
+                                                You can select multiple images. These will be shown in the product gallery.
+                                            </div>
+                                        </div>
+
+                                        <!-- Gallery Preview -->
+                                        <div id="galleryPreview" class="mt-3 row g-2 d-none"></div>
+                                    </div>
+                                </div>
+
                                 <!-- Product Attributes -->
                                 <div class="card mb-4">
                                     <div class="card-header">
@@ -135,6 +180,11 @@
                                                     @enderror
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <!-- Dynamic Attributes based on Product Type -->
+                                        <div id="productAttributes" class="mt-4">
+                                            <!-- Attributes will be loaded here based on product type -->
                                         </div>
                                     </div>
                                 </div>
@@ -284,4 +334,85 @@
             </div>
         </section>
     </main>
+
+    @push('scripts')
+    <script>
+        // Main image preview
+        document.getElementById('main_image').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('previewMainImage');
+            const previewContainer = document.getElementById('mainImagePreview');
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    previewContainer.classList.remove('d-none');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Remove main image
+        document.getElementById('removeMainImage').addEventListener('click', function() {
+            document.getElementById('main_image').value = '';
+            document.getElementById('mainImagePreview').classList.add('d-none');
+        });
+
+        // Gallery images preview
+        document.getElementById('image_gallery').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const previewContainer = document.getElementById('galleryPreview');
+            
+            previewContainer.innerHTML = '';
+            previewContainer.classList.remove('d-none');
+            
+            if (files.length > 0) {
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const col = document.createElement('div');
+                        col.className = 'col-4';
+                        col.innerHTML = `
+                            <div class="position-relative">
+                                <img src="${e.target.result}" class="img-thumbnail" style="height: 80px; object-fit: cover;">
+                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeGalleryImage(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `;
+                        previewContainer.appendChild(col);
+                    }
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+
+        function removeGalleryImage(button) {
+            button.closest('.col-4').remove();
+            // Note: This only removes the preview, you might want to handle actual file removal differently
+        }
+
+        // Dynamic attributes based on product type
+        document.getElementById('product_type').addEventListener('change', function() {
+            const productType = this.value;
+            const attributesContainer = document.getElementById('productAttributes');
+            
+            if (productType) {
+                // You can load different attribute forms based on product type
+                // This is a simplified example - you'll need to implement the actual forms
+                attributesContainer.innerHTML = `
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Additional attributes for ${productType} products will be loaded here.
+                    </div>
+                `;
+            } else {
+                attributesContainer.innerHTML = '';
+            }
+        });
+    </script>
+    @endpush
 </x-app-layout>
