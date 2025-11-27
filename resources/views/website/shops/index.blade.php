@@ -617,8 +617,8 @@
 
     /* ==================== SCHOOL ASSOCIATIONS SECTION ==================== */
     .school-associations {
-        background: #f8f9fa;
-        padding: 2rem 0;
+        /* background: #f8f9fa;
+        padding: 2rem 0; */
         margin-bottom: 2rem;
     }
 
@@ -626,17 +626,17 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
-        justify-content: center;
+        /* justify-content: center; */
     }
 
     .school-tag {
         background: white;
-        padding: 0.5rem 1rem;
+        padding: 0.2rem 0.5rem;
         border-radius: 20px;
         border: 2px solid #4361ee;
         color: #4361ee;
         font-weight: 600;
-        font-size: 0.9rem;
+        font-size: 0.7rem;
         transition: all 0.3s ease;
     }
 

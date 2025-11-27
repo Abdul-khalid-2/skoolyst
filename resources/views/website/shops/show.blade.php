@@ -418,6 +418,29 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
+    .favorite-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: white;
+        border: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .favorite-btn:hover {
+        background: #fff5f5;
+        border-color: #ff6b6b;
+    }
+
+    .favorite-btn.active {
+        background: #ff6b6b;
+        border-color: #ff6b6b;
+        color: white;
+    }
     /* ==================== NO RESULTS STYLES ==================== */
     .no-results {
         text-align: center;
@@ -437,6 +460,322 @@
         font-size: 1.3rem;
         color: #666;
         margin-bottom: 1rem;
+    }
+
+    /* ==================== MODAL STYLES ==================== */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        max-width: 600px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .modal-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #1a1a1a;
+        margin: 0;
+    }
+
+    .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #666;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+        background: #e9ecef;
+        color: #333;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-product {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-product-image {
+        width: 150px;
+        height: 150px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .modal-product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .modal-product-info {
+        flex: 1;
+    }
+
+    .modal-product-name {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1a1a1a;
+        line-height: 1.3;
+    }
+
+    .modal-product-category {
+        color: #4361ee;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+    }
+
+    .modal-product-shop {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .modal-product-price {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #4361ee;
+        margin-bottom: 0.75rem;
+    }
+
+    .modal-stock-status {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .modal-stock-status.in-stock {
+        background: #e8f5e8;
+        color: #38b000;
+    }
+
+    .modal-stock-status.low-stock {
+        background: #fff3e8;
+        color: #ff6b35;
+    }
+
+    .modal-stock-status.out-of-stock {
+        background: #ffe8e8;
+        color: #dc3545;
+    }
+
+    .modal-attributes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .modal-attribute-tag {
+        background: #f8f9fa;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        color: #666;
+        border: 1px solid #e0e0e0;
+    }
+
+    .modal-description {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        border-left: 3px solid #4361ee;
+    }
+
+    .modal-description h5 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: #333;
+    }
+
+    .modal-description p {
+        color: #666;
+        line-height: 1.5;
+        font-size: 0.9rem;
+        margin: 0;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        /* padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px; */
+    }
+
+    .quantity-label {
+        font-weight: 600;
+        color: #333;
+        min-width: 80px;
+    }
+
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .quantity-btn {
+        width: 36px;
+        height: 36px;
+        border: 1px solid #e0e0e0;
+        background: white;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .quantity-btn:hover {
+        background: #4361ee;
+        color: white;
+        border-color: #4361ee;
+    }
+
+    .quantity-input {
+        width: 50px;
+        height: 36px;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .quantity-input:focus {
+        outline: none;
+        border-color: #4361ee;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .modal-actions .btn {
+        flex: 1;
+        padding: 0.5rem;
+        font-size: 0.78rem;
+    }
+
+    /* Responsive Design for Modal */
+    @media (max-width: 768px) {
+        .modal-content {
+            max-width: 95%;
+            margin: 1rem;
+        }
+        
+        .modal-product {
+            grid-template-columns: 1fr;
+            text-align: center;
+            gap: 1rem;
+        }
+        
+        .modal-product-image {
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+        }
+        
+        .modal-product-name {
+            font-size: 1.2rem;
+        }
+        
+        .modal-product-price {
+            font-size: 1.3rem;
+        }
+        
+        .quantity-selector {
+            flex-direction: inherit;
+            align-items: anchor-center;
+            gap: 0.75rem;
+        }
+        
+        .quantity-controls {
+            justify-content: center;
+        }
+        
+        .modal-actions {
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .modal-body {
+            padding: 1.25rem;
+        }
+        
+        .modal-header {
+            padding: 1rem 1.25rem;
+        }
+        
+        .modal-title {
+            font-size: 1.1rem;
+        }
     }
 
     /* ==================== RESPONSIVE DESIGN ==================== */
@@ -611,10 +950,14 @@
 </section>
 
 <!-- ==================== PRODUCTS SECTION ==================== -->
-<section id="products" class="shop-content-section products-section">
+<!-- ==================== FEATURED PRODUCTS SECTION ==================== -->
+<section class="products-section">
     <div class="container">
-        <h2 class="section-title">Available Products</h2>
-        
+        <h2 class="section-title">Featured Products</h2>
+        <p class="section-subtitle">
+            Discover popular and essential educational products from our trusted shops
+        </p>
+
         @if($shop->products->count() > 0)
             <div class="products-grid">
                 @foreach($shop->products as $product)
@@ -634,22 +977,7 @@
                         </div>
                         
                         <div class="product-content">
-                            <div class="product-category">{{ $product->category->name ?? 'Uncategorized' }}</div>
                             <h3 class="product-name">{{ $product->name }}</h3>
-                            
-                            <div class="product-attributes">
-                                @if($product->productAttributes)
-                                    @if($product->productAttributes->education_board)
-                                        <span class="attribute-tag">{{ ucfirst($product->productAttributes->education_board) }}</span>
-                                    @endif
-                                    @if($product->productAttributes->class_level)
-                                        <span class="attribute-tag">{{ $product->productAttributes->class_level }}</span>
-                                    @endif
-                                    @if($product->productAttributes->subject)
-                                        <span class="attribute-tag">{{ $product->productAttributes->subject }}</span>
-                                    @endif
-                                @endif
-                            </div>
                             
                             <div class="product-pricing">
                                 <div>
@@ -664,24 +992,91 @@
                             </div>
                             
                             <div class="product-actions">
-                                <button class="btn btn-success">Add to Cart</button>
-                                <button class="btn btn-secondary">Quick View</button>
+                                <button class="btn btn-success quick-view-btn" 
+                                        data-product-id="{{ $product->uuid }}"
+                                        data-product-data='@json($product)'>
+                                    <i class="fas fa-eye me-2"></i>
+                                    View Details
+                                </button>
+                                <button class="favorite-btn" data-product-id="{{ $product->uuid }}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
                 @endforeach
             </div>
-        @else
-            <div class="no-results">
-                <div class="no-results-icon">
-                    <i class="fas fa-box-open"></i>
-                </div>
-                <h3 class="no-results-title">No Products Available</h3>
-                <p>This shop hasn't added any products yet.</p>
-            </div>
         @endif
     </div>
 </section>
+
+<!-- ==================== PRODUCT DETAILS MODAL ==================== -->
+<div class="modal-overlay" id="productDetailsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">Product Details</h3>
+            <button class="modal-close" id="closeDetailsModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-product">
+                <div class="modal-product-image">
+                    <img id="detailsProductImage" src="" alt="Product Image">
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <!-- Category -->
+                        <div id="detailsProductCategory" class="modal-product-category"></div>
+                        
+                        <h4 id="detailsProductName" class="modal-product-name"></h4>
+                        
+                        <!-- Shop Name -->
+                        <div id="detailsProductShop" class="modal-product-shop"></div>
+                        
+                        <div id="detailsProductPrice" class="modal-product-price"></div>
+                        
+                    </div>
+                    <div class="col">
+
+                        <div class="modal-info-left">
+                            <!-- Stock Status -->
+                            <div id="detailsStockStatus" class="modal-stock-status"></div>
+                        </div>
+                        
+                        <div class="modal-info-right">
+                            <!-- Product Attributes -->
+                            <div id="detailsProductAttributes" class="modal-attributes"></div>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="modal-description">
+                            <h5>Description</h5>
+                            <p id="detailsProductDescription"></p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+
+            <div class="quantity-selector">
+                <span class="quantity-label">Quantity:</span>
+                <div class="quantity-controls">
+                    <button type="button" class="quantity-btn" id="decreaseQuantity">-</button>
+                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" class="quantity-input">
+                    <button type="button" class="quantity-btn" id="increaseQuantity">+</button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-secondary" id="continueShopping">
+                    Continue Shopping
+                </button>
+                <button type="button" class="btn btn-success" id="addToCartFromModal">
+                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ==================== ASSOCIATED SCHOOLS SECTION ==================== -->
 @if($shop->schoolAssociations->count() > 0)
@@ -803,6 +1198,204 @@
 
         window.addEventListener('scroll', updateActiveNav);
         updateActiveNav(); // Initialize on load
+    });
+</script>
+
+<script>
+    // Auto-submit form when filter values change
+    document.addEventListener('DOMContentLoaded', function() {
+    
+
+        // Quick View Modal functionality
+        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
+        const productDetailsModal = document.getElementById('productDetailsModal');
+        const closeDetailsModal = document.getElementById('closeDetailsModal');
+        const continueShopping = document.getElementById('continueShopping');
+        const addToCartFromModal = document.getElementById('addToCartFromModal');
+        const quantityInput = document.getElementById('quantity');
+        const decreaseBtn = document.getElementById('decreaseQuantity');
+        const increaseBtn = document.getElementById('increaseQuantity');
+
+        let currentProduct = null;
+
+        quickViewButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productData = JSON.parse(this.getAttribute('data-product-data'));
+                const productCard = this.closest('.product-card');
+                const productImage = productCard.querySelector('.product-image img').src;
+
+                // Populate modal with product information
+                document.getElementById('detailsProductImage').src = productImage;
+                document.getElementById('detailsProductName').textContent = productData.name;
+                
+                // Category
+                const categoryElement = document.getElementById('detailsProductCategory');
+                if (productData.category && productData.category.name) {
+                    categoryElement.textContent = productData.category.name;
+                    categoryElement.style.display = 'block';
+                } else {
+                    categoryElement.style.display = 'none';
+                }
+
+                // Shop
+                const shopElement = document.getElementById('detailsProductShop');
+                if (productData.shop && productData.shop.name) {
+                    shopElement.innerHTML = `<i class="fas fa-store"></i> ${productData.shop.name}`;
+                    shopElement.style.display = 'flex';
+                } else {
+                    shopElement.style.display = 'none';
+                }
+
+                // Price
+                const priceElement = document.getElementById('detailsProductPrice');
+                const currentPrice = productData.sale_price || productData.base_price;
+                const originalPrice = productData.base_price;
+                
+                if (productData.sale_price && productData.sale_price < productData.base_price) {
+                    priceElement.innerHTML = `
+                        Rs. ${parseInt(currentPrice).toLocaleString()}
+                        <span style="font-size: 1rem; color: #999; text-decoration: line-through; margin-left: 0.5rem;">
+                            Rs. ${parseInt(originalPrice).toLocaleString()}
+                        </span>
+                    `;
+                } else {
+                    priceElement.textContent = `Rs. ${parseInt(currentPrice).toLocaleString()}`;
+                }
+
+                // Stock Status
+                const stockStatusElement = document.getElementById('detailsStockStatus');
+                const isInStock = productData.is_in_stock;
+                const isLowStock = productData.stock_quantity <= 10 && productData.stock_quantity > 0;
+                const stockStatus = isInStock ? (isLowStock ? 'Low Stock' : 'In Stock') : 'Out of Stock';
+                stockStatusElement.textContent = stockStatus;
+                stockStatusElement.className = `modal-stock-status ${isInStock ? (isLowStock ? 'low-stock' : 'in-stock') : 'out-of-stock'}`;
+
+                // Attributes
+                const attributesElement = document.getElementById('detailsProductAttributes');
+                attributesElement.innerHTML = '';
+                
+                if (productData.productAttributes) {
+                    const attributes = productData.productAttributes;
+                    if (attributes.education_board) {
+                        const tag = document.createElement('span');
+                        tag.className = 'modal-attribute-tag';
+                        tag.textContent = attributes.education_board.charAt(0).toUpperCase() + attributes.education_board.slice(1);
+                        attributesElement.appendChild(tag);
+                    }
+                    if (attributes.class_level) {
+                        const tag = document.createElement('span');
+                        tag.className = 'modal-attribute-tag';
+                        tag.textContent = attributes.class_level;
+                        attributesElement.appendChild(tag);
+                    }
+                    if (attributes.subject) {
+                        const tag = document.createElement('span');
+                        tag.className = 'modal-attribute-tag';
+                        tag.textContent = attributes.subject;
+                        attributesElement.appendChild(tag);
+                    }
+                }
+
+                // Description
+                const descriptionElement = document.getElementById('detailsProductDescription');
+                descriptionElement.textContent = productData.description || productData.short_description || 'No description available.';
+
+                // Reset quantity
+                quantityInput.value = 1;
+
+                // Store current product info
+                currentProduct = {
+                    id: productData.uuid,
+                    name: productData.name,
+                    price: currentPrice,
+                    isInStock: isInStock
+                };
+
+                // Enable/disable add to cart button based on stock
+                addToCartFromModal.disabled = !isInStock;
+
+                // Show modal
+                productDetailsModal.classList.add('active');
+            });
+        });
+
+        // Close modal
+        function closeModal() {
+            productDetailsModal.classList.remove('active');
+            currentProduct = null;
+        }
+
+        closeDetailsModal.addEventListener('click', closeModal);
+        continueShopping.addEventListener('click', closeModal);
+
+        // Quantity controls
+        decreaseBtn.addEventListener('click', function() {
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        increaseBtn.addEventListener('click', function() {
+            const currentValue = parseInt(quantityInput.value);
+            if (currentValue < 10) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+
+        // Add to cart from modal
+        addToCartFromModal.addEventListener('click', function() {
+            if (!currentProduct || this.disabled) return;
+
+            const quantity = parseInt(quantityInput.value);
+            
+            // Here you would typically make an AJAX call to add to cart
+            showToast(`${currentProduct.name} added to cart successfully!`, 'success');
+            closeModal();
+        });
+
+        // Favorite functionality
+        const favoriteButtons = document.querySelectorAll('.favorite-btn');
+        favoriteButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productCard = this.closest('.product-card');
+                const productName = productCard.querySelector('.product-name').textContent;
+                const isActive = this.classList.contains('active');
+
+                // Toggle favorite state
+                this.classList.toggle('active');
+
+                // Here you would typically make an AJAX call to update favorites
+                if (!isActive) {
+                    showToast(`${productName} added to favorites!`, 'success');
+                } else {
+                    showToast(`${productName} removed from favorites!`, 'info');
+                }
+            });
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#38b000' : '#4361ee'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                document.body.removeChild(toast);
+            }, 3000);
+        }
     });
 </script>
 @endpush
