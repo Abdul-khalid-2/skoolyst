@@ -26,7 +26,7 @@
             </div>
 
             <p class="copyright">
-                &copy; 2023 SKOOLYST. All rights reserved.
+                &copy; 2025 SKOOLYST. All rights reserved.
             </p>
         </div>
     </footer>
