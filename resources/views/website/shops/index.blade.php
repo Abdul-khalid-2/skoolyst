@@ -180,7 +180,7 @@
         gap: 1rem;
     }
 
-    .btn {
+    /* .btn {
         padding: 0.8rem 1.5rem;
         border-radius: 8px;
         text-decoration: none;
@@ -190,12 +190,12 @@
         cursor: pointer;
         flex: 1;
         text-align: center;
-    }
+    } */
 
-    .btn-primary {
+    /* .btn-primary {
         background: #4361ee;
         color: white;
-    }
+    } */
 
     .btn-secondary {
         background: #f8f9fa;

@@ -388,7 +388,7 @@
         gap: 0.5rem;
     }
 
-    .btn {
+    /* .btn {
         padding: 0.6rem 1rem;
         border-radius: 8px;
         text-decoration: none;
@@ -398,7 +398,7 @@
         cursor: pointer;
         text-align: center;
         font-size: 0.9rem;
-    }
+    } */
 
     .btn-success {
         background: #38b000;
@@ -541,10 +541,10 @@
 <nav class="shop-sub-nav">
     <div class="container">
         <div class="shop-sub-nav-container">
-            <a href="#about" class="shop-nav-item active">About</a>
-            <a href="#products" class="shop-nav-item">Products ({{ $shop->products->count() }})</a>
-            <a href="#schools" class="shop-nav-item">Associated Schools ({{ $shop->schoolAssociations->count() }})</a>
-            <a href="#reviews" class="shop-nav-item">Reviews</a>
+            <a href="#about" class="shop-nav-item active sub-nav-item">About</a>
+            <a href="#products" class="shop-nav-item sub-nav-item">Products ({{ $shop->products->count() }})</a>
+            <a href="#schools" class="shop-nav-item sub-nav-item">Associated Schools ({{ $shop->schoolAssociations->count() }})</a>
+            <a href="#reviews" class="shop-nav-item sub-nav-item">Reviews</a>
         </div>
     </div>
 </nav>
@@ -760,11 +760,11 @@
 
 @endsection
 
-@push('js')
+@push('scripts')
 <script>
     // Smooth scrolling for navigation
     document.addEventListener('DOMContentLoaded', function() {
-        const navItems = document.querySelectorAll('.nav-item');
+        const navItems = document.querySelectorAll('.sub-nav-item');
         const sections = document.querySelectorAll('.shop-content-section');
         
         // Update active nav item on scroll
