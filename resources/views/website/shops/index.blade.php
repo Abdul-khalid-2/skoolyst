@@ -536,7 +536,7 @@
         background: white;
         padding: 2rem 0;
         border-bottom: 1px solid #e0e0e0;
-        position: sticky;
+        position: relative ;
         top: 0;
         z-index: 100;
         box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -888,7 +888,7 @@
 
                             <div class="shop-actions">
                                 <a href="{{ route('website.shop.show', $shop->uuid) }}" class="btn btn-primary">Visit Shop</a>
-                                <a href="{{ route('website.stationary.index') }}?shop={{ $shop->id }}" class="btn btn-secondary">View Products</a>
+                                <a href="{{ route('website.stationary.index') }}?shop={{ $shop->uuid }}" class="btn btn-secondary">View Products</a>
                             </div>
                         </div>
                     </div>
