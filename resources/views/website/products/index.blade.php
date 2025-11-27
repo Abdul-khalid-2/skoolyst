@@ -42,7 +42,7 @@
         background: white;
         padding: 2rem 0;
         border-bottom: 1px solid #e0e0e0;
-        position: sticky;
+        position: relative ;
         top: 0;
         z-index: 100;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -665,6 +665,7 @@
         }
     }
 </style>
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
 @section('content')
