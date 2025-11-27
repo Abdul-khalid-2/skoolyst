@@ -6,9 +6,11 @@
                     <h2 class="h4 mb-0">Shops</h2>
                     <p class="mb-0 text-muted">Manage your shops and associations</p>
                 </div>
+                @role('super-admin')
                 <a href="{{ route('shops.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i> Create Shop
                 </a>
+                @endrole
             </div>
 
             @if(session('success'))
