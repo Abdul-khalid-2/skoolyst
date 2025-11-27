@@ -610,9 +610,9 @@
         align-items: center;
         gap: 1rem;
         margin-bottom: 1.5rem;
-        padding: 1rem;
-        background: #f8f9fa;
-        border-radius: 8px;
+        /* padding: 1rem; */
+        /* background: #f8f9fa; */
+        /* border-radius: 8px; */
     }
 
     .quantity-label {
@@ -670,8 +670,8 @@
 
     .modal-actions .btn {
         flex: 1;
-        padding: 0.875rem 1rem;
-        font-size: 0.95rem;
+        padding: 0.5rem;
+        font-size: 0.78rem;
     }
 
     /* Responsive Design for Modal */
