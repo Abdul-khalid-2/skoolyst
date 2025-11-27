@@ -682,298 +682,219 @@
 <!-- ==================== SEARCH AND FILTER SECTION ==================== -->
 <section class="search-filter-section">
     <div class="container">
-        <div class="search-container">
-            <input type="text" 
-                   class="search-input" 
-                   placeholder="Search for products, books, stationery..." 
-                   id="searchInput">
-            <button type="button" class="search-btn" id="searchButton">
-                <i class="fas fa-search me-2"></i> Search
-            </button>
-        </div>
-
-        <div class="filter-container">
-            <select class="filter-select" id="categoryFilter">
-                <option value="">All Categories</option>
-                <option value="textbooks">Textbooks</option>
-                <option value="stationery">Stationery</option>
-                <option value="uniforms">Uniforms</option>
-                <option value="bags">Bags</option>
-                <option value="copies">Copies & Notebooks</option>
-                <option value="sports">Sports Equipment</option>
-            </select>
-
-            <select class="filter-select" id="shopTypeFilter">
-                <option value="">All Shop Types</option>
-                <option value="stationery">Stationery</option>
-                <option value="book_store">Book Store</option>
-                <option value="mixed">Mixed</option>
-                <option value="school_affiliated">School Affiliated</option>
-            </select>
-
-            <select class="filter-select" id="productTypeFilter">
-                <option value="">All Product Types</option>
-                <option value="book">Books</option>
-                <option value="copy">Copies</option>
-                <option value="stationery">Stationery</option>
-                <option value="bag">Bags</option>
-                <option value="uniform">Uniforms</option>
-                <option value="other">Other</option>
-            </select>
-
-            <select class="filter-select" id="sortFilter">
-                <option value="newest">Newest First</option>
-                <option value="price_low">Price: Low to High</option>
-                <option value="price_high">Price: High to Low</option>
-                <option value="name">Name A-Z</option>
-                <option value="rating">Highest Rated</option>
-            </select>
-
-            <div class="results-count" id="resultsCount">
-                12 products found
-            </div>
-
-            <div class="view-toggle">
-                <button type="button" class="view-btn active" data-view="grid">
-                    <i class="fas fa-th"></i>
-                </button>
-                <button type="button" class="view-btn" data-view="list">
-                    <i class="fas fa-list"></i>
+        <form action="{{ route('website.stationary.index') }}" method="GET" id="productsFilterForm">
+            <div class="search-container">
+                <input type="text" 
+                       name="search" 
+                       class="search-input" 
+                       placeholder="Search for products, books, stationery..." 
+                       value="{{ $search }}"
+                       id="searchInput">
+                <button type="submit" class="search-btn" id="searchButton">
+                    <i class="fas fa-search me-2"></i> Search
                 </button>
             </div>
-        </div>
+
+            <div class="filter-container">
+                <!-- Category Filter -->
+                <select class="filter-select" name="category" id="categoryFilter">
+                    <option value="">All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->slug }}" {{ $category == $cat->slug ? 'selected' : '' }}>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Shop Filter -->
+                <select class="filter-select" name="shop" id="shopFilter">
+                    <option value="">All Shops</option>
+                    @foreach($shops as $shopItem)
+                        <option value="{{ $shopItem->uuid }}" {{ $shop == $shopItem->uuid ? 'selected' : '' }}>
+                            {{ $shopItem->name }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Product Type Filter -->
+                <select class="filter-select" name="product_type" id="productTypeFilter">
+                    <option value="">All Product Types</option>
+                    @foreach($productTypes as $type)
+                        <option value="{{ $type }}" {{ $productType == $type ? 'selected' : '' }}>
+                            {{ ucfirst($type) }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Education Board Filter -->
+                <select class="filter-select" name="education_board" id="educationBoardFilter">
+                    <option value="">All Education Boards</option>
+                    @foreach($educationBoards as $board)
+                        <option value="{{ $board }}" {{ $educationBoard == $board ? 'selected' : '' }}>
+                            {{ ucfirst($board) }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Class Level Filter -->
+                <select class="filter-select" name="class_level" id="classLevelFilter">
+                    <option value="">All Class Levels</option>
+                    @foreach($classLevels as $level)
+                        <option value="{{ $level }}" {{ $classLevel == $level ? 'selected' : '' }}>
+                            {{ $level }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <!-- Sort Filter -->
+                <select class="filter-select" name="sort_by" id="sortFilter">
+                    <option value="created_at" {{ $sortBy == 'created_at' ? 'selected' : '' }}>Newest First</option>
+                    <option value="price_low" {{ $sortBy == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                    <option value="price_high" {{ $sortBy == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                    <option value="name" {{ $sortBy == 'name' ? 'selected' : '' }}>Name A-Z</option>
+                </select>
+
+                <!-- Price Range (Hidden inputs for now, can be enhanced with range sliders) -->
+                <input type="hidden" name="min_price" value="{{ $minPrice }}">
+                <input type="hidden" name="max_price" value="{{ $maxPrice }}">
+
+                <div class="results-count" id="resultsCount">
+                    {{ $products->total() }} products found
+                </div>
+
+                <div class="view-toggle">
+                    <button type="button" class="view-btn active" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button type="button" class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
     </div>
 </section>
 
 <!-- ==================== PRODUCTS GRID SECTION ==================== -->
 <section class="products-section">
     <div class="container">
-        <div id="productsContainer" class="products-grid">
-            <!-- Product 1 -->
-            <div class="product-card" data-product-id="1">
-                <div class="product-badge sale">Sale</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/4361ee/ffffff?text=Mathematics+9" 
-                         alt="Mathematics for Class 9">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Textbook</div>
-                    <h3 class="product-name">Mathematics for Class 9 - Federal Board</h3>
-                    <div class="product-shop">Book Haven</div>
-                    <p class="product-description">
-                        Comprehensive mathematics textbook for 9th grade students following federal board curriculum.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Federal Board</span>
-                        <span class="attribute-tag">Class 9</span>
-                        <span class="attribute-tag">2024 Edition</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 850</span>
-                            <span class="price-original">Rs. 950</span>
+        @if($products->count() > 0)
+            <div id="productsContainer" class="products-grid">
+                @foreach($products as $product)
+                    <div class="product-card" data-product-id="{{ $product->uuid }}">
+                        <!-- Product Badges -->
+                        @if($product->sale_price && $product->sale_price < $product->base_price)
+                            <div class="product-badge sale">Sale</div>
+                        @elseif($product->is_featured)
+                            <div class="product-badge new">Featured</div>
+                        @endif
+
+                        <!-- Product Image -->
+                        <div class="product-image">
+                            @if($product->main_image_url)
+                                <img src="{{ asset('website/' . $product->main_image_url) }}" 
+                                     alt="{{ $product->name }}"
+                                     onerror="this.src='{{ asset('website/blog/featured-images/XW4x3h32SHkSbJoetKkWpG37K6hGjtYwMDfa4hxs.png') }}'">
+                            @else
+                                <img src="https://via.placeholder.com/300x200/4361ee/ffffff?text=Product+Image" 
+                                     alt="{{ $product->name }}">
+                            @endif
                         </div>
-                        <div class="stock-status in-stock">In Stock</div>
+
+                        <div class="product-content">
+                            <!-- Category -->
+                            <div class="product-category">
+                                {{ $product->category->name ?? 'Uncategorized' }}
+                            </div>
+
+                            <!-- Product Name -->
+                            <h3 class="product-name">{{ $product->name }}</h3>
+
+                            <!-- Shop Name -->
+                            <div class="product-shop">{{ $product->shop->name }}</div>
+
+                            <!-- Description -->
+                            <p class="product-description">
+                                {{ $product->short_description ?? Str::limit($product->description, 120) }}
+                            </p>
+
+                            <!-- Product Attributes -->
+                            <div class="product-attributes">
+                                @if($product->attributes)
+                                    @if($product->attributes->education_board)
+                                        <span class="attribute-tag">{{ ucfirst($product->attributes->education_board) }}</span>
+                                    @endif
+                                    @if($product->attributes->class_level)
+                                        <span class="attribute-tag">{{ $product->attributes->class_level }}</span>
+                                    @endif
+                                    @if($product->attributes->subject)
+                                        <span class="attribute-tag">{{ $product->attributes->subject }}</span>
+                                    @endif
+                                @endif
+                                @if($product->brand)
+                                    <span class="attribute-tag">{{ $product->brand }}</span>
+                                @endif
+                            </div>
+
+                            <!-- Pricing -->
+                            <div class="product-pricing">
+                                <div>
+                                    <span class="price-current">
+                                        Rs. {{ number_format($product->sale_price ?? $product->base_price) }}
+                                    </span>
+                                    @if($product->sale_price && $product->sale_price < $product->base_price)
+                                        <span class="price-original">
+                                            Rs. {{ number_format($product->base_price) }}
+                                        </span>
+                                    @endif
+                                </div>
+                                <div class="stock-status {{ $product->is_in_stock ? ($product->isLowStock() ? 'low-stock' : 'in-stock') : 'out-of-stock' }}">
+                                    {{ $product->is_in_stock ? ($product->isLowStock() ? 'Low Stock' : 'In Stock') : 'Out of Stock' }}
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="product-actions">
+                                <button class="btn btn-success add-to-cart-btn" 
+                                        data-product-id="{{ $product->uuid }}"
+                                        {{ !$product->is_in_stock ? 'disabled' : '' }}>
+                                    <i class="fas fa-shopping-cart me-2"></i>
+                                    {{ $product->is_in_stock ? 'Add to Cart' : 'Out of Stock' }}
+                                </button>
+                                <button class="favorite-btn" data-product-id="{{ $product->uuid }}">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="1">
-                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                        </button>
-                        <button class="favorite-btn" data-product-id="1">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
-            <!-- Product 2 -->
-            <div class="product-card" data-product-id="2">
-                <div class="product-badge new">New</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/38b000/ffffff?text=School+Bag" 
-                         alt="Premium School Backpack">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">School Bag</div>
-                    <h3 class="product-name">Premium Waterproof School Backpack</h3>
-                    <div class="product-shop">Scholar's Stationery</div>
-                    <p class="product-description">
-                        Durable waterproof backpack with multiple compartments and ergonomic design.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Waterproof</span>
-                        <span class="attribute-tag">3 Compartments</span>
-                        <span class="attribute-tag">Blue Color</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 2,500</span>
-                        </div>
-                        <div class="stock-status in-stock">In Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="2">
-                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                        </button>
-                        <button class="favorite-btn" data-product-id="2">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- Pagination -->
+            <div class="pagination">
+                {{ $products->appends(request()->query())->links() }}
             </div>
-
-            <!-- Product 3 -->
-            <div class="product-card" data-product-id="3">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/ff6b35/ffffff?text=School+Uniform" 
-                         alt="School Uniform Set">
+        @else
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-search"></i>
                 </div>
-                <div class="product-content">
-                    <div class="product-category">Uniform</div>
-                    <h3 class="product-name">Complete School Uniform Set - Beaconhouse</h3>
-                    <div class="product-shop">Uniform Center</div>
-                    <p class="product-description">
-                        Official Beaconhouse school uniform set including shirt, trouser, and tie.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Beaconhouse</span>
-                        <span class="attribute-tag">Size: Medium</span>
-                        <span class="attribute-tag">Summer Edition</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 3,200</span>
-                            <span class="price-original">Rs. 3,800</span>
-                        </div>
-                        <div class="stock-status low-stock">Low Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="3">
-                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                        </button>
-                        <button class="favorite-btn" data-product-id="3">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
+                <h3 class="empty-state-title">No products found</h3>
+                <p class="empty-state-description">
+                    @if(request()->anyFilled(['search', 'category', 'shop', 'product_type', 'education_board', 'class_level']))
+                        Try adjusting your search or filter criteria to find what you're looking for.
+                    @else
+                        No products are currently available. Please check back later.
+                    @endif
+                </p>
+                @if(request()->anyFilled(['search', 'category', 'shop', 'product_type', 'education_board', 'class_level']))
+                    <a href="{{ route('website.stationary.index') }}" class="btn btn-primary">
+                        Clear All Filters
+                    </a>
+                @endif
             </div>
-
-            <!-- Product 4 -->
-            <div class="product-card" data-product-id="4">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/7209b7/ffffff?text=Science+Kit" 
-                         alt="Science Lab Kit">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Science Equipment</div>
-                    <h3 class="product-name">Basic Science Lab Kit for Students</h3>
-                    <div class="product-shop">Education Supplies</div>
-                    <p class="product-description">
-                        Complete science laboratory kit with essential equipment for practical experiments.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Lab Equipment</span>
-                        <span class="attribute-tag">Complete Set</span>
-                        <span class="attribute-tag">Safety Included</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 4,500</span>
-                        </div>
-                        <div class="stock-status in-stock">In Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="4">
-                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                        </button>
-                        <button class="favorite-btn active" data-product-id="4">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 5 -->
-            <div class="product-card" data-product-id="5">
-                <div class="product-badge sale">Sale</div>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/ff9e00/ffffff?text=Art+Supplies" 
-                         alt="Art Supplies Set">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Stationery</div>
-                    <h3 class="product-name">Premium Art Supplies Complete Set</h3>
-                    <div class="product-shop">Creative Stationers</div>
-                    <p class="product-description">
-                        High-quality art supplies including colors, brushes, and drawing materials.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">48 Colors</span>
-                        <span class="attribute-tag">Brushes Included</span>
-                        <span class="attribute-tag">Premium Quality</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 1,800</span>
-                            <span class="price-original">Rs. 2,200</span>
-                        </div>
-                        <div class="stock-status in-stock">In Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="5">
-                            <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                        </button>
-                        <button class="favorite-btn" data-product-id="5">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product 6 -->
-            <div class="product-card" data-product-id="6">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x200/38b000/ffffff?text=English+Grammar" 
-                         alt="English Grammar Book">
-                </div>
-                <div class="product-content">
-                    <div class="product-category">Reference Book</div>
-                    <h3 class="product-name">Advanced English Grammar & Composition</h3>
-                    <div class="product-shop">Book World</div>
-                    <p class="product-description">
-                        Comprehensive English grammar guide with exercises and composition techniques.
-                    </p>
-                    <div class="product-attributes">
-                        <span class="attribute-tag">Grammar</span>
-                        <span class="attribute-tag">Composition</span>
-                        <span class="attribute-tag">All Levels</span>
-                    </div>
-                    <div class="product-pricing">
-                        <div>
-                            <span class="price-current">Rs. 650</span>
-                        </div>
-                        <div class="stock-status out-of-stock">Out of Stock</div>
-                    </div>
-                    <div class="product-actions">
-                        <button class="btn btn-success add-to-cart-btn" data-product-id="6" disabled>
-                            <i class="fas fa-shopping-cart me-2"></i> Out of Stock
-                        </button>
-                        <button class="favorite-btn" data-product-id="6">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pagination -->
-        <div class="pagination">
-            <span class="page-link disabled">&laquo; Previous</span>
-            <span class="page-link active">1</span>
-            <a href="#" class="page-link">2</a>
-            <a href="#" class="page-link">3</a>
-            <a href="#" class="page-link">Next &raquo;</a>
-        </div>
+        @endif
     </div>
 </section>
 
@@ -999,16 +920,16 @@
 
             <div class="quantity-selector">
                 <label for="quantity">Quantity:</label>
-                <button class="quantity-btn" id="decreaseQuantity">-</button>
+                <button type="button" class="quantity-btn" id="decreaseQuantity">-</button>
                 <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" class="quantity-input">
-                <button class="quantity-btn" id="increaseQuantity">+</button>
+                <button type="button" class="quantity-btn" id="increaseQuantity">+</button>
             </div>
 
             <div class="modal-actions">
-                <button class="btn btn-secondary" id="continueShopping">
+                <button type="button" class="btn btn-secondary" id="continueShopping">
                     Continue Shopping
                 </button>
-                <button class="btn btn-success" id="confirmAddToCart">
+                <button type="button" class="btn btn-success" id="confirmAddToCart">
                     <i class="fas fa-shopping-cart me-2"></i> Add to Cart
                 </button>
             </div>
@@ -1021,6 +942,14 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Auto-submit form when filters change
+        const filterSelects = document.querySelectorAll('.filter-select');
+        filterSelects.forEach(select => {
+            select.addEventListener('change', function() {
+                document.getElementById('productsFilterForm').submit();
+            });
+        });
+
         // View Toggle
         const viewButtons = document.querySelectorAll('.view-btn');
         const productsContainer = document.getElementById('productsContainer');
@@ -1050,7 +979,7 @@
             });
         });
 
-        // Add to Cart Modal
+        // Add to Cart Modal functionality
         const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
         const modal = document.getElementById('addToCartModal');
         const closeModal = document.getElementById('closeModal');
@@ -1066,7 +995,6 @@
             button.addEventListener('click', function() {
                 if (this.disabled) return;
                 
-                const productId = this.getAttribute('data-product-id');
                 const productCard = this.closest('.product-card');
                 
                 // Get product details
@@ -1089,9 +1017,8 @@
                 // Reset quantity
                 quantityInput.value = 1;
 
-                // Store current product
+                // Store current product info
                 currentProduct = {
-                    id: productId,
                     name: productName,
                     price: productPrice,
                     shop: productShop,
@@ -1134,7 +1061,8 @@
 
             const quantity = parseInt(quantityInput.value);
             
-            // Show success message
+            // Here you would typically make an AJAX call to add to cart
+            // For now, just show success message
             showToast(`${currentProduct.name} added to cart successfully!`, 'success');
 
             // Close modal
@@ -1145,62 +1073,20 @@
         const favoriteButtons = document.querySelectorAll('.favorite-btn');
         favoriteButtons.forEach(button => {
             button.addEventListener('click', function() {
-                const productId = this.getAttribute('data-product-id');
+                const productCard = this.closest('.product-card');
+                const productName = productCard.querySelector('.product-name').textContent;
                 const isActive = this.classList.contains('active');
 
                 // Toggle favorite state
                 this.classList.toggle('active');
 
-                // Show message
-                const productName = this.closest('.product-card').querySelector('.product-name').textContent;
+                // Here you would typically make an AJAX call to update favorites
                 if (!isActive) {
                     showToast(`${productName} added to favorites!`, 'success');
                 } else {
                     showToast(`${productName} removed from favorites!`, 'info');
                 }
             });
-        });
-
-        // Search functionality
-        const searchInput = document.getElementById('searchInput');
-        const searchButton = document.getElementById('searchButton');
-        
-        function performSearch() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const productCards = document.querySelectorAll('.product-card');
-            let visibleCount = 0;
-
-            productCards.forEach(card => {
-                const productName = card.querySelector('.product-name').textContent.toLowerCase();
-                const productDescription = card.querySelector('.product-description').textContent.toLowerCase();
-                const productCategory = card.querySelector('.product-category').textContent.toLowerCase();
-                
-                if (productName.includes(searchTerm) || 
-                    productDescription.includes(searchTerm) || 
-                    productCategory.includes(searchTerm) ||
-                    searchTerm === '') {
-                    card.style.display = 'block';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            // Update results count
-            document.getElementById('resultsCount').textContent = `${visibleCount} products found`;
-        }
-
-        searchButton.addEventListener('click', performSearch);
-        searchInput.addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                performSearch();
-            }
-        });
-
-        // Filter functionality
-        const filterSelects = document.querySelectorAll('.filter-select');
-        filterSelects.forEach(select => {
-            select.addEventListener('change', performSearch);
         });
 
         // Toast notification function
