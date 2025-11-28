@@ -657,18 +657,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update cart count in header
     function updateCartCount(count) {
-        if (typeof updateCartCount === 'function') {
-            updateCartCount(count);
-        } else {
-            const cartBadges = document.querySelectorAll('.cart-badge, .cart-count');
-            cartBadges.forEach(badge => {
-                if (count > 0) {
-                    badge.textContent = count > 99 ? '99+' : count;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
-            });
+        const cartBadge = document.querySelector('.cart-badge, .cart-count');
+        const cartCountElement = document.getElementById('cart-count');
+
+        if (cartBadge) {
+            if (count > 0) {
+                cartBadge.textContent = count > 99 ? '99+' : count;
+                cartBadge.style.display = 'flex';
+            } else {
+                cartBadge.style.display = 'none';
+            }
+        }
+
+        if (cartCountElement) {
+            cartCountElement.textContent = count;
+        }
+
+        // Update global cart count variable
+        if (typeof window.updateCartCount === 'function') {
+            window.updateCartCount(count);
         }
     }
 
