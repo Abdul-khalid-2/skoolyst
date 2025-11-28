@@ -276,6 +276,18 @@
         font-size: 1.1rem;
     }
 
+    /* Loading States */
+    .loading {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .quantity-btn:disabled,
+    .quantity-input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
     /* Responsive Design */
     @media (max-width: 968px) {
         .cart-container {
@@ -362,7 +374,7 @@
                             
                             <div class="cart-item-quantity">
                                 <button class="quantity-btn decrease-quantity" data-item-id="{{ $item['id'] }}">-</button>
-                                <input type="number" class="quantity-input" value="{{ $item['quantity'] }}" min="1" max="10" data-item-id="{{ $item['id'] }}">
+                                <input type="number" class="quantity-input" value="{{ $item['quantity'] }}" min="1" max="{{ $item['max_quantity'] ?? 10 }}" data-item-id="{{ $item['id'] }}">
                                 <button class="quantity-btn increase-quantity" data-item-id="{{ $item['id'] }}">+</button>
                                 <button class="cart-item-remove" data-item-id="{{ $item['id'] }}">
                                     <i class="fas fa-trash"></i>
@@ -435,6 +447,8 @@
 
 @push('scripts')
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // Quantity controls
     const decreaseButtons = document.querySelectorAll('.decrease-quantity');
@@ -442,9 +456,76 @@ document.addEventListener('DOMContentLoaded', function() {
     const quantityInputs = document.querySelectorAll('.quantity-input');
     const removeButtons = document.querySelectorAll('.cart-item-remove');
 
+    // Function to disable all buttons for a specific item
+    function disableItemButtons(itemId) {
+        const buttons = document.querySelectorAll(`
+            .decrease-quantity[data-item-id="${itemId}"],
+            .increase-quantity[data-item-id="${itemId}"],
+            .cart-item-remove[data-item-id="${itemId}"],
+            .quantity-input[data-item-id="${itemId}"]
+        `);
+        
+        buttons.forEach(button => {
+            button.disabled = true;
+            button.style.opacity = '0.6';
+            button.style.cursor = 'not-allowed';
+        });
+    }
+
+    // Function to enable all buttons for a specific item
+    function enableItemButtons(itemId) {
+        const buttons = document.querySelectorAll(`
+            .decrease-quantity[data-item-id="${itemId}"],
+            .increase-quantity[data-item-id="${itemId}"],
+            .cart-item-remove[data-item-id="${itemId}"],
+            .quantity-input[data-item-id="${itemId}"]
+        `);
+        
+        buttons.forEach(button => {
+            button.disabled = false;
+            button.style.opacity = '1';
+            button.style.cursor = 'pointer';
+        });
+    }
+
+    // Function to disable all cart buttons
+    function disableAllCartButtons() {
+        const allButtons = document.querySelectorAll(`
+            .decrease-quantity,
+            .increase-quantity,
+            .cart-item-remove,
+            .quantity-input
+        `);
+        
+        allButtons.forEach(button => {
+            button.disabled = true;
+            button.style.opacity = '0.6';
+            button.style.cursor = 'not-allowed';
+        });
+    }
+
+    // Function to enable all cart buttons
+    function enableAllCartButtons() {
+        const allButtons = document.querySelectorAll(`
+            .decrease-quantity,
+            .increase-quantity,
+            .cart-item-remove,
+            .quantity-input
+        `);
+        
+        allButtons.forEach(button => {
+            button.disabled = false;
+            button.style.opacity = '1';
+            button.style.cursor = 'pointer';
+        });
+    }
+
     // Update quantity
     function updateQuantity(itemId, newQuantity) {
         if (newQuantity < 1) newQuantity = 1;
+
+        // Disable buttons for this specific item
+        disableItemButtons(itemId);
 
         fetch('/cart/update', {
             method: 'POST',
@@ -460,9 +541,37 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Update the quantity input value
+                const quantityInput = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
+                if (quantityInput) {
+                    quantityInput.value = newQuantity;
+                }
+
+                // Update item total price if it exists
+                const itemTotalElement = document.querySelector(`[data-item-total="${itemId}"]`);
+                if (itemTotalElement && data.item_total) {
+                    itemTotalElement.textContent = `Rs. ${Math.round(data.item_total).toLocaleString()}`;
+                }
+
                 // Update UI with new cart data
                 updateCartUI(data.cart_data);
+                updateCartCount(data.cart_count);
+                
+                // Show appropriate success message
                 showToast('Cart updated successfully', 'success');
+                
+                // Remove item from DOM if quantity becomes 0
+                if (newQuantity === 0) {
+                    const item = document.querySelector(`[data-cart-item-id="${itemId}"]`);
+                    if (item) {
+                        item.remove();
+                    }
+                    
+                    // Show empty cart if no items left
+                    if (document.querySelectorAll('.cart-item').length === 0) {
+                        showEmptyCart();
+                    }
+                }
             } else {
                 showToast(data.message || 'Failed to update cart', 'error');
                 // Reload to get correct state
@@ -472,12 +581,19 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             showToast('An error occurred while updating cart', 'error');
+        })
+        .finally(() => {
+            // Re-enable buttons regardless of success/error
+            enableItemButtons(itemId);
         });
     }
 
     // Remove item from cart
     function removeItem(itemId) {
         if (confirm('Are you sure you want to remove this item from your cart?')) {
+            // Disable buttons for this specific item
+            disableItemButtons(itemId);
+
             fetch('/cart/remove', {
                 method: 'POST',
                 headers: {
@@ -511,50 +627,70 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 showToast('An error occurred while removing item', 'error');
+            })
+            .finally(() => {
+                // Re-enable buttons for remaining items
+                enableAllCartButtons();
             });
         }
     }
 
     // Update cart UI with new totals
     function updateCartUI(cartData) {
-        document.getElementById('subtotal').textContent = `Rs. ${Math.round(cartData.subtotal).toLocaleString()}`;
-        document.getElementById('shipping').textContent = `Rs. ${Math.round(cartData.shipping).toLocaleString()}`;
-        document.getElementById('tax').textContent = `Rs. ${Math.round(cartData.tax).toLocaleString()}`;
-        document.getElementById('discount').textContent = `- Rs. ${Math.round(cartData.discount).toLocaleString()}`;
-        document.getElementById('total').textContent = `Rs. ${Math.round(cartData.total).toLocaleString()}`;
+        if (document.getElementById('subtotal')) {
+            document.getElementById('subtotal').textContent = `Rs. ${Math.round(cartData.subtotal).toLocaleString()}`;
+        }
+        if (document.getElementById('shipping')) {
+            document.getElementById('shipping').textContent = `Rs. ${Math.round(cartData.shipping).toLocaleString()}`;
+        }
+        if (document.getElementById('tax')) {
+            document.getElementById('tax').textContent = `Rs. ${Math.round(cartData.tax).toLocaleString()}`;
+        }
+        if (document.getElementById('discount')) {
+            document.getElementById('discount').textContent = `- Rs. ${Math.round(cartData.discount).toLocaleString()}`;
+        }
+        if (document.getElementById('total')) {
+            document.getElementById('total').textContent = `Rs. ${Math.round(cartData.total).toLocaleString()}`;
+        }
     }
 
     // Update cart count in header
     function updateCartCount(count) {
-        const cartBadge = document.querySelector('.cart-badge, .cart-count');
-        if (cartBadge) {
-            if (count > 0) {
-                cartBadge.textContent = count > 99 ? '99+' : count;
-                cartBadge.style.display = 'flex';
-            } else {
-                cartBadge.style.display = 'none';
-            }
+        if (typeof updateCartCount === 'function') {
+            updateCartCount(count);
+        } else {
+            const cartBadges = document.querySelectorAll('.cart-badge, .cart-count');
+            cartBadges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
         }
     }
 
     // Show empty cart state
     function showEmptyCart() {
         const cartContainer = document.querySelector('.cart-container');
-        cartContainer.innerHTML = `
-            <div class="empty-cart">
-                <div class="empty-cart-icon">
-                    <i class="fas fa-shopping-cart"></i>
+        if (cartContainer) {
+            cartContainer.innerHTML = `
+                <div class="empty-cart">
+                    <div class="empty-cart-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="empty-cart-title">Your cart is empty</h3>
+                    <p class="empty-cart-description">
+                        Looks like you haven't added any items to your cart yet.
+                    </p>
+                    <a href="/stationary" class="btn btn-primary">
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        Start Shopping
+                    </a>
                 </div>
-                <h3 class="empty-cart-title">Your cart is empty</h3>
-                <p class="empty-cart-description">
-                    Looks like you haven't added any items to your cart yet.
-                </p>
-                <a href="{{ route('website.stationary.index') }}" class="btn btn-primary">
-                    <i class="fas fa-shopping-bag me-2"></i>
-                    Start Shopping
-                </a>
-            </div>
-        `;
+            `;
+        }
     }
 
     // Event listeners
@@ -563,7 +699,11 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = this.getAttribute('data-item-id');
             const input = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
             const currentValue = parseInt(input.value);
-            updateQuantity(itemId, currentValue - 1);
+            
+            // Prevent multiple rapid clicks
+            if (!this.disabled) {
+                updateQuantity(itemId, currentValue - 1);
+            }
         });
     });
 
@@ -574,10 +714,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const currentValue = parseInt(input.value);
             const maxQuantity = parseInt(input.getAttribute('max')) || 10;
             
-            if (currentValue < maxQuantity) {
-                updateQuantity(itemId, currentValue + 1);
-            } else {
-                showToast(`Maximum quantity limit reached (${maxQuantity} items)`, 'warning');
+            // Prevent multiple rapid clicks
+            if (!this.disabled) {
+                if (currentValue < maxQuantity) {
+                    updateQuantity(itemId, currentValue + 1);
+                } else {
+                    showToast(`Maximum quantity limit reached (${maxQuantity} items)`, 'warning');
+                }
             }
         });
     });
@@ -588,14 +731,19 @@ document.addEventListener('DOMContentLoaded', function() {
             const newQuantity = parseInt(this.value);
             const maxQuantity = parseInt(this.getAttribute('max')) || 10;
             
-            if (newQuantity > maxQuantity) {
-                this.value = maxQuantity;
-                showToast(`Maximum quantity limit is ${maxQuantity} items`, 'warning');
-                return;
-            }
-            
-            if (newQuantity >= 1) {
-                updateQuantity(itemId, newQuantity);
+            // Prevent multiple rapid changes
+            if (!this.disabled) {
+                if (newQuantity > maxQuantity) {
+                    this.value = maxQuantity;
+                    showToast(`Maximum quantity limit is ${maxQuantity} items`, 'warning');
+                    return;
+                }
+                
+                if (newQuantity >= 1) {
+                    updateQuantity(itemId, newQuantity);
+                } else {
+                    this.value = 1;
+                }
             }
         });
     });
@@ -603,12 +751,19 @@ document.addEventListener('DOMContentLoaded', function() {
     removeButtons.forEach(button => {
         button.addEventListener('click', function() {
             const itemId = this.getAttribute('data-item-id');
-            removeItem(itemId);
+            
+            // Prevent multiple rapid clicks
+            if (!this.disabled) {
+                removeItem(itemId);
+            }
         });
     });
 
     // Toast notification function
     function showToast(message, type = 'info') {
+        const existingToasts = document.querySelectorAll('.toast');
+        existingToasts.forEach(toast => toast.remove());
+
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
         toast.style.cssText = `
@@ -621,15 +776,29 @@ document.addEventListener('DOMContentLoaded', function() {
             border-radius: 8px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
             z-index: 10000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
         `;
         toast.textContent = message;
         document.body.appendChild(toast);
 
         setTimeout(() => {
-            document.body.removeChild(toast);
+            toast.style.transform = 'translateX(0)';
+        }, 100);
+
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
         }, 3000);
     }
 });
+
+
+
 </script>
 
 @endpush

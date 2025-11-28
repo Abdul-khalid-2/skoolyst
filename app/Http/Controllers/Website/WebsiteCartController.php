@@ -104,17 +104,15 @@ class WebsiteCartController extends Controller
             $cartKey = $this->generateCartKey($request->product_id);
 
             if (isset($cart[$cartKey])) {
-                // Check stock availability
-                $product = Product::where('uuid', $request->product_id)->first();
-                if ($product && $product->isLowStock() && $request->quantity > $product->stock_quantity) {
+                // Only query database if we need to check stock
+                if ($cart[$cartKey]['max_quantity'] && $request->quantity > $cart[$cartKey]['max_quantity']) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Only ' . $product->stock_quantity . ' items available in stock'
+                        'message' => 'Only ' . $cart[$cartKey]['max_quantity'] . ' items available in stock'
                     ], 400);
                 }
 
                 $cart[$cartKey]['quantity'] = $request->quantity;
-                $cart[$cartKey]['max_quantity'] = $product ? min(10, $product->stock_quantity) : 10;
                 session()->put('cart', $cart);
 
                 $cartData = $this->calculateCartTotals($cart);
@@ -122,7 +120,8 @@ class WebsiteCartController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'Cart updated successfully',
-                    'cart_data' => $cartData
+                    'cart_data' => $cartData,
+                    'cart_count' => $cartData['total_items'] // This should now work
                 ]);
             }
 
@@ -219,9 +218,11 @@ class WebsiteCartController extends Controller
     private function calculateCartTotals($cartItems)
     {
         $subtotal = 0;
+        $totalItems = 0;
 
         foreach ($cartItems as $item) {
             $subtotal += $item['price'] * $item['quantity'];
+            $totalItems += $item['quantity'];
         }
 
         // Calculate shipping (free over 2000, otherwise 100)
@@ -240,7 +241,8 @@ class WebsiteCartController extends Controller
             'shipping' => $shipping,
             'tax' => $tax,
             'discount' => $discount,
-            'total' => $total
+            'total' => $total,
+            'total_items' => $totalItems // Add this line
         ];
     }
 }
