@@ -32,12 +32,18 @@
                 <!-- Cart Icon with Count -->
                 <a href="{{ route('website.cart') }}" class="cart-icon position-relative text-decoration-none">
                     <i class="fas fa-shopping-cart fa-lg" style="color: #4361ee;"></i>
-                    {{-- @if($cartItemCount > 0) --}}
+                    @php
+                        $cartCount = 0;
+                        if(session()->has('cart')) {
+                            $cart = session('cart');
+                            $cartCount = array_sum(array_column($cart, 'quantity'));
+                        }
+                    @endphp
+                    @if($cartCount > 0)
                         <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{-- {{ $cartItemCount }} --}}4
-                            <span class="visually-hidden">items in cart</span>
+                            {{ $cartCount > 99 ? '99+' : $cartCount }}
                         </span>
-                    {{-- @endif --}}
+                    @endif
                 </a>
 
                 <!-- Auth Buttons -->

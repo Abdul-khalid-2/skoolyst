@@ -89,7 +89,39 @@
     @include('website.layout.footer')
     <!-- ==================== JAVASCRIPT ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Global function to update cart count
+        function updateCartCount(count = null) {
+            if (count === null) {
+                // Fetch current cart count from server
+                fetch('/cart/count')
+                    .then(response => response.json())
+                    .then(data => {
+                        updateCartBadge(data.cart_count);
+                    })
+                    .catch(error => console.error('Error fetching cart count:', error));
+            } else {
+                updateCartBadge(count);
+            }
+        }
 
+        function updateCartBadge(count) {
+            const cartBadges = document.querySelectorAll('.cart-badge, .cart-count');
+            cartBadges.forEach(badge => {
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.style.display = 'flex';
+                } else {
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
+        // Update cart count on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCartCount();
+        });
+    </script>
     @stack('scripts')
 
 </body>

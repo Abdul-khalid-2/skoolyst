@@ -543,10 +543,10 @@
         background: white;
         padding: 2rem 0;
         border-bottom: 1px solid #e0e0e0;
-        position: relative ;
+        position: relative;
         top: 0;
         z-index: 100;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
     .filters-container {
@@ -960,37 +960,37 @@
             max-width: 95%;
             margin: 1rem;
         }
-        
+
         .modal-product {
             grid-template-columns: 1fr;
             text-align: center;
             gap: 1rem;
         }
-        
+
         .modal-product-image {
             width: 100%;
             max-width: 200px;
             margin: 0 auto;
         }
-        
+
         .modal-product-name {
             font-size: 1.2rem;
         }
-        
+
         .modal-product-price {
             font-size: 1.3rem;
         }
-        
+
         .quantity-selector {
             flex-direction: inherit;
             align-items: anchor-center;
             gap: 0.75rem;
         }
-        
+
         .quantity-controls {
             justify-content: center;
         }
-        
+
         .modal-actions {
             flex-direction: column;
         }
@@ -1000,25 +1000,26 @@
         .modal-body {
             padding: 1.25rem;
         }
-        
+
         .modal-header {
             padding: 1rem 1.25rem;
         }
-        
+
         .modal-title {
             font-size: 1.1rem;
         }
     }
+
     /* ==================== RESPONSIVE DESIGN ==================== */
     @media (max-width: 768px) {
         .filters-container {
             grid-template-columns: 1fr;
         }
-        
+
         .filter-actions {
             flex-direction: column;
         }
-        
+
         .school-tags {
             justify-content: flex-start;
         }
@@ -1089,11 +1090,11 @@
                 <!-- Search Filter -->
                 <div class="filter-group">
                     <label class="filter-label">Search</label>
-                    <input type="text" 
-                           name="search" 
-                           class="filter-input" 
-                           placeholder="Search shops or products..."
-                           value="{{ $search }}">
+                    <input type="text"
+                        name="search"
+                        class="filter-input"
+                        placeholder="Search shops or products..."
+                        value="{{ $search }}">
                 </div>
 
                 <!-- School Type Filter -->
@@ -1102,9 +1103,9 @@
                     <select name="school_type" class="filter-select">
                         <option value="">All School Types</option>
                         @foreach($schoolTypes as $type)
-                            <option value="{{ $type }}" {{ $schoolType == $type ? 'selected' : '' }}>
-                                {{ $type }}
-                            </option>
+                        <option value="{{ $type }}" {{ $schoolType == $type ? 'selected' : '' }}>
+                            {{ $type }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -1115,9 +1116,9 @@
                     <select name="city" class="filter-select">
                         <option value="">All Cities</option>
                         @foreach($cities as $cityItem)
-                            <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>
-                                {{ $cityItem }}
-                            </option>
+                        <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>
+                            {{ $cityItem }}
+                        </option>
                         @endforeach
                     </select>
                 </div>
@@ -1153,84 +1154,84 @@
         </p>
 
         @if($shops->count() > 0)
-            <div class="shops-grid">
-                @foreach($shops as $shop)
-                    <div class="shop-card">
-                        <div class="shop-banner" style="background: linear-gradient(135deg, #4361ee, #38b000);">
-                            <div class="shop-logo">
-                                @if($shop->logo_url)
-                                    <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+        <div class="shops-grid">
+            @foreach($shops as $shop)
+            <div class="shop-card">
+                <div class="shop-banner" style="background: linear-gradient(135deg, #4361ee, #38b000);">
+                    <div class="shop-logo">
+                        @if($shop->logo_url)
+                        <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+                        @else
+                        <img src="https://via.placeholder.com/80" alt="{{ $shop->name }}">
+                        @endif
+                    </div>
+                </div>
+                <div class="shop-content">
+                    <h3 class="shop-name">{{ $shop->name }}</h3>
+                    <span class="shop-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+
+                    <div class="shop-location">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>{{ $shop->city }}, {{ $shop->state }}</span>
+                    </div>
+
+                    <div class="shop-rating">
+                        <div class="rating-stars">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <=floor($shop->rating))
+                                <i class="fas fa-star"></i>
+                                @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
+                                <i class="fas fa-star-half-alt"></i>
                                 @else
-                                    <img src="https://via.placeholder.com/80" alt="{{ $shop->name }}">
+                                <i class="far fa-star"></i>
                                 @endif
-                            </div>
+                                @endfor
                         </div>
-                        <div class="shop-content">
-                            <h3 class="shop-name">{{ $shop->name }}</h3>
-                            <span class="shop-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
-                            
-                            <div class="shop-location">
-                                <i class="fas fa-map-marker-alt"></i>
-                                <span>{{ $shop->city }}, {{ $shop->state }}</span>
-                            </div>
-                            
-                            <div class="shop-rating">
-                                <div class="rating-stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($shop->rating))
-                                            <i class="fas fa-star"></i>
-                                        @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
-                                            <i class="fas fa-star-half-alt"></i>
-                                        @else
-                                            <i class="far fa-star"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <span class="rating-value">{{ number_format($shop->rating, 1) }} ({{ $shop->total_reviews }} reviews)</span>
-                            </div>
-                            
-                            <p class="shop-description">
-                                {{ Str::limit($shop->description, 120) }}
-                            </p>
+                        <span class="rating-value">{{ number_format($shop->rating, 1) }} ({{ $shop->total_reviews }} reviews)</span>
+                    </div>
 
-                            <!-- School Associations -->
-                            @if($shop->schoolAssociations->count() > 0)
-                                <div class="school-associations">
-                                    <div class="school-tags">
-                                        @foreach($shop->schoolAssociations->take(3) as $association)
-                                            <span class="school-tag">{{ $association->school->name }}</span>
-                                        @endforeach
-                                        @if($shop->schoolAssociations->count() > 3)
-                                            <span class="school-tag">+{{ $shop->schoolAssociations->count() - 3 }} more</span>
-                                        @endif
-                                    </div>
-                                </div>
+                    <p class="shop-description">
+                        {{ Str::limit($shop->description, 120) }}
+                    </p>
+
+                    <!-- School Associations -->
+                    @if($shop->schoolAssociations->count() > 0)
+                    <div class="school-associations">
+                        <div class="school-tags">
+                            @foreach($shop->schoolAssociations->take(3) as $association)
+                            <span class="school-tag">{{ $association->school->name }}</span>
+                            @endforeach
+                            @if($shop->schoolAssociations->count() > 3)
+                            <span class="school-tag">+{{ $shop->schoolAssociations->count() - 3 }} more</span>
                             @endif
-
-                            <div class="shop-actions">
-                                <a href="{{ route('website.shop.show', $shop->uuid) }}" class="btn btn-primary">Visit Shop</a>
-                                <a href="{{ route('website.stationary.index') }}?shop={{ $shop->uuid }}" class="btn btn-secondary">View Products</a>
-                            </div>
                         </div>
                     </div>
-                @endforeach
-            </div>
+                    @endif
 
-            <!-- Pagination -->
-            @if($shops->hasPages())
-                <div class="pagination-container">
-                    {{ $shops->appends(request()->query())->links() }}
+                    <div class="shop-actions">
+                        <a href="{{ route('website.shop.show', $shop->uuid) }}" class="btn btn-primary">Visit Shop</a>
+                        <a href="{{ route('website.stationary.index') }}?shop={{ $shop->uuid }}" class="btn btn-secondary">View Products</a>
+                    </div>
                 </div>
-            @endif
-        @else
-            <div class="no-results">
-                <div class="no-results-icon">
-                    <i class="fas fa-store-slash"></i>
-                </div>
-                <h3 class="no-results-title">No shops found</h3>
-                <p>Try adjusting your filters or search terms to find what you're looking for.</p>
-                <a href="{{ route('website.shop.index') }}" class="btn btn-primary mt-3">Clear Filters</a>
             </div>
+            @endforeach
+        </div>
+
+        <!-- Pagination -->
+        @if($shops->hasPages())
+        <div class="pagination-container">
+            {{ $shops->appends(request()->query())->links() }}
+        </div>
+        @endif
+        @else
+        <div class="no-results">
+            <div class="no-results-icon">
+                <i class="fas fa-store-slash"></i>
+            </div>
+            <h3 class="no-results-title">No shops found</h3>
+            <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+            <a href="{{ route('website.shop.index') }}" class="btn btn-primary mt-3">Clear Filters</a>
+        </div>
         @endif
     </div>
 </section>
@@ -1244,20 +1245,20 @@
         </p>
 
         @if($categories->count() > 0)
-            <div class="categories-grid">
-                @foreach($categories as $category)
-                    <div class="category-card">
-                        <div class="category-icon">
-                            <i class="fas fa-{{ $category->icon ?? 'shopping-bag' }}"></i>
-                        </div>
-                        <h3 class="category-name">{{ $category->name }}</h3>
-                        <p class="category-description">
-                            {{ Str::limit($category->description ?? 'Various products in this category', 100) }}
-                        </p>
-                        <div class="category-count">{{ $category->products_count }} Products</div>
-                    </div>
-                @endforeach
+        <div class="categories-grid">
+            @foreach($categories as $category)
+            <div class="category-card">
+                <div class="category-icon">
+                    <i class="fas fa-{{ $category->icon ?? 'shopping-bag' }}"></i>
+                </div>
+                <h3 class="category-name">{{ $category->name }}</h3>
+                <p class="category-description">
+                    {{ Str::limit($category->description ?? 'Various products in this category', 100) }}
+                </p>
+                <div class="category-count">{{ $category->products_count }} Products</div>
             </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </section>
@@ -1271,124 +1272,58 @@
         </p>
 
         @if($featuredProducts->count() > 0)
-            <div class="products-grid">
-                @foreach($featuredProducts as $product)
-                    <div class="product-card">
-                        @if($product->sale_price && $product->sale_price < $product->base_price)
-                            <div class="product-badge">Sale</div>
-                        @elseif($product->is_featured)
-                            <div class="product-badge">Featured</div>
-                        @endif
+        <div class="products-grid">
+            @foreach($featuredProducts as $product)
+            <div class="product-card">
+                @if($product->sale_price && $product->sale_price < $product->base_price)
+                    <div class="product-badge">Sale</div>
+                    @elseif($product->is_featured)
+                    <div class="product-badge">Featured</div>
+                    @endif
 
-                        <div class="product-image">
-                            @if($product->main_image_url)
-                                <img src="{{ asset('website/' . $product->main_image_url) }}" alt="{{ $product->name }}">
-                            @else
-                                <img src="https://via.placeholder.com/300x200" alt="{{ $product->name }}">
-                            @endif
-                        </div>
-                        
-                        <div class="product-content">
-                            <h3 class="product-name">{{ $product->name }}</h3>
-                            
-                            <div class="product-pricing">
-                                <div>
-                                    <span class="price-current">Rs. {{ number_format($product->sale_price ?? $product->base_price) }}</span>
-                                    @if($product->sale_price && $product->sale_price < $product->base_price)
-                                        <span class="price-original">Rs. {{ number_format($product->base_price) }}</span>
+                    <div class="product-image">
+                        @if($product->main_image_url)
+                        <img src="{{ asset('website/' . $product->main_image_url) }}" alt="{{ $product->name }}">
+                        @else
+                        <img src="https://via.placeholder.com/300x200" alt="{{ $product->name }}">
+                        @endif
+                    </div>
+
+                    <div class="product-content">
+                        <h3 class="product-name">{{ $product->name }}</h3>
+
+                        <div class="product-pricing">
+                            <div>
+                                <span class="price-current">Rs. {{ number_format($product->sale_price ?? $product->base_price) }}</span>
+                                @if($product->sale_price && $product->sale_price < $product->base_price)
+                                    <span class="price-original">Rs. {{ number_format($product->base_price) }}</span>
                                     @endif
-                                </div>
-                                <div class="stock-status {{ $product->is_in_stock ? 'in-stock' : 'low-stock' }}">
-                                    {{ $product->is_in_stock ? 'In Stock' : 'Low Stock' }}
-                                </div>
                             </div>
-                            
-                            <div class="product-actions">
-                                <button class="btn btn-success quick-view-btn" 
-                                        data-product-id="{{ $product->uuid }}"
-                                        data-product-data='@json($product)'>
-                                    <i class="fas fa-eye me-2"></i>
-                                    View Details
-                                </button>
-                                <button class="favorite-btn" data-product-id="{{ $product->uuid }}">
-                                    <i class="fas fa-heart"></i>
-                                </button>
+                            <div class="stock-status {{ $product->is_in_stock ? 'in-stock' : 'low-stock' }}">
+                                {{ $product->is_in_stock ? 'In Stock' : 'Low Stock' }}
                             </div>
+                        </div>
+
+                        <div class="product-actions">
+                            <button class="btn btn-success quick-view-btn"
+                                data-product-id="{{ $product->uuid }}"
+                                data-product-data='@json($product)'>
+                                <i class="fas fa-eye me-2"></i>
+                                View Details
+                            </button>
+                            <button class="favorite-btn" data-product-id="{{ $product->uuid }}">
+                                <i class="fas fa-heart"></i>
+                            </button>
                         </div>
                     </div>
-                @endforeach
             </div>
+            @endforeach
+        </div>
         @endif
     </div>
 </section>
 
-<!-- ==================== PRODUCT DETAILS MODAL ==================== -->
-<div class="modal-overlay" id="productDetailsModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">Product Details</h3>
-            <button class="modal-close" id="closeDetailsModal">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="modal-product">
-                <div class="modal-product-image">
-                    <img id="detailsProductImage" src="" alt="Product Image">
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <!-- Category -->
-                        <div id="detailsProductCategory" class="modal-product-category"></div>
-                        
-                        <h4 id="detailsProductName" class="modal-product-name"></h4>
-                        
-                        <!-- Shop Name -->
-                        <div id="detailsProductShop" class="modal-product-shop"></div>
-                        
-                        <div id="detailsProductPrice" class="modal-product-price"></div>
-                        
-                    </div>
-                    <div class="col">
 
-                        <div class="modal-info-left">
-                            <!-- Stock Status -->
-                            <div id="detailsStockStatus" class="modal-stock-status"></div>
-                        </div>
-                        
-                        <div class="modal-info-right">
-                            <!-- Product Attributes -->
-                            <div id="detailsProductAttributes" class="modal-attributes"></div>
-                        </div>
-                        
-                        <!-- Description -->
-                        <div class="modal-description">
-                            <h5>Description</h5>
-                            <p id="detailsProductDescription"></p>
-                        </div>
-                    </div>
-                    
-                </div>
-            </div>
-
-            <div class="quantity-selector">
-                <span class="quantity-label">Quantity:</span>
-                <div class="quantity-controls">
-                    <button type="button" class="quantity-btn" id="decreaseQuantity">-</button>
-                    <input type="number" id="quantity" name="quantity" value="1" min="1" max="10" class="quantity-input">
-                    <button type="button" class="quantity-btn" id="increaseQuantity">+</button>
-                </div>
-            </div>
-
-            <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" id="continueShopping">
-                    Continue Shopping
-                </button>
-                <button type="button" class="btn btn-success" id="addToCartFromModal">
-                    <i class="fas fa-shopping-cart me-2"></i> Add to Cart
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
 <section class="how-it-works">
@@ -1456,7 +1391,7 @@
     // Auto-submit form when filter values change
     document.addEventListener('DOMContentLoaded', function() {
         const filterSelects = document.querySelectorAll('.filter-select');
-        
+
         filterSelects.forEach(select => {
             select.addEventListener('change', function() {
                 document.getElementById('shop-filters').submit();
@@ -1471,196 +1406,7 @@
             applyBtn.disabled = true;
         });
 
-        // Quick View Modal functionality
-        const quickViewButtons = document.querySelectorAll('.quick-view-btn');
-        const productDetailsModal = document.getElementById('productDetailsModal');
-        const closeDetailsModal = document.getElementById('closeDetailsModal');
-        const continueShopping = document.getElementById('continueShopping');
-        const addToCartFromModal = document.getElementById('addToCartFromModal');
-        const quantityInput = document.getElementById('quantity');
-        const decreaseBtn = document.getElementById('decreaseQuantity');
-        const increaseBtn = document.getElementById('increaseQuantity');
-
-        let currentProduct = null;
-
-        quickViewButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productData = JSON.parse(this.getAttribute('data-product-data'));
-                const productCard = this.closest('.product-card');
-                const productImage = productCard.querySelector('.product-image img').src;
-
-                // Populate modal with product information
-                document.getElementById('detailsProductImage').src = productImage;
-                document.getElementById('detailsProductName').textContent = productData.name;
-                
-                // Category
-                const categoryElement = document.getElementById('detailsProductCategory');
-                if (productData.category && productData.category.name) {
-                    categoryElement.textContent = productData.category.name;
-                    categoryElement.style.display = 'block';
-                } else {
-                    categoryElement.style.display = 'none';
-                }
-
-                // Shop
-                const shopElement = document.getElementById('detailsProductShop');
-                if (productData.shop && productData.shop.name) {
-                    shopElement.innerHTML = `<i class="fas fa-store"></i> ${productData.shop.name}`;
-                    shopElement.style.display = 'flex';
-                } else {
-                    shopElement.style.display = 'none';
-                }
-
-                // Price
-                const priceElement = document.getElementById('detailsProductPrice');
-                const currentPrice = productData.sale_price || productData.base_price;
-                const originalPrice = productData.base_price;
-                
-                if (productData.sale_price && productData.sale_price < productData.base_price) {
-                    priceElement.innerHTML = `
-                        Rs. ${parseInt(currentPrice).toLocaleString()}
-                        <span style="font-size: 1rem; color: #999; text-decoration: line-through; margin-left: 0.5rem;">
-                            Rs. ${parseInt(originalPrice).toLocaleString()}
-                        </span>
-                    `;
-                } else {
-                    priceElement.textContent = `Rs. ${parseInt(currentPrice).toLocaleString()}`;
-                }
-
-                // Stock Status
-                const stockStatusElement = document.getElementById('detailsStockStatus');
-                const isInStock = productData.is_in_stock;
-                const isLowStock = productData.stock_quantity <= 10 && productData.stock_quantity > 0;
-                const stockStatus = isInStock ? (isLowStock ? 'Low Stock' : 'In Stock') : 'Out of Stock';
-                stockStatusElement.textContent = stockStatus;
-                stockStatusElement.className = `modal-stock-status ${isInStock ? (isLowStock ? 'low-stock' : 'in-stock') : 'out-of-stock'}`;
-
-                // Attributes
-                const attributesElement = document.getElementById('detailsProductAttributes');
-                attributesElement.innerHTML = '';
-                
-                if (productData.productAttributes) {
-                    const attributes = productData.productAttributes;
-                    if (attributes.education_board) {
-                        const tag = document.createElement('span');
-                        tag.className = 'modal-attribute-tag';
-                        tag.textContent = attributes.education_board.charAt(0).toUpperCase() + attributes.education_board.slice(1);
-                        attributesElement.appendChild(tag);
-                    }
-                    if (attributes.class_level) {
-                        const tag = document.createElement('span');
-                        tag.className = 'modal-attribute-tag';
-                        tag.textContent = attributes.class_level;
-                        attributesElement.appendChild(tag);
-                    }
-                    if (attributes.subject) {
-                        const tag = document.createElement('span');
-                        tag.className = 'modal-attribute-tag';
-                        tag.textContent = attributes.subject;
-                        attributesElement.appendChild(tag);
-                    }
-                }
-
-                // Description
-                const descriptionElement = document.getElementById('detailsProductDescription');
-                descriptionElement.textContent = productData.description || productData.short_description || 'No description available.';
-
-                // Reset quantity
-                quantityInput.value = 1;
-
-                // Store current product info
-                currentProduct = {
-                    id: productData.uuid,
-                    name: productData.name,
-                    price: currentPrice,
-                    isInStock: isInStock
-                };
-
-                // Enable/disable add to cart button based on stock
-                addToCartFromModal.disabled = !isInStock;
-
-                // Show modal
-                productDetailsModal.classList.add('active');
-            });
-        });
-
-        // Close modal
-        function closeModal() {
-            productDetailsModal.classList.remove('active');
-            currentProduct = null;
-        }
-
-        closeDetailsModal.addEventListener('click', closeModal);
-        continueShopping.addEventListener('click', closeModal);
-
-        // Quantity controls
-        decreaseBtn.addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-
-        increaseBtn.addEventListener('click', function() {
-            const currentValue = parseInt(quantityInput.value);
-            if (currentValue < 10) {
-                quantityInput.value = currentValue + 1;
-            }
-        });
-
-        // Add to cart from modal
-        addToCartFromModal.addEventListener('click', function() {
-            if (!currentProduct || this.disabled) return;
-
-            const quantity = parseInt(quantityInput.value);
-            
-            // Here you would typically make an AJAX call to add to cart
-            showToast(`${currentProduct.name} added to cart successfully!`, 'success');
-            closeModal();
-        });
-
-        // Favorite functionality
-        const favoriteButtons = document.querySelectorAll('.favorite-btn');
-        favoriteButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const productCard = this.closest('.product-card');
-                const productName = productCard.querySelector('.product-name').textContent;
-                const isActive = this.classList.contains('active');
-
-                // Toggle favorite state
-                this.classList.toggle('active');
-
-                // Here you would typically make an AJAX call to update favorites
-                if (!isActive) {
-                    showToast(`${productName} added to favorites!`, 'success');
-                } else {
-                    showToast(`${productName} removed from favorites!`, 'info');
-                }
-            });
-        });
-
-        // Toast notification function
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.className = `toast toast-${type}`;
-            toast.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: ${type === 'success' ? '#38b000' : '#4361ee'};
-                color: white;
-                padding: 1rem 1.5rem;
-                border-radius: 8px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                z-index: 10000;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                document.body.removeChild(toast);
-            }, 3000);
-        }
     });
 </script>
+<script src="{{ asset('assets/js/product-modal.js') }}"></script>
 @endpush

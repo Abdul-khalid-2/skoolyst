@@ -445,54 +445,96 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update quantity
     function updateQuantity(itemId, newQuantity) {
         if (newQuantity < 1) newQuantity = 1;
-        if (newQuantity > 10) newQuantity = 10;
 
-        // Here you would typically make an AJAX call to update the cart
-        console.log(`Updating item ${itemId} quantity to ${newQuantity}`);
-        
-        // For demo purposes, we'll just update the UI
-        const input = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
-        if (input) {
-            input.value = newQuantity;
-        }
-        
-        updateCartTotals();
+        fetch('/cart/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                product_id: itemId,
+                quantity: newQuantity
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update UI with new cart data
+                updateCartUI(data.cart_data);
+                showToast('Cart updated successfully', 'success');
+            } else {
+                showToast(data.message || 'Failed to update cart', 'error');
+                // Reload to get correct state
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('An error occurred while updating cart', 'error');
+        });
     }
 
     // Remove item from cart
     function removeItem(itemId) {
-        // Here you would typically make an AJAX call to remove the item
-        console.log(`Removing item ${itemId} from cart`);
-        
-        // For demo purposes, we'll just remove from UI
-        const item = document.querySelector(`[data-cart-item-id="${itemId}"]`);
-        if (item) {
-            item.remove();
-        }
-        
-        updateCartTotals();
-        
-        // Show empty cart if no items left
-        if (document.querySelectorAll('.cart-item').length === 0) {
-            showEmptyCart();
+        if (confirm('Are you sure you want to remove this item from your cart?')) {
+            fetch('/cart/remove', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    product_id: itemId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const item = document.querySelector(`[data-cart-item-id="${itemId}"]`);
+                    if (item) {
+                        item.remove();
+                    }
+                    
+                    updateCartUI(data.cart_data);
+                    updateCartCount(data.cart_count);
+                    showToast('Item removed from cart', 'success');
+                    
+                    // Show empty cart if no items left
+                    if (document.querySelectorAll('.cart-item').length === 0) {
+                        showEmptyCart();
+                    }
+                } else {
+                    showToast(data.message || 'Failed to remove item', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred while removing item', 'error');
+            });
         }
     }
 
-    // Update cart totals (this would typically come from server)
-    function updateCartTotals() {
-        // In a real application, this would be calculated on the server
-        // For demo, we'll just update with some values
-        const subtotal = 2500; // This would be calculated from cart items
-        const shipping = 100;
-        const tax = 250;
-        const discount = 150;
-        const total = subtotal + shipping + tax - discount;
+    // Update cart UI with new totals
+    function updateCartUI(cartData) {
+        document.getElementById('subtotal').textContent = `Rs. ${Math.round(cartData.subtotal).toLocaleString()}`;
+        document.getElementById('shipping').textContent = `Rs. ${Math.round(cartData.shipping).toLocaleString()}`;
+        document.getElementById('tax').textContent = `Rs. ${Math.round(cartData.tax).toLocaleString()}`;
+        document.getElementById('discount').textContent = `- Rs. ${Math.round(cartData.discount).toLocaleString()}`;
+        document.getElementById('total').textContent = `Rs. ${Math.round(cartData.total).toLocaleString()}`;
+    }
 
-        document.getElementById('subtotal').textContent = `Rs. ${subtotal.toLocaleString()}`;
-        document.getElementById('shipping').textContent = `Rs. ${shipping.toLocaleString()}`;
-        document.getElementById('tax').textContent = `Rs. ${tax.toLocaleString()}`;
-        document.getElementById('discount').textContent = `- Rs. ${discount.toLocaleString()}`;
-        document.getElementById('total').textContent = `Rs. ${total.toLocaleString()}`;
+    // Update cart count in header
+    function updateCartCount(count) {
+        const cartBadge = document.querySelector('.cart-badge, .cart-count');
+        if (cartBadge) {
+            if (count > 0) {
+                cartBadge.textContent = count > 99 ? '99+' : count;
+                cartBadge.style.display = 'flex';
+            } else {
+                cartBadge.style.display = 'none';
+            }
+        }
     }
 
     // Show empty cart state
@@ -530,7 +572,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const itemId = this.getAttribute('data-item-id');
             const input = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
             const currentValue = parseInt(input.value);
-            updateQuantity(itemId, currentValue + 1);
+            const maxQuantity = parseInt(input.getAttribute('max')) || 10;
+            
+            if (currentValue < maxQuantity) {
+                updateQuantity(itemId, currentValue + 1);
+            } else {
+                showToast(`Maximum quantity limit reached (${maxQuantity} items)`, 'warning');
+            }
         });
     });
 
@@ -538,16 +586,24 @@ document.addEventListener('DOMContentLoaded', function() {
         input.addEventListener('change', function() {
             const itemId = this.getAttribute('data-item-id');
             const newQuantity = parseInt(this.value);
-            updateQuantity(itemId, newQuantity);
+            const maxQuantity = parseInt(this.getAttribute('max')) || 10;
+            
+            if (newQuantity > maxQuantity) {
+                this.value = maxQuantity;
+                showToast(`Maximum quantity limit is ${maxQuantity} items`, 'warning');
+                return;
+            }
+            
+            if (newQuantity >= 1) {
+                updateQuantity(itemId, newQuantity);
+            }
         });
     });
 
     removeButtons.forEach(button => {
         button.addEventListener('click', function() {
             const itemId = this.getAttribute('data-item-id');
-            if (confirm('Are you sure you want to remove this item from your cart?')) {
-                removeItem(itemId);
-            }
+            removeItem(itemId);
         });
     });
 
@@ -559,7 +615,7 @@ document.addEventListener('DOMContentLoaded', function() {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: ${type === 'success' ? '#38b000' : type === 'error' ? '#dc3545' : '#4361ee'};
+            background: ${type === 'success' ? '#38b000' : type === 'error' ? '#dc3545' : type === 'warning' ? '#ff6b35' : '#4361ee'};
             color: white;
             padding: 1rem 1.5rem;
             border-radius: 8px;
@@ -575,4 +631,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
 @endpush

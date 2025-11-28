@@ -35,6 +35,7 @@ use App\Http\Controllers\Website\WebsiteCheckoutController;
 use App\Http\Controllers\Website\WebsiteOrderController;
 use App\Http\Controllers\Website\WebsiteShopController;
 use App\Http\Controllers\Website\WebsiteProductsController;
+use App\Http\Controllers\Website\WebsiteModalController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -226,6 +227,13 @@ Route::prefix('products')->name('website.stationary.')->group(function () {
 
 // Cart and Checkout Routes
 Route::get('/cart', [WebsiteCartController::class, 'index'])->name('website.cart');
+Route::post('/cart/add', [WebsiteCartController::class, 'addToCart'])->name('website.cart.add');
+Route::post('/cart/update', [WebsiteCartController::class, 'updateCart'])->name('website.cart.update');
+Route::post('/cart/remove', [WebsiteCartController::class, 'removeFromCart'])->name('website.cart.remove');
+Route::post('/cart/clear', [WebsiteCartController::class, 'clearCart'])->name('website.cart.clear');
+Route::get('/cart/count', [WebsiteCartController::class, 'getCartCount'])->name('website.cart.count');
+
+
 Route::get('/checkout', [WebsiteCheckoutController::class, 'index'])->name('website.checkout');
 Route::post('/checkout/process', [WebsiteCheckoutController::class, 'process'])->name('website.checkout.process');
 Route::get('/order/confirmation', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
@@ -233,4 +241,6 @@ Route::get('/order/confirmation', [WebsiteOrderController::class, 'confirmation'
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');
 
+// Modal routes
+Route::get('/modal/product/{product}', [WebsiteModalController::class, 'productModal'])->name('website.modal.product');
 require __DIR__ . '/auth.php';
