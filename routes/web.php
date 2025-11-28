@@ -30,6 +30,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ShopSchoolAssociationController;
 use App\Http\Controllers\Website\BlogCommentController;
+use App\Http\Controllers\Website\WebsiteCartController;
+use App\Http\Controllers\Website\WebsiteCheckoutController;
+use App\Http\Controllers\Website\WebsiteOrderController;
 use App\Http\Controllers\Website\WebsiteShopController;
 use App\Http\Controllers\Website\WebsiteProductsController;
 
@@ -220,6 +223,12 @@ Route::prefix('products')->name('website.stationary.')->group(function () {
     Route::get('/', [WebsiteProductsController::class, 'index'])->name('index');
 });
 
+
+// Cart and Checkout Routes
+Route::get('/cart', [WebsiteCartController::class, 'index'])->name('website.cart');
+Route::get('/checkout', [WebsiteCheckoutController::class, 'index'])->name('website.checkout');
+Route::post('/checkout/process', [WebsiteCheckoutController::class, 'process'])->name('website.checkout.process');
+Route::get('/order/confirmation', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');

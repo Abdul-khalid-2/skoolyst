@@ -28,24 +28,38 @@
                 </li>
             </ul>
 
-            <div class="auth-buttons d-flex gap-2">
-                @if (Route::has('login'))
-                @auth
-                @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
-                <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
-                @else
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
-                </form>
-                @endif
-                @else
-                <a href="{{ route('login') }}" class="btn btn-outline-primary btn-login">Login</a>
-                @if (Route::has('register'))
-                <a href="{{ route('register') }}" class="btn btn-primary btn-register">Register</a>
-                @endif
-                @endauth
-                @endif
+            <div class="navbar-actions d-flex align-items-center gap-3">
+                <!-- Cart Icon with Count -->
+                <a href="{{ route('website.cart') }}" class="cart-icon position-relative text-decoration-none">
+                    <i class="fas fa-shopping-cart fa-lg" style="color: #4361ee;"></i>
+                    {{-- @if($cartItemCount > 0) --}}
+                        <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            {{-- {{ $cartItemCount }} --}}4
+                            <span class="visually-hidden">items in cart</span>
+                        </span>
+                    {{-- @endif --}}
+                </a>
+
+                <!-- Auth Buttons -->
+                <div class="auth-buttons d-flex gap-2">
+                    @if (Route::has('login'))
+                        @auth
+                            @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
+                                <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
+                            @else
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-login">Login</a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="btn btn-primary btn-register">Register</a>
+                            @endif
+                        @endauth
+                    @endif
+                </div>
             </div>
         </div>
     </div>
