@@ -103,32 +103,34 @@ class WebsiteCartController extends Controller
             $cart = session()->get('cart', []);
             $cartKey = $this->generateCartKey($request->product_id);
 
-            if (isset($cart[$cartKey])) {
-                // Only query database if we need to check stock
-                if ($cart[$cartKey]['max_quantity'] && $request->quantity > $cart[$cartKey]['max_quantity']) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Only ' . $cart[$cartKey]['max_quantity'] . ' items available in stock'
-                    ], 400);
-                }
-
-                $cart[$cartKey]['quantity'] = $request->quantity;
-                session()->put('cart', $cart);
-
-                $cartData = $this->calculateCartTotals($cart);
-
+            if (!isset($cart[$cartKey])) {
                 return response()->json([
-                    'success' => true,
-                    'message' => 'Cart updated successfully',
-                    'cart_data' => $cartData,
-                    'cart_count' => $cartData['total_items'] // This should now work
-                ]);
+                    'success' => false,
+                    'message' => 'Product not found in cart'
+                ], 404);
             }
 
+            if ($cart[$cartKey]['max_quantity'] && $request->quantity > $cart[$cartKey]['max_quantity']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only ' . $cart[$cartKey]['max_quantity'] . ' items available in stock'
+                ], 400);
+            }
+
+            $cart[$cartKey]['quantity'] = $request->quantity;
+            session()->put('cart', $cart);
+
+            $cartData = $this->calculateCartTotals($cart);
+
+            $itemTotal = $cart[$cartKey]['price'] * $cart[$cartKey]['quantity'];
+
             return response()->json([
-                'success' => false,
-                'message' => 'Product not found in cart'
-            ], 404);
+                'success' => true,
+                'message' => 'Cart updated successfully',
+                'cart_data' => $cartData,
+                'cart_count' => $cartData['total_items'],
+                'item_total' => $itemTotal
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

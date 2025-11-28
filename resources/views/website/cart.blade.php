@@ -368,7 +368,8 @@
                             </div>
                             
                             <div class="cart-item-price">
-                                <div class="cart-item-price-current">Rs. {{ number_format($item['price'] * $item['quantity']) }}</div>
+                                {{-- <div class="cart-item-price-current">Rs. {{ number_format($item['price'] * $item['quantity']) }}</div> --}}
+                                <div class="cart-item-price-current" data-item-total="{{ $item['id'] }}">Rs. {{ number_format($item['price'] * $item['quantity']) }}</div>
                                 <div class="cart-item-price-original">Rs. {{ number_format($item['price']) }} each</div>
                             </div>
                             
