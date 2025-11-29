@@ -43,6 +43,10 @@
                         <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
                             {{ $cartCount > 99 ? '99+' : $cartCount }}
                         </span>
+                    @else
+                        <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                           0
+                        </span>
                     @endif
                 </a>
 

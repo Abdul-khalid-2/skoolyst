@@ -432,14 +432,16 @@
         <div class="checkout-container">
             <!-- Checkout Forms -->
             <div class="checkout-forms">
-                <form id="checkoutForm">
+                <form id="checkoutForm" action="{{ route('website.checkout.process') }}" method="POST">
+                    @csrf
+                    
                     <!-- Shipping Information -->
                     <div class="form-section">
                         <h3 class="form-section-title">Shipping Information</h3>
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label">First Name *</label>
-                                <input type="text" class="form-input" name="first_name" required>
+                                <input type="text" class="form-input" name="first_name" value="{{ $userData['first_name'] ?? '' }}" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Last Name *</label>
@@ -447,15 +449,16 @@
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label">Email Address *</label>
-                                <input type="email" class="form-input" name="email" required>
+                                <input type="email" class="form-input" name="email" value="{{ $userData['email'] ?? '' }}" required>
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label">Phone Number *</label>
-                                <input type="tel" class="form-input" name="phone" required>
+                                <input type="tel" class="form-input" name="phone" value="{{ $userData['phone'] ?? '' }}" required>
+                                <span>03xxxxxxxxx</span>
                             </div>
                             <div class="form-group full-width">
                                 <label class="form-label">Address *</label>
-                                <input type="text" class="form-input" name="address" placeholder="Street address" required>
+                                <input type="text" class="form-input" name="address" value="{{ $userData['address'] ?? '' }}" placeholder="Street address" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">City *</label>
@@ -542,8 +545,11 @@
                 <h3 class="summary-title">Order Summary</h3>
                 
                 <div class="order-items">
-                    @foreach($orderItems as $item)
+                    @foreach($cartItems as $item)
                         <div class="order-item">
+                            <div class="order-item-image">
+                                <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}">
+                            </div>
                             <div class="order-item-info">
                                 <div class="order-item-name">{{ $item['name'] }}</div>
                                 <div class="order-item-details">Qty: {{ $item['quantity'] }} • {{ $item['shop_name'] }}</div>
@@ -552,36 +558,62 @@
                         </div>
                     @endforeach
                 </div>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Subtotal</span>
-                    <span class="summary-value">Rs. {{ number_format($subtotal) }}</span>
+
+                <!-- Coupon Code Section -->
+                <div class="coupon-section">
+                    <div class="coupon-input-group">
+                        <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
+                        <button type="button" id="applyCoupon" class="coupon-btn">Apply</button>
+                    </div>
+                    <div id="couponMessage" class="coupon-message"></div>
+                    <div id="appliedCoupon" class="applied-coupon" style="display: none;">
+                        <span id="couponText"></span>
+                        <button type="button" id="removeCoupon" class="remove-coupon">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
                 
-                <div class="summary-row">
-                    <span class="summary-label">Shipping</span>
-                    <span class="summary-value">Rs. {{ number_format($shipping) }}</span>
-                </div>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Tax</span>
-                    <span class="summary-value">Rs. {{ number_format($tax) }}</span>
-                </div>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Discount</span>
-                    <span class="summary-value">- Rs. {{ number_format($discount) }}</span>
-                </div>
-                
-                <div class="summary-row">
-                    <span class="summary-label">Total</span>
-                    <span class="summary-value summary-total">Rs. {{ number_format($total) }}</span>
+                <div class="summary-breakdown">
+                    <div class="summary-row">
+                        <span class="summary-label">Subtotal ({{ $total_items }} items)</span>
+                        <span class="summary-value" id="summarySubtotal">Rs. {{ number_format($subtotal) }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Shipping</span>
+                        <span class="summary-value" id="summaryShipping">Rs. {{ number_format($shipping) }}</span>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Tax</span>
+                        <span class="summary-value" id="summaryTax">Rs. {{ number_format($tax) }}</span>
+                    </div>
+                    
+                    @if($regular_discount > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">Regular Discount</span>
+                        <span class="summary-value">- Rs. {{ number_format($regular_discount) }}</span>
+                    </div>
+                    @endif
+                    
+                    @if($coupon_discount > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">Coupon Discount</span>
+                        <span class="summary-value">- Rs. {{ number_format($coupon_discount) }}</span>
+                    </div>
+                    @endif
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">Total</span>
+                        <span class="summary-value summary-total" id="summaryTotal">Rs. {{ number_format($total) }}</span>
+                    </div>
                 </div>
 
                 <div class="checkout-actions">
                     <button type="submit" form="checkoutForm" class="place-order-btn">
                         <i class="fas fa-lock me-2"></i>
-                        Place Order
+                        Place Order - Rs. {{ number_format($total) }}
                     </button>
                     <a href="{{ route('website.cart') }}" class="back-to-cart">
                         <i class="fas fa-arrow-left me-2"></i>
@@ -604,15 +636,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     paymentMethods.forEach(method => {
         method.addEventListener('click', function() {
-            // Remove selected class from all methods
             paymentMethods.forEach(m => m.classList.remove('selected'));
-            // Add selected class to clicked method
             this.classList.add('selected');
-            // Check the radio button
             const radio = this.querySelector('input[type="radio"]');
             radio.checked = true;
 
-            // Show/hide credit card form
             if (radio.value === 'credit_card') {
                 creditCardForm.style.display = 'grid';
             } else {
@@ -621,33 +649,141 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Coupon functionality
+    const couponCodeInput = document.getElementById('couponCode');
+    const applyCouponBtn = document.getElementById('applyCoupon');
+    const couponMessage = document.getElementById('couponMessage');
+    const appliedCoupon = document.getElementById('appliedCoupon');
+    const couponText = document.getElementById('couponText');
+    const removeCouponBtn = document.getElementById('removeCoupon');
+
+    applyCouponBtn.addEventListener('click', function() {
+        const couponCode = couponCodeInput.value.trim();
+        
+        if (!couponCode) {
+            showCouponMessage('Please enter a coupon code', 'error');
+            return;
+        }
+
+        // Disable button during request
+        applyCouponBtn.disabled = true;
+        applyCouponBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+        fetch('{{ route("website.checkout.apply-coupon") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                coupon_code: couponCode
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showCouponMessage(data.message, 'success');
+                couponCodeInput.value = '';
+                appliedCoupon.style.display = 'flex';
+                couponText.textContent = `Coupon: ${data.coupon.code} (-Rs. ${Math.round(data.coupon.discount_amount).toLocaleString()})`;
+                updateOrderSummary(data.cart_data);
+            } else {
+                showCouponMessage(data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showCouponMessage('An error occurred while applying coupon', 'error');
+        })
+        .finally(() => {
+            applyCouponBtn.disabled = false;
+            applyCouponBtn.innerHTML = 'Apply';
+        });
+    });
+
+    removeCouponBtn.addEventListener('click', function() {
+        fetch('{{ route("website.checkout.remove-coupon") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showCouponMessage(data.message, 'success');
+                appliedCoupon.style.display = 'none';
+                updateOrderSummary(data.cart_data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showCouponMessage('An error occurred while removing coupon', 'error');
+        });
+    });
+
+    function showCouponMessage(message, type) {
+        couponMessage.textContent = message;
+        couponMessage.className = `coupon-message ${type}`;
+        couponMessage.style.display = 'block';
+
+        setTimeout(() => {
+            couponMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    function updateOrderSummary(cartData) {
+        document.getElementById('summarySubtotal').textContent = `Rs. ${Math.round(cartData.subtotal).toLocaleString()}`;
+        document.getElementById('summaryShipping').textContent = `Rs. ${Math.round(cartData.shipping).toLocaleString()}`;
+        document.getElementById('summaryTax').textContent = `Rs. ${Math.round(cartData.tax).toLocaleString()}`;
+        document.getElementById('summaryTotal').textContent = `Rs. ${Math.round(cartData.total).toLocaleString()}`;
+        
+        // Update place order button
+        const placeOrderBtn = document.querySelector('.place-order-btn');
+        placeOrderBtn.innerHTML = `<i class="fas fa-lock me-2"></i>Place Order - Rs. ${Math.round(cartData.total).toLocaleString()}`;
+    }
+
     // Form submission
     const checkoutForm = document.getElementById('checkoutForm');
     checkoutForm.addEventListener('submit', function(e) {
         e.preventDefault();
         
-        // Validate form
         if (validateForm()) {
-            // Show loading state
             const submitBtn = document.querySelector('.place-order-btn');
             const originalText = submitBtn.innerHTML;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Processing...';
             submitBtn.disabled = true;
 
-            // Here you would typically make an AJAX call to process the order
-            setTimeout(() => {
-                // Simulate successful order processing
-                showToast('Order placed successfully!', 'success');
-                
-                // Redirect to order confirmation page
-                setTimeout(() => {
-                    window.location.href = "{{ route('website.order.confirmation') }}";
-                }, 2000);
-            }, 2000);
+            // Submit form via AJAX
+            fetch(this.action, {
+                method: 'POST',
+                body: new FormData(this)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast('Order placed successfully!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 2000);
+                } else {
+                    showToast(data.message, 'error');
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('An error occurred while processing your order', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
         }
     });
 
-    // Form validation
+    // Form validation (keep your existing validation functions)
     function validateForm() {
         const requiredFields = checkoutForm.querySelectorAll('[required]');
         let isValid = true;
@@ -661,7 +797,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Validate email
         const emailField = checkoutForm.querySelector('input[type="email"]');
         if (emailField.value && !isValidEmail(emailField.value)) {
             emailField.style.borderColor = '#dc3545';
@@ -669,7 +804,6 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
 
-        // Validate phone
         const phoneField = checkoutForm.querySelector('input[type="tel"]');
         if (phoneField.value && !isValidPhone(phoneField.value)) {
             phoneField.style.borderColor = '#dc3545';
@@ -686,7 +820,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function isValidPhone(phone) {
-        const phoneRegex = /^[0-9]{10}$/;
+        const phoneRegex = /^[0-9]{11}$/;
         return phoneRegex.test(phone.replace(/\D/g, ''));
     }
 
@@ -724,4 +858,115 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
+<style>
+.coupon-section {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.coupon-input-group {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.coupon-input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.coupon-btn {
+    padding: 0.75rem 1.5rem;
+    background: #4361ee;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.coupon-btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+.coupon-message {
+    display: none;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+}
+
+.coupon-message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.coupon-message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.applied-coupon {
+    display: flex;
+    align-items: center;
+    justify-content: between;
+    background: #d4edda;
+    color: #155724;
+    padding: 0.75rem;
+    border-radius: 6px;
+    border: 1px solid #c3e6cb;
+}
+
+.remove-coupon {
+    background: none;
+    border: none;
+    color: #721c24;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.order-item-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-right: 1rem;
+}
+
+.order-item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+.order-item-info {
+    flex: 1;
+}
+
+.summary-breakdown {
+    border-top: 1px solid #e0e0e0;
+    padding-top: 1rem;
+}
+</style>
 @endpush

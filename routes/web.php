@@ -236,7 +236,14 @@ Route::get('/cart/count', [WebsiteCartController::class, 'getCartCount'])->name(
 
 Route::get('/checkout', [WebsiteCheckoutController::class, 'index'])->name('website.checkout');
 Route::post('/checkout/process', [WebsiteCheckoutController::class, 'process'])->name('website.checkout.process');
-Route::get('/order/confirmation', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
+Route::post('/checkout/apply-coupon', [WebsiteCheckoutController::class, 'applyCoupon'])->name('website.checkout.apply-coupon');
+Route::post('/checkout/remove-coupon', [WebsiteCheckoutController::class, 'removeCoupon'])->name('website.checkout.remove-coupon');
+
+
+Route::get('orders/confirmation/{order}', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
+Route::get('orders/track', [WebsiteOrderController::class, 'track'])->name('website.order.track');
+Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('website.order.show');
+
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');

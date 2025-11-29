@@ -10,6 +10,7 @@ return new class extends Migration
     {
         Schema::create('coupon_applicables', function (Blueprint $table) {
             $table->id();
+
             $table->foreignId('coupon_id')->constrained()->onDelete('cascade');
 
             // Polymorphic relation
@@ -18,7 +19,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes
-            $table->unique(['coupon_id', 'applicable_id', 'applicable_type']);
+            $table->unique(
+                ['coupon_id', 'applicable_id', 'applicable_type'],
+                'coupon_applicable_unique'
+            );
             $table->index(['applicable_id', 'applicable_type']);
         });
     }
