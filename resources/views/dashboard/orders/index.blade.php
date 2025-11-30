@@ -209,6 +209,7 @@
                                                class="btn btn-sm btn-outline-primary" title="View Details">
                                                 <i class="fas fa-eye"></i>
                                             </a>
+                                            @role('super-admin')
                                             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
                                                     type="button" data-bs-toggle="dropdown">
                                                 <i class="fas fa-cog"></i>
@@ -216,36 +217,37 @@
                                             <ul class="dropdown-menu">
                                                 <li>
                                                     <a class="dropdown-item update-status" href="#" 
-                                                       data-order-id="{{ $order->id }}" data-status="confirmed">
+                                                        data-order-id="{{ $order->id }}" data-status="confirmed">
                                                         <i class="fas fa-check me-2"></i>Confirm Order
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item update-status" href="#" 
-                                                       data-order-id="{{ $order->id }}" data-status="processing">
+                                                        data-order-id="{{ $order->id }}" data-status="processing">
                                                         <i class="fas fa-cog me-2"></i>Processing
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item update-status" href="#" 
-                                                       data-order-id="{{ $order->id }}" data-status="shipped">
+                                                        data-order-id="{{ $order->id }}" data-status="shipped">
                                                         <i class="fas fa-shipping-fast me-2"></i>Mark Shipped
                                                     </a>
                                                 </li>
                                                 <li>
                                                     <a class="dropdown-item update-status" href="#" 
-                                                       data-order-id="{{ $order->id }}" data-status="delivered">
+                                                        data-order-id="{{ $order->id }}" data-status="delivered">
                                                         <i class="fas fa-check-circle me-2"></i>Mark Delivered
                                                     </a>
                                                 </li>
                                                 <li><hr class="dropdown-divider"></li>
                                                 <li>
                                                     <a class="dropdown-item update-payment-status" href="#" 
-                                                       data-order-id="{{ $order->id }}" data-status="paid">
+                                                        data-order-id="{{ $order->id }}" data-status="paid">
                                                         <i class="fas fa-money-bill me-2"></i>Mark Paid
                                                     </a>
                                                 </li>
                                             </ul>
+                                            @endrole
                                         </div>
                                     </td>
                                 </tr>
