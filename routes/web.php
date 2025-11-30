@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -131,6 +132,14 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
 
     // access to update status of school
     Route::put('/shop-school-associations/{association}/status', [ShopSchoolAssociationController::class, 'updateStatus'])->name('shop-school-associations.update-status');
+
+    Route::get('dashboard/orders/', [OrderController::class, 'index'])->name('dashboard.orders.index');
+    Route::get('dashboard/orders/{order}', [OrderController::class, 'show'])->name('dashboard.orders.show');
+    Route::post('dashboard/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('dashboard.orders.update-status');
+    Route::post('dashboard/orders/{order}/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('dashboard.orders.update-payment-status');
+    Route::post('dashboard/orders/{order}/update-shipping', [OrderController::class, 'updateShippingInfo'])->name('dashboard.orders.update-shipping');
+    Route::post('dashboard/orders/{order}/add-notes', [OrderController::class, 'addAdminNotes'])->name('dashboard.orders.add-notes');
+    Route::get('dashboard/orders/export/orders', [OrderController::class, 'exportOrders'])->name('dashboard.orders.export');
 });
 
 Route::middleware('guest')->group(function () {

@@ -136,6 +136,13 @@
                         <span>Productcs</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('dashboard.orders.index') }}"
+                    class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
 
             @endrole
 

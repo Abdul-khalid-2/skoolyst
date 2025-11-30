@@ -160,4 +160,30 @@ class Order extends Model
             'paid_at' => now(),
         ]);
     }
+
+
+    public function getStatusColorAttribute()
+    {
+        return match ($this->status) {
+            'pending' => 'warning',
+            'confirmed' => 'info',
+            'processing' => 'primary',
+            'shipped' => 'secondary',
+            'delivered' => 'success',
+            'cancelled' => 'danger',
+            default => 'secondary'
+        };
+    }
+
+    public function getPaymentStatusColorAttribute()
+    {
+        return match ($this->payment_status) {
+            'pending' => 'warning',
+            'paid' => 'success',
+            'failed' => 'danger',
+            'refunded' => 'info',
+            'partially_refunded' => 'primary',
+            default => 'secondary'
+        };
+    }
 }
