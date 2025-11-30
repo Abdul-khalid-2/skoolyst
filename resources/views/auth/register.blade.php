@@ -171,7 +171,12 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="school_city" class="form-label">City *</label>
-                                        <input id="school_city" class="form-control" type="text" name="school_city" value="{{ old('school_city') }}" required placeholder="Enter city">
+                                        <!-- <input class="form-control" type="text" name="school_city" value="{{ old('school_city') }}" required placeholder="Enter city"> -->
+                                        <select id="school_city" class="form-control" name="school_city" required>
+                                            <option value="">Select City</option>
+                                            <option value="Karachi">Karachi</option>
+                                            <option value="Hyderabad">Hyderabad</option>
+                                        </select>
                                         @if ($errors->has('school_city'))
                                         <div class="input-error">
                                             {{ $errors->first('school_city') }}

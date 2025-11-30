@@ -462,11 +462,18 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">City *</label>
-                                <input type="text" class="form-input" name="city" required>
+                                <select class="form-input" name="city" required>
+                                    <option value="">Select City</option>
+                                    <option value="Karachi">Karachi</option>
+                                    <option value="Hyderabad">Hyderabad</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">State *</label>
-                                <input type="text" class="form-input" name="state" required>
+                                <select class="form-input" name="state" required>
+                                    <option value="">Select State</option>
+                                    <option value="Sindh">Sindh</option>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">ZIP Code *</label>
@@ -483,7 +490,7 @@
                     <div class="form-section">
                         <h3 class="form-section-title">Payment Method</h3>
                         <div class="payment-methods">
-                            <label class="payment-method selected">
+                            {{-- <label class="payment-method selected">
                                 <input type="radio" name="payment_method" value="credit_card" checked>
                                 <div class="payment-method-icon">
                                     <i class="fas fa-credit-card"></i>
@@ -492,10 +499,10 @@
                                     <div class="payment-method-name">Credit/Debit Card</div>
                                     <div class="payment-method-description">Pay securely with your card</div>
                                 </div>
-                            </label>
+                            </label> --}}
                             
-                            <label class="payment-method">
-                                <input type="radio" name="payment_method" value="cash_on_delivery">
+                            <label class="payment-method selected">
+                                <input type="radio" name="payment_method" value="cash_on_delivery" checked>
                                 <div class="payment-method-icon">
                                     <i class="fas fa-money-bill-wave"></i>
                                 </div>
@@ -505,7 +512,7 @@
                                 </div>
                             </label>
                             
-                            <label class="payment-method">
+                            {{-- <label class="payment-method">
                                 <input type="radio" name="payment_method" value="digital_wallet">
                                 <div class="payment-method-icon">
                                     <i class="fas fa-wallet"></i>
@@ -514,11 +521,11 @@
                                     <div class="payment-method-name">Digital Wallet</div>
                                     <div class="payment-method-description">Pay with eSewa, Khalti, etc.</div>
                                 </div>
-                            </label>
+                            </label> --}}
                         </div>
 
                         <!-- Credit Card Form (shown when credit card is selected) -->
-                        <div id="creditCardForm" class="form-grid">
+                        {{-- <div id="creditCardForm" class="form-grid">
                             <div class="form-group full-width">
                                 <label class="form-label">Card Number *</label>
                                 <input type="text" class="form-input" name="card_number" placeholder="1234 5678 9012 3456">
@@ -535,7 +542,7 @@
                                 <label class="form-label">Cardholder Name *</label>
                                 <input type="text" class="form-input" name="cardholder_name" placeholder="John Doe">
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </form>
             </div>
