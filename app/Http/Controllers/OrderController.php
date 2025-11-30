@@ -130,15 +130,15 @@ class OrderController extends Controller
             }
 
             // Log status change
-            activity()
-                ->performedOn($order)
-                ->causedBy(auth()->user())
-                ->withProperties([
-                    'old_status' => $oldStatus,
-                    'new_status' => $newStatus,
-                    'notes' => $request->notes
-                ])
-                ->log('order_status_updated');
+            // activity()
+            //     ->performedOn($order)
+            //     ->causedBy(auth()->user())
+            //     ->withProperties([
+            //         'old_status' => $oldStatus,
+            //         'new_status' => $newStatus,
+            //         'notes' => $request->notes
+            //     ])
+            //     ->log('order_status_updated');
 
             DB::commit();
 
@@ -188,14 +188,14 @@ class OrderController extends Controller
             $order->update($updateData);
 
             // Log payment status change
-            activity()
-                ->performedOn($order)
-                ->causedBy(auth()->user())
-                ->withProperties([
-                    'old_payment_status' => $oldStatus,
-                    'new_payment_status' => $newStatus
-                ])
-                ->log('payment_status_updated');
+            // activity()
+            //     ->performedOn($order)
+            //     ->causedBy(auth()->user())
+            //     ->withProperties([
+            //         'old_payment_status' => $oldStatus,
+            //         'new_payment_status' => $newStatus
+            //     ])
+            //     ->log('payment_status_updated');
 
             return response()->json([
                 'success' => true,
@@ -277,10 +277,10 @@ class OrderController extends Controller
         try {
             $order->update(['admin_notes' => $request->admin_notes]);
 
-            activity()
-                ->performedOn($order)
-                ->causedBy(auth()->user())
-                ->log('admin_notes_updated');
+            // activity()
+            //     ->performedOn($order)
+            //     ->causedBy(auth()->user())
+            //     ->log('admin_notes_updated');
 
             return response()->json([
                 'success' => true,
