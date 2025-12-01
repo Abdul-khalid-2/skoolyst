@@ -232,6 +232,23 @@
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(56, 176, 0, 0.3);
     }
+    .lock-checkout-btn {
+
+        width: 100%;
+        padding: 1rem 2rem;
+        background: #a3a3a3;
+        color: rgb(0, 0, 0);
+        border: none;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
 
     .continue-shopping {
         display: block;
@@ -415,10 +432,17 @@
                     </div>
 
                     <div class="summary-actions">
-                        <a href="{{ route('website.checkout') }}" class="checkout-btn">
-                            <i class="fas fa-lock me-2"></i>
-                            Proceed to Checkout
-                        </a>
+                         @if ($total > 750)
+                            <a href="{{ route('website.checkout') }}" class="checkout-btn">
+                                <i class="fas fa-lock me-2"></i>
+                                Proceed to Checkout
+                            </a>
+                        @else
+                            <button disabled  class="btn  lock-checkout-btn">
+                                <i class="fas fa-unlock me-2"></i>
+                                Buy items worth more than Rs 750 to proceed to checkout
+                            </button>
+                        @endif
                         <a href="{{ route('website.stationary.index') }}" class="continue-shopping">
                             <i class="fas fa-arrow-left me-2"></i>
                             Continue Shopping

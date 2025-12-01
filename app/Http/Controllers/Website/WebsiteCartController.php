@@ -231,10 +231,10 @@ class WebsiteCartController extends Controller
         $shipping = $subtotal > 2000 ? 0 : 100;
 
         // Calculate tax (10% of subtotal)
-        $tax = $subtotal * 0.10;
+        $tax = $subtotal * 0.005;
 
         // Calculate discount (5% of subtotal if over 1000)
-        $discount = $subtotal > 1000 ? $subtotal * 0.05 : 0;
+        $discount = $subtotal > 1000 ? $subtotal * 0.03 : 0;
 
         $total = $subtotal + $shipping + $tax - $discount;
 
