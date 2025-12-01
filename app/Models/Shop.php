@@ -32,7 +32,8 @@ class Shop extends Model
         'is_verified',
         'is_active',
         'rating',
-        'total_reviews'
+        'total_reviews',
+        'priority'
     ];
 
     protected $casts = [
@@ -95,5 +96,10 @@ class Shop extends Model
         static::creating(function ($shop) {
             $shop->uuid = (string) \Illuminate\Support\Str::uuid();
         });
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 }

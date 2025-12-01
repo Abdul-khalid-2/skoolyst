@@ -217,8 +217,14 @@ class WebsiteCheckoutController extends Controller
             // Handle user authentication/creation
             $userId = $this->getOrCreateUser($request);
 
-            // Get primary shop ID from cart items
-            $primaryShopId = $this->getPrimaryShopId($cartItems);
+            // Get primary shop ID using smart algorithm
+            $primaryShopId = $this->getPrimaryShopId($cartItems, $request->city);
+
+            // If no primary shop found, fallback to first shop
+            if (!$primaryShopId) {
+                $firstItem = reset($cartItems);
+                $primaryShopId = $this->getShopIdForProduct($firstItem['id']);
+            }
 
             // Create order
             $order = \App\Models\Order::create([
@@ -302,7 +308,7 @@ class WebsiteCheckoutController extends Controller
             ]);
 
             // You might want to assign a guest role or handle permissions
-            $user->assignRole('guest');
+            // $user->assignRole('guest');
 
             return $user->id;
         } catch (\Exception $e) {
@@ -336,24 +342,104 @@ class WebsiteCheckoutController extends Controller
         }
     }
 
-    private function getPrimaryShopId($cartItems)
+    private function getPrimaryShopId($cartItems, $customerCity = null)
     {
         if (empty($cartItems)) {
             return null;
         }
 
-        // Get the first item's shop ID
-        $firstItem = reset($cartItems);
-        return $this->getShopIdForProduct($firstItem['id']);
+        // Get all unique shops from cart items
+        $shopIds = [];
+        $shopProducts = [];
+        foreach ($cartItems as $item) {
+            $shopId = $this->getShopIdForProduct($item['id']);
+
+            if ($shopId) {
+                $shopIds[] = $shopId;
+                if (!isset($shopProducts[$shopId])) {
+                    $shopProducts[$shopId] = [];
+                }
+                $shopProducts[$shopId][] = $item;
+            }
+        }
+
+        $uniqueShopIds = array_unique($shopIds);
+
+        if (empty($uniqueShopIds)) {
+            return null;
+        }
+
+        // Get shops with their details
+        $shops = \App\Models\Shop::withCount(['orders as total_orders'])
+            ->withSum(['orders as total_revenue' => function ($query) {
+                $query->where('payment_status', 'paid');
+            }], 'total_amount')
+            ->whereIn('id', $uniqueShopIds)
+            ->get()
+            ->keyBy('id');
+
+        // Algorithm to determine primary shop
+        return $this->determinePrimaryShop($shops, $shopProducts, $customerCity);
+    }
+
+    private function determinePrimaryShop($shops, $shopProducts, $customerCity)
+    {
+        $eligibleShops = [];
+
+        foreach ($shops as $shopId => $shop) {
+            $score = 0;
+
+            // 1. City Match (Highest Priority - 100 points)
+            if ($customerCity && $shop->city && strtolower($shop->city) === strtolower($customerCity)) {
+                $score += 100;
+            }
+
+            // 2. Admin Set Priority (High Priority - 50 points per priority level)
+            if ($shop->priority) {
+                $score += ($shop->priority * 50);
+            }
+
+            // 3. Total Revenue (Medium Priority - 1 point per 1000 Rs)
+            if ($shop->total_revenue) {
+                $score += ($shop->total_revenue / 1000);
+            }
+
+            // 4. Total Orders (Low Priority - 1 point per 10 orders)
+            if ($shop->total_orders) {
+                $score += ($shop->total_orders / 10);
+            }
+
+            // 5. Number of products in current cart (Bonus points)
+            $cartProductCount = count($shopProducts[$shopId] ?? []);
+            $score += ($cartProductCount * 5);
+
+            $eligibleShops[$shopId] = [
+                'shop' => $shop,
+                'score' => $score,
+                'city_match' => $customerCity && $shop->city && strtolower($shop->city) === strtolower($customerCity),
+                'priority' => $shop->priority ?? 0,
+                'revenue' => $shop->total_revenue ?? 0,
+                'orders' => $shop->total_orders ?? 0,
+                'cart_items' => $cartProductCount
+            ];
+        }
+
+        // Sort by score descending
+        uasort($eligibleShops, function ($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        // Return the shop with highest score
+        return !empty($eligibleShops) ? array_key_first($eligibleShops) : null;
     }
 
     private function getShopIdForProduct($productUuid)
     {
         try {
-            $product = \App\Models\Product::where('uuid', $productUuid)->first();
-            return $product ? $product->shop_id : 1; // Fallback to default shop
+            $product = \App\Models\Product::with('shop')->where('uuid', $productUuid)->first();
+            return $product ? $product->shop_id : null;
         } catch (\Exception $e) {
-            return 1; // Default shop ID if not found
+            return null;
         }
     }
 
@@ -361,9 +447,9 @@ class WebsiteCheckoutController extends Controller
     {
         try {
             $product = \App\Models\Product::where('uuid', $productUuid)->first();
-            return $product ? $product->category_id : 1; // Fallback to default category
+            return $product ? $product->category_id : null;
         } catch (\Exception $e) {
-            return 1; // Default category ID if not found
+            return null;
         }
     }
 
