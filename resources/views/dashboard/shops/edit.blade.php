@@ -116,9 +116,14 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="city" class="form-label">City</label>
-                                    <input type="text" class="form-control @error('city') is-invalid @enderror" 
-                                           id="city" name="city" value="{{ old('city', $shop->city) }}">
+                                    <label for="city" class="form-label">City *</label>
+                                    <select class="form-select @error('city') is-invalid @enderror" 
+                                            id="city" name="city">
+                                        <option value="">Select City</option>
+                                        <option value="Karachi" {{ old('city', $shop->city) == 'Karachi' ? 'selected' : '' }}>Karachi</option>
+                                        <option value="Hyderabad" {{ old('city', $shop->city) == 'Hyderabad' ? 'selected' : '' }}>Hyderabad</option>
+                                    </select>
+
                                     @error('city')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -126,9 +131,13 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="state" class="form-label">State</label>
-                                    <input type="text" class="form-control @error('state') is-invalid @enderror" 
-                                           id="state" name="state" value="{{ old('state', $shop->state) }}">
+                                    <label for="state" class="form-label">State *</label>
+                                    <select class="form-select @error('state') is-invalid @enderror" 
+                                            id="state" name="state">
+                                        <option value="">Select State</option>
+                                        <option value="Sindh" {{ old('state', $shop->state) == 'Sindh' ? 'selected' : '' }}>Sindh</option>
+                                    </select>
+
                                     @error('state')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
