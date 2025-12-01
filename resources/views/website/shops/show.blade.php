@@ -588,7 +588,7 @@
         font-size: 1.4rem;
         font-weight: 700;
         color: #4361ee;
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.03rem;
     }
 
     .modal-stock-status {
@@ -632,11 +632,11 @@
     }
 
     .modal-description {
-        background: #f8f9fa;
+        /* background: #f8f9fa; */
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
-        border-left: 3px solid #4361ee;
+        /* border-left: 3px solid #4361ee; */
     }
 
     .modal-description h5 {
@@ -1133,7 +1133,5 @@
         updateActiveNav(); // Initialize on load
     });
 </script>
-
-{{-- <script src="{{ asset('assets/js/school-profile.js') }}"></script> --}}
 <script src="{{ asset('assets/js/product-modal.js') }}"></script>
 @endpush

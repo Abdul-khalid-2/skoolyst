@@ -30,24 +30,12 @@ class ProductModal {
                             <div class="modal-product-image">
                                 <img id="detailsProductImage" src="" alt="Product Image">
                             </div>
-                            <div class="row">
-                                <div class="col">
-                                    <div id="detailsProductCategory" class="modal-product-category"></div>
-                                    <h4 id="detailsProductName" class="modal-product-name"></h4>
-                                    <div id="detailsProductShop" class="modal-product-shop"></div>
-                                    <div id="detailsProductPrice" class="modal-product-price"></div>
-                                </div>
-                                <div class="col">
-                                    <div class="modal-info-left">
-                                        <div id="detailsStockStatus" class="modal-stock-status"></div>
-                                    </div>
-                                    <div class="modal-info-right">
-                                        <div id="detailsProductAttributes" class="modal-attributes"></div>
-                                    </div>
-                                    <div class="modal-description">
-                                        <h5>Description</h5>
-                                        <p id="detailsProductDescription"></p>
-                                    </div>
+                            <div class="product-info-simple">
+                                <div id="detailsProductCategory" class="modal-product-category"></div>
+                                <h4 id="detailsProductName" class="modal-product-name"></h4>
+                                <div id="detailsProductPrice" class="modal-product-price"></div>
+                                <div class="modal-description">
+                                    <p id="detailsProductDescription"></p>
                                 </div>
                             </div>
                         </div>
@@ -137,15 +125,6 @@ class ProductModal {
             categoryElement.style.display = 'none';
         }
 
-        // Shop
-        const shopElement = document.getElementById('detailsProductShop');
-        if (productData.shop && productData.shop.name) {
-            shopElement.innerHTML = `<i class="fas fa-store"></i> ${productData.shop.name}`;
-            shopElement.style.display = 'flex';
-        } else {
-            shopElement.style.display = 'none';
-        }
-
         // Price
         const priceElement = document.getElementById('detailsProductPrice');
         const currentPrice = productData.sale_price || productData.base_price;
@@ -153,44 +132,13 @@ class ProductModal {
 
         if (productData.sale_price && productData.sale_price < productData.base_price) {
             priceElement.innerHTML = `
-                Rs. ${parseInt(currentPrice).toLocaleString()}
-                <span style="font-size: 1rem; color: #999; text-decoration: line-through; margin-left: 0.5rem;">
-                    Rs. ${parseInt(originalPrice).toLocaleString()}
-                </span>
+                <span class="current-price">Rs. ${parseInt(currentPrice).toLocaleString()}</span>
+                <span class="original-price">Rs. ${parseInt(originalPrice).toLocaleString()}</span>
             `;
         } else {
             priceElement.textContent = `Rs. ${parseInt(currentPrice).toLocaleString()}`;
         }
 
-        // Stock Status
-        const stockStatusElement = document.getElementById('detailsStockStatus');
-        const isInStock = productData.is_in_stock;
-        const isLowStock = productData.stock_quantity <= 10 && productData.stock_quantity > 0;
-        const stockStatus = isInStock ? (isLowStock ? 'Low Stock' : 'In Stock') : 'Out of Stock';
-        stockStatusElement.textContent = stockStatus;
-        stockStatusElement.className = `modal-stock-status ${isInStock ? (isLowStock ? 'low-stock' : 'in-stock') : 'out-of-stock'}`;
-
-        // Attributes
-        const attributesElement = document.getElementById('detailsProductAttributes');
-        attributesElement.innerHTML = '';
-
-        // Handle different attribute structures
-        const attributes = productData.productAttributes || productData.attributes;
-        if (attributes) {
-            if (attributes.education_board) {
-                this.createAttributeTag(attributesElement, attributes.education_board);
-            }
-            if (attributes.class_level) {
-                this.createAttributeTag(attributesElement, attributes.class_level);
-            }
-            if (attributes.subject) {
-                this.createAttributeTag(attributesElement, attributes.subject);
-            }
-        }
-
-        if (productData.brand) {
-            this.createAttributeTag(attributesElement, productData.brand);
-        }
 
         // Description
         const descriptionElement = document.getElementById('detailsProductDescription');
@@ -200,14 +148,8 @@ class ProductModal {
         document.getElementById('quantity').value = 1;
 
         // Enable/disable add to cart button based on stock
+        const isInStock = productData.is_in_stock;
         document.getElementById('addToCartFromModal').disabled = !isInStock;
-    }
-
-    createAttributeTag(container, text) {
-        const tag = document.createElement('span');
-        tag.className = 'modal-attribute-tag';
-        tag.textContent = typeof text === 'string' ? text.charAt(0).toUpperCase() + text.slice(1) : text;
-        container.appendChild(tag);
     }
 
     decreaseQuantity() {
