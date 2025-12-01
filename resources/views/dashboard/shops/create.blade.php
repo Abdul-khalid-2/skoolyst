@@ -176,7 +176,7 @@
                                     <div class="mb-3">
                                         <label for="country" class="form-label">Country</label>
                                         <input type="text" class="form-control @error('country') is-invalid @enderror" 
-                                               id="country" name="country" value="{{ old('country', 'Pakistan') }}">
+                                               id="country" name="country" value="{{ old('country', 'Pakistan') }}" disabled>
                                         @error('country')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -187,8 +187,8 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="latitude" class="form-label">Latitude</label>
-                                        <input type="number" step="any" class="form-control @error('latitude') is-invalid @enderror" 
+                                        {{-- <label for="latitude" class="form-label">Latitude</label> --}}
+                                        <input type="hidden" step="any" class="form-control @error('latitude') is-invalid @enderror" 
                                                id="latitude" name="latitude" value="{{ old('latitude') }}" placeholder="e.g., 33.6844">
                                         @error('latitude')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -197,8 +197,8 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="longitude" class="form-label">Longitude</label>
-                                        <input type="number" step="any" class="form-control @error('longitude') is-invalid @enderror" 
+                                        {{-- <label for="longitude" class="form-label">Longitude</label> --}}
+                                        <input type="hidden" step="any" class="form-control @error('longitude') is-invalid @enderror" 
                                                id="longitude" name="longitude" value="{{ old('longitude') }}" placeholder="e.g., 73.0479">
                                         @error('longitude')
                                             <div class="invalid-feedback">{{ $message }}</div>

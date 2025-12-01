@@ -27,9 +27,12 @@ class WebsiteShopController extends Controller
         $shopsQuery = Shop::with(['schoolAssociations.school', 'products'])
             ->where('is_active', true)
             ->where('is_verified', true)
-            ->whereHas('schoolAssociations', function ($query) {
-                $query->where('is_active', true)
-                    ->where('status', 'approved');
+            ->where(function ($query) {
+                $query->whereHas('schoolAssociations', function ($subQuery) {
+                    $subQuery->where('is_active', true)
+                        ->where('status', 'approved');
+                })
+                    ->orWhereDoesntHave('schoolAssociations');
             });
 
         // Apply search filter
