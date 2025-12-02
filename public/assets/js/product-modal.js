@@ -142,7 +142,7 @@ class ProductModal {
 
         // Description
         const descriptionElement = document.getElementById('detailsProductDescription');
-        descriptionElement.textContent = productData.description || productData.short_description || 'No description available.';
+        descriptionElement.textContent = productData.short_description || productData.description || 'No description available.';
 
         // Reset quantity
         document.getElementById('quantity').value = 1;
