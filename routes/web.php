@@ -216,10 +216,10 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
     Route::get('school-admin/inquiries/stats', [ContactInquiryController::class, 'getStats'])->name('admin.inquiries.stats');
     // Admin Review Routes
     Route::get('dashboard/reviews', [App\Http\Controllers\ReviewController::class, 'index'])->name('reviews.index');
-    Route::get('dashboard/reviews/create', [App\Http\Controllers\ReviewController::class, 'create'])->name('reviews.create');
-    Route::post('dashboard/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
-    Route::get('dashboard/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
-    Route::get('dashboard/reviews/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])->name('reviews.edit');
+    // Route::get('dashboard/reviews/create', [App\Http\Controllers\ReviewController::class, 'create'])->name('reviews.create');
+    // Route::post('dashboard/reviews', [App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    // Route::get('dashboard/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'show'])->name('reviews.show');
+    // Route::get('dashboard/reviews/{review}/edit', [App\Http\Controllers\ReviewController::class, 'edit'])->name('reviews.edit');
     Route::put('dashboard/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
     Route::delete('dashboard/reviews/{review}', [App\Http\Controllers\ReviewController::class, 'destroy'])->name('reviews.destroy');
 
