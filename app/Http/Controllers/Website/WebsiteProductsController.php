@@ -40,6 +40,7 @@ class WebsiteProductsController extends Controller
         ])
             ->where('is_active', true)
             ->where('is_approved', true)
+            ->where('stock_quantity', '>', 1)
             ->whereHas('shop.schoolAssociations', function ($query) {
                 $query->where('is_active', true)
                     ->where('status', 'approved');

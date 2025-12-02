@@ -588,7 +588,7 @@
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
-        border-left: 3px solid #4361ee;
+        /* border-left: 3px solid #4361ee; */
     }
 
     .modal-description h5 {
@@ -1007,9 +1007,9 @@
                                         </span>
                                     @endif
                                 </div>
-                                <div class="stock-status {{ $product->is_in_stock ? ($product->isLowStock() ? 'low-stock' : 'in-stock') : 'out-of-stock' }}">
+                                <!-- <div class="stock-status {{ $product->is_in_stock ? ($product->isLowStock() ? 'low-stock' : 'in-stock') : 'out-of-stock' }}">
                                     {{ $product->is_in_stock ? ($product->isLowStock() ? 'Low Stock' : 'In Stock') : 'Out of Stock' }}
-                                </div>
+                                </div> -->
                             </div>
 
                             <!-- Actions -->
