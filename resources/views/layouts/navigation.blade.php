@@ -115,7 +115,14 @@
                         <span>Shops</span>
                     </a>
                 </li>
-                 --}}
+                --}}
+                <li class="nav-item">
+                    <a href="{{ route('reviews.index') }}"
+                    class="nav-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Reviews</span>
+                    </a>
+                </li>
 
             @endrole
 
