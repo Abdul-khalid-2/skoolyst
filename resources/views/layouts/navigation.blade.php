@@ -170,14 +170,28 @@
                     $newInquiriesCount = \App\Models\ContactInquiry::forSchool(auth()->user()->school_id)
                     ->where('status', 'new')
                     ->count();
+                    
+                    // For shop owners, also count new orders
+                    $newOrdersCount = 0;
+                    $totalNotifications = $newInquiriesCount;
+                    
+                    if (auth()->user()->hasRole('shop-owner') && auth()->user()->shop_id) {
+                        $newOrdersCount = \App\Models\Order::where('shop_id', auth()->user()->shop_id)
+                            ->whereIn('status', ['pending', 'processing'])
+                            ->count();
+                        
+                        // Total notifications (orders + inquiries)
+                        $totalNotifications = $newOrdersCount + $newInquiriesCount;
+                    }
                     @endphp
-                    @if($newInquiriesCount > 0)
+                    @if($totalNotifications > 0)
                     <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                         style="font-size: 0.6rem;" id="notificationBadge">
-                        {{ $newInquiriesCount }}
+                        {{ $totalNotifications }}
                     </span>
                     @endif
                 </button>
+                @role('school-admin')
                 <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;" id="contactNotificationsDropdown">
                     <li class="dropdown-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -242,6 +256,156 @@
                         </a>
                     </li>
                 </ul>
+                @endrole
+                
+                @role('shop-owner')
+                <ul class="dropdown-menu dropdown-menu-end" style="min-width: 350px;" id="shopNotificationsDropdown">
+                    <!-- Orders Tab -->
+                    <li class="nav-item">
+                        <div class="dropdown-header border-bottom">
+                            <ul class="nav nav-pills nav-fill" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#orders-tab" type="button">
+                                        <i class="fas fa-shopping-cart me-1"></i> Orders
+                                        @if($newOrdersCount > 0)
+                                        <span class="badge bg-danger ms-1">{{ $newOrdersCount }}</span>
+                                        @endif
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#inquiries-tab" type="button">
+                                        <i class="fas fa-envelope me-1"></i> Inquiries
+                                        @if($newInquiriesCount > 0)
+                                        <span class="badge bg-primary ms-1">{{ $newInquiriesCount }}</span>
+                                        @endif
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="tab-content p-2">
+                            <!-- Orders Tab Content -->
+                            <div class="tab-pane fade show active" id="orders-tab">
+                                @php
+                                // Fetch recent orders for this shop
+                                $recentOrders = \App\Models\Order::with(['user', 'orderItems.product'])
+                                    ->where('shop_id', auth()->user()->shop_id)
+                                    ->latest()
+                                    ->limit(5)
+                                    ->get();
+                                @endphp
+
+                                @if($recentOrders->count() > 0)
+                                <div class="notification-list">
+                                    @foreach($recentOrders as $order)
+                                    <div class="notification-item p-2 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-truncate" style="max-width: 200px;">
+                                                    Order #{{ $order->order_number }}
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ $order->user->name ?? 'Customer' }}
+                                                </small>
+                                                <div class="small">
+                                                    {{ $order->orderItems->count() }} item(s)
+                                                    • {{ number_format($order->total_amount, 2) }} {{ config('app.currency', 'USD') }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-{{ 
+                                                    $order->status === 'pending' ? 'warning' : 
+                                                    ($order->status === 'processing' ? 'info' : 
+                                                    ($order->status === 'completed' ? 'success' : 
+                                                    ($order->status === 'cancelled' ? 'danger' : 'secondary'))) 
+                                                }} badge-sm">
+                                                    {{ ucfirst($order->status) }}
+                                                </span>
+                                                <div class="text-muted small">
+                                                    {{ $order->created_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if($order->note)
+                                        <div class="small text-muted mt-1">
+                                            <i class="fas fa-sticky-note me-1"></i>
+                                            {{ Str::limit($order->note, 30) }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-shopping-cart fa-2x mb-2"></i>
+                                    <p class="mb-0">No orders yet</p>
+                                </div>
+                                @endif
+                                
+                                <div class="mt-2">
+                                    <a class="dropdown-item text-center" href="{{ route('dashboard.orders.index') }}">
+                                        <i class="fas fa-list me-1"></i> View All Orders
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Inquiries Tab Content -->
+                            <div class="tab-pane fade" id="inquiries-tab">
+                                @php
+                                $recentInquiries = \App\Models\ContactInquiry::with(['user', 'branch'])
+                                    ->forSchool(auth()->user()->school_id)
+                                    ->latest()
+                                    ->limit(5)
+                                    ->get();
+                                @endphp
+
+                                @if($recentInquiries->count() > 0)
+                                <div class="notification-list">
+                                    @foreach($recentInquiries as $inquiry)
+                                    <div class="notification-item p-2 border-bottom">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div class="flex-grow-1">
+                                                <div class="fw-bold text-truncate" style="max-width: 200px;">
+                                                    {{ $inquiry->name }}
+                                                </div>
+                                                <small class="text-muted">
+                                                    {{ $inquiry->full_subject }}
+                                                </small>
+                                                <div class="text-truncate small" style="max-width: 250px;">
+                                                    {{ Str::limit($inquiry->message, 50) }}
+                                                </div>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-{{ $inquiry->status === 'new' ? 'danger' : 'secondary' }} badge-sm">
+                                                    {{ ucfirst($inquiry->status) }}
+                                                </span>
+                                                <div class="text-muted small">
+                                                    {{ $inquiry->created_at->diffForHumans() }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @else
+                                <div class="text-center py-4 text-muted">
+                                    <i class="fas fa-inbox fa-2x mb-2"></i>
+                                    <p class="mb-0">No contact inquiries yet</p>
+                                </div>
+                                @endif
+                                
+                                <div class="mt-2">
+                                    <a class="dropdown-item text-center" href="{{ route('admin.inquiries.index') }}">
+                                        <i class="fas fa-eye me-1"></i> View All Inquiries
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                @endrole
             </div>
 
             <div class="dropdown">
@@ -270,8 +434,6 @@
                                 {{ __('Log Out') }}
                             </x-dropdown-link>
                         </form>
-
-                        <!-- <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a> -->
                     </li>
                 </ul>
             </div>
