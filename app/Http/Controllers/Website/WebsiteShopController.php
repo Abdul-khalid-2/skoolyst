@@ -97,11 +97,11 @@ class WebsiteShopController extends Controller
         $categories = ProductCategory::where('is_active', true)
             ->whereHas('products', function ($query) {
                 $query->where('is_active', true)
-                    ->where('is_approved', true)
-                    ->whereHas('shop.schoolAssociations', function ($q) {
-                        $q->where('is_active', true)
-                            ->where('status', 'approved');
-                    });
+                    ->where('is_approved', true);
+                // ->whereHas('shop.schoolAssociations', function ($q) {
+                //     $q->where('is_active', true)
+                //         ->where('status', 'approved');
+                // });
             })
             ->withCount(['products' => function ($query) {
                 $query->where('is_active', true)
