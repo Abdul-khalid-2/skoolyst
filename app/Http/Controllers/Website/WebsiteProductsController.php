@@ -40,11 +40,16 @@ class WebsiteProductsController extends Controller
         ])
             ->where('is_active', true)
             ->where('is_approved', true)
-            ->where('stock_quantity', '>', 1)
-            ->whereHas('shop.schoolAssociations', function ($query) {
-                $query->where('is_active', true)
+            ->where('stock_quantity', '>', 1);
+        $productsQuery->where(function ($query) {
+            $query->whereHas('shop.schoolAssociations', function ($q) {
+                $q->where('is_active', true)
+                    ->where('status', 'approved');
+            })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
+                $q->where('is_active', true)
                     ->where('status', 'approved');
             });
+        });
 
         // Apply search filter
         if ($search) {
@@ -142,19 +147,21 @@ class WebsiteProductsController extends Controller
             ->whereHas('products', function ($query) {
                 $query->where('is_active', true)
                     ->where('is_approved', true)
-                    ->whereHas('shop.schoolAssociations', function ($q) {
-                        $q->where('is_active', true)
-                            ->where('status', 'approved');
+                    ->where('stock_quantity', '>', 1)
+                    ->where(function ($q) {
+                        $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
+                            $schoolQ->where('is_active', true)
+                                ->where('status', 'approved');
+                        })->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
+                            $schoolQ->where('is_active', true)
+                                ->where('status', 'approved');
+                        });
                     });
             })
             ->get();
 
         $shops = Shop::where('is_active', true)
             ->where('is_verified', true)
-            ->whereHas('schoolAssociations', function ($query) {
-                $query->where('is_active', true)
-                    ->where('status', 'approved');
-            })
             ->get();
 
         $schools = School::whereHas('shopAssociations', function ($query) {
@@ -165,7 +172,16 @@ class WebsiteProductsController extends Controller
         // Get unique product types
         $productTypes = Product::where('is_active', true)
             ->where('is_approved', true)
-            ->whereHas('shop.schoolAssociations')
+            ->where('stock_quantity', '>', 1)
+            ->where(function ($query) {
+                $query->whereHas('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                });
+            })
             ->distinct()
             ->pluck('product_type')
             ->filter();
@@ -173,11 +189,18 @@ class WebsiteProductsController extends Controller
         // Get unique education boards
         $educationBoards = ProductAttribute::whereHas('product', function ($query) {
             $query->where('is_active', true)
-                ->where('is_approved', true);
-            // ->whereHas('shop.schoolAssociations', function ($q) {
-            //     $q->where('is_active', true)
-            //         ->where('status', 'approved');
-            // });
+                ->where('is_approved', true)
+                ->where('stock_quantity', '>', 1)
+                ->where(function ($q) {
+                    $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
+                        $schoolQ->where('is_active', true)
+                            ->where('status', 'approved');
+                    })
+                        ->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
+                            $schoolQ->where('is_active', true)
+                                ->where('status', 'approved');
+                        });
+                });
         })
             ->whereNotNull('education_board')
             ->distinct()
@@ -186,11 +209,17 @@ class WebsiteProductsController extends Controller
         // Get unique class levels
         $classLevels = ProductAttribute::whereHas('product', function ($query) {
             $query->where('is_active', true)
-                ->where('is_approved', true);
-            // ->whereHas('shop.schoolAssociations', function ($q) {
-            //     $q->where('is_active', true)
-            //         ->where('status', 'approved');
-            // });
+                ->where('is_approved', true)
+                ->where('stock_quantity', '>', 1)
+                ->where(function ($q) {
+                    $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
+                        $schoolQ->where('is_active', true)
+                            ->where('status', 'approved');
+                    })->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
+                        $schoolQ->where('is_active', true)
+                            ->where('status', 'approved');
+                    });
+                });
         })
             ->whereNotNull('class_level')
             ->distinct()
@@ -232,6 +261,16 @@ class WebsiteProductsController extends Controller
             ->where('uuid', $uuid)
             ->where('is_active', true)
             ->where('is_approved', true)
+            ->where('stock_quantity', '>', 1)
+            ->where(function ($query) {
+                $query->whereHas('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                });
+            })
             ->firstOrFail();
 
         // Get related products from the same shop or category
@@ -239,6 +278,16 @@ class WebsiteProductsController extends Controller
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
             ->where('is_approved', true)
+            ->where('stock_quantity', '>', 1)
+            ->where(function ($query) {
+                $query->whereHas('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
+                    $q->where('is_active', true)
+                        ->where('status', 'approved');
+                });
+            })
             ->where(function ($query) use ($product) {
                 $query->where('shop_id', $product->shop_id)
                     ->orWhere('category_id', $product->category_id);
