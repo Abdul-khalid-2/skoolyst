@@ -169,6 +169,69 @@
                 <!-- Order Summary -->
                 <div class="col-lg-4">
                     <!-- Order Status Card -->
+                    @role('shop-owner')
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Order Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <span class="badge bg-{{ $order->status_color }} fs-6 text-capitalize">
+                                        {{ $order->status }}
+                                    </span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <strong>Payment Status:</strong>
+                                    <span class="badge bg-{{ $order->payment_status_color }} ms-2 text-capitalize">
+                                        {{ $order->payment_status }}
+                                    </span>
+                                </div>
+                                
+                                @if($order->paid_at)
+                                <div class="mb-3">
+                                    <strong>Paid At:</strong>
+                                    <br>
+                                    <span class="text-muted">{{ $order->paid_at->format('M j, Y g:i A') }}</span>
+                                </div>
+                                @endif
+
+                                <!-- Status Update Form -->
+                                <form id="statusUpdateForm" class="mb-3">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label class="form-label">Update Status</label>
+                                        <select name="status" class="form-select" id="statusSelect">
+                                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                                            <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
+                                            <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>Shipped</option>
+                                            {{-- 
+                                            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
+                                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option> --}}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100">Update Status</button>
+                                </form>
+
+                                <!-- Payment Status Update Form -->
+                                <form id="paymentStatusForm">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label class="form-label">Update Payment Status</label>
+                                        <select name="payment_status" class="form-select" id="paymentStatusSelect">
+                                            <option value="pending" {{ $order->payment_status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                            <option value="paid" {{ $order->payment_status == 'paid' ? 'selected' : '' }}>Paid</option>
+                                            <option value="failed" {{ $order->payment_status == 'failed' ? 'selected' : '' }}>Failed</option>
+                                            {{-- <option value="refunded" {{ $order->payment_status == 'refunded' ? 'selected' : '' }}>Refunded</option>
+                                            <option value="partially_refunded" {{ $order->payment_status == 'partially_refunded' ? 'selected' : '' }}>Partially Refunded</option> --}}
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-outline-primary w-100">Update Payment</button>
+                                </form>
+                            </div>
+                        </div>
+                    @endrole
 
                     @role('super-admin')
                         <div class="card mb-4">
