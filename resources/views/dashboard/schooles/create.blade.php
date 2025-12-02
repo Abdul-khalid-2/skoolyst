@@ -253,21 +253,21 @@
                                 <div class="col-md-4 mb-3">
                                     <label for="regular_fees" class="form-label">Regular Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="regular_fees" name="regular_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('regular_fees') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="discounted_fees" class="form-label">Discounted Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="discounted_fees" name="discounted_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('discounted_fees') }}">
                                     </div>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="admission_fees" class="form-label">Admission Fees</label>
                                     <div class="input-group">
-                                        <span class="input-group-text">$</span>
+                                        <span class="input-group-text">Rs</span>
                                         <input type="number" class="form-control" id="admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees') }}">
                                     </div>
                                 </div>

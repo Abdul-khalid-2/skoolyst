@@ -857,7 +857,7 @@
                             <i class="fas fa-map-marker-alt"></i>
                             <span>{{ $shop->city }}, {{ $shop->state }}, {{ $shop->country }}</span>
                         </div>
-                        @if($shop->email)
+                        {{-- @if($shop->email)
                         <div class="meta-item">
                             <i class="fas fa-envelope"></i>
                             <span>{{ $shop->email }}</span>
@@ -868,7 +868,7 @@
                             <i class="fas fa-phone"></i>
                             <span>{{ $shop->phone }}</span>
                         </div>
-                        @endif
+                        @endif --}}
                     </div>
                 </div>
             </div>
@@ -922,7 +922,7 @@
                     <span class="detail-label">Address:</span>
                     <span class="detail-value">{{ $shop->address ?? 'Not specified' }}</span>
                 </div>
-                @if($shop->email)
+                {{-- @if($shop->email)
                 <div class="detail-item">
                     <span class="detail-label">Email:</span>
                     <span class="detail-value">{{ $shop->email }}</span>
@@ -933,7 +933,7 @@
                     <span class="detail-label">Phone:</span>
                     <span class="detail-value">{{ $shop->phone }}</span>
                 </div>
-                @endif
+                @endif --}}
                 <div class="detail-item">
                     <span class="detail-label">Status:</span>
                     <span class="detail-value">
