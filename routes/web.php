@@ -81,18 +81,18 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
         return $school->branches()->where('status', 'active')->get();
     });
 
-    // Dashboard Shop Routes
-    // Route::resource('shops', ShopController::class);
-    Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
-    Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
-    Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
-    Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
-    Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
-    Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-    Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-    Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
-    Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
-    Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
+    // // Dashboard Shop Routes
+    // // Route::resource('shops', ShopController::class);
+    // Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
+    // Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
+    // Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
+    // Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    // Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
+    // Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    // Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    // Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
+    // Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
+    // Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
 
     // Dashboard Product Routes
     // Route::resource('products', ProductController::class);
@@ -164,6 +164,20 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', 'verified', 'role:super-admin|shop-owner'])->group(function () {
+
+    // Route::resource('shops', ShopController::class);
+    Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
+    Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
+    Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
+    Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
+    Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
+    Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
+    Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
+    Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
+    Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
+});
 
 // Route::middleware(['auth'])->group(function () {
 //     Route::prefix('school-image-galleries')->group(function () {

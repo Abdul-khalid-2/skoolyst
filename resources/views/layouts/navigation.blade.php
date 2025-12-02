@@ -107,7 +107,7 @@
                         <span>Posts</span>
                     </a>
                 </li>
-
+                {{-- 
                 <li class="nav-item">
                     <a href="{{ route('shops.index') }}"
                     class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
@@ -115,6 +115,7 @@
                         <span>Shops</span>
                     </a>
                 </li>
+                 --}}
 
             @endrole
 
