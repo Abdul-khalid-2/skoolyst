@@ -110,6 +110,7 @@ class WebsiteShopController extends Controller
                 //     $q->where('is_active', true)
                 //         ->where('status', 'approved');
                 // });
+
             }])
             ->having('products_count', '>', 0)
             ->get();
