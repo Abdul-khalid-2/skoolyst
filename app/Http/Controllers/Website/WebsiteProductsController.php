@@ -173,11 +173,11 @@ class WebsiteProductsController extends Controller
         // Get unique education boards
         $educationBoards = ProductAttribute::whereHas('product', function ($query) {
             $query->where('is_active', true)
-                ->where('is_approved', true)
-                ->whereHas('shop.schoolAssociations', function ($q) {
-                    $q->where('is_active', true)
-                        ->where('status', 'approved');
-                });
+                ->where('is_approved', true);
+            // ->whereHas('shop.schoolAssociations', function ($q) {
+            //     $q->where('is_active', true)
+            //         ->where('status', 'approved');
+            // });
         })
             ->whereNotNull('education_board')
             ->distinct()
@@ -186,11 +186,11 @@ class WebsiteProductsController extends Controller
         // Get unique class levels
         $classLevels = ProductAttribute::whereHas('product', function ($query) {
             $query->where('is_active', true)
-                ->where('is_approved', true)
-                ->whereHas('shop.schoolAssociations', function ($q) {
-                    $q->where('is_active', true)
-                        ->where('status', 'approved');
-                });
+                ->where('is_approved', true);
+            // ->whereHas('shop.schoolAssociations', function ($q) {
+            //     $q->where('is_active', true)
+            //         ->where('status', 'approved');
+            // });
         })
             ->whereNotNull('class_level')
             ->distinct()
