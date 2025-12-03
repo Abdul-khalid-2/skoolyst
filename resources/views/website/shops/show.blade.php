@@ -814,6 +814,54 @@
             flex-direction: column;
         }
     }
+    /* Alternative Banner Style */
+    .shop-banner-right {
+        position: relative;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .shop-banner-image {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+    }
+
+    .shop-banner-image::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, rgba(67, 97, 238, 0.7), rgba(56, 176, 0, 0.7));
+        z-index: 1;
+        mix-blend-mode: multiply;
+    }
+
+    .banner-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+        z-index: 0;
+    }
+
+    /* Banner with shop name overlay */
+    .banner-content-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 2rem;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+        z-index: 2;
+    }
+
+
 </style>
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
@@ -824,52 +872,63 @@
 <section class="shop-hero">
     <div class="container">
         <div class="shop-hero-content">
-            <div class="shop-header">
-                <div class="shop-logo-large">
-                    @if($shop->logo_url)
-                        <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
-                    @else
-                        <img src="https://via.placeholder.com/120" alt="{{ $shop->name }}">
-                    @endif
-                </div>
-                <div class="shop-info">
-                    <h1 class="shop-title">{{ $shop->name }}</h1>
-                    <span class="shop-type-badge">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
-                    
-                    <div class="shop-rating-large">
-                        <div class="rating-stars">
-                            @for($i = 1; $i <= 5; $i++)
-                                @if($i <= floor($shop->rating))
-                                    <i class="fas fa-star"></i>
-                                @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
-                                    <i class="fas fa-star-half-alt"></i>
-                                @else
-                                    <i class="far fa-star"></i>
-                                @endif
-                            @endfor
+            <div class="shop-hero-grid">
+                <!-- Left Side: Shop Info -->
+                <div class="shop-info-left">
+                    <div class="shop-header">
+                        <div class="shop-logo-large">
+                            @if($shop->logo_url)
+                                <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+                            @else
+                                <img src="https://via.placeholder.com/120" alt="{{ $shop->name }}">
+                            @endif
                         </div>
-                        <span class="rating-value">{{ number_format($shop->rating, 1) }}</span>
-                        <span class="rating-count">({{ $shop->total_reviews }} reviews)</span>
-                    </div>
+                        <div class="shop-info">
+                            <h1 class="shop-title">{{ $shop->name }}</h1>
+                            <span class="shop-type-badge">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+                            
+                            <div class="shop-rating-large">
+                                <div class="rating-stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= floor($shop->rating))
+                                            <i class="fas fa-star"></i>
+                                        @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
+                                            <i class="fas fa-star-half-alt"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                                <span class="rating-value">{{ number_format($shop->rating, 1) }}</span>
+                                <span class="rating-count">({{ $shop->total_reviews }} reviews)</span>
+                            </div>
 
-                    <div class="shop-meta">
-                        <div class="meta-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>{{ $shop->city }}, {{ $shop->state }}, {{ $shop->country }}</span>
+                            <div class="shop-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>{{ $shop->city }}, {{ $shop->state }}, {{ $shop->country }}</span>
+                                </div>
+                            </div>
                         </div>
-                        {{-- @if($shop->email)
-                        <div class="meta-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>{{ $shop->email }}</span>
-                        </div>
-                        @endif
-                        @if($shop->phone)
-                        <div class="meta-item">
-                            <i class="fas fa-phone"></i>
-                            <span>{{ $shop->phone }}</span>
-                        </div>
-                        @endif --}}
                     </div>
+                </div>
+
+                <!-- Right Side: Banner Image -->
+                <div class="shop-banner-right">
+                    @if($shop->banner_url)
+                        <div class="shop-banner-image">
+                            <img src="{{ asset('website/' . $shop->banner_url) }}" 
+                                 alt="{{ $shop->name }} Banner"
+                                 class="banner-img">
+                        </div>
+                    @else
+                        <div class="shop-banner-image default-banner">
+                            <div class="banner-placeholder">
+                                <i class="fas fa-store-alt"></i>
+                                <span>No Banner Available</span>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

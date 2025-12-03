@@ -1157,7 +1157,15 @@
         <div class="shops-grid">
             @foreach($shops as $shop)
             <div class="shop-card">
-                <div class="shop-banner" style="background: linear-gradient(135deg, #4361ee, #38b000);">
+                <div class="shop-banner" style="
+                        @if($shop->banner_url)
+                            background-image: url('{{ asset('website/' . $shop->banner_url) }}');
+                        @else
+                            background: linear-gradient(135deg, #4361ee, #38b000);
+                        @endif
+                        background-size: cover; 
+                        background-position: center; 
+                        background-repeat: no-repeat;">
                     <div class="shop-logo">
                         @if($shop->logo_url)
                         <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
