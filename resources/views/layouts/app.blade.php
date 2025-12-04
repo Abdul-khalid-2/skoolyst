@@ -43,8 +43,9 @@
 
     <!-- Footer -->
     <footer class="footer mt-auto">
-        <div class="d-flex justify-content-between align-items-center">
-            <p class="text-muted mb-0">&copy; 2025 E-Commerce Admin. All rights reserved.</p>
+        <div class="d-flex justify-content-between align-items-left">
+            <p class="">&copy; </p>
+            <p class="me-5">&copy; 2025 E-Commerce Admin. All rights reserved.</p>
             <div class="d-flex gap-3">
                 <a href="#" class="text-muted text-decoration-none">Privacy Policy</a>
                 <a href="#" class="text-muted text-decoration-none">Terms of Service</a>

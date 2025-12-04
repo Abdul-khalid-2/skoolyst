@@ -1311,3 +1311,21 @@
             $table->index(['coupon_id', 'user_id']);
             $table->index('order_id');
         });
+
+         public function up()
+    {
+        Schema::table('shops', function (Blueprint $table) {
+            $table->integer('priority')->nullable()->after('is_active')->default(0);
+            $table->index('priority');
+        });
+    }
+    public function up()
+    {
+        
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('admin_notes')->nullable();
+            $table->boolean('created_by_admin')->default(false);
+            $table->string('reviewer_email')->nullable();
+        });
+    }

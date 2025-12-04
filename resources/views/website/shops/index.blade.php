@@ -1075,7 +1075,7 @@
 <!-- ==================== HERO SECTION ==================== -->
 <section class="ecommerce-hero">
     <div class="container">
-        <h1 class="hero-title">SKOOLYST E-Commerce Marketplace</h1>
+        <h1 class="hero-title">SKOOLYST EduMart</h1>
         <p class="hero-subtitle">
             Discover educational supplies, books, uniforms, and more from trusted school-affiliated shops. Everything you need for academic success in one place.
         </p>
@@ -1410,7 +1410,7 @@
         const form = document.getElementById('shop-filters');
         form.addEventListener('submit', function() {
             const applyBtn = form.querySelector('.btn-apply');
-            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Applying...';
+            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
             applyBtn.disabled = true;
         });
 
