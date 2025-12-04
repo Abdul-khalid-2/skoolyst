@@ -9,6 +9,11 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
+Route::redirect('/public/en', '/', 301);
+Route::redirect('/en', '/', 301);
+Route::redirect('/en/', '/', 301);
+Route::redirect('/public', '/', 301);
+
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
 use App\Http\Controllers\PageController;
@@ -148,6 +153,9 @@ Route::middleware('guest')->group(function () {
 
 Route::get('/', [HomeController::class, 'home'])->name('website.home');
 Route::get('/search', [HomeController::class, 'search'])->name('search.schools');
+
+// ===== ADD THIS CONTACT ROUTE =====
+Route::get('/contact', [ContactInquiryController::class, 'create'])->name('website.contact');
 
 Route::get('/all/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
 Route::get('/browse/schools/search', [BrowseSchoolController::class, 'search'])->name('browseSchools.search');

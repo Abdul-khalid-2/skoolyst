@@ -8,6 +8,7 @@
                 <a href="{{ url('/about') }}">About</a>
                 <a href="{{ route('website.terms') }}">Terms</a>
                 <a href="{{ route('website.privacy') }}">Privacy</a>
+                <a href="{{ route('website.contact') }}">Contact</a>
             </nav>
 
             <div class="social-icons">

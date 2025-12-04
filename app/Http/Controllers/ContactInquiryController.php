@@ -238,4 +238,9 @@ class ContactInquiryController extends Controller
 
         return redirect()->back()->with('success', 'Inquiry marked as read successfully.');
     }
+
+    public function create()
+    {
+        return view('website.contact');
+    }
 }
