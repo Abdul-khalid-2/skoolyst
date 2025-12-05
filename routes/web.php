@@ -35,6 +35,10 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
 use App\Http\Controllers\ShopSchoolAssociationController;
+use App\Http\Controllers\VideoCategoryController;
+use App\Http\Controllers\VideoCommentController;
+use App\Http\Controllers\VideoController;
+use App\Http\Controllers\VideoReactionController;
 use App\Http\Controllers\Website\BlogCommentController;
 use App\Http\Controllers\Website\WebsiteCartController;
 use App\Http\Controllers\Website\WebsiteCheckoutController;
@@ -292,6 +296,40 @@ Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('web
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');
+
+
+
+// Videos Routes
+
+// Public routes
+Route::get('videos/', [VideoController::class, 'index'])->name('videos.index');
+Route::get('videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
+
+// Protected routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('videos/my-videos', [VideoController::class, 'myVideos'])->name('videos.my-videos');
+    Route::get('videos/create', [VideoController::class, 'create'])->name('videos.create');
+    Route::post('videos/', [VideoController::class, 'store'])->name('videos.store');
+    Route::get('videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
+    Route::put('videos/{video}', [VideoController::class, 'update'])->name('videos.update');
+    Route::delete('videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
+
+    // Comments
+    Route::post('videos/{video}/comments', [VideoCommentController::class, 'store'])->name('videos.comments.store');
+    Route::post('videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('videos.comments.like');
+    Route::delete('videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('videos.comments.destroy');
+
+    // Reactions
+    Route::post('videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
+});
+
+
+// Admin video categories
+Route::middleware(['auth', 'can:manage-video-categories'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('video-categories', VideoCategoryController::class)->except(['show']);
+});
+
+
 
 // Modal routes
 Route::get('/modal/product/{product}', [WebsiteModalController::class, 'productModal'])->name('website.modal.product');

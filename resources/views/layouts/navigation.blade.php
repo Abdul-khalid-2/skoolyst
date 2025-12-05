@@ -123,9 +123,16 @@
                         <span>Reviews</span>
                     </a>
                 </li>
-
+                
+                
             @endrole
-
+                <li class="nav-item">
+                    <a href="{{ route('videos.index') }}"
+                    class="nav-link {{ request()->routeIs('videos.*') ? 'active' : '' }}">
+                        <i class="fas fa-store"></i>
+                        <span>Video</span>
+                    </a>
+                </li>
 
             {{-- ===================== SHOP OWNER MENU ===================== --}}
             @role('shop-owner')
