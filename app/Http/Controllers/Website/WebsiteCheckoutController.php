@@ -215,7 +215,7 @@ class WebsiteCheckoutController extends Controller
     {
         try {
             // Handle user authentication/creation
-            $userId = $this->getOrCreateUser($request);
+            // $userId = $this->getOrCreateUser($request);
 
             // Get primary shop ID using smart algorithm
             $primaryShopId = $this->getPrimaryShopId($cartItems, $request->city);
@@ -229,7 +229,11 @@ class WebsiteCheckoutController extends Controller
             // Create order
             $order = \App\Models\Order::create([
                 'uuid' => \Illuminate\Support\Str::uuid(),
-                'user_id' => $userId,
+                'name' => $request->first_name . ' ' . $request->last_name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'user_id' => null,
                 'shop_id' => $primaryShopId,
                 'order_number' => $this->generateOrderNumber(),
                 'status' => 'pending',
@@ -274,7 +278,7 @@ class WebsiteCheckoutController extends Controller
             }
 
             // Apply coupon if exists
-            $this->applyCouponToOrder($order, $userId);
+            // $this->applyCouponToOrder($order, $userId);
 
             return $order;
         } catch (\Exception $e) {
@@ -282,65 +286,65 @@ class WebsiteCheckoutController extends Controller
         }
     }
 
-    private function getOrCreateUser($request)
-    {
-        // If user is authenticated, return their ID
-        if (auth()->check()) {
-            return auth()->id();
-        }
+    // private function getOrCreateUser($request)
+    // {
+    //     // If user is authenticated, return their ID
+    //     if (auth()->check()) {
+    //         return auth()->id();
+    //     }
 
-        // Check if user already exists with this email
-        $existingUser = \App\Models\User::where('email', $request->email)->first();
-        if ($existingUser) {
-            return $existingUser->id;
-        }
+    //     // Check if user already exists with this email
+    //     $existingUser = \App\Models\User::where('email', $request->email)->first();
+    //     if ($existingUser) {
+    //         return $existingUser->id;
+    //     }
 
-        // Create new guest user
-        try {
-            $user = \App\Models\User::create([
-                'uuid' => \Illuminate\Support\Str::uuid(),
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'password' => \Illuminate\Support\Str::random(32), // Random password for guest users
-                'email_verified_at' => null, // Not verified for guest users
-            ]);
+    //     // Create new guest user
+    //     try {
+    //         $user = \App\Models\User::create([
+    //             'uuid' => \Illuminate\Support\Str::uuid(),
+    //             'name' => $request->first_name . ' ' . $request->last_name,
+    //             'email' => $request->email,
+    //             'phone' => $request->phone,
+    //             'address' => $request->address,
+    //             'password' => \Illuminate\Support\Str::random(32), // Random password for guest users
+    //             'email_verified_at' => null, // Not verified for guest users
+    //         ]);
 
-            // You might want to assign a guest role or handle permissions
-            // $user->assignRole('guest');
+    //         // You might want to assign a guest role or handle permissions
+    //         // $user->assignRole('guest');
 
-            return $user->id;
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to create user account: ' . $e->getMessage());
-        }
-    }
+    //         return $user->id;
+    //     } catch (\Exception $e) {
+    //         throw new \Exception('Failed to create user account: ' . $e->getMessage());
+    //     }
+    // }
 
-    private function applyCouponToOrder($order, $userId)
-    {
-        $appliedCoupon = session()->get('applied_coupon');
+    // private function applyCouponToOrder($order, $userId)
+    // {
+    //     $appliedCoupon = session()->get('applied_coupon');
 
-        if ($appliedCoupon) {
-            $coupon = \App\Models\Coupon::find($appliedCoupon['id']);
+    //     if ($appliedCoupon) {
+    //         $coupon = \App\Models\Coupon::find($appliedCoupon['id']);
 
-            if ($coupon) {
-                $order->update(['coupon_id' => $coupon->id]);
+    //         if ($coupon) {
+    //             $order->update(['coupon_id' => $coupon->id]);
 
-                // Record coupon usage
-                \App\Models\CouponUsage::create([
-                    'coupon_id' => $coupon->id,
-                    'user_id' => $userId,
-                    'order_id' => $order->id,
-                    'discount_amount' => $appliedCoupon['discount_amount'],
-                ]);
+    //             // Record coupon usage
+    //             \App\Models\CouponUsage::create([
+    //                 'coupon_id' => $coupon->id,
+    //                 'user_id' => $userId,
+    //                 'order_id' => $order->id,
+    //                 'discount_amount' => $appliedCoupon['discount_amount'],
+    //             ]);
 
-                $coupon->incrementUsage();
-            }
+    //             $coupon->incrementUsage();
+    //         }
 
-            // Clear applied coupon from session
-            session()->forget('applied_coupon');
-        }
-    }
+    //         // Clear applied coupon from session
+    //         session()->forget('applied_coupon');
+    //     }
+    // }
 
     private function getPrimaryShopId($cartItems, $customerCity = null)
     {
