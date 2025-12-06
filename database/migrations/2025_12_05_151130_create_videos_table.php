@@ -33,7 +33,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->string('embed_video_link');
+            $table->text('embed_video_link');
             $table->string('thumbnail')->nullable();
             $table->string('video_id')->nullable(); // YouTube video ID extracted from link
             $table->integer('sort_order')->default(0);

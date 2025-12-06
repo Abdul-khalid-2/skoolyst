@@ -303,7 +303,6 @@ Route::view('terms', 'website.terms')->name('website.terms');
 
 // Public routes
 Route::get('videos/', [VideoController::class, 'index'])->name('videos.index');
-Route::get('videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
 
 // Protected routes
 Route::middleware(['auth'])->group(function () {
@@ -323,6 +322,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
 });
 
+Route::get('videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
 
 // Admin video categories
 Route::middleware(['auth', 'can:manage-video-categories'])->prefix('admin')->name('admin.')->group(function () {
