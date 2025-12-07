@@ -11,7 +11,7 @@
                                 <p class="page-subtitle">Explore educational videos from schools and shops</p>
                             </div>
                             {{-- @can('create-videos') --}}
-                            <a href="{{ route('videos.create') }}" class="btn btn-primary">
+                            <a href="{{ route('admin.videos.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i> Upload Video
                             </a>
                             {{-- @endcan --}}
@@ -24,7 +24,7 @@
                     <div class="col">
                         <div class="card">
                             <div class="card-body">
-                                <form action="{{ route('videos.index') }}" method="GET" id="filter-form">
+                                <form action="{{ route('admin.videos.index') }}" method="GET" id="filter-form">
                                     <div class="row g-3">
                                         <!-- Search -->
                                         <div class="col-lg-3 col-md-6">
@@ -160,7 +160,7 @@
                                 <!-- Card Body -->
                                 <div class="card-body">
                                     <h5 class="card-title video-title">
-                                        <a href="{{ route('videos.show', $video->slug) }}" class="text-decoration-none">
+                                        <a href="{{ route('admin.videos.show', $video->slug) }}" class="text-decoration-none">
                                             {{ Str::limit($video->title, 60) }}
                                         </a>
                                     </h5>
@@ -243,7 +243,7 @@
                                         @endif
                                     </p>
                                     @can('create-videos')
-                                    <a href="{{ route('videos.create') }}" class="btn btn-primary">
+                                    <a href="{{ route('admin.videos.create') }}" class="btn btn-primary">
                                         <i class="fas fa-plus me-2"></i> Upload First Video
                                     </a>
                                     @endcan

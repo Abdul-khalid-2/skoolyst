@@ -14,7 +14,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h1 class="h4 mb-0">{{ $video->title }}</h1>
-                                @can('update', $video)
+                                {{-- @can('update', $video) --}}
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" 
                                             data-bs-toggle="dropdown" aria-expanded="false">
@@ -22,12 +22,12 @@
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end">
                                         <li>
-                                            <a class="dropdown-item" href="{{ route('videos.edit', $video) }}">
+                                            <a class="dropdown-item" href="{{ route('admin.videos.edit', $video) }}">
                                                 <i class="fas fa-edit me-2"></i> Edit Video
                                             </a>
                                         </li>
                                         <li>
-                                            <form action="{{ route('videos.destroy', $video) }}" method="POST" 
+                                            <form action="{{ route('admin.videos.destroy', $video) }}" method="POST" 
                                                   onsubmit="return confirm('Are you sure?')">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="dropdown-item text-danger">
@@ -37,7 +37,7 @@
                                         </li>
                                     </ul>
                                 </div>
-                                @endcan
+                                {{-- @endcan --}}
                             </div>
                             
                             <!-- Video Stats -->
@@ -133,7 +133,7 @@
                         <div class="card-body">
                             <!-- Comment Form -->
                             @auth
-                            <form action="{{ route('videos.comments.store', $video) }}" method="POST" class="mb-4">
+                            <form action="{{ route('admin.videos.comments.store', $video) }}" method="POST" class="mb-4">
                                 @csrf
                                 <div class="mb-3">
                                     <textarea name="message" id="comment-message" rows="3" 
@@ -239,7 +239,7 @@
                         <div class="card-body">
                             <div class="list-group list-group-flush">
                                 @foreach($relatedVideos as $related)
-                                <a href="{{ route('videos.show', $related->slug) }}" 
+                                <a href="{{ route('admin.videos.show', $related->slug) }}" 
                                    class="list-group-item list-group-item-action border-0 px-0 py-3">
                                     <div class="d-flex">
                                         <div class="flex-shrink-0 me-3">
@@ -311,7 +311,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Video reaction function
             window.reactToVideo = function(reaction) {
-                fetch('{{ route("videos.reactions.store", $video) }}', {
+                fetch('{{ route("admin.videos.reactions.store", $video) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

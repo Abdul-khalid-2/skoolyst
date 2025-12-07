@@ -6,7 +6,7 @@
                     <h2 class="h4 mb-0">My Videos</h2>
                     <p class="mb-0 text-muted">Manage your uploaded videos</p>
                 </div>
-                <a href="{{ route('videos.create') }}" class="btn btn-primary">
+                <a href="{{ route('admin.videos.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i> Upload New Video
                 </a>
             </div>
@@ -126,7 +126,7 @@
                                 <button type="submit" class="btn btn-primary">
                                     <i class="fas fa-filter me-2"></i> Apply Filters
                                 </button>
-                                <a href="{{ route('videos.my-videos') }}" class="btn btn-outline-secondary">
+                                <a href="{{ route('admin.videos.my-videos') }}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times me-2"></i> Clear
                                 </a>
                             </div>
@@ -163,7 +163,7 @@
                                                 </div>
                                                 <div class="flex-grow-1">
                                                     <h6 class="mb-1">
-                                                        <a href="{{ route('videos.show', $video->slug) }}" class="text-decoration-none">
+                                                        <a href="{{ route('admin.videos.show', $video->slug) }}" class="text-decoration-none">
                                                             {{ Str::limit($video->title, 50) }}
                                                         </a>
                                                     </h6>
@@ -207,11 +207,11 @@
                                         </td>
                                         <td>
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('videos.show', $video->slug) }}"
+                                                <a href="{{ route('admin.videos.show', $video->slug) }}"
                                                    class="btn btn-sm btn-outline-primary" title="View">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('videos.edit', $video) }}"
+                                                <a href="{{ route('admin.videos.edit', $video) }}"
                                                    class="btn btn-sm btn-outline-secondary" title="Edit">
                                                     <i class="fas fa-edit"></i>
                                                 </a>
@@ -222,7 +222,7 @@
                                             </div>
                                             
                                             <form id="delete-form-{{ $video->id }}" 
-                                                  action="{{ route('videos.destroy', $video) }}" 
+                                                  action="{{ route('admin.videos.destroy', $video) }}" 
                                                   method="POST" style="display: none;">
                                                 @csrf @method('DELETE')
                                             </form>
@@ -234,7 +234,7 @@
                                             <div class="text-muted">
                                                 <i class="fas fa-video fa-2x mb-3"></i>
                                                 <p>You haven't uploaded any videos yet.</p>
-                                                <a href="{{ route('videos.create') }}" class="btn btn-primary">
+                                                <a href="{{ route('admin.videos.create') }}" class="btn btn-primary">
                                                     <i class="fas fa-plus me-2"></i> Upload Your First Video
                                                 </a>
                                             </div>

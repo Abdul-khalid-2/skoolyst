@@ -154,32 +154,29 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
     // Videos Routes
 
     // Public routes
-    Route::get('dashboard/videos/', [VideoController::class, 'index'])->name('videos.index');
+    Route::get('dashboard/videos/', [VideoController::class, 'index'])->name('admin.videos.index');
 
     // Protected routes
-    Route::middleware(['auth'])->group(function () {
-        Route::get('dashboard/videos/my-videos', [VideoController::class, 'myVideos'])->name('videos.my-videos');
-        Route::get('dashboard/videos/create', [VideoController::class, 'create'])->name('videos.create');
-        Route::post('dashboard/videos/', [VideoController::class, 'store'])->name('videos.store');
-        Route::get('dashboard/videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
-        Route::put('dashboard/videos/{video}', [VideoController::class, 'update'])->name('videos.update');
-        Route::delete('dashboard/videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
 
-        // Comments
-        Route::post('dashboard/videos/{video}/comments', [VideoCommentController::class, 'store'])->name('videos.comments.store');
-        Route::post('dashboard/videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('videos.comments.like');
-        Route::delete('dashboard/videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('videos.comments.destroy');
+    Route::get('dashboard/videos/my-videos', [VideoController::class, 'myVideos'])->name('admin.videos.my-videos');
+    Route::get('dashboard/videos/create', [VideoController::class, 'create'])->name('admin.videos.create');
+    Route::post('dashboard/videos/', [VideoController::class, 'store'])->name('admin.videos.store');
+    Route::get('dashboard/videos/{video}/edit', [VideoController::class, 'edit'])->name('admin.videos.edit');
+    Route::put('dashboard/videos/{video}', [VideoController::class, 'update'])->name('admin.videos.update');
+    Route::delete('dashboard/videos/{video}', [VideoController::class, 'destroy'])->name('admin.videos.destroy');
 
-        // Reactions
-        Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
-    });
+    // Comments
+    Route::post('dashboard/videos/{video}/comments', [VideoCommentController::class, 'store'])->name('admin.videos.comments.store');
+    Route::post('dashboard/videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('admin.videos.comments.like');
+    Route::delete('dashboard/videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('admin.videos.comments.destroy');
 
-    Route::get('dashboard/videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
+    // Reactions
+    Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('admin.videos.reactions.store');
+
+    Route::get('dashboard/videos/{slug}', [VideoController::class, 'show'])->name('admin.videos.show');
 
     // Admin video categories
-    Route::middleware(['auth', 'can:manage-video-categories'])->prefix('admin')->name('admin.')->group(function () {
-        Route::resource('dashboard/video-categories', VideoCategoryController::class)->except(['show']);
-    });
+    Route::resource('dashboard/video-categories', VideoCategoryController::class)->except(['admin.show']);
 });
 
 Route::middleware('guest')->group(function () {

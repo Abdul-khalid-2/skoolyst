@@ -10,14 +10,14 @@
                                     <h4 class="mb-0">Upload New Video</h4>
                                     <p class="mb-0 text-muted">Share your video content with the community</p>
                                 </div>
-                                <a href="{{ route('videos.index') }}" class="btn btn-sm btn-outline-secondary">
+                                <a href="{{ route('admin.videos.index') }}" class="btn btn-sm btn-outline-secondary">
                                     <i class="fas fa-arrow-left me-2"></i> Back to Videos
                                 </a>
                             </div>
                         </div>
 
                         <div class="card-body">
-                            <form action="{{ route('videos.store') }}" method="POST">
+                            <form action="{{ route('admin.videos.store') }}" method="POST">
                                 @csrf
 
                                 <!-- Basic Information -->
@@ -217,7 +217,7 @@
 
                                 <!-- Submit Buttons -->
                                 <div class="d-flex justify-content-between border-top pt-4">
-                                    <a href="{{ route('videos.index') }}" class="btn btn-outline-secondary">
+                                    <a href="{{ route('admin.videos.index') }}" class="btn btn-outline-secondary">
                                         <i class="fas fa-times me-2"></i> Cancel
                                     </a>
                                     <div class="d-flex gap-2">
