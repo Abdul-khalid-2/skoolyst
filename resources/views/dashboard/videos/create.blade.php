@@ -2,7 +2,7 @@
     <main class="main-content">
         <section id="upload-video" class="page-section">
             <div class="row justify-content-center">
-                <div class="col-lg-8">
+                <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
                             <div class="d-flex justify-content-between align-items-center">
