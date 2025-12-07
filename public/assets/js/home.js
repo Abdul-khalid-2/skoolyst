@@ -43,7 +43,7 @@ function renderSchools(schoolsToRender) {
                             <span style="color: #666; margin-left: 0.5rem;">${school.rating}</span>
                             <small style="color: #888; margin-left: 0.5rem;">(${school.review_count} reviews)</small>
                         </div>
-                        <p class="school-description">${school.description}</p>
+                        <p class="school-description">${school.description.substring(0, 120)}...</p>
                         <div class="school-features">
                             <span class="feature-tag"><i class="fas fa-book"></i> ${school.curriculum}</span>
                             ${school.features.map(f => `<span class="feature-tag">${f}</span>`).join('')}
