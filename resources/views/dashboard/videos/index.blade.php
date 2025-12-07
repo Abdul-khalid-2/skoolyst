@@ -10,11 +10,11 @@
                                 <h1 class="page-title">Videos</h1>
                                 <p class="page-subtitle">Explore educational videos from schools and shops</p>
                             </div>
-                            @can('create-videos')
+                            {{-- @can('create-videos') --}}
                             <a href="{{ route('videos.create') }}" class="btn btn-primary">
                                 <i class="fas fa-plus me-2"></i> Upload Video
                             </a>
-                            @endcan
+                            {{-- @endcan --}}
                         </div>
                     </div>
                 </div>

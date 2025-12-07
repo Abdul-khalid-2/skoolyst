@@ -149,6 +149,37 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
     Route::post('dashboard/orders/{order}/update-shipping', [OrderController::class, 'updateShippingInfo'])->name('dashboard.orders.update-shipping');
     Route::post('dashboard/orders/{order}/add-notes', [OrderController::class, 'addAdminNotes'])->name('dashboard.orders.add-notes');
     Route::get('dashboard/orders/export/orders', [OrderController::class, 'exportOrders'])->name('dashboard.orders.export');
+
+
+    // Videos Routes
+
+    // Public routes
+    Route::get('dashboard/videos/', [VideoController::class, 'index'])->name('videos.index');
+
+    // Protected routes
+    Route::middleware(['auth'])->group(function () {
+        Route::get('dashboard/videos/my-videos', [VideoController::class, 'myVideos'])->name('videos.my-videos');
+        Route::get('dashboard/videos/create', [VideoController::class, 'create'])->name('videos.create');
+        Route::post('dashboard/videos/', [VideoController::class, 'store'])->name('videos.store');
+        Route::get('dashboard/videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
+        Route::put('dashboard/videos/{video}', [VideoController::class, 'update'])->name('videos.update');
+        Route::delete('dashboard/videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
+
+        // Comments
+        Route::post('dashboard/videos/{video}/comments', [VideoCommentController::class, 'store'])->name('videos.comments.store');
+        Route::post('dashboard/videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('videos.comments.like');
+        Route::delete('dashboard/videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('videos.comments.destroy');
+
+        // Reactions
+        Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
+    });
+
+    Route::get('dashboard/videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
+
+    // Admin video categories
+    Route::middleware(['auth', 'can:manage-video-categories'])->prefix('admin')->name('admin.')->group(function () {
+        Route::resource('dashboard/video-categories', VideoCategoryController::class)->except(['show']);
+    });
 });
 
 Route::middleware('guest')->group(function () {
@@ -299,35 +330,6 @@ Route::view('terms', 'website.terms')->name('website.terms');
 
 
 
-// Videos Routes
-
-// Public routes
-Route::get('videos/', [VideoController::class, 'index'])->name('videos.index');
-
-// Protected routes
-Route::middleware(['auth'])->group(function () {
-    Route::get('videos/my-videos', [VideoController::class, 'myVideos'])->name('videos.my-videos');
-    Route::get('videos/create', [VideoController::class, 'create'])->name('videos.create');
-    Route::post('videos/', [VideoController::class, 'store'])->name('videos.store');
-    Route::get('videos/{video}/edit', [VideoController::class, 'edit'])->name('videos.edit');
-    Route::put('videos/{video}', [VideoController::class, 'update'])->name('videos.update');
-    Route::delete('videos/{video}', [VideoController::class, 'destroy'])->name('videos.destroy');
-
-    // Comments
-    Route::post('videos/{video}/comments', [VideoCommentController::class, 'store'])->name('videos.comments.store');
-    Route::post('videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('videos.comments.like');
-    Route::delete('videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('videos.comments.destroy');
-
-    // Reactions
-    Route::post('videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
-});
-
-Route::get('videos/{slug}', [VideoController::class, 'show'])->name('videos.show');
-
-// Admin video categories
-Route::middleware(['auth', 'can:manage-video-categories'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('video-categories', VideoCategoryController::class)->except(['show']);
-});
 
 
 
