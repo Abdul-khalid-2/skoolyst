@@ -26,6 +26,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('shop') ? 'active' : '' }}" href="{{ route('website.shop.index') }}">Shop</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ route('website.videos.index') }}">Videos</a>
+                </li>
             </ul>
 
             <div class="navbar-actions d-flex align-items-center gap-3">

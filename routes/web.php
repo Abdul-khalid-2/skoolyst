@@ -40,6 +40,7 @@ use App\Http\Controllers\VideoCommentController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoReactionController;
 use App\Http\Controllers\Website\BlogCommentController;
+use App\Http\Controllers\Website\VideoWebsiteController;
 use App\Http\Controllers\Website\WebsiteCartController;
 use App\Http\Controllers\Website\WebsiteCheckoutController;
 use App\Http\Controllers\Website\WebsiteOrderController;
@@ -325,6 +326,13 @@ Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('web
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');
 
+
+Route::get('videos/', [VideoWebsiteController::class, 'index'])->name('website.videos.index');
+Route::get('videos/category/{slug}', [VideoWebsiteController::class, 'category'])->name('website.videos.category');
+Route::get('videos/{slug}', [VideoWebsiteController::class, 'show'])->name('website.videos.show');
+
+// Comments
+Route::post('videos/{video}/comments', [VideoWebsiteController::class, 'storeComment'])->name('website.videos.comments.store');
 
 
 
