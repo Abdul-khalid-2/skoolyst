@@ -13,7 +13,7 @@ class VideoCategoryController extends Controller
         Gate::authorize('viewAny', VideoCategory::class);
 
         $categories = VideoCategory::orderBy('sort_order')->paginate(20);
-        return view('videos.categories.index', compact('categories'));
+        return view('admin.videos.categories.index', compact('categories'));
     }
 
     public function store(Request $request)

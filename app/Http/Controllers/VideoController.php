@@ -256,7 +256,7 @@ class VideoController extends Controller
 
         $video = Video::create($validated);
 
-        return redirect()->route('videos.show', $video->slug)
+        return redirect()->route('admin.videos.show', $video->slug)
             ->with('success', 'Video uploaded successfully!');
     }
 
@@ -296,7 +296,7 @@ class VideoController extends Controller
             $shops = Shop::where('is_active', true)->get();
         }
 
-        return view('videos.edit', compact('video', 'categories', 'schools', 'shops'));
+        return view('dashboard.videos.edit', compact('video', 'categories', 'schools', 'shops'));
     }
 
     public function update(Request $request, Video $video)
@@ -313,7 +313,7 @@ class VideoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'embed_video_link' => 'required|url',
+            'embed_video_link' => ['required', 'regex:/^<iframe.*<\/iframe>$/s'],
             'category_id' => 'nullable|exists:video_categories,id',
             'school_id' => 'nullable|exists:schools,id',
             'shop_id' => 'nullable|exists:shops,id',
@@ -339,7 +339,7 @@ class VideoController extends Controller
 
         $video->update($validated);
 
-        return redirect()->route('videos.show', $video->slug)
+        return redirect()->route('admin.videos.show', $video->slug)
             ->with('success', 'Video updated successfully!');
     }
 
@@ -356,7 +356,7 @@ class VideoController extends Controller
 
         $video->delete();
 
-        return redirect()->route('videos.index')
+        return redirect()->route('admin.videos.index')
             ->with('success', 'Video deleted successfully!');
     }
 
