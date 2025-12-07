@@ -659,7 +659,7 @@
                             <a href="{{ route('website.videos.category', $category->slug) }}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                                 {{ $category->name }}
-                                <span class="badge bg-primary rounded-pill">{{ $category->videos_count ?? 0 }}</span>
+                                <span class="badge bg-primary rounded-pill">{{ $category->videos->count() ?? 0 }}</span>
                             </a>
                             @endforeach
                         </div>

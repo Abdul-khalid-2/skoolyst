@@ -171,8 +171,6 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
     Route::post('dashboard/videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('admin.videos.comments.like');
     Route::delete('dashboard/videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('admin.videos.comments.destroy');
 
-    // Reactions
-    Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('admin.videos.reactions.store');
 
     Route::get('dashboard/videos/{slug}', [VideoController::class, 'show'])->name('admin.videos.show');
 
@@ -302,6 +300,13 @@ Route::prefix('products')->name('website.stationary.')->group(function () {
     Route::get('/', [WebsiteProductsController::class, 'index'])->name('index');
 });
 
+// Comments
+// Route::post('dashboard/videos/{video}/comments', [VideoCommentController::class, 'store'])->name('admin.videos.comments.store');
+// Route::post('dashboard/videos/comments/{comment}/like', [VideoCommentController::class, 'like'])->name('admin.videos.comments.like');
+// Route::delete('dashboard/videos/comments/{comment}', [VideoCommentController::class, 'destroy'])->name('admin.videos.comments.destroy');
+
+// Reactions
+Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
 
 // Cart and Checkout Routes
 Route::get('/cart', [WebsiteCartController::class, 'index'])->name('website.cart');
