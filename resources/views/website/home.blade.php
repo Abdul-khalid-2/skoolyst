@@ -662,51 +662,96 @@
         <h2 class="section-title">What Parents Say</h2>
         <p class="section-subtitle">Real experiences from families who found their perfect school</p>
 
-        <div class="row mt-5">
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "SKOOLYST made finding the right school for my daughter so easy! The detailed profiles and honest reviews helped us make the perfect choice."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">P</div>
-                        <div class="author-info">
-                            <div class="author-name">Fatima Malik</div>
-                            <div class="author-role">Parent, Karachi</div>
+        @if($testimonials->count() > 2)
+            <div class="row mt-5">
+                @foreach($testimonials as $testimonial)
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <div class="testimonial-rating mb-3">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= $testimonial->rating)
+                                    <i class="fas fa-star text-warning"></i>
+                                @else
+                                    <i class="far fa-star text-muted"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <p class="testimonial-text">
+                            "{{ $testimonial->message }}"
+                        </p>
+                        <div class="testimonial-author">
+                            @if($testimonial->avatar)
+                                <img src="{{ asset($testimonial->avatar) }}" alt="{{ $testimonial->author_name }}" class="author-avatar">
+                            @else
+                                <div class="author-avatar">{{ $testimonial->initials }}</div>
+                            @endif
+                            <div class="author-info">
+                                <div class="author-name">{{ $testimonial->author_name }}</div>
+                                <div class="author-role">{{ $testimonial->author_role }}, {{ $testimonial->author_location }}</div>
+                                <div class="author-experience">
+                                    <small class="text-muted">{{ $testimonial->experience_rating }} • {{ $testimonial->formattedDate }}</small>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+                @endforeach
             </div>
+        @else
+            <!-- Fallback to hardcoded testimonials if none in database -->
+            <div class="row mt-5">
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "SKOOLYST made finding the right school for my daughter so easy! The detailed profiles and honest reviews helped us make the perfect choice."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">P</div>
+                            <div class="author-info">
+                                <div class="author-name">Fatima Malik</div>
+                                <div class="author-role">Parent, Karachi</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "The comparison feature is brilliant! We could evaluate multiple schools based on our priorities and found an excellent match within days."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">R</div>
-                        <div class="author-info">
-                            <div class="author-name">Umer Khan</div>
-                            <div class="author-role">Parent, Hyderabad</div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "The comparison feature is brilliant! We could evaluate multiple schools based on our priorities and found an excellent match within days."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">R</div>
+                            <div class="author-info">
+                                <div class="author-name">Umer Khan</div>
+                                <div class="author-role">Parent, Hyderabad</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="col-lg-4 col-md-6">
-                <div class="testimonial-card">
-                    <p class="testimonial-text">
-                        "As a working parent, I appreciated how quickly I could research schools online. The platform is user-friendly and comprehensive."
-                    </p>
-                    <div class="testimonial-author">
-                        <div class="author-avatar">A</div>
-                        <div class="author-info">
-                            <div class="author-name">Ayesha Ahmed</div>
-                            <div class="author-role">Parent, Karachi</div>
+                <div class="col-lg-4 col-md-6">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "As a working parent, I appreciated how quickly I could research schools online. The platform is user-friendly and comprehensive."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">A</div>
+                            <div class="author-info">
+                                <div class="author-name">Ayesha Ahmed</div>
+                                <div class="author-role">Parent, Karachi</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        @endif
+        
+        <!-- View All Testimonials Link -->
+        <div class="text-center mt-4">
+            <a href="{{ route('testimonials.index') }}" class="btn btn-outline-primary">
+                View All Testimonials <i class="fas fa-arrow-right ms-2"></i>
+            </a>
         </div>
     </div>
 </section>
@@ -719,6 +764,115 @@
         <a href="{{ route('browseSchools.index') }}" class="cta-button">Start Exploring</a>
     </div>
 </section>
+
+@push('testemonial')
+                <!-- Testimonial Form Section -->
+            <div class="testimonial-form-section">
+                <h3 class="form-title">Share Your Experience</h3>
+                <p class="form-subtitle">Help other parents by sharing your feedback about our platform</p>
+                
+                <form id="testimonialForm" class="testimonial-form">
+                    @csrf
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="author_name">Your Name <span style="color: red">*</span></label>
+                                <input type="text" id="author_name" name="author_name" class="form-control" 
+                                    placeholder="Enter your name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="author_email">Email Address</label>
+                                <input type="email" id="author_email" name="author_email" class="form-control" 
+                                    placeholder="Enter your email (optional)">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="author_location">Your Location</label>
+                                <input type="text" id="author_location" name="author_location" class="form-control" 
+                                    placeholder="e.g., Karachi, Lahore">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Rate Your Experience <span style="color: red">*</span></label>
+                                <div class="star-rating">
+                                    <input type="radio" id="star5" name="rating" value="5" required>
+                                    <label for="star5" title="Excellent">☆</label>
+                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <label for="star4" title="Good">☆</label>
+                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <label for="star3" title="Average">☆</label>
+                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <label for="star2" title="Poor">☆</label>
+                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <label for="star1" title="Very Poor">☆</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="experience_rating">Overall Experience <span style="color: red">*</span></label>
+                        <select id="experience_rating" name="experience_rating" class="form-control" required>
+                            <option value="">Select your experience</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="average">Average</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>What did you like most? (Select all that apply)</label>
+                        <div class="platform-features">
+                            <div class="form-check">
+                                <input type="checkbox" name="platform_features[]" value="School Search" id="feature1">
+                                <label for="feature1">School Search</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="platform_features[]" value="School Comparison" id="feature2">
+                                <label for="feature2">School Comparison</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="platform_features[]" value="Detailed Profiles" id="feature3">
+                                <label for="feature3">Detailed School Profiles</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="platform_features[]" value="Reviews & Ratings" id="feature4">
+                                <label for="feature4">Reviews & Ratings</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="platform_features[]" value="User Interface" id="feature5">
+                                <label for="feature5">User-Friendly Interface</label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Your Testimonial <span style="color: red">*</span></label>
+                        <textarea id="message" name="message" class="form-control" rows="4" 
+                                placeholder="Share your experience with SKOOLYST platform..." 
+                                minlength="20" maxlength="1000" required></textarea>
+                        <small class="text-muted">Minimum 20 characters</small>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-submit">
+                        <span class="submit-text">Submit Feedback</span>
+                        <span class="spinner-border spinner-border-sm d-none" role="status"></span>
+                    </button>
+                    
+                    <div class="alert mt-3 d-none" id="formMessage"></div>
+                </form>
+            </div>
+
+@endpush
 
 @push('scripts')
 <script src="{{ asset('assets/js/home.js') }}"></script>
@@ -796,6 +950,92 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+</script>
+<script>
+    // Add this to your main JS file or create a new one
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('testimonialForm');
+        const submitBtn = form.querySelector('.btn-submit');
+        const submitText = form.querySelector('.submit-text');
+        const spinner = form.querySelector('.spinner-border');
+        const formMessage = document.getElementById('formMessage');
+        
+        if (form) {
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Disable submit button and show spinner
+                submitBtn.disabled = true;
+                submitText.textContent = 'Submitting...';
+                spinner.classList.remove('d-none');
+                
+                // Clear previous messages
+                formMessage.classList.add('d-none');
+                formMessage.textContent = '';
+                
+                try {
+                    const response = await fetch('/testimonials', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value,
+                            'Accept': 'application/json'
+                        },
+                        body: new FormData(form)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok) {
+                        // Success
+                        formMessage.classList.remove('d-none', 'alert-danger');
+                        formMessage.classList.add('alert-success');
+                        formMessage.textContent = data.message;
+                        
+                        // Reset form
+                        form.reset();
+                        form.reset();
+                        
+                        // Reset star rating
+                        const starInputs = form.querySelectorAll('input[name="rating"]');
+                        starInputs.forEach(input => input.checked = false);
+                        
+                        // Scroll to message
+                        formMessage.scrollIntoView({ behavior: 'smooth' });
+                        
+                        // Hide message after 5 seconds
+                        setTimeout(() => {
+                            formMessage.classList.add('d-none');
+                        }, 5000);
+                    } else {
+                        // Show validation errors
+                        formMessage.classList.remove('d-none', 'alert-success');
+                        formMessage.classList.add('alert-danger');
+                        
+                        if (data.errors) {
+                            let errorHtml = '<ul class="mb-0">';
+                            for (const field in data.errors) {
+                                errorHtml += `<li>${data.errors[field][0]}</li>`;
+                            }
+                            errorHtml += '</ul>';
+                            formMessage.innerHTML = errorHtml;
+                        } else {
+                            formMessage.textContent = data.message || 'An error occurred. Please try again.';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    formMessage.classList.remove('d-none', 'alert-success');
+                    formMessage.classList.add('alert-danger');
+                    formMessage.textContent = 'An error occurred. Please try again.';
+                } finally {
+                    // Re-enable submit button
+                    submitBtn.disabled = false;
+                    submitText.textContent = 'Submit Feedback';
+                    spinner.classList.add('d-none');
+                }
+            });
+        }
+    });
 </script>
 @endpush
 

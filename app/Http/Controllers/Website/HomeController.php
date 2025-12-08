@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\School;
 use App\Models\Curriculum;
 use App\Models\Feature;
+use App\Models\Testimonial;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -35,7 +36,13 @@ class HomeController extends Controller
         // Get school types for filter
         $schoolTypes = ['Co-Ed', 'Boys', 'Girls'];
 
-        return view('website.home', compact('schools', 'curriculums', 'cities', 'schoolTypes'));
+        // Get testimonials for homepage
+        $testimonials = Testimonial::approved()
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
+        return view('website.home', compact('schools', 'curriculums', 'cities', 'schoolTypes', 'testimonials'));
     }
 
     public function search(Request $request)

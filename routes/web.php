@@ -42,6 +42,7 @@ use App\Http\Controllers\Website\WebsiteOrderController;
 use App\Http\Controllers\Website\WebsiteShopController;
 use App\Http\Controllers\Website\WebsiteProductsController;
 use App\Http\Controllers\Website\WebsiteModalController;
+use App\Http\Controllers\Website\TestimonialController;
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -292,6 +293,9 @@ Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('web
 
 Route::view('privacy', 'website.privacy')->name('website.privacy');
 Route::view('terms', 'website.terms')->name('website.terms');
+
+Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
+Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
 // Modal routes
 Route::get('/modal/product/{product}', [WebsiteModalController::class, 'productModal'])->name('website.modal.product');
