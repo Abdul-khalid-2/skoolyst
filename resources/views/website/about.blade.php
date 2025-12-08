@@ -590,7 +590,7 @@
                     <div class="feature-icon">
                         <i class="fas fa-ad"></i>
                     </div>
-                    <h3 class="feature-title">Post Advertisements</h3>
+                    <h3 class="feature-title">Post Announcements</h3>
                     <p class="feature-text">
                         Promote new admissions, events, workshops, and special programs to attract prospective students.
                     </p>
