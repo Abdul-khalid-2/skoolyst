@@ -774,7 +774,7 @@
                 </div>
 
                 <!-- Newsletter Widget -->
-                <div class="sidebar-widget card shadow-sm bg-primary text-white">
+                {{-- <div class="sidebar-widget card shadow-sm bg-primary text-white">
                     <div class="card-body text-center">
                         <i class="fas fa-video fa-2x mb-3"></i>
                         <h5>Stay Updated</h5>
@@ -788,7 +788,7 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
