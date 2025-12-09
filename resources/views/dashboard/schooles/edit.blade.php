@@ -231,7 +231,6 @@
                                 </button>
                             </div>
 
-                            <!-- Social Media Links -->
                            <!-- Social Media Links -->
                             <h5 class="mb-3">Social Media Links</h5>
                             <div class="row">
@@ -364,9 +363,8 @@
                                     @foreach($curriculums as $curriculum)
                                     <div class="col-md-6 mb-2">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="radio" name="curriculum_id"
-                                                value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}"
-                                                {{ old('curriculum_id', $schoolCurriculums[0] ?? '') == $curriculum->id ? 'checked' : '' }} required>
+                                            <input class="form-check-input" type="checkbox" name="curriculum_ids[]" value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}"
+                                                {{ in_array($curriculum->id, old('curriculum_ids', $schoolCurriculums)) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="curriculum_{{ $curriculum->id }}">
                                                 {{ $curriculum->name }}
                                             </label>
@@ -377,8 +375,8 @@
                                     </div>
                                     @endforeach
                                 </div>
-                                @error('curriculum_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @error('curriculum_ids')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
                                 @enderror
                             </div>
 
