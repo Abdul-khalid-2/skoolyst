@@ -1217,14 +1217,14 @@
                       <section class="sidebar-section">
                         <h3 class="sidebar-title">Quick Actions</h3>
                         <div class="action-buttons">
-                            <button class="action-btn primary">
+                            <!-- <button class="action-btn primary">
                                 <i class="fas fa-download"></i>
                                 Download Brochure
                             </button>
                             <button class="action-btn secondary">
                                 <i class="fas fa-calendar-check"></i>
                                 Schedule Visit
-                            </button>
+                            </button> -->
                             <button class="action-btn tertiary" id="writeReviewBtn">
                                 <i class="fas fa-edit"></i>
                                 Write Review
