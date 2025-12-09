@@ -97,7 +97,8 @@ class SchoolController extends Controller
             'password'        => 'required|string|min:8|confirmed',
             'features'        => 'nullable|array',
             'features.*'      => 'exists:features,id',
-            'curriculum_id'   => 'required|exists:curriculums,id',
+            'curriculum_ids' => 'required|array|min:1',
+            'curriculum_ids.*' => 'exists:curriculums,id',
 
             // Profile fields validation
             'established_year' => 'nullable|string|max:20',
@@ -207,7 +208,9 @@ class SchoolController extends Controller
             }
 
             // ✅ Attach curriculum to school
-            $school->curriculums()->attach($request->curriculum_id);
+            if ($request->has('curriculum_ids')) {
+                $school->curriculums()->attach($request->curriculum_ids);
+            }
 
             // Create admin user
             $user = new User();
@@ -375,7 +378,8 @@ class SchoolController extends Controller
                 'remove_banner'     => 'nullable|boolean',
                 'features'          => 'nullable|array',
                 'features.*'        => 'exists:features,id',
-                'curriculum_id'     => 'required|exists:curriculums,id',
+                'curriculum_ids'     => 'required|array|min:1',
+                'curriculum_ids.*'   => 'exists:curriculums,id',
                 'quick_fact_keys'   => 'nullable|array',
                 'quick_fact_values' => 'nullable|array',
             ]);
@@ -457,7 +461,11 @@ class SchoolController extends Controller
             }
 
             // ✅ Update Curriculum (Sync will handle adding/removing)
-            $school->curriculums()->sync([$request->curriculum_id]);
+            if ($request->has('curriculum_ids')) {
+                $school->curriculums()->sync($request->curriculum_ids);
+            } else {
+                $school->curriculums()->detach();
+            }
 
             $folderName = Str::slug($school->name, '-');
 

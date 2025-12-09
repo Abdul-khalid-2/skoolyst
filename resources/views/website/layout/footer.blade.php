@@ -1,5 +1,6 @@
     <footer>
         <div class="container">
+            @stack('testemonial')
             <nav class="footer-nav">
                 <a href="{{ route('website.home') }}">Home</a>
                 <a href="{{ route('browseSchools.index') }}">Browse Schools</a>

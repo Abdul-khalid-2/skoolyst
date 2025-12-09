@@ -11,9 +11,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('website.home') }}">Home</a>
                 </li>
-                <li class="nav-item">
+                <!-- <li class="nav-item">
                     <a class="nav-link {{ request()->is('how-it-works') ? 'active' : '' }}" href="{{ route('website.how_it_works') }}">How It Works</a>
-                </li>
+                </li> -->
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ route('browseSchools.index') }}">Schools</a>
                 </li>
@@ -36,41 +36,41 @@
                 <a href="{{ route('website.cart') }}" class="cart-icon position-relative text-decoration-none">
                     <i class="fas fa-shopping-cart fa-lg" style="color: #4361ee;"></i>
                     @php
-                        $cartCount = 0;
-                        if(session()->has('cart')) {
-                            $cart = session('cart');
-                            $cartCount = array_sum(array_column($cart, 'quantity'));
-                        }
+                    $cartCount = 0;
+                    if(session()->has('cart')) {
+                    $cart = session('cart');
+                    $cartCount = array_sum(array_column($cart, 'quantity'));
+                    }
                     @endphp
                     @if($cartCount > 0)
-                        <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ $cartCount > 99 ? '99+' : $cartCount }}
-                        </span>
+                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        {{ $cartCount > 99 ? '99+' : $cartCount }}
+                    </span>
                     @else
-                        <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                           0
-                        </span>
+                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        0
+                    </span>
                     @endif
                 </a>
 
                 <!-- Auth Buttons -->
                 <div class="auth-buttons d-flex gap-2">
                     @if (Route::has('login'))
-                        @auth
-                            @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
-                                <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
-                            @else
-                                <form method="POST" action="{{ route('logout') }}">
-                                    @csrf
-                                    <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
-                                </form>
-                            @endif
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary btn-login">Login</a>
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="btn btn-primary btn-register">Register</a>
-                            @endif
-                        @endauth
+                    @auth
+                    @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
+                    <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
+                    @else
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
+                    </form>
+                    @endif
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-login">Login</a>
+                    @if (Route::has('register'))
+                    <a href="{{ route('register') }}" class="btn btn-primary btn-register">Register</a>
+                    @endif
+                    @endauth
                     @endif
                 </div>
             </div>

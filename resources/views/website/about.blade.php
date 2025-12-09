@@ -4,8 +4,17 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <style>
-    /* ==================== ABOUT HERO SECTION ==================== */
-    .about-hero {
+    /* ==================== COMMON STYLES ==================== */
+    .section-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 3rem;
+        color: #1a1a1a;
+    }
+
+    /* ==================== HERO SECTION ==================== */
+    .hero-section {
         background: linear-gradient(135deg, #4361ee 0%, #38b000 50%, #ff9e00 100%);
         color: white;
         padding: 100px 0 80px;
@@ -14,7 +23,7 @@
         overflow: hidden;
     }
 
-    .about-hero::before {
+    .hero-section::before {
         content: '';
         position: absolute;
         top: 0;
@@ -50,18 +59,75 @@
         line-height: 1.6;
     }
 
-    /* ==================== MISSION VISION SECTION ==================== */
-    .mission-vision-section {
+    .hero-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 20px auto;
+        display: block;
+    }
+
+    /* ==================== ABOUT SECTION ==================== */
+    .about-section {
         padding: 80px 0;
         background: #f8f9fa;
     }
 
-    .section-title {
-        font-size: 2.5rem;
-        font-weight: 700;
+    .section-description {
+        font-size: 1.2rem;
         text-align: center;
-        margin-bottom: 3rem;
+        max-width: 800px;
+        margin: 0 auto 3rem;
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border-color: #4361ee;
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #4361ee, #38b000);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        color: white;
+        font-size: 1.8rem;
+    }
+
+    .feature-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
         color: #1a1a1a;
+    }
+
+    .feature-text {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #666;
+    }
+
+    /* ==================== MISSION VISION SECTION ==================== */
+    .mission-vision-section {
+        padding: 80px 0;
+        background: white;
     }
 
     .mission-vision-grid {
@@ -73,7 +139,7 @@
 
     .mission-card,
     .vision-card {
-        background: white;
+        background: #f8f9fa;
         padding: 3rem 2.5rem;
         border-radius: 20px;
         box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -113,8 +179,31 @@
         color: #555;
     }
 
+    /* ==================== HOW IT WORKS SECTION ==================== */
+    .how-it-works-section {
+        padding: 80px 0;
+        background: #f8f9fa;
+    }
+
+    .how-it-works-card {
+        background: white;
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        text-align: center;
+        height: 100%;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+    }
+
+    .how-it-works-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border-color: #38b000;
+    }
+
     /* ==================== PLATFORM FEATURES ==================== */
-    .features-section {
+    .platform-features-section {
         padding: 80px 0;
         background: white;
     }
@@ -141,37 +230,10 @@
         border-color: #4361ee;
     }
 
-    .feature-icon {
-        width: 70px;
-        height: 70px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 1.5rem;
-        color: white;
-        font-size: 1.8rem;
-    }
-
-    .feature-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-        color: #1a1a1a;
-    }
-
-    .feature-description {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #666;
-    }
-
     /* ==================== VALUE PROPOSITION ==================== */
     .value-section {
         padding: 80px 0;
-        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-        /* color: white; */
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     }
 
     .value-grid {
@@ -181,81 +243,95 @@
     }
 
     .value-card {
+        background: white;
         text-align: center;
-        padding: 2rem;
+        padding: 2.5rem 2rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .value-card:hover {
+        transform: translateY(-5px);
     }
 
     .value-number {
-        font-size: 3rem;
+        font-size: 2.5rem;
         font-weight: 800;
         margin-bottom: 1rem;
-        opacity: 0.9;
+        color: #4361ee;
     }
 
     .value-title {
         font-size: 1.3rem;
         font-weight: 600;
         margin-bottom: 1rem;
+        color: #1a1a1a;
     }
 
     .value-description {
         font-size: 1rem;
-        opacity: 0.9;
+        color: #666;
         line-height: 1.6;
     }
 
-    /* ==================== FUTURE ROADMAP ==================== */
-    .roadmap-section {
+    /* ==================== BLOG SECTION ==================== */
+    .blog-section {
         padding: 80px 0;
         background: #f8f9fa;
     }
 
-    .roadmap-timeline {
-        max-width: 800px;
-        margin: 0 auto;
-    }
-
-    .roadmap-item {
+    .blog-card {
         background: white;
-        padding: 2.5rem;
         border-radius: 15px;
-        margin-bottom: 2rem;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        border-left: 5px solid #4361ee;
+        overflow: hidden;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        height: 100%;
     }
 
-    .roadmap-phase {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #4361ee;
-        margin-bottom: 0.5rem;
+    .blog-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
     }
 
-    .roadmap-title {
-        font-size: 1.4rem;
+    .blog-image {
+        height: 200px;
+        background: linear-gradient(135deg, #4361ee, #38b000);
+        background-size: cover;
+        background-position: center;
+    }
+
+    .blog-content {
+        padding: 2rem;
+    }
+
+    .blog-title {
+        font-size: 1.3rem;
         font-weight: 700;
         margin-bottom: 1rem;
         color: #1a1a1a;
     }
 
-    .roadmap-features {
-        list-style: none;
-        padding: 0;
+    .blog-excerpt {
+        font-size: 1rem;
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
     }
 
-    .roadmap-features li {
-        padding: 0.5rem 0;
-        color: #555;
-        position: relative;
-        padding-left: 1.5rem;
+    .blog-link {
+        color: #4361ee;
+        text-decoration: none;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: color 0.3s ease;
     }
 
-    .roadmap-features li::before {
-        content: '✓';
-        position: absolute;
-        left: 0;
+    .blog-link:hover {
         color: #38b000;
-        font-weight: bold;
     }
 
     /* ==================== CTA SECTION ==================== */
@@ -309,6 +385,40 @@
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
+    /* ==================== FINAL CTA ==================== */
+    .final-cta {
+        padding: 80px 0;
+        background: #1a1a1a;
+        color: white;
+        text-align: center;
+    }
+
+    .final-cta-headline {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+    }
+
+    .final-cta-button {
+        display: inline-block;
+        padding: 1rem 2.5rem;
+        background: #38b000;
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 2px solid #38b000;
+    }
+
+    .final-cta-button:hover {
+        background: transparent;
+        color: #38b000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(56, 176, 0, 0.3);
+    }
+
     /* ==================== RESPONSIVE DESIGN ==================== */
     @media (max-width: 768px) {
         .hero-title {
@@ -318,25 +428,19 @@
         .hero-subtitle {
             font-size: 1.1rem;
         }
-
-        .mission-vision-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .mission-card,
-        .vision-card {
-            padding: 2rem 1.5rem;
-        }
-
-        .features-grid {
-            grid-template-columns: 1fr;
-        }
-
+        
+        .mission-vision-grid,
+        .features-grid,
         .value-grid {
             grid-template-columns: 1fr;
         }
 
-        .roadmap-item {
+        .mission-card,
+        .vision-card,
+        .feature-card,
+        .how-it-works-card,
+        .feature-card,
+        .value-card {
             padding: 2rem 1.5rem;
         }
 
@@ -349,6 +453,10 @@
             width: 100%;
             max-width: 300px;
         }
+        
+        .section-title {
+            font-size: 2rem;
+        }
     }
 </style>
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
@@ -357,12 +465,76 @@
 @section('content')
 
 <!-- ==================== HERO SECTION ==================== -->
-<section class="about-hero">
+<section class="hero-section">
     <div class="container">
         <h1 class="hero-title">Transforming Education Discovery</h1>
         <p class="hero-subtitle">
             SKOOLYST is revolutionizing how schools connect with students and parents, creating a comprehensive educational ecosystem that empowers informed decisions and bright futures.
         </p>
+        <div class="hero-content">
+            <img src="{{ asset('assets/assets/hero1.png') }}" alt="SKOOLYST Platform Overview">
+        </div>
+    </div>
+</section>
+
+<!-- ==================== ABOUT SECTION ==================== -->
+<section class="about-section" id="about">
+    <div class="container">
+        <h2 class="section-title">Why Choose SKOOLYST?</h2>
+        <p class="section-description">
+            Empower schools, academies, and institutes to build digital profiles, advertise admissions,
+            showcase achievements, and connect with students – all in one place.
+        </p>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-school"></i>
+                    </div>
+                    <h3 class="feature-title">School Profiles</h3>
+                    <p class="feature-text">
+                        Create and customize your institution's comprehensive digital page with ease.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                    <h3 class="feature-title">Smart Ads</h3>
+                    <p class="feature-text">
+                        Promote admissions, events, or achievements to reach the right audience effectively.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <h3 class="feature-title">Achievement Hub</h3>
+                    <p class="feature-text">
+                        Highlight and celebrate student and staff successes on a dedicated platform.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">Parent Engagement</h3>
+                    <p class="feature-text">
+                        Build trust with direct communication channels between schools and families.
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 
@@ -378,7 +550,7 @@
                 </div>
                 <h3 class="card-title">Our Mission</h3>
                 <p class="card-content">
-                    To create the most comprehensive educational platform that bridges the gap between schools and families. We empower schools to showcase their unique offerings while providing parents and students with transparent, detailed information to make the best educational choices for their future.
+                    To create the most comprehensive educational platform that bridges the gap between schools and families. We empower schools to showcase their unique offerings while providing parents and students with transparent, detailed information to make the best educational choices.
                 </p>
             </div>
 
@@ -395,39 +567,76 @@
     </div>
 </section>
 
+<!-- ==================== HOW IT WORKS SECTION ==================== -->
+<section class="how-it-works-section" id="how-it-works">
+    <div class="container">
+        <h2 class="section-title">How It Works</h2>
+
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="how-it-works-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3 class="feature-title">Create School Profile</h3>
+                    <p class="feature-text">
+                        Sign up and build a complete profile showcasing your institution's unique identity, facilities, and values.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="how-it-works-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-ad"></i>
+                    </div>
+                    <h3 class="feature-title">Post Announcements</h3>
+                    <p class="feature-text">
+                        Promote new admissions, events, workshops, and special programs to attract prospective students.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="how-it-works-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <h3 class="feature-title">Highlight Achievements</h3>
+                    <p class="feature-text">
+                        Share academic excellence, sports victories, cultural events, and student accomplishments with pride.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="how-it-works-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 class="feature-title">Engage with Community</h3>
+                    <p class="feature-text">
+                        Foster meaningful connections through integrated messaging and community-building tools.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- ==================== PLATFORM FEATURES ==================== -->
-<section class="features-section">
+<section class="platform-features-section">
     <div class="container">
         <h2 class="section-title">What Makes SKOOLYST Unique</h2>
 
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
-                    <i class="fas fa-school"></i>
-                </div>
-                <h3 class="feature-title">Centralized School Directory</h3>
-                <p class="feature-description">
-                    Multiple schools register and create comprehensive profiles showcasing their facilities, curriculum, achievements, and unique offerings - all in one place for easy comparison.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h3 class="feature-title">Smart Discovery & Analytics</h3>
-                <p class="feature-description">
+                <p class="feature-text">
                     Advanced search and filtering help users find perfect matches. Schools get valuable insights on profile visits, engagement metrics, and audience demographics.
-                </p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">
-                    <i class="fas fa-bullhorn"></i>
-                </div>
-                <h3 class="feature-title">Digital Advertisement Board</h3>
-                <p class="feature-description">
-                    Schools can create and display event banners, achievement announcements, admission notices, and sports updates - replacing traditional street boards with digital efficiency.
                 </p>
             </div>
 
@@ -436,7 +645,7 @@
                     <i class="fas fa-star"></i>
                 </div>
                 <h3 class="feature-title">Authentic Reviews & Ratings</h3>
-                <p class="feature-description">
+                <p class="feature-text">
                     Real feedback from parents and students helps build trust and provides valuable insights for both schools and prospective families.
                 </p>
             </div>
@@ -446,7 +655,7 @@
                     <i class="fas fa-exchange-alt"></i>
                 </div>
                 <h3 class="feature-title">Competitive Comparison</h3>
-                <p class="feature-description">
+                <p class="feature-text">
                     Users can compare multiple schools side-by-side based on curriculum, fees, facilities, and reviews to make informed decisions.
                 </p>
             </div>
@@ -455,9 +664,9 @@
                 <div class="feature-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <h3 class="feature-title">Future E-commerce Integration</h3>
-                <p class="feature-description">
-                    Coming soon: Purchase courses, uniforms, books, and other school essentials directly through our platform for complete convenience.
+                <h3 class="feature-title">E-commerce Integration</h3>
+                <p class="feature-text">
+                    Purchase courses, uniforms, books, and other school essentials directly through our platform for complete convenience.
                 </p>
             </div>
         </div>
@@ -467,7 +676,7 @@
 <!-- ==================== VALUE PROPOSITION ==================== -->
 <section class="value-section">
     <div class="container">
-        <h2 class="section-title">Why Choose SKOOLYST?</h2>
+        <h2 class="section-title">Who Benefits from SKOOLYST?</h2>
 
         <div class="value-grid">
             <div class="value-card">
@@ -492,6 +701,54 @@
                 <p class="value-description">
                     Find the perfect learning environment that matches your interests, learning style, and career aspirations for a successful educational journey.
                 </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== BLOG SECTION (Optional) ==================== -->
+<section class="blog-section" id="blog">
+    <div class="container">
+        <h2 class="section-headline">Latest Insights</h2>
+
+        <div class="row mt-5">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="blog-card">
+                    <div class="blog-image"></div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Digital Transformation in Education</h3>
+                        <p class="blog-excerpt">
+                            Discover how educational institutions are leveraging technology to enhance learning experiences and streamline operations.
+                        </p>
+                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="blog-card">
+                    <div class="blog-image"></div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Building Stronger School Communities</h3>
+                        <p class="blog-excerpt">
+                            Learn effective strategies for fostering parent engagement and creating collaborative educational environments.
+                        </p>
+                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="blog-card">
+                    <div class="blog-image"></div>
+                    <div class="blog-content">
+                        <h3 class="blog-title">Marketing Your School Online</h3>
+                        <p class="blog-excerpt">
+                            Explore proven digital marketing techniques to attract prospective students and showcase your institution's strengths.
+                        </p>
+                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -561,4 +818,55 @@
     </div>
 </section>
 
+<!-- ==================== FINAL CTA ==================== -->
+<section class="final-cta">
+    <div class="container">
+        <h2 class="final-cta-headline">Ready to Transform Education?</h2>
+        <p class="section-description" style="color: #ccc; margin-bottom: 2rem;">
+            Join thousands of schools and parents who trust SKOOLYST for their educational journey.
+        </p>
+        <a href="{{ route('register') }}" class="final-cta-button">Get Started Free</a>
+    </div>
+</section>
+
 @endsection
+
+@push('scripts')
+<script>
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if(targetId === '#') return;
+            
+            const targetElement = document.querySelector(targetId);
+            if(targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 100,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+
+    // Add animation on scroll (optional)
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+            }
+        });
+    }, observerOptions);
+
+    // Observe all feature cards
+    document.querySelectorAll('.feature-card, .how-it-works-card, .feature-card, .value-card').forEach(card => {
+        observer.observe(card);
+    });
+</script>
+@endpush
