@@ -311,7 +311,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Video reaction function
             window.reactToVideo = function(reaction) {
-                fetch('{{ route("admin.videos.reactions.store", $video) }}', {
+                fetch('{{ route("videos.reactions.store", $video) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

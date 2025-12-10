@@ -601,10 +601,33 @@
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="d-flex gap-2 flex-wrap">
-                            <button class="btn btn-outline-primary" id="like-btn">
-                                <i class="fas fa-thumbs-up me-2"></i>
-                                <span id="like-text">Like</span>
-                            </button>
+                            <!-- Video Actions -->
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="d-flex gap-2 flex-wrap">
+                                      @auth
+                                        @php
+                                            $userHasLiked = $video->reactions()
+                                                ->where('user_id', Auth::id())
+                                                ->where('reaction', 'like')
+                                                ->exists();
+                                        @endphp
+                                        
+                                        <button class="btn {{ $userHasLiked ? 'btn-primary' : 'btn-outline-primary' }}" 
+                                                onclick="reactToVideo('like')" 
+                                                id="like-btn">
+                                            <i class="fas fa-thumbs-up me-2"></i>
+                                            <span id="like-text">{{ $userHasLiked ? 'Liked' : 'Like' }}</span>
+                                        </button>
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-thumbs-up me-2"></i> Like
+                                        </a>
+                                    @endauth
+                                        <!-- other buttons -->
+                                    </div>
+                                </div>
+                            </div>
                             {{-- <button class="btn btn-outline-secondary" onclick="shareVideo()">
                                 <i class="fas fa-share-alt me-2"></i> Share
                             </button>
@@ -699,9 +722,9 @@
                                     Member since {{ $video->user->created_at->format('F Y') }}
                                 </p>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-outline-primary btn-sm">
+                                    {{-- <button class="btn btn-outline-primary btn-sm">
                                         <i class="fas fa-user-plus me-1"></i> Follow
-                                    </button>
+                                    </button> --}}
                                     <a href="{{ route('website.videos.index') }}?user={{ $video->user_id }}" 
                                        class="btn btn-outline-secondary btn-sm">
                                         <i class="fas fa-video me-1"></i> View All Videos
@@ -790,13 +813,13 @@
                                             {{ $comment->message }}
                                         </div>
                                         <div class="comment-actions mt-2">
-                                            <button class="comment-action-btn like-comment-btn" data-comment-id="{{ $comment->id }}">
+                                            <!-- <button class="comment-action-btn like-comment-btn" data-comment-id="{{ $comment->id }}">
                                                 <i class="fas fa-thumbs-up me-1"></i>
                                                 <span class="like-count">{{ $comment->likes_count }}</span>
-                                            </button>
-                                            {{-- <button class="comment-action-btn reply-btn" data-comment-id="{{ $comment->id }}">
+                                            </button> -->
+                                             <!-- <button class="comment-action-btn reply-btn" data-comment-id="{{ $comment->id }}">
                                                 <i class="fas fa-reply me-1"></i> Reply
-                                            </button> --}}
+                                            </button> -->
                                         </div>
                                     </div>
                                 </div>
@@ -1084,8 +1107,30 @@
         // Like functionality
         const likeBtn = document.getElementById('like-btn');
         const likeText = document.getElementById('like-text');
-        const likesCount = document.getElementById('likes-count');
+        const likesCountStat = document.getElementById('likes-count-stat'); // Changed ID
 
+        function updateLikeUI(data) {
+            // Update likes count in stats section
+            const likesCountStat = document.getElementById('likes-count-stat');
+            if (likesCountStat) {
+                likesCountStat.textContent = data.likes_count;
+            }
+            
+            // Update the like button
+            if (likeBtn) {
+                if (data.reaction) {
+                    likeBtn.classList.remove('btn-outline-primary');
+                    likeBtn.classList.add('btn-primary');
+                    likeBtn.innerHTML = '<i class="fas fa-thumbs-up me-2"></i> <span id="like-text">Liked</span>';
+                } else {
+                    likeBtn.classList.remove('btn-primary');
+                    likeBtn.classList.add('btn-outline-primary');
+                    likeBtn.innerHTML = '<i class="fas fa-thumbs-up me-2"></i> <span id="like-text">Like</span>';
+                }
+            }
+        }
+
+        // Add click event listener
         likeBtn.addEventListener('click', function() {
             if (!{{ Auth::check() ? 'true' : 'false' }}) {
                 window.location.href = '{{ route("login") }}';
@@ -1108,22 +1153,25 @@
                     return;
                 }
                 
-                likesCount.textContent = data.likes_count;
-                
-                if (data.reaction) {
-                    likeBtn.classList.add('active');
-                    likeText.textContent = 'Liked';
-                    likeBtn.innerHTML = '<i class="fas fa-thumbs-up"></i> <span id="like-text">Liked</span> (' + data.likes_count + ')';
-                } else {
-                    likeBtn.classList.remove('active');
-                    likeText.textContent = 'Like';
-                    likeBtn.innerHTML = '<i class="fas fa-thumbs-up"></i> <span id="like-text">Like</span> (' + data.likes_count + ')';
-                }
+                updateLikeUI(data);
             })
             .catch(error => {
                 console.error('Error:', error);
                 showToast('An error occurred. Please try again.', 'error');
             });
+        });
+
+        // Initialize button state on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // You might want to pass initial reaction state from backend
+            @if(Auth::check())
+                const userHasLiked = {{ $video->reactions()->where('user_id', Auth::id())->where('reaction', 'like')->exists() ? 'true' : 'false' }};
+                if (userHasLiked) {
+                    likeBtn.classList.remove('btn-outline-primary');
+                    likeBtn.classList.add('btn-primary');
+                    likeBtn.innerHTML = '<i class="fas fa-thumbs-up me-2"></i> <span id="like-text">Liked</span>';
+                }
+            @endif
         });
 
         // Share functionality
