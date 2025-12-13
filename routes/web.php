@@ -236,6 +236,17 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
     Route::post('dashboard/reviews/{review}/update-status', [App\Http\Controllers\ReviewController::class, 'updateStatus'])->name('reviews.update-status');
     Route::post('dashboard/reviews/bulk-action', [App\Http\Controllers\ReviewController::class, 'bulkAction'])->name('reviews.bulk-action');
     Route::get('dashboard/reviews/get-branches', [App\Http\Controllers\ReviewController::class, 'getBranches'])->name('reviews.get-branches');
+
+
+    // Branch Image Management Routes
+    Route::prefix('schools/{school}/branches/{branch}')->group(function () {
+        Route::get('/images', [BranchController::class, 'imagesIndex'])->name('schools.branches.images.index');
+        Route::post('/images', [BranchController::class, 'storeImages'])->name('schools.branches.images.store');
+        Route::delete('/images/{image}', [BranchController::class, 'deleteImage'])->name('schools.branches.images.destroy');
+        Route::put('/images/{image}', [BranchController::class, 'updateImage'])->name('schools.branches.images.update');
+        Route::post('/images/reorder', [BranchController::class, 'reorderImages'])->name('schools.branches.images.reorder');
+        Route::get('/images/stats', [BranchController::class, 'getImageStats'])->name('schools.branches.getImageStats');
+    });
 });
 
 
