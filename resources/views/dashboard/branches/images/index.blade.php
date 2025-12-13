@@ -163,7 +163,7 @@
                                  data-type="{{ $image->type }}">
                                 <div class="card h-100 shadow-sm">
                                     <div class="position-relative">
-                                        <img src="{{ Storage::url($image->image_path) }}" 
+                                        <img src="{{ asset('website/'. $image->image_path) }}" 
                                              class="card-img-top gallery-image" 
                                              alt="{{ $image->title }}"
                                              data-id="{{ $image->id }}"
@@ -631,7 +631,7 @@
                      data-type="${imageData.type}">
                     <div class="card h-100 shadow-sm">
                         <div class="position-relative">
-                            <img src="/storage/${imageData.image_path}" 
+                            <img src="{{asset('website/${imageData.image_path}')}}" 
                                  class="card-img-top gallery-image" 
                                  alt="${imageData.title}"
                                  data-id="${imageData.id}"

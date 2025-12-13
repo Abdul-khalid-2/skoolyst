@@ -241,17 +241,15 @@ class BranchController extends Controller
         $uploadedImages = [];
 
         try {
+            $imageType = $request->type ?? 'gallery';
+
             foreach ($request->file('images') as $image) {
                 $originalName = $image->getClientOriginalName();
                 $extension = $image->getClientOriginalExtension();
                 $uniqueName = Str::uuid() . '.' . $extension;
 
-                // Create directory if not exists
-                $directory = 'branch-images/' . $branch->id;
-                Storage::makeDirectory($directory);
-
-                // Store image
-                $path = $image->storeAs($directory, $uniqueName, 'public');
+                $imagePath = Storage::disk('website')
+                    ->putFile("school/{$school->id}/branches/{$branch->id}/{$imageType}", $image);
 
                 // Get next sort order
                 $maxSortOrder = $branch->images()->max('sort_order') ?? 0;
@@ -260,16 +258,25 @@ class BranchController extends Controller
                 $branchImage = BranchImage::create([
                     'uuid' => Str::uuid(),
                     'branch_id' => $branch->id,
-                    'image_path' => $path,
+                    'image_path' => $imagePath,
                     'image_name' => pathinfo($originalName, PATHINFO_FILENAME),
                     'image_unique_name' => $uniqueName,
                     'title' => pathinfo($originalName, PATHINFO_FILENAME),
-                    'type' => $request->type ?? 'gallery',
+                    'type' => $imageType,
                     'sort_order' => $maxSortOrder + 1,
                     'status' => 'active',
                 ]);
 
-                $uploadedImages[] = $branchImage;
+                $uploadedImages[] = [
+                    'id' => $branchImage->id,
+                    'title' => $branchImage->title,
+                    'type' => $branchImage->type,
+                    'is_featured' => (bool)$branchImage->is_featured,
+                    'is_main_banner' => (bool)$branchImage->is_main_banner,
+                    'image_path' => $branchImage->image_path,
+                    'image_url' => Storage::disk('website')->url($branchImage->image_path),
+                    'created_at' => $branchImage->created_at->toDateTimeString()
+                ];
             }
 
             return response()->json([
@@ -317,16 +324,27 @@ class BranchController extends Controller
             }
 
             $image->update($data);
+            $image->refresh();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Image updated successfully',
-                'image' => $image
+                'image' => [
+                    'id' => $image->id,
+                    'title' => $image->title,
+                    'caption' => $image->caption,
+                    'type' => $image->type,
+                    'is_featured' => (bool)$image->is_featured,
+                    'is_main_banner' => (bool)$image->is_main_banner,
+                    'image_path' => $image->image_path,
+                    'image_url' => Storage::disk('website')->url($image->image_path),
+                    'updated_at' => $image->updated_at->toDateTimeString()
+                ]
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update image'
+                'message' => 'Failed to update image: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -342,9 +360,9 @@ class BranchController extends Controller
         }
 
         try {
-            // Delete physical file
-            if (Storage::exists($image->image_path)) {
-                Storage::delete($image->image_path);
+            // ✅ Delete physical file from website disk
+            if (Storage::disk('website')->exists($image->image_path)) {
+                Storage::disk('website')->delete($image->image_path);
             }
 
             // Delete record

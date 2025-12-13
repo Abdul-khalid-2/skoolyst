@@ -254,7 +254,7 @@
                                 @foreach($branch->images->take(6) as $image)
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="image-preview">
-                                        <img src="{{ Storage::url($image->image_path) }}" 
+                                        <img src="{{ asset('website/'. $image->image_path) }}" 
                                              alt="{{ $image->title }}" 
                                              class="img-fluid rounded"
                                              style="height: 120px; width: 100%; object-fit: cover;">
@@ -312,7 +312,6 @@
         </div>
     </div>
 
-    @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Get current location
@@ -342,5 +341,5 @@
             @endif
         });
     </script>
-    @endpush
+
 </x-app-layout>
