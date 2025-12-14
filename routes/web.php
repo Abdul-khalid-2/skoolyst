@@ -251,9 +251,9 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
 
 
 // Notification routes
-Route::middleware(['auth'])->prefix('admin/inquiries')->group(function () {
-    Route::get('/notification-count', [ContactInquiryController::class, 'getNotificationCount'])->name('admin.inquiries.notification-count');
-    Route::post('/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
+Route::middleware(['auth'])->group(function () {
+    Route::get('admin/inquiries/notification-count', [ContactInquiryController::class, 'getNotificationCount'])->name('admin.inquiries.notification-count');
+    Route::post('admin/inquiries/{inquiry}/mark-read', [ContactInquiryController::class, 'markAsRead'])->name('admin.inquiries.mark-read');
 });
 
 Route::get('/announcement/{announcement}', [WebsiteAnnouncementController::class, 'show'])->name('website.announcements.show');
@@ -263,23 +263,16 @@ Route::post('announcements/{uuid}/comments', [WebsiteAnnouncementController::cla
 //     ->name('announcements.comments.store');
 
 // Blog Routes
-Route::prefix('blog')->name('website.blog.')->group(function () {
-    Route::get('/', [WebsiteBlogPostController::class, 'index'])->name('index');
-    Route::get('/{slug}', [WebsiteBlogPostController::class, 'show'])->name('show');
-    Route::get('/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('category');
-    Route::get('/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('tag');
+Route::get('blog/', [WebsiteBlogPostController::class, 'index'])->name('website.blog.index');
+Route::get('blog/{slug}', [WebsiteBlogPostController::class, 'show'])->name('website.blog.show');
+Route::get('blog/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('website.blog.category');
+Route::get('blog/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('website.blog.tag');
+Route::post('blog/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('website.blog.comment.store');
 
+Route::get('shop/', [WebsiteShopController::class, 'index'])->name('website.shop.index');
+Route::get('shop/{uuid}', [WebsiteShopController::class, 'show'])->name('website.shop.show');
 
-    Route::post('/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('comment.store');
-});
-
-Route::prefix('shop')->name('website.shop.')->group(function () {
-    Route::get('/', [WebsiteShopController::class, 'index'])->name('index');
-    Route::get('/{uuid}', [WebsiteShopController::class, 'show'])->name('show'); // Add this line
-});
-Route::prefix('products')->name('website.stationary.')->group(function () {
-    Route::get('/', [WebsiteProductsController::class, 'index'])->name('index');
-});
+Route::get('products/', [WebsiteProductsController::class, 'index'])->name('website.stationary.index');
 
 
 // Cart and Checkout Routes
