@@ -134,10 +134,9 @@ class WebsiteBlogPostController extends Controller
      */
     public function category($slug)
     {
-        abort(503); // Disable category view
         $category = BlogCategory::where('slug', $slug)->firstOrFail();
 
-        $posts = BlogPost::with(['author', 'category'])
+        $posts = BlogPost::with(['user', 'category'])
             ->where('blog_category_id', $category->id)
             ->where('status', 'published')
             ->where('published_at', '<=', now())
@@ -145,13 +144,13 @@ class WebsiteBlogPostController extends Controller
             ->paginate(12);
 
         // Get categories with post counts
-        $categories = BlogCategory::withCount(['posts' => function ($query) {
+        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
             $query->where('status', 'published')
                 ->where('published_at', '<=', now());
         }])->get();
 
         // Get popular posts
-        $popularPosts = BlogPost::with(['author', 'category'])
+        $popularPosts = BlogPost::with(['user', 'category'])
             ->where('status', 'published')
             ->where('published_at', '<=', now())
             ->orderBy('view_count', 'desc')
@@ -174,8 +173,7 @@ class WebsiteBlogPostController extends Controller
      */
     public function tag($tag)
     {
-        abort(503);
-        $posts = BlogPost::with(['author', 'category'])
+        $posts = BlogPost::with(['user', 'category'])
             ->where('status', 'published')
             ->where('published_at', '<=', now())
             ->whereJsonContains('tags', $tag)
@@ -183,13 +181,13 @@ class WebsiteBlogPostController extends Controller
             ->paginate(12);
 
         // Get categories with post counts
-        $categories = BlogCategory::withCount(['posts' => function ($query) {
+        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
             $query->where('status', 'published')
                 ->where('published_at', '<=', now());
         }])->get();
 
         // Get popular posts
-        $popularPosts = BlogPost::with(['author', 'category'])
+        $popularPosts = BlogPost::with(['user', 'category'])
             ->where('status', 'published')
             ->where('published_at', '<=', now())
             ->orderBy('view_count', 'desc')
