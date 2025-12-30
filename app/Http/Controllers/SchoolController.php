@@ -88,9 +88,11 @@ class SchoolController extends Controller
             'website'         => 'nullable|url|max:255',
             'facilities'      => 'nullable|string',
             'school_type'     => 'required|in:Co-Ed,Boys,Girls',
+            'fee_structure_type' => 'required|in:fixed,class_wise',
             'regular_fees'    => 'nullable|numeric|min:0',
             'discounted_fees' => 'nullable|numeric|min:0',
             'admission_fees'  => 'nullable|numeric|min:0',
+            'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|nullable|string',
             'status'          => 'required|in:active,inactive',
             'visibility'      => 'required|in:public,private',
             'publish_date'    => 'nullable|date',
@@ -108,7 +110,8 @@ class SchoolController extends Controller
             'school_motto'     => 'nullable|string|max:255',
             'mission'          => 'nullable|string',
             'vision'           => 'nullable|string',
-            'logo'             => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'logo'              => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'banner_image'      => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'facebook_url'     => 'nullable|url|max:255',
             'twitter_url'      => 'nullable|url|max:255',
             'instagram_url'    => 'nullable|url|max:255',
@@ -125,9 +128,41 @@ class SchoolController extends Controller
         try {
             DB::beginTransaction();
 
+            // Prepare fees data based on structure type
+            $regularFees = null;
+            $discountedFees = null;
+            $admissionFees = $validated['admission_fees'] ?? null;
+            $classWiseFees = null;
+
+            if ($validated['fee_structure_type'] === 'fixed') {
+                $regularFees = $validated['regular_fees'] ?? null;
+                $discountedFees = $validated['discounted_fees'] ?? null;
+            } else {
+                $classWiseFees = $validated['class_wise_fees'];
+            }
+
             // Create school
-            $school = new School($validated);
-            $school->save();
+            $school = School::create([
+                'name'              => $validated['name'],
+                'description'       => $validated['description'] ?? null,
+                'address'           => $validated['address'],
+                'city'              => $validated['city'],
+                'contact_number'    => $validated['contact_number'] ?? null,
+                'email'             => $validated['email'],
+                'website'           => $validated['website'] ?? null,
+                'facilities'        => $validated['facilities'] ?? null,
+                'school_type'       => $validated['school_type'],
+                'fee_structure_type' => $validated['fee_structure_type'],
+                'regular_fees'      => $regularFees,
+                'discounted_fees'   => $discountedFees,
+                'admission_fees'    => $admissionFees,
+                'class_wise_fees'   => $classWiseFees,
+                'status'            => $validated['status'],
+                'visibility'        => $validated['visibility'],
+                'publish_date'      => $validated['publish_date'] ?? null,
+                'banner_title'      => $validated['banner_title'] ?? null,
+                'banner_tagline'    => $validated['banner_tagline'] ?? null,
+            ]);
 
             // Create school profile
             $profileData = [
@@ -345,7 +380,8 @@ class SchoolController extends Controller
                 'admin-email'       => $adminEmailRule,
                 'website'           => 'nullable|url|max:255',
                 'facilities'        => 'nullable|string',
-                'school_type'       => 'required|in:Co-Ed,Boys,Girls',
+                'school_type'       => 'required|in:Co-Ed,Boys,Girls,Separate',
+                'fee_structure_type' => 'required|in:fixed,class_wise',
                 'established_year'  => 'nullable|string|max:4',
                 'student_strength'  => 'nullable|integer|min:0',
                 'faculty_count'     => 'nullable|integer|min:0',
@@ -361,6 +397,7 @@ class SchoolController extends Controller
                 'regular_fees'      => 'nullable|numeric|min:0',
                 'discounted_fees'   => 'nullable|numeric|min:0',
                 'admission_fees'    => 'nullable|numeric|min:0',
+                'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|nullable|string',
                 'status'            => 'required|in:active,inactive',
                 'visibility'        => 'required|in:public,private',
                 'publish_date'      => 'nullable|date',
@@ -386,6 +423,19 @@ class SchoolController extends Controller
 
             DB::beginTransaction();
 
+            // Prepare fees data based on structure type
+            $regularFees = null;
+            $discountedFees = null;
+            $admissionFees = $validated['admission_fees'] ?? null;
+            $classWiseFees = null;
+
+            if ($validated['fee_structure_type'] === 'fixed') {
+                $regularFees = $validated['regular_fees'] ?? null;
+                $discountedFees = $validated['discounted_fees'] ?? null;
+            } else {
+                $classWiseFees = $validated['class_wise_fees'];
+            }
+
             // ✅ Update school info
             $school->update([
                 'name'              => $validated['name'],
@@ -397,9 +447,11 @@ class SchoolController extends Controller
                 'website'           => $validated['website'] ?? null,
                 'facilities'        => $validated['facilities'] ?? null,
                 'school_type'       => $validated['school_type'],
-                'regular_fees'      => $validated['regular_fees'] ?? null,
-                'discounted_fees'   => $validated['discounted_fees'] ?? null,
-                'admission_fees'    => $validated['admission_fees'] ?? null,
+                'fee_structure_type' => $validated['fee_structure_type'],
+                'regular_fees'      => $regularFees,
+                'discounted_fees'   => $discountedFees,
+                'admission_fees'    => $admissionFees,
+                'class_wise_fees'   => $classWiseFees,
                 'status'            => $validated['status'],
                 'visibility'        => $validated['visibility'],
                 'publish_date'      => $validated['publish_date'] ?? null,
@@ -594,19 +646,34 @@ class SchoolController extends Controller
             'school_contact' => 'nullable|string',
             'school_description' => 'nullable|string',
             'school_facilities' => 'nullable|string',
-            'school_type' => 'required|in:Co-Ed,Boys,Girls',
+            'school_type' => 'required|in:Co-Ed,Boys,Girls,Separate',
             'school_website' => 'nullable|url',
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
             'admin_password' => 'required|string|min:8|confirmed',
-            'regular_fees' => 'nullable|numeric',
-            'discounted_fees' => 'nullable|numeric',
-            'admission_fees' => 'nullable|numeric',
+            'fee_structure_type' => 'required|in:fixed,class_wise',
+            'regular_fees' => 'nullable',
+            'discounted_fees' => 'nullable',
+            'admission_fees' => 'nullable',
+            'class_wise_fees' => 'required_if:fee_structure_type,class_wise|nullable|string|max:500',
             'school_terms' => 'required|accepted',
         ]);
 
         try {
             DB::beginTransaction();
+
+            // Prepare fees data based on structure type
+            $regularFees = null;
+            $discountedFees = null;
+            $admissionFees = $validated['admission_fees'] ?? null;
+            $classWiseFees = null;
+
+            if ($validated['fee_structure_type'] === 'fixed') {
+                $regularFees = $validated['regular_fees'] ?? null;
+                $discountedFees = $validated['discounted_fees'] ?? null;
+            } else {
+                $classWiseFees = $validated['class_wise_fees'];
+            }
 
             // Create the school
             $school = School::create([
@@ -620,9 +687,11 @@ class SchoolController extends Controller
                 'description' => $validated['school_description'],
                 'facilities' => $validated['school_facilities'],
                 'school_type' => $validated['school_type'],
-                'regular_fees' => $validated['regular_fees'],
-                'discounted_fees' => $validated['discounted_fees'],
-                'admission_fees' => $validated['admission_fees'],
+                'fee_structure_type' => $validated['fee_structure_type'],
+                'regular_fees' => $regularFees,
+                'discounted_fees' => $discountedFees,
+                'admission_fees' => $admissionFees,
+                'class_wise_fees' => $classWiseFees,
                 'status' => 'inactive',
                 'visibility' => 'public',
                 'publish_date' => now(),

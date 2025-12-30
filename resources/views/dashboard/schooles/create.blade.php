@@ -252,27 +252,105 @@
 
                             <!-- Pricing -->
                             <h5 class="mb-3">School Fees</h5>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="regular_fees" class="form-label">Regular Fees</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="regular_fees" name="regular_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('regular_fees') }}">
+
+                            <!-- Fee Structure Type -->
+                            <div class="mb-3">
+                                <label class="form-label">Fee Structure Type <span class="text-danger">*</span></label>
+                                <div class="fee-structure-toggle bg-light p-3 rounded mb-3">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_fixed_create" value="fixed"
+                                            {{ old('fee_structure_type', 'fixed') == 'fixed' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_fixed_create">
+                                            Fixed Structure (Regular/Discounted Fees)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_class_wise_create" value="class_wise"
+                                            {{ old('fee_structure_type') == 'class_wise' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_class_wise_create">
+                                            Class-wise Structure
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="discounted_fees" class="form-label">Discounted Fees</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="discounted_fees" name="discounted_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('discounted_fees') }}">
+                                @error('fee_structure_type')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Fixed Fee Structure Fields -->
+                            <div id="fixed_fee_structure_create" class="fee-structure-section bg-light p-3 rounded mb-3"
+                                style="{{ old('fee_structure_type', 'fixed') == 'fixed' ? '' : 'display: none;' }}">
+                                <h6 class="mb-3 text-muted">Fixed Fee Structure</h6>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="regular_fees" class="form-label">Regular Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="regular_fees" name="regular_fees"
+                                                placeholder="0.00" step="0.01" min="0" value="{{ old('regular_fees') }}">
+                                        </div>
+                                        @error('regular_fees')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
+                                                placeholder="0.00" step="0.01" min="0" value="{{ old('discounted_fees') }}">
+                                        </div>
+                                        @error('discounted_fees')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="admission_fees_fixed" class="form-label">Admission Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="admission_fees_fixed" name="admission_fees"
+                                                placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees') }}">
+                                        </div>
+                                        @error('admission_fees')
+                                        <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="admission_fees" class="form-label">Admission Fees</label>
+                            </div>
+
+                            <!-- Class-wise Fee Structure Fields -->
+                            <div id="class_wise_fee_structure_create" class="fee-structure-section bg-light p-3 rounded mb-3"
+                                style="{{ old('fee_structure_type') == 'class_wise' ? '' : 'display: none;' }}">
+                                <h6 class="mb-3 text-muted">Class-wise Fee Structure</h6>
+
+                                <div class="mb-3">
+                                    <label for="class_wise_fees" class="form-label">Class-wise Fees <span class="text-danger">*</span></label>
+                                    <textarea id="class_wise_fees" class="form-control @error('class_wise_fees') is-invalid @enderror"
+                                        name="class_wise_fees" rows="5"
+                                        placeholder="Enter fees in this format:
+                            Class Range or Name: Amount
+                            Example:
+                            KG to 1: 1000
+                            2 to 5: 1200
+                            6 to 8: 1500
+                            9 to 10: 1800">{{ old('class_wise_fees') }}</textarea>
+                                    <small class="text-muted">Enter each class range and fee on a new line. Format: "Class Range: Amount"</small>
+                                    @error('class_wise_fees')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="class_wise_admission_fees" class="form-label">Admission Fees (Optional)</label>
                                     <div class="input-group">
                                         <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees') }}">
+                                        <input type="number" class="form-control" id="class_wise_admission_fees" name="admission_fees"
+                                            placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees') }}">
                                     </div>
+                                    <small class="text-muted">If admission fee is same for all classes, enter it here</small>
+                                    @error('admission_fees')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -663,6 +741,103 @@
                 form.appendChild(hiddenInput);
                 form.submit();
             });
+        });
+        
+
+        // Fee Structure Toggle for Create Form
+        document.addEventListener('DOMContentLoaded', function() {
+            const feeFixedRadioCreate = document.getElementById('fee_fixed_create');
+            const feeClassWiseRadioCreate = document.getElementById('fee_class_wise_create');
+            const fixedFeeSectionCreate = document.getElementById('fixed_fee_structure_create');
+            const classWiseFeeSectionCreate = document.getElementById('class_wise_fee_structure_create');
+            const regularFeesInputCreate = document.getElementById('regular_fees');
+            const discountedFeesInputCreate = document.getElementById('discounted_fees');
+            const admissionFeesFixedInputCreate = document.getElementById('admission_fees_fixed');
+            const classWiseAdmissionFeesInputCreate = document.getElementById('class_wise_admission_fees');
+            const classWiseFeesTextareaCreate = document.getElementById('class_wise_fees');
+
+            function toggleFeeSectionsCreate() {
+                if (feeFixedRadioCreate.checked) {
+                    fixedFeeSectionCreate.style.display = 'block';
+                    classWiseFeeSectionCreate.style.display = 'none';
+                    
+                    // Clear class-wise fields when switching to fixed
+                    if (classWiseFeesTextareaCreate) {
+                        classWiseFeesTextareaCreate.value = '';
+                    }
+                    
+                    // Sync admission fees
+                    if (classWiseAdmissionFeesInputCreate.value) {
+                        admissionFeesFixedInputCreate.value = classWiseAdmissionFeesInputCreate.value;
+                        classWiseAdmissionFeesInputCreate.value = '';
+                    }
+                } else {
+                    fixedFeeSectionCreate.style.display = 'none';
+                    classWiseFeeSectionCreate.style.display = 'block';
+                    
+                    // Clear fixed fields when switching to class-wise
+                    if (regularFeesInputCreate) regularFeesInputCreate.value = '';
+                    if (discountedFeesInputCreate) discountedFeesInputCreate.value = '';
+                    
+                    // Sync admission fees
+                    if (admissionFeesFixedInputCreate.value) {
+                        classWiseAdmissionFeesInputCreate.value = admissionFeesFixedInputCreate.value;
+                        admissionFeesFixedInputCreate.value = '';
+                    }
+                }
+            }
+
+            // Add event listeners for create form
+            if (feeFixedRadioCreate && feeClassWiseRadioCreate) {
+                feeFixedRadioCreate.addEventListener('change', toggleFeeSectionsCreate);
+                feeClassWiseRadioCreate.addEventListener('change', toggleFeeSectionsCreate);
+                
+                // Initialize on page load
+                toggleFeeSectionsCreate();
+            }
+
+            // Sync admission fees between both sections for create form
+            if (admissionFeesFixedInputCreate && classWiseAdmissionFeesInputCreate) {
+                admissionFeesFixedInputCreate.addEventListener('input', function() {
+                    if (feeFixedRadioCreate.checked) {
+                        classWiseAdmissionFeesInputCreate.value = this.value;
+                    }
+                });
+
+                classWiseAdmissionFeesInputCreate.addEventListener('input', function() {
+                    if (feeClassWiseRadioCreate.checked) {
+                        admissionFeesFixedInputCreate.value = this.value;
+                    }
+                });
+            }
+
+            // Validate class-wise fees format on blur
+            if (classWiseFeesTextareaCreate) {
+                classWiseFeesTextareaCreate.addEventListener('blur', function() {
+                    const value = this.value.trim();
+                    if (!value) return;
+                    
+                    const lines = value.split('\n');
+                    let hasError = false;
+                    
+                    lines.forEach((line, index) => {
+                        if (line.trim()) {
+                            const parts = line.split(':');
+                            if (parts.length < 2 || !parts[1].trim()) {
+                                hasError = true;
+                                // Highlight the problematic line
+                                if (!this.classList.contains('is-invalid')) {
+                                    this.classList.add('is-invalid');
+                                }
+                            }
+                        }
+                    });
+                    
+                    if (!hasError && this.classList.contains('is-invalid')) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            }
         });
     </script>
 

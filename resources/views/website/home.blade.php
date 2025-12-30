@@ -478,7 +478,7 @@
                 <select class="filter-select" id="typeFilter" onchange="applyFilters()">
                     <option value="">All Types</option>
                     @foreach($schoolTypes as $type)
-                    <option value="{{ $type }}">{{ $type }}</option>
+                    <option value="{{ $type }}">{{ $type === 'Separate' ? 'Girs And Boys Seprate Campuses' : $type }}</option>
                     @endforeach
                 </select>
             </div>

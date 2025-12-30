@@ -310,6 +310,7 @@
                                     <option value="Co-Ed" {{ old('school_type', $school->school_type) == 'Co-Ed' ? 'selected' : '' }}>Co-Ed</option>
                                     <option value="Boys" {{ old('school_type', $school->school_type) == 'Boys' ? 'selected' : '' }}>Boys</option>
                                     <option value="Girls" {{ old('school_type', $school->school_type) == 'Girls' ? 'selected' : '' }}>Girls</option>
+                                    <option value="Separate" {{ old('school_type', $school->school_type) == 'Separate' ? 'selected' : '' }}>Separate Girls And Boys Campuses</option>
                                 </select>
                                 @error('school_type')
                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -395,33 +396,91 @@
 
                             <!-- Pricing -->
                             <h5 class="mb-3">School Fees</h5>
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <label for="regular_fees" class="form-label">Regular Fees</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="regular_fees" name="regular_fees"
-                                            value="{{ old('regular_fees', $school->regular_fees) }}" placeholder="0.00" step="0.01" min="0">
+
+                            <!-- Fee Structure Type -->
+                            <div class="mb-3">
+                                <label class="form-label">Fee Structure Type <span class="text-danger">*</span></label>
+                                <div class="fee-structure-toggle bg-light p-3 rounded mb-3">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_fixed_edit" value="fixed" 
+                                            {{ old('fee_structure_type', $school->fee_structure_type) == 'fixed' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_fixed_edit">
+                                            Fixed Structure (Regular/Discounted Fees)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_class_wise_edit" value="class_wise" 
+                                            {{ old('fee_structure_type', $school->fee_structure_type) == 'class_wise' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_class_wise_edit">
+                                            Class-wise Structure
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="discounted_fees" class="form-label">Discounted Fees</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
-                                            value="{{ old('discounted_fees', $school->discounted_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                @error('fee_structure_type')
+                                <div class="text-danger small mt-1">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Fixed Fee Structure Fields -->
+                            <div id="fixed_fee_structure_edit" class="fee-structure-section bg-light p-3 rounded mb-3" 
+                                style="{{ old('fee_structure_type', $school->fee_structure_type) == 'fixed' ? '' : 'display: none;' }}">
+                                <h6 class="mb-3 text-muted">Fixed Fee Structure</h6>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="regular_fees" class="form-label">Regular Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="regular_fees" name="regular_fees"
+                                                value="{{ old('regular_fees', $school->regular_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-4 mb-3">
-                                    <label for="admission_fees" class="form-label">Admission Fees</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="admission_fees" name="admission_fees"
-                                            value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="discounted_fees" name="discounted_fees"
+                                                value="{{ old('discounted_fees', $school->discounted_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="admission_fees" class="form-label">Admission Fees</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">Rs</span>
+                                            <input type="number" class="form-control" id="admission_fees" name="admission_fees"
+                                                value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                            <!-- Class-wise Fee Structure Fields -->
+                            <div id="class_wise_fee_structure_edit" class="fee-structure-section bg-light p-3 rounded mb-3" 
+                                style="{{ old('fee_structure_type', $school->fee_structure_type) == 'class_wise' ? '' : 'display: none;' }}">
+                                <h6 class="mb-3 text-muted">Class-wise Fee Structure</h6>
+                                
+                                <div class="mb-3">
+                                    <label for="class_wise_fees" class="form-label">Class-wise Fees <span class="text-danger">*</span></label>
+                                    <textarea id="class_wise_fees" class="form-control" name="class_wise_fees" rows="5" 
+                                        placeholder="Enter fees in this format: Class Range or Name: Amount Example: KG to 1: 1000 2 to 5: 1200 6 to 8: 1500 9 to 10: 1800">{{ old('class_wise_fees', $school->class_wise_fees) }}</textarea>
+                                    <small class="text-muted">Enter each class range and fee on a new line. Format: "Class Range: Amount"</small>
+                                    @error('class_wise_fees')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="class_wise_admission_fees" class="form-label">Admission Fees (Optional)</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">Rs</span>
+                                        <input type="number" class="form-control" id="class_wise_admission_fees" name="admission_fees"
+                                            value="{{ old('admission_fees', $school->admission_fees) }}" placeholder="0.00" step="0.01" min="0">
+                                    </div>
+                                    <small class="text-muted">If admission fee is same for all classes, enter it here</small>
+                                    @error('admission_fees')
+                                    <div class="text-danger small mt-1">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
                             <!-- Additional Info -->
                             <h5 class="mb-3">Additional Information</h5>
                             <div class="mb-3">
@@ -994,6 +1053,92 @@
                 checkbox.checked = !allChecked;
             });
         }
+
+        // Fee Structure Toggle for Edit Form
+        document.addEventListener('DOMContentLoaded', function() {
+            const feeFixedRadioEdit = document.getElementById('fee_fixed_edit');
+            const feeClassWiseRadioEdit = document.getElementById('fee_class_wise_edit');
+            const fixedFeeSectionEdit = document.getElementById('fixed_fee_structure_edit');
+            const classWiseFeeSectionEdit = document.getElementById('class_wise_fee_structure_edit');
+            const regularFeesInputEdit = document.getElementById('regular_fees');
+            const discountedFeesInputEdit = document.getElementById('discounted_fees');
+            const admissionFeesInputEdit = document.getElementById('admission_fees');
+            const classWiseAdmissionFeesInputEdit = document.getElementById('class_wise_admission_fees');
+            const classWiseFeesTextarea = document.getElementById('class_wise_fees');
+
+            function toggleFeeSectionsEdit() {
+                if (feeFixedRadioEdit.checked) {
+                    fixedFeeSectionEdit.style.display = 'block';
+                    classWiseFeeSectionEdit.style.display = 'none';
+                    
+                    // Sync admission fees
+                    if (classWiseAdmissionFeesInputEdit.value) {
+                        admissionFeesInputEdit.value = classWiseAdmissionFeesInputEdit.value;
+                    }
+                } else {
+                    fixedFeeSectionEdit.style.display = 'none';
+                    classWiseFeeSectionEdit.style.display = 'block';
+                    
+                    // Sync admission fees
+                    if (admissionFeesInputEdit.value) {
+                        classWiseAdmissionFeesInputEdit.value = admissionFeesInputEdit.value;
+                    }
+                }
+            }
+
+            // Add event listeners for edit form
+            if (feeFixedRadioEdit && feeClassWiseRadioEdit) {
+                feeFixedRadioEdit.addEventListener('change', toggleFeeSectionsEdit);
+                feeClassWiseRadioEdit.addEventListener('change', toggleFeeSectionsEdit);
+                
+                // Initialize on page load
+                toggleFeeSectionsEdit();
+            }
+
+            // Sync admission fees between both sections for edit form
+            if (admissionFeesInputEdit && classWiseAdmissionFeesInputEdit) {
+                admissionFeesInputEdit.addEventListener('input', function() {
+                    if (feeFixedRadioEdit.checked) {
+                        classWiseAdmissionFeesInputEdit.value = this.value;
+                    }
+                });
+
+                classWiseAdmissionFeesInputEdit.addEventListener('input', function() {
+                    if (feeClassWiseRadioEdit.checked) {
+                        admissionFeesInputEdit.value = this.value;
+                    }
+                });
+            }
+
+            // Validate class-wise fees format on blur
+            if (classWiseFeesTextarea) {
+                classWiseFeesTextarea.addEventListener('blur', function() {
+                    const value = this.value.trim();
+                    if (!value) return;
+                    
+                    const lines = value.split('\n');
+                    let hasError = false;
+                    
+                    lines.forEach((line, index) => {
+                        if (line.trim()) {
+                            const parts = line.split(':');
+                            if (parts.length < 2 || !parts[1].trim()) {
+                                hasError = true;
+                                // Highlight the problematic line
+                                if (!this.classList.contains('is-invalid')) {
+                                    this.classList.add('is-invalid');
+                                }
+                                console.error(`Line ${index + 1} has incorrect format: "${line}"`);
+                            }
+                        }
+                    });
+                    
+                    if (!hasError && this.classList.contains('is-invalid')) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            }
+        });
     </script>
 
     <style>
