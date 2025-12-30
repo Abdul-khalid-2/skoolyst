@@ -665,7 +665,7 @@
                                 <i class="fas fa-school"></i> School
                             </div>
                             <div class="detail-value">
-                                <a href="{{ route('website.schools.show', $video->school->uuid) }}" 
+                                <a href="{{ route('browseSchools.index', $video->school->uuid) }}" 
                                    class="text-decoration-none">
                                     {{ $video->school->name }}
                                 </a>

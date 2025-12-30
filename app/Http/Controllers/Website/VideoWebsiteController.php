@@ -136,6 +136,7 @@ class VideoWebsiteController extends Controller
 
     public function category($slug)
     {
+        abort(404);
         $category = VideoCategory::where('slug', $slug)
             ->where('status', 'active')
             ->firstOrFail();
@@ -146,7 +147,7 @@ class VideoWebsiteController extends Controller
             ->approved()
             ->paginate(12);
 
-        return view('website.videos.category', compact('category', 'videos'));
+        return view('dashboard.videos.categories.index', compact('category', 'videos'));
     }
 
     public function storeComment(Request $request, Video $video)
