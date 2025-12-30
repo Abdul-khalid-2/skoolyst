@@ -530,9 +530,13 @@
                                 
                                 <!-- Play Overlay -->
                                 <div class="video-play-overlay">
-                                    <div class="play-icon">
-                                        <i class="fas fa-play"></i>
-                                    </div>
+                                     <a href="{{ route('website.videos.show', $video->slug) }}"
+                                        class="text-dark text-decoration-none">
+                                        <div class="play-icon">
+                                            <i class="fas fa-play"></i>
+                                        </div>
+                                    </a>
+                                    
                                 </div>
                                 
                                 <!-- Featured Badge -->
@@ -765,7 +769,7 @@
                             </a>
                             @endforeach
                             @if($schools->count() > 5)
-                            <a href="{{ route('website.schools.index') }}" class="list-group-item list-group-item-action text-center text-primary">
+                            <a href="{{ route('browseSchools.index') }}" class="list-group-item list-group-item-action text-center text-primary">
                                 View All Schools <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                             @endif

@@ -90,7 +90,7 @@ class VideoController extends Controller
         } elseif ($user->hasRole('school-admin')) {
             $schools = School::where('id', $user->school_id)->where('status', 'active')->get();
             // School admin might have associated shops
-            $shops = Shop::whereHas('shopAssociations', function ($q) use ($user) {
+            $shops = Shop::whereHas('schoolAssociations', function ($q) use ($user) {
                 $q->where('school_id', $user->school_id);
             })->where('is_active', true)->get();
         } elseif ($user->hasRole('shop-owner')) {
@@ -200,7 +200,7 @@ class VideoController extends Controller
         } elseif ($user->hasRole('school-admin')) {
             $schools = School::where('id', $user->school_id)->where('status', 'active')->get();
             // School admin can only upload to their school
-            $shops = Shop::whereHas('shopAssociations', function ($q) use ($user) {
+            $shops = Shop::whereHas('schoolAssociations', function ($q) use ($user) {
                 $q->where('school_id', $user->school_id);
             })->where('is_active', true)->get();
         } elseif ($user->hasRole('shop-owner')) {
@@ -282,7 +282,7 @@ class VideoController extends Controller
             $shops = Shop::where('is_active', true)->get();
         } elseif ($user->hasRole('school-admin')) {
             $schools = School::where('id', $user->school_id)->where('status', 'active')->get();
-            $shops = Shop::whereHas('shopAssociations', function ($q) use ($user) {
+            $shops = Shop::whereHas('schoolAssociations', function ($q) use ($user) {
                 $q->where('school_id', $user->school_id);
             })->where('is_active', true)->get();
         } elseif ($user->hasRole('shop-owner')) {
