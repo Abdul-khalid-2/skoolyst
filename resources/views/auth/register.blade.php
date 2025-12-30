@@ -236,6 +236,7 @@
                                             <option value="Co-Ed" {{ old('school_type') == 'Co-Ed' ? 'selected' : '' }}>Co-Educational</option>
                                             <option value="Boys" {{ old('school_type') == 'Boys' ? 'selected' : '' }}>Boys Only</option>
                                             <option value="Girls" {{ old('school_type') == 'Girls' ? 'selected' : '' }}>Girls Only</option>
+                                            <option value="Separate" {{ old('school_type') == 'Separate' ? 'selected' : '' }}>Separate Boys & Girls Campuses</option>
                                         </select>
                                         @if ($errors->has('school_type'))
                                         <div class="input-error">
@@ -302,39 +303,91 @@
                                 <input id="admin_password_confirmation" class="form-control" type="password" name="admin_password_confirmation" required placeholder="Confirm admin password">
                             </div>
 
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="regular_fees" class="form-label">Regular Fees</label>
-                                        <input id="regular_fees" class="form-control" type="number" name="regular_fees" value="{{ old('regular_fees') }}" step="0.01" placeholder="0.00">
-                                        @if ($errors->has('regular_fees'))
-                                        <div class="input-error">
-                                            {{ $errors->first('regular_fees') }}
-                                        </div>
-                                        @endif
+                            <!-- Fees Structure Type -->
+                            <div class="form-group">
+                                <label class="form-label">Fee Structure Type *</label>
+                                <div class="fee-structure-toggle" style="margin-bottom: 1rem;">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_fixed" value="fixed" {{ old('fee_structure_type', 'fixed') == 'fixed' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_fixed">
+                                            Fixed Structure (Regular/Discounted Fees)
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_class_wise" value="class_wise" {{ old('fee_structure_type') == 'class_wise' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="fee_class_wise">
+                                            Class-wise Structure
+                                        </label>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="discounted_fees" class="form-label">Discounted Fees</label>
-                                        <input id="discounted_fees" class="form-control" type="number" name="discounted_fees" value="{{ old('discounted_fees') }}" step="0.01" placeholder="0.00">
-                                        @if ($errors->has('discounted_fees'))
-                                        <div class="input-error">
-                                            {{ $errors->first('discounted_fees') }}
+                                @if ($errors->has('fee_structure_type'))
+                                <div class="input-error">
+                                    {{ $errors->first('fee_structure_type') }}
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- Fixed Fee Structure Fields -->
+                            <div id="fixed_fee_structure" class="fee-structure-section" style="{{ old('fee_structure_type', 'fixed') == 'fixed' ? '' : 'display: none;' }}">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="regular_fees" class="form-label">Regular Fees</label>
+                                            <input id="regular_fees" class="form-control" type="text" name="regular_fees" value="{{ old('regular_fees') }}" step="0.01" placeholder="0.00">
+                                            @if ($errors->has('regular_fees'))
+                                            <div class="input-error">
+                                                {{ $errors->first('regular_fees') }}
+                                            </div>
+                                            @endif
                                         </div>
-                                        @endif
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="discounted_fees" class="form-label">Discounted Fees</label>
+                                            <input id="discounted_fees" class="form-control" type="text" name="discounted_fees" value="{{ old('discounted_fees') }}" step="0.01" placeholder="0.00">
+                                            @if ($errors->has('discounted_fees'))
+                                            <div class="input-error">
+                                                {{ $errors->first('discounted_fees') }}
+                                            </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="admission_fees" class="form-label">Admission Fees</label>
+                                            <input id="admission_fees" class="form-control" type="number" name="admission_fees" value="{{ old('admission_fees') }}" step="0.01" placeholder="0.00">
+                                            @if ($errors->has('admission_fees'))
+                                            <div class="input-error">
+                                                {{ $errors->first('admission_fees') }}
+                                            </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="admission_fees" class="form-label">Admission Fees</label>
-                                        <input id="admission_fees" class="form-control" type="number" name="admission_fees" value="{{ old('admission_fees') }}" step="0.01" placeholder="0.00">
-                                        @if ($errors->has('admission_fees'))
-                                        <div class="input-error">
-                                            {{ $errors->first('admission_fees') }}
-                                        </div>
-                                        @endif
+                            </div>
+
+                            <!-- Class-wise Fee Structure Fields -->
+                            <div id="class_wise_fee_structure" class="fee-structure-section" style="{{ old('fee_structure_type') == 'class_wise' ? '' : 'display: none;' }}">
+                                <div class="form-group">
+                                    <label for="class_wise_fees" class="form-label">Class-wise Fees *</label>
+                                    <textarea id="class_wise_fees" class="form-control" name="class_wise_fees" rows="5" placeholder="Enter fees in this format: Class Range or Name: Amount Example: KG to 1: 1000 2 to 5: 1200 6 to 8: 1500 9 to 10: 1800">{{ old('class_wise_fees') }}</textarea>
+                                    <small class="text-muted">Enter each class range and fee on a new line. Format: "Class Range: Amount"</small>
+                                    @if ($errors->has('class_wise_fees'))
+                                    <div class="input-error">
+                                        {{ $errors->first('class_wise_fees') }}
                                     </div>
+                                    @endif
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="class_wise_admission_fees" class="form-label">Admission Fees (Optional)</label>
+                                    <input id="class_wise_admission_fees" class="form-control" type="number" name="admission_fees" value="{{ old('admission_fees') }}" step="0.01" placeholder="0.00">
+                                    <small class="text-muted">If admission fee is same for all classes, enter it here</small>
+                                    @if ($errors->has('admission_fees'))
+                                    <div class="input-error">
+                                        {{ $errors->first('admission_fees') }}
+                                    </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -368,5 +421,73 @@
 
 @push('scripts')
 <script src="{{ asset('assets/js/register.js') }}"></script>
+<script>
+    
+    // Fee Structure Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const feeFixedRadio = document.getElementById('fee_fixed');
+        const feeClassWiseRadio = document.getElementById('fee_class_wise');
+        const fixedFeeSection = document.getElementById('fixed_fee_structure');
+        const classWiseFeeSection = document.getElementById('class_wise_fee_structure');
+        const regularFeesInput = document.getElementById('regular_fees');
+        const discountedFeesInput = document.getElementById('discounted_fees');
+        const admissionFeesInput = document.getElementById('admission_fees');
+        const classWiseAdmissionFeesInput = document.getElementById('class_wise_admission_fees');
+
+        function toggleFeeSections() {
+            if (feeFixedRadio.checked) {
+                fixedFeeSection.style.display = 'block';
+                classWiseFeeSection.style.display = 'none';
+                
+                // Clear class-wise fields when switching to fixed
+                document.getElementById('class_wise_fees').value = '';
+                
+                // Sync admission fees if needed
+                if (classWiseAdmissionFeesInput.value) {
+                    admissionFeesInput.value = classWiseAdmissionFeesInput.value;
+                    classWiseAdmissionFeesInput.value = '';
+                }
+            } else {
+                fixedFeeSection.style.display = 'none';
+                classWiseFeeSection.style.display = 'block';
+                
+                // Clear fixed fields when switching to class-wise
+                regularFeesInput.value = '';
+                discountedFeesInput.value = '';
+                
+                // Sync admission fees if needed
+                if (admissionFeesInput.value) {
+                    classWiseAdmissionFeesInput.value = admissionFeesInput.value;
+                    admissionFeesInput.value = '';
+                }
+            }
+        }
+
+        // Add event listeners
+        if (feeFixedRadio && feeClassWiseRadio) {
+            feeFixedRadio.addEventListener('change', toggleFeeSections);
+            feeClassWiseRadio.addEventListener('change', toggleFeeSections);
+            
+            // Initialize on page load
+            toggleFeeSections();
+        }
+
+        // Sync admission fees between both sections
+        if (admissionFeesInput && classWiseAdmissionFeesInput) {
+            admissionFeesInput.addEventListener('input', function() {
+                if (feeFixedRadio.checked) {
+                    classWiseAdmissionFeesInput.value = this.value;
+                }
+            });
+
+            classWiseAdmissionFeesInput.addEventListener('input', function() {
+                if (feeClassWiseRadio.checked) {
+                    admissionFeesInput.value = this.value;
+                }
+            });
+        }
+    });
+
+</script>
 @endpush
 @endsection

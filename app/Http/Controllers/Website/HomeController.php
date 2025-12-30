@@ -34,7 +34,7 @@ class HomeController extends Controller
             ->values();
 
         // Get school types for filter
-        $schoolTypes = ['Co-Ed', 'Boys', 'Girls'];
+        $schoolTypes = ['Co-Ed', 'Boys', 'Girls', 'Separate'];
 
         // Get testimonials for homepage
         $testimonials = Testimonial::approved()
