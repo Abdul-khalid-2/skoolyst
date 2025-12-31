@@ -159,7 +159,7 @@ class VideoController extends Controller
         }
 
         // Increment views
-        $video->increment('views');
+        // $video->increment('views');
 
         // Get related videos
         $relatedQuery = Video::where('category_id', $video->category_id)
