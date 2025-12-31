@@ -514,7 +514,7 @@
                 @if($videos->count() > 0)
                 <div class="row">
                     @foreach($videos as $video)
-                    <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="col-md-6 col-lg-6 col-xl-6 mb-4">
                         <article class="video-card card h-100 shadow-sm">
                             <!-- Video Thumbnail -->
                             <div class="position-relative card-img-top">
@@ -556,12 +556,12 @@
                                 </a>
                                 @endif
 
-                                <h5 class="card-title">
+                                <h6 class="card-title">
                                     <a href="{{ route('website.videos.show', $video->slug) }}"
                                         class="text-dark text-decoration-none">
                                         {{ Str::limit($video->title, 50) }}
                                     </a>
-                                </h5>
+                                </h6>
 
                                 <p class="card-text text-muted small">
                                     {{ Str::limit($video->description, 100) }}
