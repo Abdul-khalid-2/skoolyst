@@ -176,7 +176,18 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner
     Route::get('dashboard/videos/{slug}', [VideoController::class, 'show'])->name('admin.videos.show');
 
     // Admin video categories
-    Route::resource('dashboard/video-categories', VideoCategoryController::class)->except(['admin.show']);
+    // Route::resource('dashboard/video-categories', VideoCategoryController::class)->except(['admin.show']);
+    Route::prefix('dashboard/video-categories')->name('video-categories.')->group(function () {
+        Route::get('/', [VideoCategoryController::class, 'index'])->name('index');
+        Route::post('/', [VideoCategoryController::class, 'store'])->name('store');
+        Route::get('/{videoCategory}/edit', [VideoCategoryController::class, 'edit'])->name('edit');
+        Route::put('/{videoCategory}', [VideoCategoryController::class, 'update'])->name('update');
+        Route::delete('/{videoCategory}', [VideoCategoryController::class, 'destroy'])->name('destroy');
+
+        // Optional bulk actions
+        Route::post('/bulk-action', [VideoCategoryController::class, 'bulkAction'])->name('bulk.action');
+        Route::post('/update-sort', [VideoCategoryController::class, 'updateSortOrder'])->name('update.sort');
+    });
 });
 
 Route::middleware('guest')->group(function () {

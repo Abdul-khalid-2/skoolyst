@@ -77,6 +77,13 @@
                         <span>Productes Categories</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('video-categories.index') }}"
+                    class="nav-link {{ request()->routeIs('video-categories.*') ? 'active' : '' }}">
+                        <i class="fas fa-list-alt"></i>
+                        <span>Video Category</span>
+                    </a>
+                </li>
 
             @endrole
 
