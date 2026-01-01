@@ -1,10 +1,15 @@
 <?php
 
 use App\Http\Controllers\AnnouncementController;
+use App\Http\Controllers\BookCategoryController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\McqController;
+use App\Http\Controllers\McqDashboardController;
+use App\Http\Controllers\MockTestController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +39,13 @@ use App\Http\Controllers\Website\WebsiteBlogPostController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\SchoolMcqController;
+use App\Http\Controllers\SchoolStudyMaterialController;
 use App\Http\Controllers\ShopSchoolAssociationController;
+use App\Http\Controllers\StudyMaterialController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\TestTypeController;
+use App\Http\Controllers\TopicController;
 use App\Http\Controllers\VideoCategoryController;
 use App\Http\Controllers\VideoCommentController;
 use App\Http\Controllers\VideoController;
@@ -288,6 +299,65 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
         Route::put('/images/{image}', [BranchController::class, 'updateImage'])->name('schools.branches.images.update');
         Route::post('/images/reorder', [BranchController::class, 'reorderImages'])->name('schools.branches.images.reorder');
         Route::get('/images/stats', [BranchController::class, 'getImageStats'])->name('schools.branches.getImageStats');
+    });
+
+
+    // In routes/web.php
+    Route::prefix('dashboard')->middleware(['auth', 'role:super-admin'])->group(function () {
+        // Dashboard
+        Route::get('/mcq-dashboard', [McqDashboardController::class, 'index'])->name('mcq.dashboard');
+        Route::get('/mcq-stats', [McqDashboardController::class, 'getStats'])->name('mcq.stats');
+
+        // Test Types
+        Route::resource('test-types', TestTypeController::class);
+        Route::post('test-types/bulk-action', [TestTypeController::class, 'bulkAction'])->name('test-types.bulk.action');
+        Route::post('test-types/update-sort', [TestTypeController::class, 'updateSort'])->name('test-types.update.sort');
+
+        // Subjects
+        Route::resource('subjects', SubjectController::class);
+        Route::post('subjects/bulk-action', [SubjectController::class, 'bulkAction'])->name('subjects.bulk.action');
+        Route::post('subjects/update-sort', [SubjectController::class, 'updateSort'])->name('subjects.update.sort');
+
+        // Topics
+        Route::resource('topics', TopicController::class);
+        Route::post('topics/bulk-action', [TopicController::class, 'bulkAction'])->name('topics.bulk.action');
+        Route::post('topics/update-sort', [TopicController::class, 'updateSort'])->name('topics.update.sort');
+
+        // MCQs
+        Route::resource('mcqs', McqController::class);
+        Route::post('mcqs/bulk-action', [McqController::class, 'bulkAction'])->name('mcqs.bulk.action');
+        Route::post('mcqs/{mcq}/verify', [McqController::class, 'verify'])->name('mcqs.verify');
+        Route::post('mcqs/{mcq}/unverify', [McqController::class, 'unverify'])->name('mcqs.unverify');
+        Route::get('mcqs/get-topics', [McqController::class, 'getTopicsBySubject'])->name('mcqs.get-topics');
+
+        // Mock Tests
+        Route::resource('mock-tests', MockTestController::class);
+        Route::post('mock-tests/bulk-action', [MockTestController::class, 'bulkAction'])->name('mock-tests.bulk.action');
+        Route::get('mock-tests/{mockTest}/add-questions', [MockTestController::class, 'addQuestions'])->name('mock-tests.add-questions');
+        Route::post('mock-tests/{mockTest}/add-question', [MockTestController::class, 'addQuestion'])->name('mock-tests.add-question');
+        Route::delete('mock-tests/{mockTest}/remove-question/{mcq}', [MockTestController::class, 'removeQuestion'])->name('mock-tests.remove-question');
+        Route::post('mock-tests/{mockTest}/update-question-order', [MockTestController::class, 'updateQuestionOrder'])->name('mock-tests.update-question-order');
+        Route::post('mock-tests/{mockTest}/questions/{question}/update-details', [MockTestController::class, 'updateQuestionDetails'])->name('mock-tests.update-question-details');
+        Route::post('mock-tests/{mockTest}/bulk-add-questions', [MockTestController::class, 'bulkAddQuestions'])->name('mock-tests.bulk-add-questions');
+        Route::get('mock-tests/get-mcqs/selection', [MockTestController::class, 'getMcqsForSelection'])->name('mock-tests.get-mcqs');
+        Route::get('mock-tests/{mockTest}/preview', [MockTestController::class, 'preview'])->name('mock-test.preview');
+
+        // user-test-attemts
+        Route::get('mock-tests/user-test-attempts', [MockTestController::class, 'user-test-attempts'])->name('user-test-attempts.index');
+        // Book Categories
+        Route::resource('book-categories', BookCategoryController::class);
+
+        // Books
+        Route::resource('books', BookController::class);
+
+        // Study Materials
+        Route::resource('study-materials', StudyMaterialController::class);
+    });
+
+    // School Admin Routes
+    Route::prefix('school')->middleware(['auth', 'role:school-admin'])->group(function () {
+        Route::get('/mcqs', [SchoolMcqController::class, 'index'])->name('school.mcqs.index');
+        Route::get('/study-materials', [SchoolStudyMaterialController::class, 'index'])->name('school.study-materials.index');
     });
 });
 

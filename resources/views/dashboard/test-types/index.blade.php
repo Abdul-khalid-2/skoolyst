@@ -1,14 +1,19 @@
 <x-app-layout>
     <main class="main-content">
-        <section id="video-categories" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h2 class="h4 mb-0">Video Categories</h2>
-                    <p class="mb-0 text-muted">Manage video categories and organization</p>
+        <div class="container-fluid">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h1 class="h3 mb-2">Test Types</h1>
+                        <p class="text-muted mb-0">Manage different types of tests (Entry Test, Job Test, University Test, etc.)</p>
+                    </div>
+                    <div>
+                        <a href="{{ route('test-types.create') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i> Add Test Type
+                        </a>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                    <i class="fas fa-plus me-2"></i> Add Category
-                </button>
             </div>
 
             @if(session('success'))
@@ -25,11 +30,78 @@
                 </div>
             @endif
 
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Total Test Types</h6>
+                                    <h3 class="mb-0">{{ $testTypes->total() }}</h3>
+                                </div>
+                                <div class="bg-primary bg-opacity-10 p-3 rounded">
+                                    <i class="fas fa-list fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Active Types</h6>
+                                    <h3 class="mb-0">{{ \App\Models\TestType::where('status', 'active')->count() }}</h3>
+                                </div>
+                                <div class="bg-success bg-opacity-10 p-3 rounded">
+                                    <i class="fas fa-check-circle fa-2x text-success"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">Subjects</h6>
+                                    <h3 class="mb-0">{{ \App\Models\Subject::count() }}</h3>
+                                </div>
+                                <div class="bg-info bg-opacity-10 p-3 rounded">
+                                    <i class="fas fa-book fa-2x text-info"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card card-hover">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="text-muted mb-2">MCQs</h6>
+                                    <h3 class="mb-0">{{ \App\Models\Mcq::count() }}</h3>
+                                </div>
+                                <div class="bg-warning bg-opacity-10 p-3 rounded">
+                                    <i class="fas fa-question-circle fa-2x text-warning"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Bulk Actions -->
             <div class="card mb-3 d-none" id="bulkActionsCard">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
-                        <span class="me-3" id="selectedCount">0 categories selected</span>
+                        <span class="me-3" id="selectedCount">0 test types selected</span>
                         <select class="form-select form-select-sm me-2" style="width: auto;" id="bulkActionSelect">
                             <option value="">Bulk Actions</option>
                             <option value="activate">Activate</option>
@@ -42,77 +114,96 @@
                 </div>
             </div>
 
-            <!-- Categories Table -->
+            <!-- Test Types Table -->
             <div class="card">
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover" id="categoriesTable">
+                        <table class="table table-striped table-hover" id="testTypesTable">
                             <thead>
                                 <tr>
                                     <th width="50">
                                         <input type="checkbox" class="form-check-input" id="selectAll">
                                     </th>
                                     <th width="80">#</th>
-                                    <th>Category Name</th>
-                                    <th>Slug</th>
-                                    <th width="100">Videos</th>
+                                    <th>Test Type</th>
+                                    <th>Icon</th>
+                                    <th>Description</th>
+                                    <th>Subjects</th>
                                     <th width="120">Status</th>
                                     <th width="120">Sort Order</th>
                                     <th width="150" class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($categories as $category)
-                                <tr data-id="{{ $category->id }}">
+                                @foreach($testTypes as $testType)
+                                <tr data-id="{{ $testType->id }}">
                                     <td>
-                                        <input type="checkbox" class="form-check-input category-checkbox" value="{{ $category->id }}">
+                                        <input type="checkbox" class="form-check-input test-type-checkbox" value="{{ $testType->id }}">
                                     </td>
-                                    <td>{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
+                                    <td>{{ ($testTypes->currentPage() - 1) * $testTypes->perPage() + $loop->iteration }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            <strong>{{ $category->name }}</strong>
+                                            <strong>{{ $testType->name }}</strong>
                                         </div>
-                                        @if($category->description)
-                                        <small class="text-muted d-block mt-1">{{ Str::limit($category->description, 50) }}</small>
+                                        <small class="text-muted d-block mt-1">{{ $testType->slug }}</small>
+                                    </td>
+                                    <td>
+                                        @if($testType->icon)
+                                        <i class="{{ $testType->icon }} fa-lg text-primary"></i>
+                                        @else
+                                        <span class="text-muted">-</span>
                                         @endif
                                     </td>
                                     <td>
-                                        <code>{{ $category->slug }}</code>
+                                        @if($testType->description)
+                                        <span data-bs-toggle="tooltip" title="{{ $testType->description }}">
+                                            {{ Str::limit($testType->description, 50) }}
+                                        </span>
+                                        @else
+                                        <span class="text-muted">-</span>
+                                        @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-primary">{{ $category->videos_count }}</span>
+                                        <a href="{{ route('subjects.index', ['test_type_id' => $testType->id]) }}" 
+                                           class="badge bg-primary">
+                                            {{ $testType->subjects_count ?? 0 }}
+                                        </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $category->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($category->status) }}
+                                        <span class="badge bg-{{ $testType->status == 'active' ? 'success' : 'secondary' }}">
+                                            {{ ucfirst($testType->status) }}
                                         </span>
                                     </td>
                                     <td>
                                         <input type="number" 
                                                class="form-control form-control-sm sort-order-input" 
-                                               value="{{ $category->sort_order }}"
-                                               data-id="{{ $category->id }}"
+                                               value="{{ $testType->sort_order }}"
+                                               data-id="{{ $testType->id }}"
                                                style="width: 80px;">
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('video-categories.edit', $category) }}" 
+                                            <a href="{{ route('test-types.edit', $testType) }}" 
                                                class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            @if($category->videos_count == 0)
-                                            <form action="{{ route('video-categories.destroy', $category) }}" 
+                                            <a href="{{ route('test-types.show', $testType) }}" 
+                                               class="btn btn-sm btn-outline-info">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if($testType->subjects_count == 0)
+                                            <form action="{{ route('test-types.destroy', $testType) }}" 
                                                   method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                        onclick="return confirm('Are you sure you want to delete this category?')">
+                                                        onclick="return confirm('Are you sure you want to delete this test type?')">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
                                             @else
                                             <button type="button" class="btn btn-sm btn-outline-secondary" 
                                                     data-bs-toggle="tooltip" 
-                                                    title="Cannot delete category with videos">
+                                                    title="Cannot delete test type with subjects">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                             @endif
@@ -125,81 +216,20 @@
                     </div>
                     
                     <!-- Pagination -->
-                    @if($categories->hasPages())
+                    @if($testTypes->hasPages())
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div class="text-muted">
-                            Showing {{ $categories->firstItem() }} to {{ $categories->lastItem() }} of {{ $categories->total() }} entries
+                            Showing {{ $testTypes->firstItem() }} to {{ $testTypes->lastItem() }} of {{ $testTypes->total() }} entries
                         </div>
                         <nav>
-                            {{ $categories->links() }}
+                            {{ $testTypes->links() }}
                         </nav>
                     </div>
                     @endif
                 </div>
             </div>
-        </section>
-    </main>
-
-    <!-- Add Category Modal -->
-    <div class="modal fade" id="addCategoryModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form action="{{ route('video-categories.store') }}" method="POST">
-                    @csrf
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Category Name *</label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" value="{{ old('name') }}" required>
-                            @error('name')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control @error('description') is-invalid @enderror" 
-                                      id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                            @error('description')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-select @error('status') is-invalid @enderror" 
-                                        id="status" name="status">
-                                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                                @error('status')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <label for="sort_order" class="form-label">Sort Order</label>
-                                <input type="number" class="form-control @error('sort_order') is-invalid @enderror" 
-                                       id="sort_order" name="sort_order" value="{{ old('sort_order', 0) }}">
-                                @error('sort_order')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Add Category</button>
-                    </div>
-                </form>
-            </div>
         </div>
-    </div>
+    </main>
 
     @push('js')
     <script>
@@ -210,7 +240,7 @@
             
             // Bulk selection functionality
             const selectAll = document.getElementById('selectAll');
-            const checkboxes = document.querySelectorAll('.category-checkbox');
+            const checkboxes = document.querySelectorAll('.test-type-checkbox');
             const bulkActionsCard = document.getElementById('bulkActionsCard');
             const selectedCount = document.getElementById('selectedCount');
             const clearSelectionBtn = document.getElementById('clearSelection');
@@ -248,18 +278,18 @@
                 }
                 
                 if (selectedIds.length === 0) {
-                    alert('Please select at least one category');
+                    alert('Please select at least one test type');
                     return;
                 }
                 
                 if (action === 'delete') {
-                    if (!confirm(`Are you sure you want to delete ${selectedIds.length} category(ies)?`)) {
+                    if (!confirm(`Are you sure you want to delete ${selectedIds.length} test type(s)?`)) {
                         return;
                     }
                 }
                 
                 // Submit bulk action
-                fetch('{{ route("video-categories.bulk.action") }}', {
+                fetch('{{ route("test-types.bulk.action") }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -274,6 +304,8 @@
                 .then(data => {
                     if (data.success) {
                         window.location.reload();
+                    } else {
+                        alert(data.message || 'An error occurred');
                     }
                 })
                 .catch(error => console.error('Error:', error));
@@ -285,7 +317,7 @@
                     const id = this.dataset.id;
                     const sortOrder = this.value;
                     
-                    fetch('{{ route("video-categories.update.sort") }}', {
+                    fetch('{{ route("test-types.update.sort") }}', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -306,7 +338,7 @@
                 
                 if (selected > 0) {
                     bulkActionsCard.classList.remove('d-none');
-                    selectedCount.textContent = `${selected} categor${selected === 1 ? 'y' : 'ies'} selected`;
+                    selectedCount.textContent = `${selected} test type${selected === 1 ? '' : 's'} selected`;
                 } else {
                     bulkActionsCard.classList.add('d-none');
                     selectAll.checked = false;
@@ -317,13 +349,19 @@
     @endpush
 
     <style>
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
         .table-responsive {
             width: 100%;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
         }
 
-        #categoriesTable {
+        #testTypesTable {
             min-width: 768px;
         }
 
@@ -339,13 +377,6 @@
             .btn-sm {
                 padding: 0.25rem 0.5rem;
                 font-size: 0.75rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .table td:nth-child(3),
-            .table th:nth-child(3) {
-                display: none;
             }
         }
     </style>

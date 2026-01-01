@@ -328,7 +328,7 @@
     </style>
     @endpush
 
-    @push('scripts')
+    @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Add click event to entire video card for navigation
