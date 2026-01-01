@@ -85,6 +85,121 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('test-types.index') }}" 
+                    class="nav-link {{ request()->routeIs('test-types.*') ? 'active' : '' }}">
+                        <i class="fas fa-list"></i>
+                        <span>Test Types</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('subjects.index') }}" 
+                    class="nav-link {{ request()->routeIs('subjects.*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i>
+                        <span>Subjects</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('topics.index') }}" 
+                    class="nav-link {{ request()->routeIs('topics.*') ? 'active' : '' }}">
+                        <i class="fas fa-folder"></i>
+                        <span>Topics</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('mcqs.index') }}" 
+                    class="nav-link {{ request()->routeIs('mcqs.*') ? 'active' : '' }}">
+                        <i class="fas fa-question"></i>
+                        <span>MCQs</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('mock-tests.index') }}" 
+                    class="nav-link {{ request()->routeIs('mock-tests.*') ? 'active' : '' }}">
+                        <i class="fas fa-file-alt"></i>
+                        <span>Mock Tests</span>
+                    </a>
+                </li>
+                {{-- <li class="nav-item">
+                    <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#mcqCollapse">
+                        <i class="fas fa-question-circle"></i>
+                        <span>MCQ System</span>
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="mcqCollapse">
+                        <ul class="submenu">
+                            <li class="nav-item">
+                                <a href="{{ route('test-types.index') }}" 
+                                class="nav-link {{ request()->routeIs('test-types.*') ? 'active' : '' }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Test Types</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('subjects.index') }}" 
+                                class="nav-link {{ request()->routeIs('subjects.*') ? 'active' : '' }}">
+                                    <i class="fas fa-book"></i>
+                                    <span>Subjects</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('topics.index') }}" 
+                                class="nav-link {{ request()->routeIs('topics.*') ? 'active' : '' }}">
+                                    <i class="fas fa-folder"></i>
+                                    <span>Topics</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('mcqs.index') }}" 
+                                class="nav-link {{ request()->routeIs('mcqs.*') ? 'active' : '' }}">
+                                    <i class="fas fa-question"></i>
+                                    <span>MCQs</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('mock-tests.index') }}" 
+                                class="nav-link {{ request()->routeIs('mock-tests.*') ? 'active' : '' }}">
+                                    <i class="fas fa-file-alt"></i>
+                                    <span>Mock Tests</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li> --}}
+
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#studyCollapse">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Study Resources</span>
+                        <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="studyCollapse">
+                        <ul class="submenu">
+                            <li class="nav-item">
+                                <a href="{{ route('book-categories.index') }}" 
+                                class="nav-link {{ request()->routeIs('book-categories.*') ? 'active' : '' }}">
+                                    <i class="fas fa-list"></i>
+                                    <span>Book Categories</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('books.index') }}" 
+                                class="nav-link {{ request()->routeIs('books.*') ? 'active' : '' }}">
+                                    <i class="fas fa-book-open"></i>
+                                    <span>Books</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('study-materials.index') }}" 
+                                class="nav-link {{ request()->routeIs('study-materials.*') ? 'active' : '' }}">
+                                    <i class="fas fa-file-pdf"></i>
+                                    <span>Study Materials</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+
             @endrole
 
 
@@ -126,8 +241,24 @@
                 <li class="nav-item">
                     <a href="{{ route('reviews.index') }}"
                     class="nav-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
+                        <i class="fas fa-star"></i>
                         <span>Reviews</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('school.mcqs.index') }}" 
+                    class="nav-link {{ request()->routeIs('school.mcqs.*') ? 'active' : '' }}">
+                        <i class="fas fa-question-circle"></i>
+                        <span>MCQs</span>
+                    </a>
+                </li>
+                
+                <li class="nav-item">
+                    <a href="{{ route('school.study-materials.index') }}" 
+                    class="nav-link {{ request()->routeIs('school.study-materials.*') ? 'active' : '' }}">
+                        <i class="fas fa-book"></i>
+                        <span>Study Materials</span>
                     </a>
                 </li>
                 
@@ -136,8 +267,8 @@
                 <li class="nav-item">
                     <a href="{{ route('admin.videos.index') }}"
                     class="nav-link {{ request()->routeIs('admin.videos.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
-                        <span>Video</span>
+                        <i class="fas fa-video"></i>
+                        <span>Videos</span>
                     </a>
                 </li>
 
@@ -154,14 +285,14 @@
                 <li class="nav-item">
                     <a href="{{ route('products.index') }}"
                     class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
-                        <span>Productcs</span>
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a href="{{ route('dashboard.orders.index') }}"
                     class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
+                        <i class="fas fa-shopping-cart"></i>
                         <span>Orders</span>
                     </a>
                 </li>
