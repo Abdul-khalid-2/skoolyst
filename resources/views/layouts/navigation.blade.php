@@ -86,47 +86,12 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('test-types.index') }}" 
-                    class="nav-link {{ request()->routeIs('test-types.*') ? 'active' : '' }}">
-                        <i class="fas fa-list"></i>
-                        <span>Test Types</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('subjects.index') }}" 
-                    class="nav-link {{ request()->routeIs('subjects.*') ? 'active' : '' }}">
-                        <i class="fas fa-book"></i>
-                        <span>Subjects</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('topics.index') }}" 
-                    class="nav-link {{ request()->routeIs('topics.*') ? 'active' : '' }}">
-                        <i class="fas fa-folder"></i>
-                        <span>Topics</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('mcqs.index') }}" 
-                    class="nav-link {{ request()->routeIs('mcqs.*') ? 'active' : '' }}">
-                        <i class="fas fa-question"></i>
-                        <span>MCQs</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('mock-tests.index') }}" 
-                    class="nav-link {{ request()->routeIs('mock-tests.*') ? 'active' : '' }}">
-                        <i class="fas fa-file-alt"></i>
-                        <span>Mock Tests</span>
-                    </a>
-                </li>
-                {{-- <li class="nav-item">
                     <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#mcqCollapse">
                         <i class="fas fa-question-circle"></i>
                         <span>MCQ System</span>
                         <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse" id="mcqCollapse">
+                    <div class="collapse" style="visibility: visible;" id="mcqCollapse">
                         <ul class="submenu">
                             <li class="nav-item">
                                 <a href="{{ route('test-types.index') }}" 
@@ -165,7 +130,7 @@
                             </li>
                         </ul>
                     </div>
-                </li> --}}
+                </li>
 
                 <li class="nav-item">
                     <a href="#" class="nav-link" data-bs-toggle="collapse" data-bs-target="#studyCollapse">
@@ -173,7 +138,7 @@
                         <span>Study Resources</span>
                         <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                    <div class="collapse" id="studyCollapse">
+                    <div class="collapse"  style="visibility: visible;" id="studyCollapse">
                         <ul class="submenu">
                             <li class="nav-item">
                                 <a href="{{ route('book-categories.index') }}" 
