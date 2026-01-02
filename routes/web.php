@@ -324,14 +324,13 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
         Route::post('topics/update-sort', [TopicController::class, 'updateSort'])->name('topics.update.sort');
 
         // MCQs
-        Route::resource('mcqs', McqController::class);
         Route::post('mcqs/bulk-action', [McqController::class, 'bulkAction'])->name('mcqs.bulk.action');
         Route::post('mcqs/{mcq}/verify', [McqController::class, 'verify'])->name('mcqs.verify');
         Route::post('mcqs/{mcq}/unverify', [McqController::class, 'unverify'])->name('mcqs.unverify');
         Route::get('mcqs/get-topics', [McqController::class, 'getTopicsBySubject'])->name('mcqs.get-topics');
+        Route::resource('mcqs', McqController::class);
 
         // Mock Tests
-        Route::resource('mock-tests', MockTestController::class);
         Route::post('mock-tests/bulk-action', [MockTestController::class, 'bulkAction'])->name('mock-tests.bulk.action');
         Route::get('mock-tests/{mockTest}/add-questions', [MockTestController::class, 'addQuestions'])->name('mock-tests.add-questions');
         Route::post('mock-tests/{mockTest}/add-question', [MockTestController::class, 'addQuestion'])->name('mock-tests.add-question');
@@ -341,6 +340,7 @@ Route::middleware(['auth', 'verified', 'role:super-admin|school-admin'])->group(
         Route::post('mock-tests/{mockTest}/bulk-add-questions', [MockTestController::class, 'bulkAddQuestions'])->name('mock-tests.bulk-add-questions');
         Route::get('mock-tests/get-mcqs/selection', [MockTestController::class, 'getMcqsForSelection'])->name('mock-tests.get-mcqs');
         Route::get('mock-tests/{mockTest}/preview', [MockTestController::class, 'preview'])->name('mock-test.preview');
+        Route::resource('mock-tests', MockTestController::class);
 
         // user-test-attemts
         Route::get('mock-tests/user-test-attempts', [MockTestController::class, 'user-test-attempts'])->name('user-test-attempts.index');
