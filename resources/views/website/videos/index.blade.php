@@ -6,7 +6,7 @@
 <style>
     /* ==================== VIDEOS HEADER SECTION ==================== */
     .videos-header {
-        background: linear-gradient(135deg, #4361ee 0%, #38b000 50%, #ff9e00 100%);
+        background: #0f4077;
         color: white;
         padding: 100px 0 80px;
         text-align: center;
@@ -159,7 +159,7 @@
     }
 
     .video-category-badge {
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border: none;
         border-radius: 50px;
         font-size: 0.8rem;
@@ -232,7 +232,7 @@
     }
 
     .sidebar-widget .card-header {
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         color: white;
         border: none;
         font-weight: 700;
@@ -318,7 +318,7 @@
     }
 
     .pagination .page-item.active .page-link {
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-color: #4361ee;
     }
 

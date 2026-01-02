@@ -6,7 +6,7 @@
 <style>
     /* ==================== ABOUT HERO SECTION ==================== */
     .about-hero {
-        background: linear-gradient(135deg, #4361ee 0%, #38b000 50%, #ff9e00 100%);
+        background: #0f4077;
         color: white;
         padding: 100px 0 80px;
         text-align: center;
@@ -90,7 +90,7 @@
     .card-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -144,7 +144,7 @@
     .feature-icon {
         width: 70px;
         height: 70px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -261,7 +261,7 @@
     /* ==================== CTA SECTION ==================== */
     .cta-section {
         padding: 80px 0;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         color: white;
         text-align: center;
     }

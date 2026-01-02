@@ -15,7 +15,7 @@
 
     /* ==================== HERO SECTION ==================== */
     .hero-section {
-        background: linear-gradient(135deg, #4361ee 0%, #38b000 50%, #ff9e00 100%);
+        background: #0f4077;
         color: white;
         padding: 100px 0 80px;
         text-align: center;
@@ -54,7 +54,7 @@
     .hero-subtitle {
         font-size: 1.3rem;
         opacity: 0.95;
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
         line-height: 1.6;
     }
@@ -101,7 +101,7 @@
     .feature-icon {
         width: 70px;
         height: 70px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -156,7 +156,7 @@
     .card-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -297,7 +297,7 @@
 
     .blog-image {
         height: 200px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         background-size: cover;
         background-position: center;
     }
@@ -337,7 +337,7 @@
     /* ==================== CTA SECTION ==================== */
     .cta-section {
         padding: 80px 0;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         color: white;
         text-align: center;
     }
@@ -467,7 +467,7 @@
 <!-- ==================== HERO SECTION ==================== -->
 <section class="hero-section">
     <div class="container">
-        <h1 class="hero-title">Transforming Education Discovery</h1>
+        <h3 class="hero-title">Transforming Education Discovery</h3>
         <p class="hero-subtitle">
             SKOOLYST is revolutionizing how schools connect with students and parents, creating a comprehensive educational ecosystem that empowers informed decisions and bright futures.
         </p>

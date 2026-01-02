@@ -6,7 +6,7 @@
 <style>
     /* ==================== TAG HEADER SECTION ==================== */
     .tag-header {
-        background: linear-gradient(135deg, #4361ee 0%, #ff9e00 100%);
+        background: #0f4077;
         color: white;
         padding: 100px 0 60px;
         text-align: center;
@@ -129,7 +129,7 @@
     }
 
     .category-badge {
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border: none;
         border-radius: 50px;
         font-size: 0.8rem;

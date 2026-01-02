@@ -202,7 +202,7 @@
         left: 0;
         width: 40px;
         height: 3px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 2px;
     }
 
@@ -262,7 +262,7 @@
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -304,7 +304,7 @@
         width: 40px;
         height: 40px;
         border-radius: 50%;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         display: flex;
         align-items: center;
         justify-content: center;

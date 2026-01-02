@@ -131,7 +131,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        /* background: linear-gradient(135deg, #4361ee, #38b000); */
+        /* background: #0f4077; */
     }
 
     .event-card:hover {
@@ -153,7 +153,7 @@
     .event-icon {
         width: 60px;
         height: 60px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -201,7 +201,7 @@
     }
 
     .btn-view {
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         color: white;
         padding: 0.75rem 1.5rem;
         border-radius: 50px;

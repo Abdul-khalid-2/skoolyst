@@ -97,7 +97,7 @@
 
     .shop-banner {
         height: 150px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         position: relative;
     }
 
@@ -221,7 +221,7 @@
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
     }
 
     .category-card:hover {
@@ -233,7 +233,7 @@
     .category-icon {
         width: 80px;
         height: 80px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -464,7 +464,7 @@
         content: counter(step-counter);
         width: 60px;
         height: 60px;
-        background: linear-gradient(135deg, #4361ee, #38b000);
+        background: #0f4077;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -1161,7 +1161,7 @@
                         @if($shop->banner_url)
                             background-image: url('{{ asset('website/' . $shop->banner_url) }}');
                         @else
-                            background: linear-gradient(135deg, #4361ee, #38b000);
+                            background: #0f4077;
                         @endif
                         background-size: cover; 
                         background-position: center; 

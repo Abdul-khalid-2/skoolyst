@@ -464,7 +464,7 @@
     <footer class="page-footer">
         <div class="container">
             <div class="text-center">
-                <div class="footer-brand mb-2" style="font-size: 1.2rem; font-weight: 700; background: linear-gradient(135deg, #4361ee, #38b000); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                <div class="footer-brand mb-2" style="font-size: 1.2rem; font-weight: 700; background: #0f4077; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
                     SKOOLYST
                 </div>
                 <p class="mb-0">&copy; {{ date('Y') }} Skoolyst. All rights reserved.</p>

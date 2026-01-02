@@ -185,7 +185,7 @@
 .feature-icon {
     font-size: 3rem;
     margin-bottom: 1rem;
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -235,7 +235,7 @@
 .card-icon {
     width: 60px;
     height: 60px;
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -327,7 +327,7 @@
 
 /* ==================== FINAL CTA SECTION ==================== */
 .final-cta {
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     padding: 5rem 0;
     text-align: center;
     color: white;

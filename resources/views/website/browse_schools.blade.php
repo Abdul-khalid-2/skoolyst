@@ -7,7 +7,7 @@
 <style>
 /* ==================== PAGE HEADER ==================== */
 .page-header {
-    background: linear-gradient(135deg, #4361ee, #38b000, #ff9e00);
+    background: #0f4077;
     color: white;
     padding: 60px 0 40px;
     margin-bottom: 0;
@@ -172,7 +172,7 @@
 .school-image {
     width: 100%;
     height: 200px;
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -217,7 +217,7 @@
 .school-type-badge {
     display: inline-block;
     padding: 0.4rem 1rem;
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     color: white;
     border-radius: 20px;
     font-size: 0.75rem;
@@ -281,7 +281,7 @@
     display: block;
     width: 100%;
     padding: 0.9rem;
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     color: white;
     border: none;
     border-radius: 10px;
@@ -339,7 +339,7 @@
 }
 
 .page-item.active .page-link {
-    background: linear-gradient(135deg, #4361ee, #38b000);
+    background: #0f4077;
     border-color: #4361ee;
     color: white;
 }

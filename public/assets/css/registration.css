@@ -19,7 +19,7 @@
 
  .register-left {
      flex: 1;
-     background: linear-gradient(135deg, #4361ee, #38b000);
+     background: #0f4077;
      color: white;
      padding: 4rem;
      display: flex;
@@ -134,7 +134,7 @@
  .register-btn {
      width: 100%;
      padding: 0.9rem;
-     background: linear-gradient(135deg, #4361ee, #38b000);
+     background: #0f4077;
      color: white;
      border: none;
      border-radius: 8px;
