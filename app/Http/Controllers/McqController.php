@@ -76,6 +76,14 @@ class McqController extends Controller
         $selectedSubject = $request->get('subject_id');
         $selectedTopic = $request->get('topic_id');
         
+        // If topic_id is provided but subject_id is not, find the subject from the topic
+        if ($selectedTopic && !$selectedSubject) {
+            $topic = Topic::find($selectedTopic);
+            if ($topic) {
+                $selectedSubject = $topic->subject_id;
+            }
+        }
+        
         return view('dashboard.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
     }
 

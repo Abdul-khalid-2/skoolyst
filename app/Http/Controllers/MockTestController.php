@@ -365,10 +365,29 @@ class MockTestController extends Controller
     // Get MCQs for selection (AJAX)
     public function getMcqsForSelection(Request $request)
     {
-        $query = Mcq::with(['subject', 'topic'])
-            ->published()
-            ->verified();
+        // Get mock test ID from the current context (you might need to adjust this)
+        // If you're calling this from the add-questions page, you might want to pass the mock test ID
+        $mockTestId = $request->get('mock_test_id');
 
+        // Get existing MCQ IDs for this test
+        if ($mockTestId) {
+            $existingMcqIds = MockTestQuestion::where('mock_test_id', $mockTestId)
+                ->pluck('mcq_id')
+                ->toArray();
+        } else {
+            $existingMcqIds = [];
+        }
+
+        // Build query
+        $query = Mcq::with(['subject', 'topic'])
+            ->published();
+
+        // Exclude MCQs already in the test
+        if (!empty($existingMcqIds)) {
+            $query->whereNotIn('id', $existingMcqIds);
+        }
+
+        // Apply filters
         if ($request->filled('subject_id')) {
             $query->where('subject_id', $request->subject_id);
         }
@@ -388,24 +407,24 @@ class MockTestController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('question', 'LIKE', "%{$search}%")
+                $q->where('question', 'like', "%{$search}%")
                     ->orWhereHas('subject', function ($q) use ($search) {
-                        $q->where('name', 'LIKE', "%{$search}%");
+                        $q->where('name', 'like', "%{$search}%");
                     })
                     ->orWhereHas('topic', function ($q) use ($search) {
-                        $q->where('title', 'LIKE', "%{$search}%");
+                        $q->where('title', 'like', "%{$search}%");
                     });
             });
         }
 
-        $mcqs = $query->paginate(20);
+        $mcqs = $query->orderBy('created_at', 'desc')->paginate(20);
 
         return response()->json([
             'mcqs' => $mcqs,
             'pagination' => [
                 'current_page' => $mcqs->currentPage(),
                 'last_page' => $mcqs->lastPage(),
-                'total' => $mcqs->total(),
+                'total' => $mcqs->total()
             ]
         ]);
     }

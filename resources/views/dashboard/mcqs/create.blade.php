@@ -396,7 +396,6 @@
     @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            alert('testing');
             let optionCounter = 2; // Starting from C (0=A, 1=B, 2=C)
             
             // Get DOM elements
