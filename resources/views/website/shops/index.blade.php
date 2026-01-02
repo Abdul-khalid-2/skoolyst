@@ -6,7 +6,7 @@
 <style>
     /* ==================== ECOMMERCE HERO SECTION ==================== */
     .ecommerce-hero {
-        background: linear-gradient(135deg, #ff6b35 0%, #4361ee 50%, #38b000 100%);
+        background: #0f4077;
         color: white;
         padding: 100px 0 80px;
         text-align: center;
