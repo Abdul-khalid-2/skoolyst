@@ -29,6 +29,9 @@
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ route('website.videos.index') }}">Videos</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('mcqs') ? 'active' : '' }}" href="{{ route('website.mcqs.index') }}">MCQs</a>
+                </li>
             </ul>
 
             <div class="navbar-actions d-flex align-items-center gap-3">
