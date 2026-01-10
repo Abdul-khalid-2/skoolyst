@@ -11,7 +11,7 @@ class SchoolMcqController extends Controller
      */
     public function index()
     {
-        //
+        return view('dashboard.mcqs_system.school_mcqs.index');
     }
 
     /**
