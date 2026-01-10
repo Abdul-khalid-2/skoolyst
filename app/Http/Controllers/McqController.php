@@ -64,7 +64,7 @@ class McqController extends Controller
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
         
-        return view('dashboard.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
+        return view('dashboard.mcqs_system.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
     }
 
     public function create(Request $request)
@@ -84,7 +84,7 @@ class McqController extends Controller
             }
         }
         
-        return view('dashboard.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
+        return view('dashboard.mcqs_system.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
     }
 
     public function store(Request $request)
@@ -157,7 +157,7 @@ class McqController extends Controller
     public function show(Mcq $mcq)
     {
         $mcq->load(['subject', 'topic', 'testType', 'createdBy', 'approvedBy']);
-        return view('dashboard.mcqs.show', compact('mcq'));
+        return view('dashboard.mcqs_system.mcqs.show', compact('mcq'));
     }
 
     public function edit(Mcq $mcq)
@@ -171,7 +171,7 @@ class McqController extends Controller
         $correctAnswers = json_decode($mcq->correct_answers, true) ?? [];
         $tags = $mcq->tags ? implode(', ', json_decode($mcq->tags, true)) : '';
         
-        return view('dashboard.mcqs.edit', compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags'));
+        return view('dashboard.mcqs_system.mcqs.edit', compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags'));
     }
 
     public function update(Request $request, Mcq $mcq)

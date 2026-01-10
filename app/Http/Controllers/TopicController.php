@@ -42,7 +42,7 @@ class TopicController extends Controller
         $topics = $query->orderBy('sort_order')->paginate(20);
         $subjects = Subject::active()->get();
 
-        return view('dashboard.topics.index', compact('topics', 'subjects'));
+        return view('dashboard.mcqs_system.topics.index', compact('topics', 'subjects'));
     }
 
     public function create(Request $request)
@@ -50,7 +50,7 @@ class TopicController extends Controller
         $subjects = Subject::active()->get();
         $selectedSubject = $request->get('subject_id');
 
-        return view('dashboard.topics.create', compact('subjects', 'selectedSubject'));
+        return view('dashboard.mcqs_system.topics.create', compact('subjects', 'selectedSubject'));
     }
 
     public function store(Request $request)
@@ -99,13 +99,13 @@ class TopicController extends Controller
             $q->orderBy('difficulty_level')->latest()->take(10);
         }]);
 
-        return view('dashboard.topics.show', compact('topic'));
+        return view('dashboard.mcqs_system.topics.show', compact('topic'));
     }
 
     public function edit(Topic $topic)
     {
         $subjects = Subject::active()->get();
-        return view('dashboard.topics.edit', compact('topic', 'subjects'));
+        return view('dashboard.mcqs_system.topics.edit', compact('topic', 'subjects'));
     }
 
     public function update(Request $request, Topic $topic)

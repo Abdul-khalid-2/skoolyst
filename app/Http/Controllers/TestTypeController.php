@@ -12,12 +12,12 @@ class TestTypeController extends Controller
     public function index()
     {
         $testTypes = TestType::orderBy('sort_order')->paginate(20);
-        return view('dashboard.test-types.index', compact('testTypes'));
+        return view('dashboard.mcqs_system.test-types.index', compact('testTypes'));
     }
 
     public function create()
     {
-        return view('dashboard.test-types.create');
+        return view('dashboard.mcqs_system.test-types.create');
     }
 
     public function store(Request $request)
@@ -46,12 +46,12 @@ class TestTypeController extends Controller
 
     public function show(TestType $testType)
     {
-        return view('dashboard.test-types.show', compact('testType'));
+        return view('dashboard.mcqs_system.test-types.show', compact('testType'));
     }
 
     public function edit(TestType $testType)
     {
-        return view('dashboard.test-types.edit', compact('testType'));
+        return view('dashboard.mcqs_system.test-types.edit', compact('testType'));
     }
 
     public function update(Request $request, TestType $testType)
