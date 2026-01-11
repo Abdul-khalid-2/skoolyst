@@ -229,6 +229,7 @@
         }
     }
 </style>
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
 @section('content')

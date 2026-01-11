@@ -121,6 +121,15 @@ class WebsiteMcqController extends Controller
             abort(404);
         }
 
+        // Ensure options and correct_answers are arrays
+        if (is_string($mcq->options)) {
+            $mcq->options = json_decode($mcq->options, true);
+        }
+        
+        if (is_string($mcq->correct_answers)) {
+            $mcq->correct_answers = json_decode($mcq->correct_answers, true);
+        }
+
         // Get similar questions
         $similarMcqs = Mcq::where('subject_id', $mcq->subject_id)
             ->where('topic_id', $mcq->topic_id)
@@ -133,38 +142,83 @@ class WebsiteMcqController extends Controller
         return view('website.mcqs_system.mcqs.practice', compact('mcq', 'similarMcqs'));
     }
 
-    // Check answer for practice
     public function checkAnswer(Mcq $mcq, Request $request)
     {
+
+        dd($request->all());
         $request->validate([
             'selected_answers' => 'required|array',
             'selected_answers.*' => 'string'
         ]);
 
-        $selectedAnswers = $request->selected_answers;
-        $correctAnswers = $mcq->correct_answers;
+        // Ensure selected answers are properly formatted
+        $selectedAnswers = (array) $request->selected_answers;
         
+        // Ensure correct_answers is an array (handle both string and array)
+        if (is_string($mcq->correct_answers)) {
+            $correctAnswers = json_decode($mcq->correct_answers, true);
+            // If decoding fails, try to handle it as a single answer
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $correctAnswers = [$mcq->correct_answers];
+            }
+        } else {
+            $correctAnswers = (array) $mcq->correct_answers;
+        }
+        
+        // Debug logging
+        \Log::info('Answer Check:', [
+            'mcq_id' => $mcq->id,
+            'selected' => $selectedAnswers,
+            'correct' => $correctAnswers,
+            'question_type' => $mcq->question_type
+        ]);
+
         // Check if answers are correct
-        $isCorrect = empty(array_diff($correctAnswers, $selectedAnswers)) && 
-                     empty(array_diff($selectedAnswers, $correctAnswers));
+        // For single choice questions, we need exact match
+        // For multiple choice, we need to check all answers
+        if ($mcq->question_type === 'single') {
+            // For single choice, compare the first selected answer with first correct answer
+            $selected = isset($selectedAnswers[0]) ? trim($selectedAnswers[0]) : '';
+            $correct = isset($correctAnswers[0]) ? trim($correctAnswers[0]) : '';
+            $isCorrect = ($selected === $correct);
+            dd($selectedAnswers, $correctAnswers, $isCorrect);
+        } else {
+            // For multiple choice, check if all correct answers are selected and no extra ones
+            $selectedAnswers = array_map('trim', $selectedAnswers);
+            $correctAnswers = array_map('trim', $correctAnswers);
+            
+            sort($selectedAnswers);
+            sort($correctAnswers);
+            
+            $isCorrect = ($selectedAnswers === $correctAnswers);
+        }
 
         // Save user's answer if logged in
         if (Auth::check()) {
-            UserMcqAnswer::updateOrCreate(
-                [
+            try {
+                UserMcqAnswer::updateOrCreate(
+                    [
+                        'user_id' => Auth::id(),
+                        'mcq_id' => $mcq->id,
+                        'test_attempt_id' => null
+                    ],
+                    [
+                        'selected_answers' => $selectedAnswers,
+                        'is_correct' => $isCorrect,
+                        'time_taken_seconds' => $request->time_taken ?? 0,
+                        'topic_id' => $mcq->topic_id
+                    ]
+                );
+            } catch (\Exception $e) {
+                \Log::error('Failed to save user answer:', [
+                    'error' => $e->getMessage(),
                     'user_id' => Auth::id(),
-                    'mcq_id' => $mcq->id,
-                    'test_attempt_id' => null
-                ],
-                [
-                    'selected_answers' => $selectedAnswers,
-                    'is_correct' => $isCorrect,
-                    'time_taken_seconds' => $request->time_taken ?? 0,
-                    'topic_id' => $mcq->topic_id
-                ]
-            );
+                    'mcq_id' => $mcq->id
+                ]);
+            }
         }
 
+        
         return response()->json([
             'correct' => $isCorrect,
             'correct_answers' => $correctAnswers,

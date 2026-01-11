@@ -442,7 +442,7 @@ Route::prefix('mcqs/test')->name('website.mcqs.')->group(function () {
     Route::get('/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
     Route::get('/{test_type:slug}/{subject:slug}', [WebsiteMcqController::class, 'subject'])->name('subject');
     Route::get('/{test_type:slug}/{subject:slug}/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
-    Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
+    // Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
     Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('check-answer');
 
     // Mock Tests
@@ -452,4 +452,6 @@ Route::prefix('mcqs/test')->name('website.mcqs.')->group(function () {
     Route::post('/mock-tests/{mock_test:slug}/submit', [WebsiteMcqController::class, 'submitMockTest'])->name('submit-mock-test');
     Route::get('/test-attempts/{attempt:uuid}', [WebsiteMcqController::class, 'testResult'])->name('test-result');
 });
+Route::get('/mcqs/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('website.mcqs.practice');
+Route::post('/mcqs/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('website.mcqs.check-answer');
 require __DIR__ . '/auth.php';

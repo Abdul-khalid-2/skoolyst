@@ -1,5 +1,9 @@
 @extends('website.layout.app')
-
+@push('styles')
+<link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+@endpush
 @section('content')
 <section class="py-5">
     <div class="container">
