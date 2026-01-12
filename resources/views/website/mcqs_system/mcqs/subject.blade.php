@@ -295,6 +295,391 @@
     .difficulty-easy { background: #d1fae5; color: #065f46; }
     .difficulty-medium { background: #fef3c7; color: #92400e; }
     .difficulty-hard { background: #fee2e2; color: #991b1b; }
+
+    /* Topic Content Styles */
+    .topic-content-section {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .topic-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .topic-title {
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 700;
+        font-size: 1.8rem;
+    }
+
+    .topic-meta {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .topic-meta-badge {
+        background: #e8f4ff;
+        color: #4361ee;
+        padding: 8px 18px;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .topic-description-text {
+        line-height: 1.7;
+        color: #4a5568;
+        font-size: 1.05rem;
+        margin-bottom: 20px;
+    }
+
+    .topic-content-wrapper {
+        line-height: 1.8;
+        color: #4a5568;
+        font-size: 1.05rem;
+    }
+
+    .topic-content-wrapper img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin: 20px 0;
+    }
+
+    .topic-content-wrapper h1,
+    .topic-content-wrapper h2,
+    .topic-content-wrapper h3 {
+        color: #2c3e50;
+        margin-top: 25px;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .topic-content-wrapper ul,
+    .topic-content-wrapper ol {
+        padding-left: 25px;
+        margin: 15px 0;
+    }
+
+    .topic-content-wrapper li {
+        margin-bottom: 8px;
+    }
+
+    .topic-content-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    .topic-content-wrapper table th,
+    .topic-content-wrapper table td {
+        border: 1px solid #e2e8f0;
+        padding: 12px;
+        text-align: left;
+    }
+
+    .topic-content-wrapper table th {
+        background: #f7fafc;
+        font-weight: 600;
+    }
+
+    .topic-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .start-practice-btn {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .start-practice-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(67, 97, 238, 0.3);
+    }
+
+    .back-to-topics-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .back-to-topics-btn:hover {
+        background: #545b62;
+    }
+
+    .progress-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #718096;
+        font-size: 0.9rem;
+    }
+
+    .progress-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #e8f4ff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: #4361ee;
+    }
+
+    /* Questions Section */
+    .questions-section {
+        display: none;
+    }
+
+    .questions-section.active {
+        display: block;
+        animation: fadeInSlide 0.5s ease;
+    }
+
+    @keyframes fadeInSlide {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Collapsible Content Container */
+    .topic-content-container {
+        position: relative;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .topic-content-collapsible {
+        max-height: 300px;
+        overflow: hidden;
+        transition: max-height 0.5s ease;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 20px;
+        background: #fafbfc;
+    }
+
+    .topic-content-collapsible.expanded {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .description-gradient {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to bottom, transparent, #fafbfc 90%);
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
+
+    .topic-content-collapsible.expanded .description-gradient {
+        opacity: 0;
+    }
+
+    .content-toggle-btn {
+        background: #4361ee;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 15px;
+    }
+
+    .content-toggle-btn:hover {
+        background: #3a0ca3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+    }
+
+    /* Styling for content inside */
+    .topic-content-wrapper h1, 
+    .topic-content-wrapper h2, 
+    .topic-content-wrapper h3, 
+    .topic-content-wrapper h4, 
+    .topic-content-wrapper h5, 
+    .topic-content-wrapper h6 {
+        color: #2c3e50;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+    }
+
+    .topic-content-wrapper p {
+        margin-bottom: 1rem;
+        line-height: 1.7;
+    }
+
+    .topic-content-wrapper ul, 
+    .topic-content-wrapper ol {
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .topic-content-wrapper li {
+        margin-bottom: 0.5rem;
+    }
+
+    .topic-content-wrapper img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+
+    .topic-content-wrapper table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+    }
+
+    .topic-content-wrapper table th,
+    .topic-content-wrapper table td {
+        border: 1px solid #dee2e6;
+        padding: 0.75rem;
+        text-align: left;
+    }
+
+    .topic-content-wrapper table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+    }
+
+    .topic-content-wrapper code {
+        background-color: #f1f3f5;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+    }
+
+    .topic-content-wrapper pre {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+
+    .topic-content-wrapper blockquote {
+        border-left: 4px solid #4361ee;
+        padding-left: 1rem;
+        margin-left: 0;
+        margin-right: 0;
+        color: #6c757d;
+        font-style: italic;
+    }
+
+    .back-to-subject-btn {
+        background: #6c757d;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .back-to-subject-btn:hover {
+        background: #545b62;
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Breadcrumb improvement */
+    .breadcrumb-item.active {
+        color: #4361ee;
+        font-weight: 500;
+    }
+
+    /* Difficulty badges for topics */
+    .difficulty-beginner { background: #d1fae5; color: #065f46; }
+    .difficulty-intermediate { background: #fef3c7; color: #92400e; }
+    .difficulty-advanced { background: #fee2e2; color: #991b1b; }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .topic-header {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .topic-meta {
+            width: 100%;
+            justify-content: flex-start;
+        }
+        
+        .topic-actions {
+            flex-direction: column;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        
+        .start-practice-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 </style>
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
@@ -308,8 +693,22 @@
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.test-type', $testType->slug) }}">{{ $testType->name }}</a></li>
                 <li class="breadcrumb-item active">{{ $subject->name }}</li>
+                @if($currentTopic)
+                    <li class="breadcrumb-item active">{{ $currentTopic->title }}</li>
+                @endif
             </ol>
         </nav>
+
+        <!-- Back to Subject Button (Only when topic is selected) -->
+        @if($currentTopic)
+            <div class="mb-4">
+                <a href="{{ route('website.mcqs.subject', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}" 
+                class="back-to-subject-btn">
+                    <i class="fas fa-arrow-left me-2"></i> 
+                    Back to All {{ $subject->name }} Topics
+                </a>
+            </div>
+        @endif
 
         <div class="row">
             <!-- Main Content -->
@@ -325,25 +724,239 @@
                     </div>
                 </div>
 
+                @if($currentTopic)
+                    <!-- Topic Content Section -->
+                    <div class="topic-content-section" id="topicContent">
+                        <div class="topic-header">
+                            <h2 class="topic-title">{{ $currentTopic->title }}</h2>
+                            <div class="topic-meta">
+                                <span class="topic-meta-badge">
+                                    <i class="fas fa-clock me-1"></i> 
+                                    {{ $currentTopic->estimated_time_minutes }} min read
+                                </span>
+                                <span class="topic-meta-badge">
+                                    <i class="fas fa-question-circle me-1"></i> 
+                                    {{ $currentTopic->mcqs_count }} Questions
+                                </span>
+                                <span class="topic-meta-badge difficulty-{{ $currentTopic->difficulty_level }}">
+                                    {{ ucfirst($currentTopic->difficulty_level) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        @if($currentTopic->description)
+                            <div class="mb-4">
+                                <h4 class="mb-3">Overview</h4>
+                                <p class="topic-description-text">{{ $currentTopic->description }}</p>
+                            </div>
+                        @endif
+
+                        <!-- Topic Content with Collapse/Expand -->
+                        @if($currentTopic->content)
+
+                          
+                            <div class="mb-4">
+                                <h4 class="mb-3">Topic Content</h4>
+                                
+
+                                <p class="d-inline-flex gap-1">
+                                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#topicContentCollapsible" role="button" aria-expanded="false" aria-controls="topicContentCollapsible">
+                                        Show Full Content
+                                    </a>
+                                </p>
+                                <div class="collapse" id="topicContentCollapsible">
+                                    <div class="description-gradient" id="descriptionGradient"></div>
+                                    <div class="topic-content-wrapper">
+                                        {!! $currentTopic->content !!}
+                                    </div>
+                                </div>
+
+                                {{-- <div class="topic-content-container"> remove this no longer needed also related js and css
+                                    <div class="topic-content-collapsible" id="topicContentCollapsible">
+                                        <div class="description-gradient" id="descriptionGradient"></div>
+                                        <div class="topic-content-wrapper">
+                                            {!! $currentTopic->content !!}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button class="content-toggle-btn" onclick="toggleContent()" id="contentToggleBtn">
+                                    <i class="fas fa-chevron-down" id="contentToggleIcon"></i>
+                                    <span id="contentToggleText">Show Full Content</span>
+                                </button> --}}
+                            </div>
+                        @else
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                No detailed content available for this topic. You can start practicing directly.
+                            </div>
+                        @endif
+
+                        <div class="topic-actions">
+                            <div class="progress-indicator">
+                                <div class="progress-circle">
+                                    <i class="fas fa-book-reader"></i>
+                                </div>
+                                <div>
+                                    <strong>Read Before Practicing</strong>
+                                    <div>Understand the topic first for better results</div>
+                                </div>
+                            </div>
+                            <button class="start-practice-btn" onclick="startPractice()">
+                                <i class="fas fa-play-circle"></i>
+                                Start Practice
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Questions Section (Hidden initially) -->
+                    <div class="questions-section" id="questionsSection">
+                        <div class="card shadow-sm mb-4">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-0">Practicing: {{ $currentTopic->title }}</h5>
+                                    <small class="text-muted">{{ $mcqs->count() }} questions available</small>
+                                </div>
+                                <button class="back-to-topics-btn" onclick="backToContent()">
+                                    <i class="fas fa-arrow-left me-2"></i> Back to Content
+                                </button>
+                            </div>
+                            
+                            <div class="card-body">
+                                <!-- Questions List -->
+                                @if($mcqs->count() > 0)
+                                    @foreach($mcqs as $index => $mcq)
+                                        @php
+                                            $options = is_array($mcq->options) ? $mcq->options : [];
+                                        @endphp
+                                        
+                                        <div class="question-preview" id="mcq-{{ $mcq->uuid }}">
+                                            <div class="d-flex align-items-start mb-3">
+                                                <div class="mcq-counter">{{ $index + 1 }}</div>
+                                                <div class="flex-grow-1">
+                                                    <div class="mcq-meta">
+                                                        <span class="difficulty-badge difficulty-{{ $mcq->difficulty_level }}">
+                                                            {{ ucfirst($mcq->difficulty_level) }}
+                                                        </span>
+                                                        <span class="badge bg-light text-dark">
+                                                            <i class="fas fa-star me-1"></i>{{ $mcq->marks }} Mark{{ $mcq->marks > 1 ? 's' : '' }}
+                                                        </span>
+                                                        <span id="result-{{ $mcq->uuid }}"></span>
+                                                    </div>
+                                                    
+                                                    <div class="question-text">
+                                                        {!! $mcq->question !!}
+                                                    </div>
+
+                                                    <!-- Options Toggle Button -->
+                                                    <button class="options-toggle-btn" onclick="toggleOptions('{{ $mcq->uuid }}')">
+                                                        <i class="fas fa-chevron-down" id="toggle-icon-{{ $mcq->uuid }}"></i>
+                                                        <span>Show Options</span>
+                                                    </button>
+
+                                                    <!-- Options Container -->
+                                                    <div class="options-container" id="options-{{ $mcq->uuid }}" 
+                                                         data-question-type="{{ $mcq->question_type }}">
+                                                        @if(count($options) > 0)
+                                                            @foreach($options as $optIndex => $option)
+                                                            <div class="option-item">
+                                                                <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
+                                                                       id="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" 
+                                                                       name="mcq-{{ $mcq->uuid }}" 
+                                                                       value="{{ $optIndex }}"
+                                                                       class="option-input">
+                                                                <label for="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" class="option-label">
+                                                                    <span class="option-marker">{{ chr(65 + $optIndex) }}</span>
+                                                                    {{ $option }}
+                                                                </label>
+                                                            </div>
+                                                            @endforeach
+                                                        @else
+                                                            <div class="alert alert-warning">
+                                                                No options available for this question.
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Action Buttons -->
+                                                    <div class="action-buttons">
+                                                        <button class="check-btn" onclick="checkAnswer('{{ $mcq->uuid }}')">
+                                                            <i class="fas fa-check"></i> Check Answer
+                                                        </button>
+                                                        <button class="reset-btn" onclick="resetAnswer('{{ $mcq->uuid }}')">
+                                                            <i class="fas fa-redo"></i> Reset
+                                                        </button>
+                                                        @if($mcq->hint)
+                                                        <button class="btn btn-sm btn-outline-warning" onclick="showHint('{{ $mcq->uuid }}')">
+                                                            <i class="fas fa-lightbulb"></i> Hint
+                                                        </button>
+                                                        @endif
+                                                    </div>
+
+                                                    <!-- Explanation -->
+                                                    @if($mcq->explanation)
+                                                    <div class="explanation-box" id="explanation-{{ $mcq->uuid }}">
+                                                        <h6 class="mb-2"><i class="fas fa-info-circle text-success me-2"></i>Explanation</h6>
+                                                        <div class="explanation-content">
+                                                            {!! $mcq->explanation !!}
+                                                        </div>
+                                                        @if($mcq->reference_book)
+                                                        <div class="mt-2">
+                                                            <small class="text-muted">
+                                                                <i class="fas fa-book me-1"></i>
+                                                                Reference: {{ $mcq->reference_book }}
+                                                                @if($mcq->reference_page)
+                                                                , Page {{ $mcq->reference_page }}
+                                                                @endif
+                                                            </small>
+                                                        </div>
+                                                        @endif
+                                                    </div>
+                                                    @endif
+
+                                                    <!-- Hint -->
+                                                    @if($mcq->hint)
+                                                    <div class="hint-box" id="hint-{{ $mcq->uuid }}">
+                                                        <h6 class="mb-1"><i class="fas fa-lightbulb text-warning me-2"></i>Hint</h6>
+                                                        <div class="hint-content">{{ $mcq->hint }}</div>
+                                                    </div>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                @else
+                                <div class="text-center py-5">
+                                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">No questions found for this topic</h5>
+                                    <p class="text-muted">There are no questions available for "{{ $currentTopic->title }}"</p>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <!-- Default View (When no topic selected) -->
+                    
                 <!-- Difficulty Filters -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <h5 class="card-title mb-3">Filter by Difficulty</h5>
                         <div class="text-center">
                             <a href="{{ request()->fullUrlWithQuery(['difficulty' => null]) }}" 
-                               class="difficulty-filter {{ !request('difficulty') ? 'active' : '' }}">
+                                class="difficulty-filter {{ !request('difficulty') ? 'active' : '' }}">
                                 All ({{ $difficultyStats->sum('count') }})
                             </a>
                             <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'easy']) }}" 
-                               class="difficulty-filter {{ request('difficulty') === 'easy' ? 'active' : '' }}">
+                                class="difficulty-filter {{ request('difficulty') === 'easy' ? 'active' : '' }}">
                                 Easy ({{ $difficultyStats['easy']->count ?? 0 }})
                             </a>
                             <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'medium']) }}" 
-                               class="difficulty-filter {{ request('difficulty') === 'medium' ? 'active' : '' }}">
+                                class="difficulty-filter {{ request('difficulty') === 'medium' ? 'active' : '' }}">
                                 Medium ({{ $difficultyStats['medium']->count ?? 0 }})
                             </a>
                             <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'hard']) }}" 
-                               class="difficulty-filter {{ request('difficulty') === 'hard' ? 'active' : '' }}">
+                                class="difficulty-filter {{ request('difficulty') === 'hard' ? 'active' : '' }}">
                                 Hard ({{ $difficultyStats['hard']->count ?? 0 }})
                             </a>
                         </div>
@@ -356,13 +969,9 @@
                     <div class="card-body">
                         <h5 class="card-title mb-3">Topics</h5>
                         <div class="d-flex flex-wrap">
-                            <a href="{{ request()->fullUrlWithQuery(['topic' => null]) }}" 
-                               class="topic-filter {{ !request('topic') ? 'active' : '' }}">
-                                All Topics
-                            </a>
                             @foreach($topics as $topic)
                             <a href="{{ request()->fullUrlWithQuery(['topic' => $topic->id]) }}" 
-                               class="topic-filter {{ request('topic') == $topic->id ? 'active' : '' }}">
+                                class="topic-filter {{ request('topic') == $topic->id ? 'active' : '' }}">
                                 {{ $topic->title }} ({{ $topic->mcqs_count }})
                             </a>
                             @endforeach
@@ -371,17 +980,21 @@
                 </div>
                 @endif
 
-                <!-- Questions List -->
+                <!-- All Questions (When no specific topic selected) -->
+                @if($mcqs->count() > 0)
                 <div class="card shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Practice Questions</h5>
+                        <h5 class="mb-0">All Practice Questions</h5>
                         <span class="badge bg-primary">
                             {{ $mcqs->total() }} Questions
                         </span>
                     </div>
                     <div class="card-body">
-                        @if($mcqs->count() > 0)
-                            @foreach($mcqs as $index => $mcq)
+                        @foreach($mcqs as $index => $mcq)
+                            @php
+                                $options = is_array($mcq->options) ? $mcq->options : [];
+                            @endphp
+                            
                             <div class="question-preview" id="mcq-{{ $mcq->uuid }}">
                                 <div class="d-flex align-items-start mb-3">
                                     <div class="mcq-counter">{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $index + 1 }}</div>
@@ -413,20 +1026,26 @@
 
                                         <!-- Options Container (Collapsed by default) -->
                                         <div class="options-container" id="options-{{ $mcq->uuid }}" 
-                                             data-question-type="{{ $mcq->question_type }}">
-                                            @foreach($mcq->options as $optIndex => $option)
+                                            data-question-type="{{ $mcq->question_type }}">
+                                        @if(count($options) > 0)
+                                            @foreach($options as $optIndex => $option)
                                             <div class="option-item">
                                                 <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
-                                                       id="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" 
-                                                       name="mcq-{{ $mcq->uuid }}" 
-                                                       value="{{ $optIndex }}"
-                                                       class="option-input">
+                                                        id="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" 
+                                                        name="mcq-{{ $mcq->uuid }}" 
+                                                        value="{{ $optIndex }}"
+                                                        class="option-input">
                                                 <label for="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" class="option-label">
                                                     <span class="option-marker">{{ chr(65 + $optIndex) }}</span>
                                                     {{ $option }}
                                                 </label>
                                             </div>
                                             @endforeach
+                                        @else
+                                            <div class="alert alert-warning">
+                                                No options available for this question.
+                                            </div>
+                                        @endif
                                         </div>
 
                                         <!-- Action Buttons -->
@@ -483,18 +1102,18 @@
                                 {{ $mcqs->links('pagination::bootstrap-5') }}
                             </div>
                             @endif
+                            </div>
+                        </div>
                         @else
-                        <div class="text-center py-5">
-                            <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No questions found</h5>
-                            <p class="text-muted">Try adjusting your filters</p>
-                            <a href="{{ request()->fullUrlWithQuery(['difficulty' => null, 'topic' => null]) }}" class="btn btn-primary">
-                                Clear Filters
-                            </a>
+                        <div class="card shadow-sm">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">No questions found</h5>
+                                <p class="text-muted">Try selecting a topic or adjusting your filters</p>
+                            </div>
                         </div>
                         @endif
-                    </div>
-                </div>
+                    @endif
             </div>
 
             <!-- Sidebar -->
@@ -539,18 +1158,17 @@
                 <!-- Recommended Practice -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Recommended Practice</h5>
+                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Recommended Topics</h5>
                     </div>
                     <div class="card-body">
                         <div class="list-group list-group-flush">
                             @foreach($topics->take(5) as $topic)
-                            <a href="{{ route('website.mcqs.subject', [
-                                'test_type' => $testType->slug, 
-                                'subject' => $subject->slug,
-                                'topic' => $topic->id
-                            ]) }}" 
+                            <a href="{{ request()->fullUrlWithQuery(['topic' => $topic->id]) }}" 
                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                <span>{{ $topic->title }}</span>
+                                <div>
+                                    <span>{{ $topic->title }}</span>
+                                    <small class="text-muted d-block">{{ $topic->difficulty_level }}</small>
+                                </div>
                                 <span class="badge bg-primary rounded-pill">{{ $topic->mcqs_count }}</span>
                             </a>
                             @endforeach
@@ -565,9 +1183,9 @@
                         <a href="{{ route('website.mcqs.mock-tests', ['test_type' => $testType->slug]) }}" class="btn btn-primary btn-lg w-100 mb-3">
                             <i class="fas fa-clipboard-list me-2"></i>Take Mock Test
                         </a>
-                        <button onclick="practiceAllRandom()" class="btn btn-outline-primary btn-lg w-100">
-                            <i class="fas fa-random me-2"></i>Random Practice
-                        </button>
+                        <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'random']) }}" class="btn btn-outline-primary btn-lg w-100">
+                            <i class="fas fa-random me-2"></i>Random Questions
+                        </a>
                     </div>
                 </div>
             </div>
@@ -578,7 +1196,103 @@
 
 @push('scripts')
 <script>
-    // Toggle options visibility
+    // Topic Content Toggle Function
+    // function toggleContent() {
+    //     const contentContainer = document.getElementById('topicContentCollapsible');
+    //     const toggleIcon = document.getElementById('contentToggleIcon');
+    //     const toggleText = document.getElementById('contentToggleText');
+    //     const gradient = document.getElementById('descriptionGradient');
+        
+    //     if (contentContainer.classList.contains('expanded')) {
+    //         // Collapse content
+    //         contentContainer.classList.remove('expanded');
+    //         toggleIcon.className = 'fas fa-chevron-down';
+    //         toggleText.textContent = 'Show Full Content';
+            
+    //         // Show gradient again
+    //         if (gradient) {
+    //             gradient.style.opacity = '1';
+    //         }
+            
+    //         // Smooth scroll to top of content
+    //         contentContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    //     } else {
+    //         // Expand content
+    //         contentContainer.classList.add('expanded');
+    //         toggleIcon.className = 'fas fa-chevron-up';
+    //         toggleText.textContent = 'Hide Content';
+            
+    //         // Hide gradient when expanded
+    //         if (gradient) {
+    //             gradient.style.opacity = '0';
+    //         }
+    //     }
+    // }
+
+    // Auto-detect if content is short enough to show fully
+    // function initContentToggle() {
+    //     const contentContainer = document.getElementById('topicContentCollapsible');
+    //     const toggleBtn = document.getElementById('contentToggleBtn');
+    //     const gradient = document.getElementById('descriptionGradient');
+        
+    //     if (contentContainer) {
+    //         // Get the actual content height
+    //         const contentHeight = contentContainer.scrollHeight;
+    //         const containerHeight = 300; // Default max-height
+            
+    //         // If content is short (less than 400px), expand it by default and hide the button
+    //         if (contentHeight <= 400) {
+    //             contentContainer.classList.add('expanded');
+    //             contentContainer.style.maxHeight = 'none';
+                
+    //             // Hide the toggle button since content is already fully visible
+    //             if (toggleBtn) {
+    //                 toggleBtn.style.display = 'none';
+    //             }
+                
+    //             // Hide gradient
+    //             if (gradient) {
+    //                 gradient.style.display = 'none';
+    //             }
+    //         } else {
+    //             // Content is long, keep it collapsed initially
+    //             contentContainer.style.maxHeight = '300px';
+                
+    //             // Show toggle button
+    //             if (toggleBtn) {
+    //                 toggleBtn.style.display = 'inline-flex';
+    //             }
+                
+    //             // Show gradient
+    //             if (gradient) {
+    //                 gradient.style.display = 'block';
+    //             }
+    //         }
+    //     }
+    // }
+
+    // Start Practice - Show questions
+    function startPractice() {
+        document.getElementById('topicContent').style.display = 'none';
+        document.getElementById('questionsSection').classList.add('active');
+        
+        // Save that user has read the content
+        localStorage.setItem(`topic_read_{{ $currentTopic?->id }}`, 'true');
+        
+        // Scroll to top of questions
+        document.getElementById('questionsSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Back to Content
+    function backToContent() {
+        document.getElementById('questionsSection').classList.remove('active');
+        document.getElementById('topicContent').style.display = 'block';
+        
+        // Scroll to top of content
+        document.getElementById('topicContent').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // MCQ Functions
     function toggleOptions(mcqUuid) {
         const optionsContainer = document.getElementById(`options-${mcqUuid}`);
         const toggleIcon = document.getElementById(`toggle-icon-${mcqUuid}`);
@@ -774,36 +1488,20 @@
         }
     });
 
-    // Save progress to localStorage
-    function saveProgress(mcqUuid, isCorrect) {
-        const progressKey = `mcq_progress_{{ $subject->id }}`;
-        let progress = JSON.parse(localStorage.getItem(progressKey)) || {};
-        
-        progress[mcqUuid] = {
-            correct: isCorrect,
-            timestamp: new Date().toISOString()
-        };
-        
-        localStorage.setItem(progressKey, JSON.stringify(progress));
-    }
-
-    // Load progress from localStorage on page load
+    // On page load
     document.addEventListener('DOMContentLoaded', function() {
-        const progressKey = `mcq_progress_{{ $subject->id }}`;
-        const progress = JSON.parse(localStorage.getItem(progressKey)) || {};
+        // Initialize content toggle
+        initContentToggle();
         
-        Object.keys(progress).forEach(mcqUuid => {
-            const result = progress[mcqUuid].correct;
-            const resultBadge = document.getElementById(`result-${mcqUuid}`);
-            
-            if (resultBadge) {
-                if (result) {
-                    resultBadge.innerHTML = '<span class="result-badge result-correct"><i class="fas fa-check me-1"></i>Correct</span>';
-                } else {
-                    resultBadge.innerHTML = '<span class="result-badge result-incorrect"><i class="fas fa-times me-1"></i>Incorrect</span>';
-                }
+        @if($currentTopic)
+            // Check if user already read the topic
+            const hasRead = localStorage.getItem(`topic_read_{{ $currentTopic->id }}`);
+            if (hasRead === 'true') {
+                // User already read the content, show questions directly
+                document.getElementById('topicContent').style.display = 'none';
+                document.getElementById('questionsSection').classList.add('active');
             }
-        });
+        @endif
     });
 </script>
 @endpush

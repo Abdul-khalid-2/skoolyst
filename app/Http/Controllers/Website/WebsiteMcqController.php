@@ -73,6 +73,12 @@ class WebsiteMcqController extends Controller
             ->orderBy('sort_order')
             ->get();
 
+        // Get the current selected topic if any
+        $currentTopic = null;
+        if ($request->filled('topic')) {
+            $currentTopic = Topic::find($request->topic);
+        }
+
         $mcqs = Mcq::where('subject_id', $subject->id)
             ->where('status', 'published')
             ->with('topic')
@@ -107,7 +113,14 @@ class WebsiteMcqController extends Controller
             ->get()
             ->keyBy('difficulty_level');
 
-        return view('website.mcqs_system.mcqs.subject', compact('testType', 'subject', 'topics', 'mcqs', 'difficultyStats'));
+        return view('website.mcqs_system.mcqs.subject', compact(
+            'testType',
+            'subject',
+            'topics',
+            'mcqs',
+            'difficultyStats',
+            'currentTopic'
+        ));
     }
 
     // Topic page
