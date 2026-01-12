@@ -83,7 +83,22 @@ class WebsiteMcqController extends Controller
                 $query->where('topic_id', $request->topic);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(10);
+
+        // Ensure options are arrays for each MCQ
+        $mcqs->transform(function ($mcq) {
+            // Decode options if it's a string
+            if (is_string($mcq->options)) {
+                $mcq->options = json_decode($mcq->options, true);
+            }
+            
+            // Ensure it's always an array
+            if (!is_array($mcq->options)) {
+                $mcq->options = [];
+            }
+            
+            return $mcq;
+        });
 
         $difficultyStats = Mcq::where('subject_id', $subject->id)
             ->where('status', 'published')
