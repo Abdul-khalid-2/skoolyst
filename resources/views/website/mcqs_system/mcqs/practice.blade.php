@@ -224,7 +224,7 @@
                         <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
                                id="option{{ $index }}" 
                                name="answer" 
-                               value="{{ $option }}" 
+                               value="{{ $index }}" 
                                class="option-input">
                         <label for="option{{ $index }}" class="option-label">
                             <span class="option-marker">{{ chr(65 + $index) }}</span>

@@ -144,8 +144,6 @@ class WebsiteMcqController extends Controller
 
     public function checkAnswer(Mcq $mcq, Request $request)
     {
-
-        dd($request->all());
         $request->validate([
             'selected_answers' => 'required|array',
             'selected_answers.*' => 'string'
@@ -165,13 +163,7 @@ class WebsiteMcqController extends Controller
             $correctAnswers = (array) $mcq->correct_answers;
         }
         
-        // Debug logging
-        \Log::info('Answer Check:', [
-            'mcq_id' => $mcq->id,
-            'selected' => $selectedAnswers,
-            'correct' => $correctAnswers,
-            'question_type' => $mcq->question_type
-        ]);
+      
 
         // Check if answers are correct
         // For single choice questions, we need exact match
@@ -181,7 +173,6 @@ class WebsiteMcqController extends Controller
             $selected = isset($selectedAnswers[0]) ? trim($selectedAnswers[0]) : '';
             $correct = isset($correctAnswers[0]) ? trim($correctAnswers[0]) : '';
             $isCorrect = ($selected === $correct);
-            dd($selectedAnswers, $correctAnswers, $isCorrect);
         } else {
             // For multiple choice, check if all correct answers are selected and no extra ones
             $selectedAnswers = array_map('trim', $selectedAnswers);

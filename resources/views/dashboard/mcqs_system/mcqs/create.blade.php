@@ -408,6 +408,12 @@
             const previewBtn = document.getElementById('preview-btn');
             const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
             
+            // Initialize correct answers from old input
+            let selectedCorrectAnswers = [];
+            @if(old('correct_answers'))
+                selectedCorrectAnswers = @json(old('correct_answers'));
+            @endif
+            
             // Add option
             document.getElementById('add-option').addEventListener('click', function() {
                 if (optionCounter >= 10) {
@@ -445,10 +451,10 @@
                     
                     // Check if this option is selected as correct answer
                     const optionIndex = Array.from(optionsContainer.children).indexOf(optionItem);
-                    const optionLetter = String.fromCharCode(65 + optionIndex);
-                    const correctCheckbox = document.querySelector(`input[name="correct_answers[]"][value="${optionIndex}"]`);
+                    const optionNumber = optionIndex + 1; // 1-based index
+                    const isCorrect = selectedCorrectAnswers.includes(optionNumber.toString());
                     
-                    if (correctCheckbox && correctCheckbox.checked) {
+                    if (isCorrect) {
                         alert('Cannot remove an option that is marked as correct answer');
                         return;
                     }
@@ -481,13 +487,16 @@
                 
                 optionInputs.forEach((input, index) => {
                     const optionLetter = String.fromCharCode(65 + index);
-                    const checkboxId = `correct_${index}`;
+                    const optionNumber = index + 1; // 1-based index
+                    const checkboxId = `correct_${optionNumber}`;
+                    const isSelected = selectedCorrectAnswers.includes(optionNumber.toString());
                     
                     const div = document.createElement('div');
                     div.className = 'form-check form-check-inline';
                     div.innerHTML = `
                         <input class="form-check-input" type="${questionTypeSelect.value === 'single' ? 'radio' : 'checkbox'}" 
-                               name="correct_answers[]" id="${checkboxId}" value="${index}">
+                            name="correct_answers[]" id="${checkboxId}" value="${optionNumber}"
+                            ${isSelected ? 'checked' : ''}>
                         <label class="form-check-label" for="${checkboxId}">
                             <span class="badge bg-light text-dark">${optionLetter}</span>
                         </label>
@@ -498,11 +507,22 @@
                     // Add event listener to the checkbox/radio
                     const checkbox = div.querySelector('input');
                     checkbox.addEventListener('change', function() {
-                        if (questionTypeSelect.value === 'single' && this.type === 'radio') {
-                            // For radio buttons, uncheck others
-                            correctAnswersContainer.querySelectorAll('input[type="radio"]').forEach(cb => {
+                        if (questionTypeSelect.value === 'single') {
+                            // For single choice, clear and add selected one
+                            selectedCorrectAnswers = [this.value];
+                            // Uncheck others
+                            correctAnswersContainer.querySelectorAll('input[name="correct_answers[]"]').forEach(cb => {
                                 if (cb !== this) cb.checked = false;
                             });
+                        } else {
+                            // For multiple choice
+                            if (this.checked) {
+                                if (!selectedCorrectAnswers.includes(this.value)) {
+                                    selectedCorrectAnswers.push(this.value);
+                                }
+                            } else {
+                                selectedCorrectAnswers = selectedCorrectAnswers.filter(val => val !== this.value);
+                            }
                         }
                     });
                 });
@@ -557,11 +577,13 @@
                 `;
                 
                 // Add options
-                for (let i = 0; i < optionCounter; i++) {
-                    const optionValue = formData.get(`options[${i}]`);
+                const optionInputs = optionsContainer.querySelectorAll('input[name^="options"]');
+                optionInputs.forEach((input, index) => {
+                    const optionValue = input.value;
                     if (optionValue) {
-                        const optionLetter = String.fromCharCode(65 + i);
-                        const isCorrect = formData.getAll('correct_answers[]').includes(i.toString());
+                        const optionLetter = String.fromCharCode(65 + index);
+                        const optionNumber = index + 1;
+                        const isCorrect = selectedCorrectAnswers.includes(optionNumber.toString());
                         
                         previewHTML += `
                             <div class="list-group-item d-flex justify-content-between align-items-center">
@@ -573,7 +595,7 @@
                             </div>
                         `;
                     }
-                }
+                });
                 
                 previewHTML += `
                         </div>

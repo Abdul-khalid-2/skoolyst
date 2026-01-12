@@ -102,8 +102,7 @@ class McqController extends Controller
             
             // Correct answers validation
             'correct_answers' => 'required|array|min:1',
-            'correct_answers.*' => 'required|string|in:' . implode(',', array_keys($request->options)),
-            
+            'correct_answers.*' => 'required|string',
             'explanation' => 'nullable|string',
             'hint' => 'nullable|string',
             'difficulty_level' => 'required|in:easy,medium,hard',
@@ -124,6 +123,24 @@ class McqController extends Controller
                 ->with('error', 'Single choice questions can have only one correct answer.');
         }
 
+        // Format options as key-value pairs (1 => "option1", 2 => "option2", ...)
+        $formattedOptions = [];
+        foreach ($request->options as $index => $option) {
+            // Use 1-based indexing for options (1, 2, 3, 4...)
+            $key = $index + 1;
+            $formattedOptions[$key] = $option;
+        }
+
+        // Validate that correct answers are valid option keys
+        $validOptionKeys = array_keys($formattedOptions);
+        foreach ($request->correct_answers as $answer) {
+            if (!in_array($answer, $validOptionKeys)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', "Invalid correct answer: '{$answer}'. Valid options are: " . implode(', ', $validOptionKeys));
+            }
+        }
+
         $mcqData = [
             'uuid' => Str::uuid(),
             'question' => $request->question,
@@ -131,7 +148,7 @@ class McqController extends Controller
             'subject_id' => $request->subject_id,
             'topic_id' => $request->topic_id,
             'test_type_id' => $request->test_type_id,
-            'options' => json_encode($request->options),
+            'options' => json_encode($formattedOptions),
             'correct_answers' => json_encode($request->correct_answers),
             'explanation' => $request->explanation,
             'hint' => $request->hint,
