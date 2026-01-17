@@ -1,2 +1,10 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /storage/
+Disallow: /vendor/
+Disallow: /nova/
+
+# Sitemap
+Sitemap: https://skoolyst.com/sitemap.xml
