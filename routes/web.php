@@ -129,7 +129,7 @@ Route::group([
         Route::get('dashboard/products/{product}', [ProductController::class, 'show'])->name('products.show');
         Route::get('dashboard/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
         Route::put('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update');
-        Route::patch('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::patch('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update.patch');
         Route::delete('dashboard/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
 
