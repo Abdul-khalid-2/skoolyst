@@ -60,8 +60,7 @@ use App\Http\Controllers\Website\WebsiteProductsController;
 use App\Http\Controllers\Website\WebsiteModalController;
 use App\Http\Controllers\Website\TestimonialController;
 use App\Http\Controllers\Website\WebsiteMcqController;
-
-
+use App\Http\Controllers\Website\WebsiteMockMcqController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 Route::group([
@@ -443,22 +442,37 @@ Route::group([
 
     // MCQs Routes
     Route::prefix('mcqs/test')->name('website.mcqs.')->group(function () {
+
+        // ✅ STATIC ROUTES FIRST
+        Route::get('/mock-tests', [WebsiteMockMcqController::class, 'mockTests'])
+            ->name('mock-tests');
+
+        Route::get('/mock-tests/{mock_test:slug}', [WebsiteMockMcqController::class, 'mockTestDetail'])
+            ->name('mock-test-detail');
+
+        Route::get('/mock-tests/{mock_test:slug}/start', [WebsiteMockMcqController::class, 'startMockTest'])
+            ->name('start-mock-test');
+
+        Route::post('/mock-tests/{mock_test:slug}/submit', [WebsiteMockMcqController::class, 'submitMockTest'])
+            ->name('submit-mock-test');
+
+
+        Route::get('/take/{attempt:uuid}', [WebsiteMockMcqController::class, 'takeTest'])->name('take-test');
+        Route::post('/{attempt:uuid}/save', [WebsiteMockMcqController::class, 'saveAnswer'])->name('save-answer');
+        Route::post('/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])->name('submit-test');
+
+
+
+        // ✅ THEN DYNAMIC ROUTES
         Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
         Route::get('/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
         Route::get('/{test_type:slug}/{subject:slug}', [WebsiteMcqController::class, 'subject'])->name('subject');
         Route::get('/{test_type:slug}/{subject:slug}/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
-        // Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
-        Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('check-answer');
-
-        // Mock Tests
-        Route::get('/mock-tests', [WebsiteMcqController::class, 'mockTests'])->name('mock-tests');
-        Route::get('/mock-tests/{mock_test:slug}', [WebsiteMcqController::class, 'mockTestDetail'])->name('mock-test-detail');
-        Route::get('/mock-tests/{mock_test:slug}/start', [WebsiteMcqController::class, 'startMockTest'])->name('start-mock-test');
-        Route::post('/mock-tests/{mock_test:slug}/submit', [WebsiteMcqController::class, 'submitMockTest'])->name('submit-mock-test');
-        Route::get('/test-attempts/{attempt:uuid}', [WebsiteMcqController::class, 'testResult'])->name('test-result');
     });
+
+
     Route::get('/mcqs/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('website.mcqs.practice');
     Route::post('/mcqs/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('website.mcqs.check-answer');
-});
 
-require __DIR__ . '/auth.php';
+    require __DIR__ . '/auth.php';
+});
