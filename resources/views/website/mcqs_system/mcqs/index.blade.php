@@ -324,10 +324,13 @@
         <div class="row g-4">
             @foreach($popularSubjects as $subject)
             <div class="col-md-3">
-                <a href="{{ route('website.mcqs.subject', ['test_type' => $subject->testType->slug, 'subject' => $subject->slug]) }}" 
-                   class="text-decoration-none">
+                @php
+                    $testTypeSlug = $subject->testType->slug ?? 'general';
+                @endphp
+                <a href="{{ route('website.mcqs.subject', ['test_type' => $testTypeSlug, 'subject' => $subject->slug]) }}" 
+                class="text-decoration-none">
                     <div class="subject-card">
-                        <div class="subject-icon" style="background: {{ $subject->color_code }}; color: white;">
+                        <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }}; color: white;">
                             <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
                         </div>
                         <h4 class="h5 mb-2">{{ $subject->name }}</h4>
