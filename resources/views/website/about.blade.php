@@ -3,6 +3,9 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
+@php
+    $rtlText = app()->getLocale() === 'ur' ? 'text-rtl' : '';
+@endphp
 <style>
     /* ==================== COMMON STYLES ==================== */
     .section-title {
@@ -466,8 +469,8 @@
 <!-- ==================== HERO SECTION ==================== -->
 <section class="hero-section">
     <div class="container">
-        <h3 class="hero-title">{{ __('about.hero_title') }}</h3>
-        <p class="hero-subtitle">
+        <h3 class="hero-title {{ $rtlText }}">{{ __('about.hero_title') }}</h3>
+        <p class="hero-subtitle {{ $rtlText }}">
             {{ __('about.hero_subtitle') }}
         </p>
         <div class="hero-content">
@@ -479,8 +482,8 @@
 <!-- ==================== ABOUT SECTION ==================== -->
 <section class="about-section" id="about">
     <div class="container">
-        <h2 class="section-title">{{ __('about.why_choose_us') }}</h2>
-        <p class="section-description">
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.why_choose_us') }}</h2>
+        <p class="section-description {{ $rtlText }}">
             {{ __('about.about_description') }}
         </p>
 
@@ -490,8 +493,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-school"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.school_profiles') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.school_profiles') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.school_profiles_text') }}
                     </p>
                 </div>
@@ -502,8 +505,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.smart_ads') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.smart_ads') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.smart_ads_text') }}
                     </p>
                 </div>
@@ -514,8 +517,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.achievement_hub') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.achievement_hub') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.achievement_hub_text') }}
                     </p>
                 </div>
@@ -526,8 +529,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.parent_engagement') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.parent_engagement') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.parent_engagement_text') }}
                     </p>
                 </div>
@@ -539,15 +542,15 @@
 <!-- ==================== MISSION & VISION SECTION ==================== -->
 <section class="mission-vision-section">
     <div class="container">
-        <h2 class="section-title">{{ __('about.purpose_vision') }}</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.purpose_vision') }}</h2>
 
         <div class="mission-vision-grid">
             <div class="mission-card">
                 <div class="card-icon">
                     <i class="fas fa-bullseye"></i>
                 </div>
-                <h3 class="card-title">{{ __('about.our_mission') }}</h3>
-                <p class="card-content">
+                <h3 class="card-title {{ $rtlText }}">{{ __('about.our_mission') }}</h3>
+                <p class="card-content {{ $rtlText }}">
                     {{ __('about.mission_text') }}
                 </p>
             </div>
@@ -556,8 +559,8 @@
                 <div class="card-icon">
                     <i class="fas fa-eye"></i>
                 </div>
-                <h3 class="card-title">{{ __('about.our_vision') }}</h3>
-                <p class="card-content">
+                <h3 class="card-title {{ $rtlText }}">{{ __('about.our_vision') }}</h3>
+                <p class="card-content {{ $rtlText }}">
                     {{ __('about.vision_text') }}
                 </p>
             </div>
@@ -568,7 +571,7 @@
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
 <section class="how-it-works-section" id="how-it-works">
     <div class="container">
-        <h2 class="section-title">{{ __('about.how_it_works') }}</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.how_it_works') }}</h2>
 
         <div class="row">
             <div class="col-lg-3 col-md-6 mb-4">
@@ -576,8 +579,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.create_profile') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.create_profile') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.create_profile_text') }}
                     </p>
                 </div>
@@ -588,8 +591,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-ad"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.post_announcements') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.post_announcements') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.post_announcements_text') }}
                     </p>
                 </div>
@@ -600,8 +603,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-medal"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.highlight_achievements') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.highlight_achievements') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.highlight_achievements_text') }}
                     </p>
                 </div>
@@ -612,8 +615,8 @@
                     <div class="feature-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3 class="feature-title">{{ __('about.engage_community') }}</h3>
-                    <p class="feature-text">
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.engage_community') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
                         {{ __('about.engage_community_text') }}
                     </p>
                 </div>
@@ -625,15 +628,15 @@
 <!-- ==================== PLATFORM FEATURES ==================== -->
 <section class="platform-features-section">
     <div class="container">
-        <h2 class="section-title">{{ __('about.unique_features') }}</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.unique_features') }}</h2>
 
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="feature-title">{{ __('about.smart_discovery') }}</h3>
-                <p class="feature-text">
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.smart_discovery') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
                     {{ __('about.smart_discovery_text') }}
                 </p>
             </div>
@@ -642,8 +645,8 @@
                 <div class="feature-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <h3 class="feature-title">{{ __('about.reviews_ratings') }}</h3>
-                <p class="feature-text">
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.reviews_ratings') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
                     {{ __('about.reviews_ratings_text') }}
                 </p>
             </div>
@@ -652,8 +655,8 @@
                 <div class="feature-icon">
                     <i class="fas fa-exchange-alt"></i>
                 </div>
-                <h3 class="feature-title">{{ __('about.comparison') }}</h3>
-                <p class="feature-text">
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.comparison') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
                     {{ __('about.comparison_text') }}
                 </p>
             </div>
@@ -662,8 +665,8 @@
                 <div class="feature-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <h3 class="feature-title">{{ __('about.ecommerce') }}</h3>
-                <p class="feature-text">
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.ecommerce') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
                     {{ __('about.ecommerce_text') }}
                 </p>
             </div>
@@ -674,28 +677,28 @@
 <!-- ==================== VALUE PROPOSITION ==================== -->
 <section class="value-section">
     <div class="container">
-        <h2 class="section-title">{{ __('about.who_benefits') }}</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.who_benefits') }}</h2>
 
         <div class="value-grid">
             <div class="value-card">
-                <div class="value-number">{{ __('about.parents') }}</div>
-                <h3 class="value-title">{{ __('about.parents_title') }}</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.parents') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.parents_title') }}</h3>
                 <p class="value-description">
                     {{ __('about.parents_description') }}
                 </p>
             </div>
 
             <div class="value-card">
-                <div class="value-number">{{ __('about.schools_benefit') }}</div>
-                <h3 class="value-title">{{ __('about.schools_title') }}</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.schools_benefit') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.schools_title') }}</h3>
                 <p class="value-description">
                     {{ __('about.schools_description') }}
                 </p>
             </div>
 
             <div class="value-card">
-                <div class="value-number">{{ __('about.students') }}</div>
-                <h3 class="value-title">{{ __('about.students_title') }}</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.students') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.students_title') }}</h3>
                 <p class="value-description">
                     {{ __('about.students_description') }}
                 </p>
@@ -707,18 +710,18 @@
 <!-- ==================== BLOG SECTION (Optional) ==================== -->
 <section class="blog-section" id="blog">
     <div class="container">
-        <h2 class="section-headline">{{ __('about.latest_insights') }}</h2>
+        <h2 class="section-headline {{ $rtlText }}">{{ __('about.latest_insights') }}</h2>
 
         <div class="row mt-5">
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">{{ __('about.digital_transformation') }}</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.digital_transformation') }}</h3>
                         <p class="blog-excerpt">
                             {{ __('about.digital_transformation_text') }}
                         </p>
-                        <a href="#" class="blog-link">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -727,11 +730,11 @@
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">{{ __('about.school_communities') }}</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.school_communities') }}</h3>
                         <p class="blog-excerpt">
                             {{ __('about.school_communities_text') }}
                         </p>
-                        <a href="#" class="blog-link">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -740,11 +743,11 @@
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">{{ __('about.marketing_school') }}</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.marketing_school') }}</h3>
                         <p class="blog-excerpt">
                             {{ __('about.marketing_school_text') }}
                         </p>
-                        <a href="#" class="blog-link">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -755,8 +758,8 @@
 <!-- ==================== CTA SECTION ==================== -->
 <section class="cta-section">
     <div class="container">
-        <h2 class="cta-title">{{ __('about.join_revolution') }}</h2>
-        <p class="cta-subtitle">
+        <h2 class="cta-title {{ $rtlText }}">{{ __('about.join_revolution') }}</h2>
+        <p class="cta-subtitle {{ $rtlText }}">
             {{ __('about.cta_subtitle') }}
         </p>
 
@@ -774,11 +777,11 @@
 <!-- ==================== FINAL CTA ==================== -->
 <section class="final-cta">
     <div class="container">
-        <h2 class="final-cta-headline">{{ __('about.ready_transform') }}</h2>
-        <p class="section-description" style="color: #ccc; margin-bottom: 2rem;">
+        <h2 class="final-cta-headline {{ $rtlText }}">{{ __('about.ready_transform') }}</h2>
+        <p class="section-description {{ $rtlText }}" style="color: #ccc; margin-bottom: 2rem;">
             {{ __('about.final_cta_text') }}
         </p>
-        <a href="{{ route('register') }}" class="final-cta-button">{{ __('about.get_started_free') }}</a>
+        <a href="{{ route('register') }}" class="final-cta-button {{ $rtlText }}">{{ __('about.get_started_free') }}</a>
     </div>
 </section>
 
