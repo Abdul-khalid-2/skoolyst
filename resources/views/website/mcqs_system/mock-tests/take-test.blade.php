@@ -430,7 +430,7 @@
         let question = questions[currentQuestion - 1];
         if (!question || !question.selectedAnswers) return;
         
-        fetch('{{ route("website.mcqs.save-answer", $attempt->uuid) }}', {
+        fetch('{{ route("website.mcqs.save-answer", ["attempt" => $attempt->uuid]) }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -505,7 +505,7 @@
     function finalSubmit() {
         clearInterval(timerInterval);
         
-        fetch('{{ route("website.mcqs.submit-test", $attempt->uuid) }}', {
+        fetch('{{ route("website.mcqs.submit-test", ["attempt" => $attempt->uuid]) }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

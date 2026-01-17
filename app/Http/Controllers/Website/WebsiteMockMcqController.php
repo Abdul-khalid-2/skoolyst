@@ -378,4 +378,116 @@ class WebsiteMockMcqController extends Controller
 
         return redirect()->route('website.mcqs.test-result', $attempt->uuid);
     }
+
+
+    // Test result page
+    public function testResult(UserTestAttempt $attempt)
+    {
+        if (Auth::id() !== $attempt->user_id) {
+            abort(403);
+        }
+
+        $attempt->load(['mockTest.testType', 'mockTest.questions.mcq', 'user']);
+
+        // Get detailed answers
+        $userAnswers = UserMcqAnswer::where('test_attempt_id', $attempt->id)
+            ->with('mcq')
+            ->get();
+
+        // Prepare detailed results
+        $detailedResults = [];
+        foreach ($userAnswers as $answer) {
+            $mcq = $answer->mcq;
+
+            if (is_string($mcq->options)) {
+                $mcq->options = json_decode($mcq->options, true);
+            }
+
+            if (is_string($mcq->correct_answers)) {
+                $mcq->correct_answers = json_decode($mcq->correct_answers, true);
+            }
+
+            $selectedAnswers = $answer->selected_answers;
+            if (is_string($selectedAnswers)) {
+                $selectedAnswers = json_decode($selectedAnswers, true);
+            }
+
+            $detailedResults[] = [
+                'question' => $mcq->question,
+                'options' => $mcq->options,
+                'selected_answers' => $selectedAnswers,
+                'correct_answers' => $mcq->correct_answers,
+                'is_correct' => $answer->is_correct,
+                'explanation' => $mcq->explanation,
+                'marks' => $answer->mcq->marks,
+                'time_taken' => $answer->time_taken_seconds,
+                'subject' => $mcq->subject?->name,
+                'topic' => $mcq->topic?->title,
+            ];
+        }
+
+        // Calculate statistics
+        $statistics = [
+            'total_questions' => $attempt->total_questions,
+            'attempted' => $attempt->attempted_questions,
+            'skipped' => $attempt->skipped_questions,
+            'correct' => $attempt->correct_answers,
+            'wrong' => $attempt->wrong_answers,
+            'accuracy' => $attempt->attempted_questions > 0 ?
+                round(($attempt->correct_answers / $attempt->attempted_questions) * 100, 2) : 0,
+            'time_taken' => $this->formatTime($attempt->time_taken_seconds),
+            'average_time_per_question' => $attempt->attempted_questions > 0 ?
+                round($attempt->time_taken_seconds / $attempt->attempted_questions, 2) : 0,
+        ];
+
+        // Subject-wise performance
+        $subjectPerformance = [];
+        foreach ($userAnswers as $answer) {
+            $subjectName = $answer->mcq->subject?->name;
+            if (!$subjectName) continue;
+
+            if (!isset($subjectPerformance[$subjectName])) {
+                $subjectPerformance[$subjectName] = [
+                    'total' => 0,
+                    'correct' => 0,
+                    'marks_obtained' => 0,
+                    'total_marks' => 0,
+                ];
+            }
+
+            $subjectPerformance[$subjectName]['total']++;
+            $subjectPerformance[$subjectName]['total_marks'] += $answer->mcq->marks;
+
+            if ($answer->is_correct) {
+                $subjectPerformance[$subjectName]['correct']++;
+                $subjectPerformance[$subjectName]['marks_obtained'] += $answer->mcq->marks;
+            }
+        }
+
+        return view('website.mcqs_system.mcqs.test-result', compact(
+            'attempt',
+            'detailedResults',
+            'statistics',
+            'subjectPerformance'
+        ));
+    }
+
+    // Helper method to format time
+    private function formatTime($seconds)
+    {
+        $hours = floor($seconds / 3600);
+        $minutes = floor(($seconds % 3600) / 60);
+        $seconds = $seconds % 60;
+
+        $time = '';
+        if ($hours > 0) {
+            $time .= $hours . 'h ';
+        }
+        if ($minutes > 0 || $hours > 0) {
+            $time .= $minutes . 'm ';
+        }
+        $time .= $seconds . 's';
+
+        return trim($time);
+    }
 }

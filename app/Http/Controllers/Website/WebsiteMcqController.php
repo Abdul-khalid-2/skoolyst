@@ -424,15 +424,4 @@ class WebsiteMcqController extends Controller
         return redirect()->route('website.mcqs.test-result', $attempt->uuid);
     }
 
-    // Test result
-    public function testResult(UserTestAttempt $attempt)
-    {
-        if (Auth::id() !== $attempt->user_id) {
-            abort(403);
-        }
-
-        $attempt->load(['mockTest.testType', 'mockTest.questions.mcq']);
-
-        return view('website.mcqs_system.mcqs.test-result', compact('attempt'));
-    }
 }

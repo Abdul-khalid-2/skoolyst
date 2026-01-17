@@ -456,12 +456,18 @@ Route::group([
         Route::post('/mock-tests/{mock_test:slug}/submit', [WebsiteMockMcqController::class, 'submitMockTest'])
             ->name('submit-mock-test');
 
+        // ✅ TEST ATTEMPT ROUTES - Place these BEFORE dynamic routes
+        Route::get('/take/{attempt:uuid}', [WebsiteMockMcqController::class, 'takeTest'])
+            ->name('take-test');
 
-        Route::get('/take/{attempt:uuid}', [WebsiteMockMcqController::class, 'takeTest'])->name('take-test');
-        Route::post('/{attempt:uuid}/save', [WebsiteMockMcqController::class, 'saveAnswer'])->name('save-answer');
-        Route::post('/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])->name('submit-test');
+        Route::post('/attempt/{attempt:uuid}/save', [WebsiteMockMcqController::class, 'saveAnswer'])
+            ->name('save-answer');
 
+        Route::post('/attempt/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])
+            ->name('submit-test');
 
+        Route::get('/test-attempts/{attempt:uuid}', [WebsiteMockMcqController::class, 'testResult'])
+            ->name('test-result');
 
         // ✅ THEN DYNAMIC ROUTES
         Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
