@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="{{ url('/') }}">SKOOLYST</a>
+        <a class="navbar-brand" href="{{ LaravelLocalization::localizeUrl('/') }}">SKOOLYST</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
@@ -9,31 +9,48 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ route('website.home') }}">Home</a>
-                </li>
-                <!-- <li class="nav-item">
-                    <a class="nav-link {{ request()->is('how-it-works') ? 'active' : '' }}" href="{{ route('website.how_it_works') }}">How It Works</a>
-                </li> -->
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ route('browseSchools.index') }}">Schools</a>
+                    <a class="nav-link {{ request()->is('/') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.home', [], false)) }}">
+                        {{ __('messages.home') }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ url('/about') }}">About</a>
+                    <a class="nav-link {{ request()->is('directory') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('browseSchools.index', [], false)) }}">
+                        {{ __('messages.schools') }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('blog') ? 'active' : '' }}" href="{{ url('/blog') }}">Blog</a>
+                    <a class="nav-link {{ request()->is('about') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl('/about') }}">
+                        {{ __('messages.about') }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('shop') ? 'active' : '' }}" href="{{ route('website.shop.index') }}">Shop</a>
+                    <a class="nav-link {{ request()->is('blog') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl('/blog') }}">
+                        {{ __('messages.blog') }}
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ route('website.videos.index') }}">Videos</a>
+                    <a class="nav-link {{ request()->is('shop') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.shop.index', [], false)) }}">
+                        {{ __('messages.shop') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.videos.index', [], false)) }}">
+                        {{ __('messages.videos') }}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('mcqs') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.mcqs.index', [], false)) }}">
+                        {{ __('messages.mcqs') }}
+                    </a>
                 </li>
             </ul>
 
             <div class="navbar-actions d-flex align-items-center gap-3">
+                <!-- Language Switcher -->
+                <x-language-switcher />
+
                 <!-- Cart Icon with Count -->
-                <a href="{{ route('website.cart') }}" class="cart-icon position-relative text-decoration-none">
+                <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="cart-icon position-relative text-decoration-none">
                     <i class="fas fa-shopping-cart fa-lg" style="color: #4361ee;"></i>
                     @php
                     $cartCount = 0;
@@ -58,17 +75,17 @@
                     @if (Route::has('login'))
                     @auth
                     @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
-                    <a href="{{ url('/dashboard') }}" class="btn-global-style">Dashboard</a>
+                    <a href="{{ LaravelLocalization::localizeUrl('/dashboard') }}" class="btn-global-style">Dashboard</a>
                     @else
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ LaravelLocalization::localizeUrl(route('logout', [], false)) }}">
                         @csrf
                         <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
                     </form>
                     @endif
                     @else
-                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-login">Login</a>
+                    <a href="{{ LaravelLocalization::localizeUrl(route('login', [], false)) }}" class="btn btn-outline-primary btn-login">Login</a>
                     @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-register">Register</a>
+                    <a href="{{ LaravelLocalization::localizeUrl(route('register', [], false)) }}" class="btn btn-primary btn-register">Register</a>
                     @endif
                     @endauth
                     @endif

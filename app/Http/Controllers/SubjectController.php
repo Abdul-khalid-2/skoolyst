@@ -37,13 +37,13 @@ class SubjectController extends Controller
         $subjects = $query->orderBy('sort_order')->paginate(20);
         $testTypes = TestType::active()->get();
 
-        return view('dashboard.subjects.index', compact('subjects', 'testTypes'));
+        return view('dashboard.mcqs_system.subjects.index', compact('subjects', 'testTypes'));
     }
 
     public function create()
     {
         $testTypes = TestType::active()->get();
-        return view('dashboard.subjects.create', compact('testTypes'));
+        return view('dashboard.mcqs_system.subjects.create', compact('testTypes'));
     }
 
     public function store(Request $request)
@@ -82,13 +82,13 @@ class SubjectController extends Controller
             $q->latest()->take(10);
         }]);
 
-        return view('dashboard.subjects.show', compact('subject'));
+        return view('dashboard.mcqs_system.subjects.show', compact('subject'));
     }
 
     public function edit(Subject $subject)
     {
         $testTypes = TestType::active()->get();
-        return view('dashboard.subjects.edit', compact('subject', 'testTypes'));
+        return view('dashboard.mcqs_system.subjects.edit', compact('subject', 'testTypes'));
     }
 
     public function update(Request $request, Subject $subject)

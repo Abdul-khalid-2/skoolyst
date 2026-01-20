@@ -64,7 +64,7 @@ class McqController extends Controller
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
         
-        return view('dashboard.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
+        return view('dashboard.mcqs_system.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
     }
 
     public function create(Request $request)
@@ -84,7 +84,7 @@ class McqController extends Controller
             }
         }
         
-        return view('dashboard.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
+        return view('dashboard.mcqs_system.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
     }
 
     public function store(Request $request)
@@ -102,8 +102,7 @@ class McqController extends Controller
             
             // Correct answers validation
             'correct_answers' => 'required|array|min:1',
-            'correct_answers.*' => 'required|string|in:' . implode(',', array_keys($request->options)),
-            
+            'correct_answers.*' => 'required|string',
             'explanation' => 'nullable|string',
             'hint' => 'nullable|string',
             'difficulty_level' => 'required|in:easy,medium,hard',
@@ -124,6 +123,24 @@ class McqController extends Controller
                 ->with('error', 'Single choice questions can have only one correct answer.');
         }
 
+        // Format options as key-value pairs (1 => "option1", 2 => "option2", ...)
+        $formattedOptions = [];
+        foreach ($request->options as $index => $option) {
+            // Use 1-based indexing for options (1, 2, 3, 4...)
+            $key = $index + 1;
+            $formattedOptions[$key] = $option;
+        }
+
+        // Validate that correct answers are valid option keys
+        $validOptionKeys = array_keys($formattedOptions);
+        foreach ($request->correct_answers as $answer) {
+            if (!in_array($answer, $validOptionKeys)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', "Invalid correct answer: '{$answer}'. Valid options are: " . implode(', ', $validOptionKeys));
+            }
+        }
+
         $mcqData = [
             'uuid' => Str::uuid(),
             'question' => $request->question,
@@ -131,7 +148,7 @@ class McqController extends Controller
             'subject_id' => $request->subject_id,
             'topic_id' => $request->topic_id,
             'test_type_id' => $request->test_type_id,
-            'options' => json_encode($request->options),
+            'options' => json_encode($formattedOptions),
             'correct_answers' => json_encode($request->correct_answers),
             'explanation' => $request->explanation,
             'hint' => $request->hint,
@@ -157,7 +174,7 @@ class McqController extends Controller
     public function show(Mcq $mcq)
     {
         $mcq->load(['subject', 'topic', 'testType', 'createdBy', 'approvedBy']);
-        return view('dashboard.mcqs.show', compact('mcq'));
+        return view('dashboard.mcqs_system.mcqs.show', compact('mcq'));
     }
 
     public function edit(Mcq $mcq)
@@ -171,7 +188,7 @@ class McqController extends Controller
         $correctAnswers = json_decode($mcq->correct_answers, true) ?? [];
         $tags = $mcq->tags ? implode(', ', json_decode($mcq->tags, true)) : '';
         
-        return view('dashboard.mcqs.edit', compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags'));
+        return view('dashboard.mcqs_system.mcqs.edit', compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags'));
     }
 
     public function update(Request $request, Mcq $mcq)

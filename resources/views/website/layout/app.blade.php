@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="{{ app()->getLocale() }}" dir="ltr">
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -73,9 +73,24 @@
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <!-- ================= RTL TEXT ONLY STYLES ================= -->
+    <style>
+        /* Only text RTL – layout remains LTR */
+        .text-rtl {
+            direction: rtl;
+            unicode-bidi: isolate;
+            /* text-align: right; */
+        }
+
+        /* Prevent RTL from breaking UI */
+        nav, header, footer, .container, .row, .card, .btn {
+            direction: ltr;
+        }
+    </style>
+
     @stack('styles')
+    @stack('meta')
 </head>
-@stack('meta')
 
 <body>
 

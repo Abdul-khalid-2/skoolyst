@@ -43,7 +43,7 @@ class MockTestController extends Controller
         $mockTests = $query->latest()->paginate(20);
         $testTypes = TestType::active()->get();
 
-        return view('dashboard.mock-tests.index', compact('mockTests', 'testTypes'));
+        return view('dashboard.mcqs_system.mock-tests.index', compact('mockTests', 'testTypes'));
     }
 
     public function create()
@@ -51,7 +51,7 @@ class MockTestController extends Controller
         $testTypes = TestType::active()->get();
         $subjects = Subject::active()->get();
 
-        return view('dashboard.mock-tests.create', compact('testTypes', 'subjects'));
+        return view('dashboard.mcqs_system.mock-tests.create', compact('testTypes', 'subjects'));
     }
 
     public function store(Request $request)
@@ -116,7 +116,7 @@ class MockTestController extends Controller
             }
         ]);
 
-        return view('dashboard.mock-tests.show', compact('mockTest'));
+        return view('dashboard.mcqs_system.mock-tests.show', compact('mockTest'));
     }
 
     public function edit(MockTest $mockTest)
@@ -126,7 +126,7 @@ class MockTestController extends Controller
 
         $mockTest->load(['questions.mcq']);
 
-        return view('dashboard.mock-tests.edit', compact('mockTest', 'testTypes', 'subjects'));
+        return view('dashboard.mcqs_system.mock-tests.edit', compact('mockTest', 'testTypes', 'subjects'));
     }
 
     public function update(Request $request, MockTest $mockTest)
@@ -212,7 +212,7 @@ class MockTestController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        return view('dashboard.mock-tests.add-questions', compact(
+        return view('dashboard.mcqs_system.mock-tests.add-questions', compact(
             'mockTest',
             'subjects',
             'topics',
@@ -492,6 +492,6 @@ class MockTestController extends Controller
             }
         ]);
 
-        return view('dashboard.mock-tests.preview', compact('mockTest'));
+        return view('dashboard.mcqs_system.mock-tests.preview', compact('mockTest'));
     }
 }

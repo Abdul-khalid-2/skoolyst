@@ -3,6 +3,9 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
+@php
+    $rtlText = app()->getLocale() === 'ur' ? 'text-rtl' : '';
+@endphp
 <style>
     /* ==================== COMMON STYLES ==================== */
     .section-title {
@@ -428,7 +431,7 @@
         .hero-subtitle {
             font-size: 1.1rem;
         }
-        
+
         .mission-vision-grid,
         .features-grid,
         .value-grid {
@@ -453,7 +456,7 @@
             width: 100%;
             max-width: 300px;
         }
-        
+
         .section-title {
             font-size: 2rem;
         }
@@ -463,13 +466,12 @@
 @endpush
 
 @section('content')
-
 <!-- ==================== HERO SECTION ==================== -->
 <section class="hero-section">
     <div class="container">
-        <h3 class="hero-title">Transforming Education Discovery</h3>
-        <p class="hero-subtitle">
-            SKOOLYST is revolutionizing how schools connect with students and parents, creating a comprehensive educational ecosystem that empowers informed decisions and bright futures.
+        <h3 class="hero-title {{ $rtlText }}">{{ __('about.hero_title') }}</h3>
+        <p class="hero-subtitle {{ $rtlText }}">
+            {{ __('about.hero_subtitle') }}
         </p>
         <div class="hero-content">
             <img src="{{ asset('assets/assets/hero1.png') }}" alt="SKOOLYST Platform Overview">
@@ -480,10 +482,9 @@
 <!-- ==================== ABOUT SECTION ==================== -->
 <section class="about-section" id="about">
     <div class="container">
-        <h2 class="section-title">Why Choose SKOOLYST?</h2>
-        <p class="section-description">
-            Empower schools, academies, and institutes to build digital profiles, advertise admissions,
-            showcase achievements, and connect with students – all in one place.
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.why_choose_us') }}</h2>
+        <p class="section-description {{ $rtlText }}">
+            {{ __('about.about_description') }}
         </p>
 
         <div class="row">
@@ -492,9 +493,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-school"></i>
                     </div>
-                    <h3 class="feature-title">School Profiles</h3>
-                    <p class="feature-text">
-                        Create and customize your institution's comprehensive digital page with ease.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.school_profiles') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.school_profiles_text') }}
                     </p>
                 </div>
             </div>
@@ -504,9 +505,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-bullhorn"></i>
                     </div>
-                    <h3 class="feature-title">Smart Ads</h3>
-                    <p class="feature-text">
-                        Promote admissions, events, or achievements to reach the right audience effectively.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.smart_ads') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.smart_ads_text') }}
                     </p>
                 </div>
             </div>
@@ -516,9 +517,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-trophy"></i>
                     </div>
-                    <h3 class="feature-title">Achievement Hub</h3>
-                    <p class="feature-text">
-                        Highlight and celebrate student and staff successes on a dedicated platform.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.achievement_hub') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.achievement_hub_text') }}
                     </p>
                 </div>
             </div>
@@ -528,9 +529,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-comments"></i>
                     </div>
-                    <h3 class="feature-title">Parent Engagement</h3>
-                    <p class="feature-text">
-                        Build trust with direct communication channels between schools and families.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.parent_engagement') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.parent_engagement_text') }}
                     </p>
                 </div>
             </div>
@@ -541,16 +542,16 @@
 <!-- ==================== MISSION & VISION SECTION ==================== -->
 <section class="mission-vision-section">
     <div class="container">
-        <h2 class="section-title">Our Purpose & Vision</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.purpose_vision') }}</h2>
 
         <div class="mission-vision-grid">
             <div class="mission-card">
                 <div class="card-icon">
                     <i class="fas fa-bullseye"></i>
                 </div>
-                <h3 class="card-title">Our Mission</h3>
-                <p class="card-content">
-                    To create the most comprehensive educational platform that bridges the gap between schools and families. We empower schools to showcase their unique offerings while providing parents and students with transparent, detailed information to make the best educational choices.
+                <h3 class="card-title {{ $rtlText }}">{{ __('about.our_mission') }}</h3>
+                <p class="card-content {{ $rtlText }}">
+                    {{ __('about.mission_text') }}
                 </p>
             </div>
 
@@ -558,9 +559,9 @@
                 <div class="card-icon">
                     <i class="fas fa-eye"></i>
                 </div>
-                <h3 class="card-title">Our Vision</h3>
-                <p class="card-content">
-                    To become the world's leading educational discovery platform where every school can effectively reach its audience, every student finds their perfect learning environment, and education becomes more accessible, transparent, and data-driven for all stakeholders.
+                <h3 class="card-title {{ $rtlText }}">{{ __('about.our_vision') }}</h3>
+                <p class="card-content {{ $rtlText }}">
+                    {{ __('about.vision_text') }}
                 </p>
             </div>
         </div>
@@ -570,7 +571,7 @@
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
 <section class="how-it-works-section" id="how-it-works">
     <div class="container">
-        <h2 class="section-title">How It Works</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.how_it_works') }}</h2>
 
         <div class="row">
             <div class="col-lg-3 col-md-6 mb-4">
@@ -578,9 +579,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-user-plus"></i>
                     </div>
-                    <h3 class="feature-title">Create School Profile</h3>
-                    <p class="feature-text">
-                        Sign up and build a complete profile showcasing your institution's unique identity, facilities, and values.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.create_profile') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.create_profile_text') }}
                     </p>
                 </div>
             </div>
@@ -590,9 +591,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-ad"></i>
                     </div>
-                    <h3 class="feature-title">Post Announcements</h3>
-                    <p class="feature-text">
-                        Promote new admissions, events, workshops, and special programs to attract prospective students.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.post_announcements') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.post_announcements_text') }}
                     </p>
                 </div>
             </div>
@@ -602,9 +603,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-medal"></i>
                     </div>
-                    <h3 class="feature-title">Highlight Achievements</h3>
-                    <p class="feature-text">
-                        Share academic excellence, sports victories, cultural events, and student accomplishments with pride.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.highlight_achievements') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.highlight_achievements_text') }}
                     </p>
                 </div>
             </div>
@@ -614,9 +615,9 @@
                     <div class="feature-icon">
                         <i class="fas fa-users"></i>
                     </div>
-                    <h3 class="feature-title">Engage with Community</h3>
-                    <p class="feature-text">
-                        Foster meaningful connections through integrated messaging and community-building tools.
+                    <h3 class="feature-title {{ $rtlText }}">{{ __('about.engage_community') }}</h3>
+                    <p class="feature-text {{ $rtlText }}">
+                        {{ __('about.engage_community_text') }}
                     </p>
                 </div>
             </div>
@@ -627,16 +628,16 @@
 <!-- ==================== PLATFORM FEATURES ==================== -->
 <section class="platform-features-section">
     <div class="container">
-        <h2 class="section-title">What Makes SKOOLYST Unique</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.unique_features') }}</h2>
 
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">
                     <i class="fas fa-chart-line"></i>
                 </div>
-                <h3 class="feature-title">Smart Discovery & Analytics</h3>
-                <p class="feature-text">
-                    Advanced search and filtering help users find perfect matches. Schools get valuable insights on profile visits, engagement metrics, and audience demographics.
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.smart_discovery') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
+                    {{ __('about.smart_discovery_text') }}
                 </p>
             </div>
 
@@ -644,9 +645,9 @@
                 <div class="feature-icon">
                     <i class="fas fa-star"></i>
                 </div>
-                <h3 class="feature-title">Authentic Reviews & Ratings</h3>
-                <p class="feature-text">
-                    Real feedback from parents and students helps build trust and provides valuable insights for both schools and prospective families.
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.reviews_ratings') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
+                    {{ __('about.reviews_ratings_text') }}
                 </p>
             </div>
 
@@ -654,9 +655,9 @@
                 <div class="feature-icon">
                     <i class="fas fa-exchange-alt"></i>
                 </div>
-                <h3 class="feature-title">Competitive Comparison</h3>
-                <p class="feature-text">
-                    Users can compare multiple schools side-by-side based on curriculum, fees, facilities, and reviews to make informed decisions.
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.comparison') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
+                    {{ __('about.comparison_text') }}
                 </p>
             </div>
 
@@ -664,9 +665,9 @@
                 <div class="feature-icon">
                     <i class="fas fa-shopping-cart"></i>
                 </div>
-                <h3 class="feature-title">E-commerce Integration</h3>
-                <p class="feature-text">
-                    Purchase courses, uniforms, books, and other school essentials directly through our platform for complete convenience.
+                <h3 class="feature-title {{ $rtlText }}">{{ __('about.ecommerce') }}</h3>
+                <p class="feature-text {{ $rtlText }}">
+                    {{ __('about.ecommerce_text') }}
                 </p>
             </div>
         </div>
@@ -676,30 +677,30 @@
 <!-- ==================== VALUE PROPOSITION ==================== -->
 <section class="value-section">
     <div class="container">
-        <h2 class="section-title">Who Benefits from SKOOLYST?</h2>
+        <h2 class="section-title {{ $rtlText }}">{{ __('about.who_benefits') }}</h2>
 
         <div class="value-grid">
             <div class="value-card">
-                <div class="value-number">Parents</div>
-                <h3 class="value-title">Informed Decisions</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.parents') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.parents_title') }}</h3>
                 <p class="value-description">
-                    Comprehensive school information, authentic reviews, and easy comparison tools to choose the best educational path for your children.
+                    {{ __('about.parents_description') }}
                 </p>
             </div>
 
             <div class="value-card">
-                <div class="value-number">Schools</div>
-                <h3 class="value-title">Enhanced Visibility</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.schools_benefit') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.schools_title') }}</h3>
                 <p class="value-description">
-                    Reach your target audience effectively, showcase your unique offerings, and get valuable insights to improve your outreach strategies.
+                    {{ __('about.schools_description') }}
                 </p>
             </div>
 
             <div class="value-card">
-                <div class="value-number">Students</div>
-                <h3 class="value-title">Bright Future</h3>
+                <div class="value-number {{ $rtlText }}">{{ __('about.students') }}</div>
+                <h3 class="value-title {{ $rtlText }}">{{ __('about.students_title') }}</h3>
                 <p class="value-description">
-                    Find the perfect learning environment that matches your interests, learning style, and career aspirations for a successful educational journey.
+                    {{ __('about.students_description') }}
                 </p>
             </div>
         </div>
@@ -709,18 +710,18 @@
 <!-- ==================== BLOG SECTION (Optional) ==================== -->
 <section class="blog-section" id="blog">
     <div class="container">
-        <h2 class="section-headline">Latest Insights</h2>
+        <h2 class="section-headline {{ $rtlText }}">{{ __('about.latest_insights') }}</h2>
 
         <div class="row mt-5">
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">Digital Transformation in Education</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.digital_transformation') }}</h3>
                         <p class="blog-excerpt">
-                            Discover how educational institutions are leveraging technology to enhance learning experiences and streamline operations.
+                            {{ __('about.digital_transformation_text') }}
                         </p>
-                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -729,11 +730,11 @@
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">Building Stronger School Communities</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.school_communities') }}</h3>
                         <p class="blog-excerpt">
-                            Learn effective strategies for fostering parent engagement and creating collaborative educational environments.
+                            {{ __('about.school_communities_text') }}
                         </p>
-                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -742,11 +743,11 @@
                 <div class="blog-card">
                     <div class="blog-image"></div>
                     <div class="blog-content">
-                        <h3 class="blog-title">Marketing Your School Online</h3>
+                        <h3 class="blog-title {{ $rtlText }}">{{ __('about.marketing_school') }}</h3>
                         <p class="blog-excerpt">
-                            Explore proven digital marketing techniques to attract prospective students and showcase your institution's strengths.
+                            {{ __('about.marketing_school_text') }}
                         </p>
-                        <a href="#" class="blog-link">Read More <i class="fas fa-arrow-right"></i></a>
+                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -754,65 +755,20 @@
     </div>
 </section>
 
-<!-- ==================== FUTURE ROADMAP ==================== -->
-<!-- <section class="roadmap-section">
-    <div class="container">
-        <h2 class="section-title">Our Future Vision</h2>
-
-        <div class="roadmap-timeline">
-            <div class="roadmap-item">
-                <div class="roadmap-phase">Phase 1 - Current</div>
-                <h3 class="roadmap-title">School Discovery Platform</h3>
-                <ul class="roadmap-features">
-                    <li>Comprehensive school profiles and directory</li>
-                    <li>Advanced search and filtering system</li>
-                    <li>Review and rating system</li>
-                    <li>Event and announcement management</li>
-                    <li>Analytics and insights dashboard</li>
-                </ul>
-            </div>
-
-            <div class="roadmap-item">
-                <div class="roadmap-phase">Phase 2 - Coming Soon</div>
-                <h3 class="roadmap-title">Educational E-commerce</h3>
-                <ul class="roadmap-features">
-                    <li>Online course enrollment and payment</li>
-                    <li>School uniform and merchandise store</li>
-                    <li>Book and supply purchasing</li>
-                    <li>Fee payment integration</li>
-                    <li>Digital admission processing</li>
-                </ul>
-            </div>
-
-            <div class="roadmap-item">
-                <div class="roadmap-phase">Phase 3 - Future</div>
-                <h3 class="roadmap-title">Complete Educational Ecosystem</h3>
-                <ul class="roadmap-features">
-                    <li>Virtual campus tours</li>
-                    <li>Online learning management system</li>
-                    <li>Parent-teacher communication portal</li>
-                    <li>Career guidance and counseling</li>
-                    <li>Scholarship and financial aid platform</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-</section> -->
-
 <!-- ==================== CTA SECTION ==================== -->
 <section class="cta-section">
     <div class="container">
-        <h2 class="cta-title">Join the Educational Revolution</h2>
-        <p class="cta-subtitle">
-            Whether you're a school looking to showcase your offerings or a parent seeking the perfect educational institution, SKOOLYST is your ultimate partner in educational discovery.
+        <h2 class="cta-title {{ $rtlText }}">{{ __('about.join_revolution') }}</h2>
+        <p class="cta-subtitle {{ $rtlText }}">
+            {{ __('about.cta_subtitle') }}
         </p>
 
         <div class="cta-buttons">
             <a href="{{ route('browseSchools.index') }}" class="cta-btn primary">
-                <i class="fas fa-search me-2"></i> Browse Schools
+                <i class="fas fa-search me-2"></i> {{ __('about.browse_schools') }}
             </a>
             <a href="{{ route('register') }}" class="cta-btn secondary">
-                <i class="fas fa-school me-2"></i> Register Your School
+                <i class="fas fa-school me-2"></i> {{ __('about.register_school') }}
             </a>
         </div>
     </div>
@@ -821,11 +777,11 @@
 <!-- ==================== FINAL CTA ==================== -->
 <section class="final-cta">
     <div class="container">
-        <h2 class="final-cta-headline">Ready to Transform Education?</h2>
-        <p class="section-description" style="color: #ccc; margin-bottom: 2rem;">
-            Join thousands of schools and parents who trust SKOOLYST for their educational journey.
+        <h2 class="final-cta-headline {{ $rtlText }}">{{ __('about.ready_transform') }}</h2>
+        <p class="section-description {{ $rtlText }}" style="color: #ccc; margin-bottom: 2rem;">
+            {{ __('about.final_cta_text') }}
         </p>
-        <a href="{{ route('register') }}" class="final-cta-button">Get Started Free</a>
+        <a href="{{ route('register') }}" class="final-cta-button {{ $rtlText }}">{{ __('about.get_started_free') }}</a>
     </div>
 </section>
 
@@ -835,13 +791,13 @@
 <script>
     // Add smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
+        anchor.addEventListener('click', function(e) {
             e.preventDefault();
             const targetId = this.getAttribute('href');
-            if(targetId === '#') return;
-            
+            if (targetId === '#') return;
+
             const targetElement = document.querySelector(targetId);
-            if(targetElement) {
+            if (targetElement) {
                 window.scrollTo({
                     top: targetElement.offsetTop - 100,
                     behavior: 'smooth'
@@ -858,7 +814,7 @@
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if(entry.isIntersecting) {
+            if (entry.isIntersecting) {
                 entry.target.classList.add('animate-in');
             }
         });
