@@ -1890,3 +1890,19 @@
 
             $table->unique(['subject_id', 'test_type_id']);
         });
+
+         Schema::create('mcq_test_type', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('mcq_id')->constrained('mcqs')->onDelete('cascade');
+            $table->foreignId('test_type_id')->constrained('test_types')->onDelete('cascade');
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+
+            $table->unique(['mcq_id', 'test_type_id']);
+        });
+
+        // Remove the foreign key constraint and column from mcqs table
+        Schema::table('mcqs', function (Blueprint $table) {
+            $table->dropForeign(['test_type_id']);
+            $table->dropColumn('test_type_id');
+        });

@@ -471,10 +471,26 @@ Route::group([
 
         // ✅ THEN DYNAMIC ROUTES
         Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
-        Route::get('/subject-mcqs/{subject:slug}', [WebsiteMcqController::class, 'subjectShow'])->name('subject.show');
-        Route::get('/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
-        Route::get('/{test_type:slug}/{subject:slug}', [WebsiteMcqController::class, 'subjectTestType'])->name('subject.test-type');
-        Route::get('/{test_type:slug}/{subject:slug}/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
+
+        // Test Type routes
+        Route::get('/test-type/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
+
+        // Subject routes
+        Route::get('/subject/{subject:slug}', [WebsiteMcqController::class, 'subject'])->name('subject');
+
+        // Topic routes
+        Route::get('/subject/{subject:slug}/topic/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
+
+        // Test Type + Subject routes
+        Route::get('/test-type/{test_type:slug}/subject/{subject:slug}', [WebsiteMcqController::class, 'subjectByTestType'])->name('subject-by-test-type');
+
+        // Practice routes
+        Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
+        Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('check-answer');
+
+        // Mock tests routes (keep these separate)
+        Route::get('/mock-tests', [WebsiteMockMcqController::class, 'mockTests'])->name('mock-tests');
+        Route::get('/mock-tests/{mock_test:slug}', [WebsiteMockMcqController::class, 'mockTestDetail'])->name('mock-test-detail');
     });
 
 

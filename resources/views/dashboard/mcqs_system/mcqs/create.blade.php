@@ -100,20 +100,38 @@
                                         @enderror
                                     </div>
                                     
-                                    <div class="col-md-4">
-                                        <label for="test_type_id" class="form-label">Test Type</label>
-                                        <select class="form-select @error('test_type_id') is-invalid @enderror" 
-                                                id="test_type_id" name="test_type_id">
-                                            <option value="">Select Test Type (Optional)</option>
-                                            @foreach($testTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('test_type_id') == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('test_type_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+
+                                    <!-- With this: -->
+                                    <div class="col-12">
+                                        <label class="form-label">Test Types</label>
+                                        <div class="border rounded p-3 @error('test_type_ids') border-danger @enderror">
+                                            <div class="row g-2">
+                                                @foreach($testTypes as $type)
+                                                <div class="col-md-4 col-sm-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" 
+                                                            name="test_type_ids[]" 
+                                                            value="{{ $type->id }}" 
+                                                            id="test_type_{{ $type->id }}"
+                                                            {{ is_array(old('test_type_ids')) && in_array($type->id, old('test_type_ids')) ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="test_type_{{ $type->id }}">
+                                                            @if($type->icon)
+                                                                <i class="{{ $type->icon }} me-1"></i>
+                                                            @endif
+                                                            {{ $type->name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @if($testTypes->isEmpty())
+                                                <p class="text-muted mb-0">No test types available.</p>
+                                            @endif
+                                        </div>
+                                        @error('test_type_ids')
+                                            <div class="text-danger small">{{ $message }}</div>
                                         @enderror
+                                        <small class="text-muted">Select multiple test types for this question</small>
                                     </div>
                                 </div>
                                 

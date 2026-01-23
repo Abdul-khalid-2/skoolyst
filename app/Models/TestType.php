@@ -33,7 +33,9 @@ class TestType extends Model
 
     public function mcqs()
     {
-        return $this->hasMany(Mcq::class);
+        return $this->belongsToMany(Mcq::class, 'mcq_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps();
     }
 
     public function mockTests()

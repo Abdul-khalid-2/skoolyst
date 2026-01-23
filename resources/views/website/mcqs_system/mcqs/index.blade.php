@@ -234,18 +234,16 @@
 
 @section('content')
 
-<!-- ==================== MCQS HERO SECTION ==================== -->
 <section class="mcqs-header">
     <div class="container">
-        <h1 class="mcqs-hero-title">Practice MCQs & Mock Tests</h1>
+        <h1 class="mcqs-hero-title">Practice MCQs for Competitive Exams</h1>
         <p class="mcqs-hero-subtitle">
-            Master your subjects with thousands of practice questions, 
-            detailed explanations, and comprehensive mock tests for various competitive exams.
+            Master your subjects with practice questions for NTS, PPSC, FPSC, MDCAT, ECAT and more.
         </p>
 
         <!-- Quick Stats -->
         <div class="row justify-content-center mt-5">
-            <div class="col-md-8">
+            <div class="col-md-10">
                 <div class="row g-4">
                     <div class="col-md-3">
                         <div class="stats-card">
@@ -261,8 +259,8 @@
                     </div>
                     <div class="col-md-3">
                         <div class="stats-card">
-                            <div class="stats-number">{{ \App\Models\MockTest::where('status', 'published')->count() }}</div>
-                            <div class="text-muted">Mock Tests</div>
+                            <div class="stats-number">{{ \App\Models\TestType::where('status', 'active')->count() }}</div>
+                            <div class="text-muted">Test Types</div>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -289,19 +287,17 @@
 
         <div class="row g-4">
             @foreach($testTypes as $testType)
-            <div class="col-md-4">
+            <div class="col-md-4 col-lg-3">
                 <a href="{{ route('website.mcqs.test-type', $testType->slug) }}" class="text-decoration-none">
                     <div class="test-type-card">
-                        <span class="test-type-count">{{ $testType->subjects_count }} Subjects</span>
                         <div class="test-type-icon">
                             <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
                         </div>
-                        <h3 class="h4 mb-3">{{ $testType->name }}</h3>
-                        <p class="text-muted mb-0">{{ $testType->description }}</p>
-                        <div class="mt-3">
-                            <span class="badge bg-light text-dark">
-                                {{ $testType->mcqs_count }} Questions
-                            </span>
+                        <h3 class="h5 mb-2">{{ $testType->name }}</h3>
+                        <p class="text-muted small mb-2">{{ $testType->description }}</p>
+                        <div class="d-flex justify-content-between text-muted small">
+                            <span>{{ $testType->subjects_count }} Subjects</span>
+                            <span>{{ $testType->mcqs_count }} MCQs</span>
                         </div>
                     </div>
                 </a>
@@ -322,23 +318,111 @@
         </div>
 
         <div class="row g-4">
-            @foreach($popularSubjects as $subject)
-            <div class="col-md-3">
-                <a href="{{ route('website.mcqs.subject.show', ['subject' => $subject->slug]) }}" 
-                   class="text-decoration-none">
-                    <div class="subject-card">
-                        <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }}; color: white;">
+            @foreach($subjects as $subject)
+            <div class="col-md-4 col-lg-3">
+                <div class="subject-card">
+                    <div class="subject-header">
+                        <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }};">
                             <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
                         </div>
-                        <h4 class="h5 mb-2">{{ $subject->name }}</h4>
-                        <div class="d-flex justify-content-between text-muted small">
-                            <span>{{ $subject->mcqs_count }} Questions</span>
-                            <span>{{ $subject->topics_count }} Topics</span>
+                        <div class="subject-meta">
+                            <span class="badge bg-light text-dark">
+                                {{ $subject->mcqs_count }} Questions
+                            </span>
+                            <span class="badge bg-light text-dark">
+                                {{ $subject->topics_count }} Topics
+                            </span>
                         </div>
                     </div>
-                </a>
+
+                    <h4 class="h5 my-3">
+                        <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="text-decoration-none text-dark">
+                            {{ $subject->name }}
+                        </a>
+                    </h4>
+
+                    @if($subject->description)
+                    <p class="text-muted small mb-3">{{ Str::limit($subject->description, 100) }}</p>
+                    @endif
+
+                    <!-- Test Types for this subject -->
+                    @if($subject->testTypes->count() > 0)
+                    <div class="subject-test-types">
+                        <span class="text-muted small">Available for:</span>
+                        <div class="d-flex flex-wrap gap-1 mt-1">
+                            @foreach($subject->testTypes->take(3) as $testType)
+                            <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}"
+                                class="badge bg-light text-dark text-decoration-none">
+                                {{ $testType->name }}
+                            </a>
+                            @endforeach
+                            @if($subject->testTypes->count() > 3)
+                            <span class="badge bg-secondary">+{{ $subject->testTypes->count() - 3 }}</span>
+                            @endif
+                        </div>
+                    </div>
+                    @endif
+
+                    <div class="mt-3">
+                        <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="btn btn-sm btn-outline-primary">
+                            View Topics <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
             </div>
             @endforeach
+        </div>
+
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <a href="#" class="btn btn-lg btn-primary">
+                    <i class="fas fa-search me-2"></i>Browse All Subjects
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== HOW IT WORKS SECTION ==================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-12 text-center">
+                <h2 class="h1 mb-3">How It Works</h2>
+                <p class="text-muted">Three simple steps to improve your preparation</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-book-open fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 mb-3">1. Choose Test Type or Subject</h4>
+                    <p class="text-muted">Select from various test types like NTS, PPSC, FPSC or browse by subject.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-folder-open fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 mb-3">2. Select Topic</h4>
+                    <p class="text-muted">Choose specific topics within your subject for focused practice.</p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="text-center">
+                    <div class="step-icon mb-3">
+                        <i class="fas fa-question-circle fa-2x text-primary"></i>
+                    </div>
+                    <h4 class="h5 mb-3">3. Practice Questions</h4>
+                    <p class="text-muted">Practice with detailed explanations and track your progress.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -446,4 +530,142 @@
         });
     });
 </script>
+
+@push('styles')
+<style>
+    /* Hero Section */
+    .mcqs-header {
+        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+    }
+
+    .mcqs-hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .mcqs-hero-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Stats Cards */
+    .stats-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    .stats-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Test Type Cards */
+    .test-type-card {
+        background: white;
+        border-radius: 10px;
+        padding: 25px;
+        text-align: center;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #eee;
+        height: 100%;
+    }
+
+    .test-type-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .test-type-icon {
+        width: 70px;
+        height: 70px;
+        background: #4361ee;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 1.8rem;
+    }
+
+    /* Subject Cards */
+    .subject-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+        border: 1px solid #eee;
+        height: 100%;
+    }
+
+    .subject-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .subject-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .subject-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .subject-meta {
+        display: flex;
+        gap: 5px;
+    }
+
+    .subject-test-types {
+        border-top: 1px solid #eee;
+        padding-top: 15px;
+        margin-top: 15px;
+    }
+
+    /* Step Icons */
+    .step-icon {
+        width: 80px;
+        height: 80px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .mcqs-hero-title {
+            font-size: 2.5rem;
+        }
+        
+        .mcqs-hero-subtitle {
+            font-size: 1rem;
+        }
+        
+        .stats-number {
+            font-size: 2rem;
+        }
+    }
+</style>
+@endpush
 @endpush
