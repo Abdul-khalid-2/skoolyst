@@ -346,7 +346,7 @@
                     @endif
 
                     <!-- Test Types for this subject -->
-                    @if($subject->testTypes->count() > 0)
+                    <!-- @if($subject->testTypes->count() > 0)
                     <div class="subject-test-types">
                         <span class="text-muted small">Available for:</span>
                         <div class="d-flex flex-wrap gap-1 mt-1">
@@ -361,7 +361,7 @@
                             @endif
                         </div>
                     </div>
-                    @endif
+                    @endif -->
 
                     <div class="mt-3">
                         <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="btn btn-sm btn-outline-primary">
