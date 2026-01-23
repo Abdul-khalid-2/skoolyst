@@ -471,8 +471,9 @@ Route::group([
 
         // ✅ THEN DYNAMIC ROUTES
         Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
+        Route::get('/subject-mcqs/{subject:slug}', [WebsiteMcqController::class, 'subjectShow'])->name('subject.show');
         Route::get('/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
-        Route::get('/{test_type:slug}/{subject:slug}', [WebsiteMcqController::class, 'subject'])->name('subject');
+        Route::get('/{test_type:slug}/{subject:slug}', [WebsiteMcqController::class, 'subjectTestType'])->name('subject.test-type');
         Route::get('/{test_type:slug}/{subject:slug}/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
     });
 

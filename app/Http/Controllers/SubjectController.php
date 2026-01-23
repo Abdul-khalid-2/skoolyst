@@ -12,12 +12,14 @@ class SubjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Subject::with(['testType'])
+        $query = Subject::with(['testTypes']) // Changed from testType to testTypes
             ->withCount(['topics', 'mcqs']);
 
         // Filter by test type
         if ($request->filled('test_type_id')) {
-            $query->where('test_type_id', $request->test_type_id);
+            $query->whereHas('testTypes', function ($q) use ($request) {
+                $q->where('test_type_id', $request->test_type_id);
+            });
         }
 
         // Filter by status
@@ -50,7 +52,8 @@ class SubjectController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:subjects,name',
-            'test_type_id' => 'nullable|exists:test_types,id',
+            'test_type_ids' => 'nullable|array', // Changed from test_type_id
+            'test_type_ids.*' => 'exists:test_types,id',
             'icon' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'color_code' => 'nullable|string|size:7',
@@ -58,11 +61,10 @@ class SubjectController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        Subject::create([
+        $subject = Subject::create([
             'uuid' => Str::uuid(),
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'test_type_id' => $request->test_type_id,
             'icon' => $request->icon,
             'description' => $request->description,
             'color_code' => $request->color_code ?? '#3B82F6',
@@ -70,13 +72,21 @@ class SubjectController extends Controller
             'status' => $request->status,
         ]);
 
+        if ($request->has('test_type_ids')) {
+            $testTypeData = [];
+            foreach ($request->test_type_ids as $index => $testTypeId) {
+                $testTypeData[$testTypeId] = ['sort_order' => $index];
+            }
+            $subject->testTypes()->sync($testTypeData);
+        }
+
         return redirect()->route('subjects.index')
             ->with('success', 'Subject created successfully.');
     }
 
     public function show(Subject $subject)
     {
-        $subject->load(['testType', 'topics' => function ($q) {
+        $subject->load(['testTypes', 'topics' => function ($q) {
             $q->orderBy('sort_order');
         }, 'mcqs' => function ($q) {
             $q->latest()->take(10);
@@ -88,6 +98,7 @@ class SubjectController extends Controller
     public function edit(Subject $subject)
     {
         $testTypes = TestType::active()->get();
+        $subject->load('testTypes');
         return view('dashboard.mcqs_system.subjects.edit', compact('subject', 'testTypes'));
     }
 
@@ -100,7 +111,8 @@ class SubjectController extends Controller
                 'max:255',
                 Rule::unique('subjects')->ignore($subject->id),
             ],
-            'test_type_id' => 'nullable|exists:test_types,id',
+            'test_type_ids' => 'nullable|array', // Changed from test_type_id
+            'test_type_ids.*' => 'exists:test_types,id',
             'icon' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'color_code' => 'nullable|string|size:7',
@@ -111,13 +123,24 @@ class SubjectController extends Controller
         $subject->update([
             'name' => $request->name,
             'slug' => Str::slug($request->name),
-            'test_type_id' => $request->test_type_id,
             'icon' => $request->icon,
             'description' => $request->description,
             'color_code' => $request->color_code ?? $subject->color_code,
             'sort_order' => $request->sort_order ?? $subject->sort_order,
             'status' => $request->status,
         ]);
+
+        // Sync test types (many-to-many)
+        if ($request->has('test_type_ids')) {
+            $testTypeData = [];
+            foreach ($request->test_type_ids as $index => $testTypeId) {
+                $testTypeData[$testTypeId] = ['sort_order' => $index];
+            }
+            $subject->testTypes()->sync($testTypeData);
+        } else {
+            // If no test types selected, detach all
+            $subject->testTypes()->detach();
+        }
 
         return redirect()->route('subjects.index')
             ->with('success', 'Subject updated successfully.');

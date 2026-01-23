@@ -26,7 +26,9 @@ class TestType extends Model
     // Relationships
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(Subject::class, 'subject_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps();
     }
 
     public function mcqs()

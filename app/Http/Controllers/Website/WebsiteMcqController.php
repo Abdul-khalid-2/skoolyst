@@ -65,8 +65,63 @@ class WebsiteMcqController extends Controller
         return view('website.mcqs_system.mcqs.test-type', compact('testType', 'subjects', 'topics', 'featuredMcqs'));
     }
 
+    // New method for single parameter subject page
+public function subjectShow(Subject $subject, Request $request)
+{
+   
+    // Get all test types associated with this subject
+    $testTypes = TestType::whereHas('subjects', function($query) use ($subject) {
+        $query->where('subjects.id', $subject->id);
+    })->withCount(['subjects as mcqs_count' => function($query) use ($subject) {
+        $query->where('subject_id', $subject->id);
+    }])->get();
+    
+    // Get topics for this subject
+    $topics = Topic::where('subject_id', $subject->id)
+        ->withCount('mcqs')
+        ->orderBy('sort_order')
+        ->get();
+
+    // Get overall subject statistics
+    $difficultyStats = Mcq::where('subject_id', $subject->id)
+        ->where('status', 'published')
+        ->selectRaw('difficulty_level, COUNT(*) as count')
+        ->groupBy('difficulty_level')
+        ->get()
+        ->keyBy('difficulty_level');
+
+    // Get recent MCQs for preview
+    $recentMcqs = Mcq::where('subject_id', $subject->id)
+        ->where('status', 'published')
+        ->with('topic')
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+
+    // Transform options for preview MCQs
+    $recentMcqs->transform(function ($mcq) {
+        if (is_string($mcq->options)) {
+            $mcq->options = json_decode($mcq->options, true);
+        }
+        if (!is_array($mcq->options)) {
+            $mcq->options = [];
+        }
+        return $mcq;
+    });
+
+    return view('website.mcqs_system.mcqs.subject-show', compact(
+        'subject',
+        'testTypes',
+        'topics',
+        'difficultyStats',
+        'recentMcqs'
+    ));
+}
+
+
+
     // Subject page
-    public function subject(TestType $testType, Subject $subject, Request $request)
+    public function subjectTestType(TestType $testType, Subject $subject, Request $request)
     {
         $topics = Topic::where('subject_id', $subject->id)
             ->withCount('mcqs')

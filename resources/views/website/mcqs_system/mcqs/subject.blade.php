@@ -702,7 +702,11 @@
         <!-- Back to Subject Button (Only when topic is selected) -->
         @if($currentTopic)
             <div class="mb-4">
-                <a href="{{ route('website.mcqs.subject', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}" 
+                 @php
+                    $testTypeSlug = optional($subject->testType)->slug ?? 'general';
+                @endphp
+
+                <a href="{{ route('website.mcqs.subject.show', ['subject' => $subject->slug]) }}" 
                 class="back-to-subject-btn">
                     <i class="fas fa-arrow-left me-2"></i> 
                     Back to All {{ $subject->name }} Topics

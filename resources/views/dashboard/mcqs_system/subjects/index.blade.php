@@ -239,13 +239,45 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @if($subject->testType)
-                                        <span class="badge bg-light text-dark">
-                                            <i class="{{ $subject->testType->icon ?? 'fas fa-list' }} me-1"></i>
-                                            {{ Str::limit($subject->testType->name, 15) }}
-                                        </span>
+                                        @if($subject->testTypes->count() > 0)
+                                            <div class="d-flex align-items-center">
+                                                <!-- Show first 3 test types as badges -->
+                                                @foreach($subject->testTypes->take(3) as $testType)
+                                                    <span class="badge bg-light text-dark small me-1">
+                                                        @if($testType->icon)
+                                                            <i class="{{ $testType->icon }}"></i>
+                                                        @else
+                                                            {{ Str::limit($testType->name, 8) }}
+                                                        @endif
+                                                    </span>
+                                                @endforeach
+                                                
+                                                <!-- Show dropdown button if more than 3 test types -->
+                                                @if($subject->testTypes->count() > 3)
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-1" 
+                                                                type="button" 
+                                                                data-bs-toggle="dropdown" 
+                                                                aria-expanded="false">
+                                                            +{{ $subject->testTypes->count() - 3 }}
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            @foreach($subject->testTypes->skip(3) as $testType)
+                                                                <li>
+                                                                    <span class="dropdown-item-text">
+                                                                        @if($testType->icon)
+                                                                            <i class="{{ $testType->icon }} me-1"></i>
+                                                                        @endif
+                                                                        {{ $testType->name }}
+                                                                    </span>
+                                                                </li>
+                                                            @endforeach
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            </div>
                                         @else
-                                        <span class="text-muted">-</span>
+                                            <span class="text-muted">-</span>
                                         @endif
                                     </td>
                                     <td>
@@ -320,10 +352,11 @@
                                                     {{ ucfirst($subject->status) }}
                                                 </span>
                                             </div>
-                                            @if($subject->testType)
+                                            @if($subject->testTypes->count() > 0)
                                             <div class="text-end">
                                                 <span class="badge bg-light text-dark small">
-                                                    <i class="{{ $subject->testType->icon ?? 'fas fa-list' }}"></i>
+                                                    <i class="{{ $subject->testTypes->first()->icon ?? 'fas fa-list' }}"></i>
+                                                    {{ $subject->testTypes->count() }}
                                                 </span>
                                             </div>
                                             @endif
@@ -335,6 +368,44 @@
                                             <p class="small text-muted mb-2">
                                                 {{ Str::limit($subject->description, 60) }}
                                             </p>
+                                            @endif
+                                            
+                                            <!-- Test Types for Mobile -->
+                                            @if($subject->testTypes->count() > 0)
+                                                <div class="mt-2">
+                                                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                        @foreach($subject->testTypes->take(2) as $testType)
+                                                            <span class="badge bg-light text-dark small">
+                                                                @if($testType->icon)
+                                                                    <i class="{{ $testType->icon }} me-1"></i>
+                                                                @endif
+                                                                {{ Str::limit($testType->name, 10) }}
+                                                            </span>
+                                                        @endforeach
+                                                        @if($subject->testTypes->count() > 2)
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-1" 
+                                                                        type="button" 
+                                                                        data-bs-toggle="dropdown" 
+                                                                        aria-expanded="false">
+                                                                    +{{ $subject->testTypes->count() - 2 }}
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    @foreach($subject->testTypes->skip(2) as $testType)
+                                                                        <li>
+                                                                            <span class="dropdown-item-text">
+                                                                                @if($testType->icon)
+                                                                                    <i class="{{ $testType->icon }} me-1"></i>
+                                                                                @endif
+                                                                                {{ $testType->name }}
+                                                                            </span>
+                                                                        </li>
+                                                                    @endforeach
+                                                                </ul>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @endif
                                         </div>
                                         
@@ -628,6 +699,36 @@
             .color-indicator {
                 width: 16px;
                 height: 16px;
+            }
+        }
+        
+        /* Test Type badges and dropdown */
+        .badge.bg-light {
+            border: 1px solid #dee2e6;
+        }
+        
+        .dropdown-toggle.py-0.px-1 {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.6875rem;
+            line-height: 1.2;
+            min-height: auto;
+        }
+        
+        .dropdown-menu {
+            font-size: 0.875rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .dropdown-item-text {
+            padding: 0.25rem 1rem;
+            display: block;
+        }
+        
+        @media (max-width: 767.98px) {
+            .dropdown-toggle.py-0.px-1 {
+                padding: 0.1rem 0.2rem;
+                font-size: 0.625rem;
             }
         }
         

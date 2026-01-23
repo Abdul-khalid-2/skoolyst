@@ -25,6 +25,14 @@ class Subject extends Model
         'status' => 'string'
     ];
 
+    public function testTypes()
+    {
+        return $this->belongsToMany(TestType::class, 'subject_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps();
+    }
+
+
     public function testType()
     {
         return $this->belongsTo(TestType::class);

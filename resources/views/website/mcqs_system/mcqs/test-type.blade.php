@@ -34,7 +34,7 @@
                             <p class="text-muted small">{{ $subject->description }}</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="badge bg-light text-dark">{{ $subject->mcqs_count }} Questions</span>
-                                <a href="{{ route('website.mcqs.subject', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}"
+                                <a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}"
                                     class="btn btn-sm btn-primary">
                                     Start Practice
                                 </a>

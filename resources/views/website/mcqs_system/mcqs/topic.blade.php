@@ -78,7 +78,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.test-type', $testType->slug) }}">{{ $testType->name }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}">{{ $subject->name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}">{{ $subject->name }}</a></li>
                 <li class="breadcrumb-item active">{{ $topic->title }}</li>
             </ol>
         </nav>
@@ -264,7 +264,7 @@
                         <button class="btn btn-outline-primary btn-lg w-100 mb-3" onclick="startTimedPractice()">
                             <i class="far fa-clock me-2"></i>Timed Practice
                         </button>
-                        <a href="{{ route('website.mcqs.subject', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}" 
+                        <a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}" 
                            class="btn btn-outline-secondary btn-lg w-100">
                             <i class="fas fa-arrow-left me-2"></i>Back to Subject
                         </a>
