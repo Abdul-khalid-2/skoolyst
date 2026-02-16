@@ -264,28 +264,6 @@
                     ->get();
                 @endphp
 
-                @if($featuredMcqs->count() > 0)
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-star me-2"></i>Featured Questions</h5>
-                    </div>
-                    <div class="card-body">
-                        @foreach($featuredMcqs as $mcq)
-                        <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}" class="text-decoration-none">
-                            <div class="featured-mcq">
-                                <div class="mcq-preview mb-2">
-                                    {!! Str::limit(strip_tags($mcq->question), 80) !!}
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-light text-dark small">{{ $mcq->subject->name }}</span>
-                                    <span class="badge bg-light text-dark small">{{ ucfirst($mcq->difficulty_level) }}</span>
-                                </div>
-                            </div>
-                        </a>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
 
                 <!-- Popular Subjects -->
                 @if($subjects->count() > 0)

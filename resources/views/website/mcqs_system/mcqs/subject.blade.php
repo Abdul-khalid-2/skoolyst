@@ -231,10 +231,6 @@
                             <div class="subject-stat-value">{{ $topics->count() }}</div>
                             <div class="subject-stat-label">Topics</div>
                         </div>
-                        <div class="subject-stat">
-                            <div class="subject-stat-value">{{ $testTypes->count() }}</div>
-                            <div class="subject-stat-label">Test Types</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -243,51 +239,6 @@
         <div class="row">
             <!-- Main Content -->
             <div class="col-lg-8">
-                <!-- Test Types Section -->
-                @if($testTypes->count() > 0)
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-white">
-                        <h4 class="mb-0">Practice by Test Type</h4>
-                        <p class="text-muted mb-0">Filter questions for specific exams</p>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4">
-                            @foreach($testTypes as $testType)
-                            <div class="col-md-6">
-                                <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}" 
-                                   class="text-decoration-none">
-                                    <div class="test-type-card">
-                                        <div class="test-type-icon">
-                                            <i class="{{ $testType->icon ?? 'fas fa-clipboard-list' }}"></i>
-                                        </div>
-                                        <h5 class="h5 mb-2">{{ $testType->name }}</h5>
-                                        <p class="text-muted small mb-3">
-                                            {{ $subject->name }} questions for {{ $testType->name }}
-                                        </p>
-                                        <div class="test-type-stats">
-                                            <div class="stat-item">
-                                                <div class="stat-value">{{ $testType->mcqs_count ?? 0 }}</div>
-                                                <div class="stat-label">Questions</div>
-                                            </div>
-                                            <div class="stat-item">
-                                                <div class="stat-value">{{ $topics->count() }}</div>
-                                                <div class="stat-label">Topics</div>
-                                            </div>
-                                            <div class="stat-item">
-                                                <span class="btn btn-sm btn-primary">
-                                                    Practice <i class="fas fa-arrow-right ms-1"></i>
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </a>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                @endif
-
                 <!-- Topics Section -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
@@ -456,27 +407,6 @@
                         </button>
                     </div>
                 </div>
-
-                <!-- Test Types Summary -->
-                @if($testTypes->count() > 0)
-                <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Available For</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach($testTypes as $testType)
-                            <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}" 
-                               class="badge bg-light text-dark text-decoration-none">
-                                <i class="{{ $testType->icon ?? 'fas fa-tag' }} me-1"></i>
-                                {{ $testType->name }}
-                                <span class="ms-1">({{ $testType->mcqs_count }})</span>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                @endif
             </div>
         </div>
     </div>
