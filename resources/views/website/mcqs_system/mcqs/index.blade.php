@@ -65,17 +65,17 @@
     .test-type-card:hover {
         transform: translateY(-10px);
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        border-color: #4361ee;
+        border-color: #000000;
     }
 
     .test-type-icon {
         font-size: 3rem;
         margin-bottom: 20px;
-        color: #4361ee;
+        color: #000000;
     }
 
     .test-type-count {
-        background: #4361ee;
+        background: #000000;
         color: white;
         border-radius: 20px;
         padding: 5px 15px;
@@ -83,6 +83,7 @@
         position: absolute;
         top: 15px;
         right: 15px;
+        font-weight: bold;
     }
 
     /* ==================== SUBJECT CARDS ==================== */
@@ -98,7 +99,7 @@
     .subject-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: #4361ee;
+        border-color: #000000;
     }
 
     .subject-icon {
@@ -124,7 +125,7 @@
 
     .mcq-card:hover {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-        border-color: #4361ee;
+        border-color: #000000;
     }
 
     .mcq-difficulty {
@@ -162,7 +163,7 @@
     .stats-number {
         font-size: 2.5rem;
         font-weight: 700;
-        color: #4361ee;
+        color: #000000;
         margin-bottom: 10px;
     }
 
@@ -193,13 +194,13 @@
 
     .option-card:hover {
         background: #e9ecef;
-        border-color: #4361ee;
+        border-color: #000000;
     }
 
     .option-card.selected {
-        background: #4361ee;
+        background: #000000;
         color: white;
-        border-color: #4361ee;
+        border-color: #000000;
     }
 
     .option-card.correct {
@@ -212,6 +213,12 @@
         background: #f8d7da;
         border-color: #dc3545;
         color: #721c24;
+    }
+
+    .stats-card .text-muted {
+        font-weight: bolder;
+        --bs-text-opacity: 1;
+        color: rgb(255 255 255) !important;
     }
 
     /* ==================== RESPONSIVE DESIGN ==================== */
@@ -565,8 +572,9 @@
 
     .stats-number {
         font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 0.5rem;
+        font-weight: 750;
+        margin-bottom: 0.1rem;
+        /* color: white; */
     }
 
     /* Test Type Cards */
@@ -588,7 +596,7 @@
     .test-type-icon {
         width: 70px;
         height: 70px;
-        background: #4361ee;
+        background: #000000;
         color: white;
         border-radius: 50%;
         display: flex;
@@ -665,6 +673,10 @@
         .stats-number {
             font-size: 2rem;
         }
+    }
+    a {
+        color: rgb(0 0 0);
+        text-decoration: underline;
     }
 </style>
 @endpush
