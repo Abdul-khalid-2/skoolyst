@@ -333,6 +333,7 @@ Route::group([
             Route::post('mcqs/{mcq}/verify', [McqController::class, 'verify'])->name('mcqs.verify');
             Route::post('mcqs/{mcq}/unverify', [McqController::class, 'unverify'])->name('mcqs.unverify');
             Route::get('mcqs/get-topics', [McqController::class, 'getTopicsBySubject'])->name('mcqs.get-topics');
+            Route::get('mcqs/get-test-types', [McqController::class, 'getTestTypesBySubject'])->name('mcqs.get-test-types');
             Route::resource('mcqs', McqController::class);
 
             // Mock Tests

@@ -416,4 +416,16 @@ class McqController extends Controller
             
         return response()->json($topics);
     }
+
+    // Get test types by subject (AJAX)
+    public function getTestTypesBySubject(Request $request)
+    {
+        $subject = Subject::with('testTypes')->find($request->subject_id);
+        
+        if (!$subject) {
+            return response()->json([]);
+        }
+        
+        return response()->json($subject->testTypes);
+    }
 }
