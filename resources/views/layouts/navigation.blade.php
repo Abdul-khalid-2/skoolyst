@@ -211,7 +211,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
+                {{-- <li class="nav-item">
                     <a href="{{ route('school.mcqs.index') }}" 
                     class="nav-link {{ request()->routeIs('school.mcqs.*') ? 'active' : '' }}">
                         <i class="fas fa-question-circle"></i>
@@ -225,7 +225,7 @@
                         <i class="fas fa-book"></i>
                         <span>Study Materials</span>
                     </a>
-                </li>
+                </li> --}}
                 
                 
             @endrole
