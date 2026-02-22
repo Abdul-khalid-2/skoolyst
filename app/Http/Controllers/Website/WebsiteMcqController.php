@@ -50,10 +50,26 @@ class WebsiteMcqController extends Controller
             ->withCount(['mcqs' => function($query) use ($testType) {
                 $query->whereHas('testTypes', function($q) use ($testType) {
                     $q->where('test_types.id', $testType->id);
-                });
-            }, 'topics'])
+                })->where('status', 'published');
+            }])
             ->orderByPivot('sort_order')
             ->get();
+
+        // Load topics for each subject with MCQs count for this test type
+        foreach ($subjects as $subject) {
+            $subject->topics = Topic::where('subject_id', $subject->id)
+                ->where('status', 'active')
+                ->withCount(['mcqs' => function($query) use ($testType, $subject) {
+                    $query->where('subject_id', $subject->id)
+                          ->whereHas('testTypes', function($q) use ($testType) {
+                              $q->where('test_types.id', $testType->id);
+                          })
+                          ->where('status', 'published');
+                }])
+                ->having('mcqs_count', '>', 0)
+                ->orderBy('sort_order')
+                ->get();
+        }
 
         // Get total MCQs count for this test type
         $totalMcqs = Mcq::whereHas('testTypes', function($query) use ($testType) {
@@ -142,7 +158,7 @@ class WebsiteMcqController extends Controller
                 $query->where('topic_id', $request->topic);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(20);
 
         // Get topics for this subject
         $topics = Topic::where('subject_id', $subject->id)
@@ -186,7 +202,7 @@ class WebsiteMcqController extends Controller
                 $query->where('difficulty_level', $request->difficulty);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->paginate(20);
 
         $relatedTopics = Topic::where('subject_id', $subject->id)
             ->where('id', '!=', $topic->id)

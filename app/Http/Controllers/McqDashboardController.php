@@ -16,7 +16,7 @@ class McqDashboardController extends Controller
 {
     public function index()
     {
-        return view('admin.mcq-dashboard', [
+        return view('dashboard.mcqs_system.mcqs.mcq-dashboard', [
             'stats' => $this->getDashboardStats()
         ]);
     }

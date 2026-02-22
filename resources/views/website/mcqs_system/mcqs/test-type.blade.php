@@ -220,20 +220,42 @@
                             @foreach($subjects as $subject)
                             <div class="col-md-6">
                                 <div class="subject-card">
-                                    <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }};">
-                                        <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }};">
+                                            <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="badge bg-primary">{{ $subject->mcqs_count }} MCQs</span>
+                                        </div>
                                     </div>
                                     <h5 class="h5 mb-2">{{ $subject->name }}</h5>
-                                    <p class="text-muted small mb-3">{{ Str::limit($subject->description, 100) }}</p>
+                                    <p class="text-muted small mb-3">{{ Str::limit($subject->description ?? '', 100) }}</p>
+                                    
+                                    <!-- Topics List -->
+                                    @if(isset($subject->topics) && $subject->topics->count() > 0)
+                                    <div class="mb-3">
+                                        <h6 class="small fw-bold text-muted mb-2">Topics:</h6>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            @foreach($subject->topics->take(4) as $topic)
+                                            <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}?topic={{ $topic->id }}" 
+                                               class="badge bg-light text-dark text-decoration-none">
+                                                {{ $topic->title }} ({{ $topic->mcqs_count }})
+                                            </a>
+                                            @endforeach
+                                            @if($subject->topics->count() > 4)
+                                            <span class="badge bg-secondary">+{{ $subject->topics->count() - 4 }} more</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    @endif
+                                    
                                     <div class="subject-meta">
                                         <div>
-                                            <span class="badge bg-light text-dark">{{ $subject->mcqs_count }} Questions</span>
-                                            <span class="badge bg-light text-dark ms-2">{{ $subject->topics_count }} Topics</span>
+                                            <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}"
+                                               class="btn btn-sm btn-primary">
+                                                View All MCQs
+                                            </a>
                                         </div>
-                                        <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}"
-                                           class="btn btn-sm btn-primary">
-                                            Start Practice
-                                        </a>
                                     </div>
                                 </div>
                             </div>

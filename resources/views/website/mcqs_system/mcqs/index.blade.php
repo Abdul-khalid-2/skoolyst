@@ -282,8 +282,64 @@
     </div>
 </section>
 
-<!-- ==================== TEST TYPES SECTION ==================== -->
+<!-- ==================== MAIN NAVIGATION SECTIONS ==================== -->
 <section class="py-5">
+    <div class="container">
+        <!-- Three Main Options -->
+        <div class="row g-4 mb-5">
+            <!-- Test Type Wise -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-clipboard-list fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Test Type Wise</h3>
+                        <p class="text-muted mb-4">Browse MCQs by test types like NTS, GAT, PPSC, FPSC, MDCAT, ECAT</p>
+                        <a href="#test-types-section" class="btn btn-primary btn-lg w-100">
+                            Browse by Test Type <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subject Wise -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-book fa-3x text-success"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Subject Wise</h3>
+                        <p class="text-muted mb-4">Select a subject and practice MCQs topic by topic</p>
+                        <a href="#subjects-section" class="btn btn-success btn-lg w-100">
+                            Browse by Subject <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mock Tests -->
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center p-4">
+                        <div class="mb-3">
+                            <i class="fas fa-tasks fa-3x text-warning"></i>
+                        </div>
+                        <h3 class="h4 mb-3">Mock Tests</h3>
+                        <p class="text-muted mb-4">Take full-length mock tests with time limits and detailed results</p>
+                        <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-warning btn-lg w-100">
+                            View Mock Tests <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== TEST TYPES SECTION ==================== -->
+<section id="test-types-section" class="py-5 bg-light">
     <div class="container">
         <div class="row mb-5">
             <div class="col-12 text-center">
@@ -301,7 +357,7 @@
                             <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
                         </div>
                         <h3 class="h5 mb-2">{{ $testType->name }}</h3>
-                        <p class="text-muted small mb-2">{{ $testType->description }}</p>
+                        <p class="text-muted small mb-2">{{ Str::limit($testType->description ?? '', 80) }}</p>
                         <div class="d-flex justify-content-between text-muted small">
                             <span>{{ $testType->subjects_count }} Subjects</span>
                             <span>{{ $testType->mcqs_count }} MCQs</span>
@@ -315,7 +371,7 @@
 </section>
 
 <!-- ==================== POPULAR SUBJECTS SECTION ==================== -->
-<section class="py-5 bg-light">
+<section id="subjects-section" class="py-5">
     <div class="container">
         <div class="row mb-5">
             <div class="col-12 text-center">

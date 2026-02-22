@@ -287,7 +287,7 @@
                         @foreach($mcqs as $index => $mcq)
                         <div class="question-card" id="question-{{ $mcq->id }}" data-question-id="{{ $mcq->id }}">
                             <div class="question-header">
-                                <span class="question-number">{{ $index + 1 }}</span>
+                                <span class="question-number">{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $index + 1 }}</span>
                                 <span class="question-text">{!! $mcq->question !!}</span>
                             </div>
                             
@@ -345,22 +345,53 @@
                         @endforeach
 
                         <!-- Test Navigation -->
-                        <div class="test-navigation">
-                            <div class="progress-indicator">
+                        <div class="test-navigation mb-4">
+                            <div class="progress-indicator mb-3">
                                 <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
                             </div>
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div>
-                                    <span id="answeredCount">0</span>/{{ $mcqs->total() }} Answered
+                                    <span id="answeredCount">0</span>/{{ $mcqs->count() }} Answered (Page {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }})
                                 </div>
                                 <div>
                                     <button type="button" class="btn btn-outline-primary me-2" onclick="clearTest()">
                                         <i class="fas fa-undo me-2"></i>Clear
                                     </button>
-                                    <button type="submit" class="btn btn-success">
+                                </div>
+                            </div>
+                            
+                            <!-- Pagination and Submit Buttons -->
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    @if($mcqs->hasMorePages())
+                                    <a href="{{ $mcqs->nextPageUrl() }}" class="btn btn-primary">
+                                        <i class="fas fa-arrow-right me-2"></i>Next Page ({{ $mcqs->currentPage() + 1 }}/{{ $mcqs->lastPage() }})
+                                    </a>
+                                    @endif
+                                    
+                                    @if($mcqs->onFirstPage() == false)
+                                    <a href="{{ $mcqs->previousPageUrl() }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Previous Page
+                                    </a>
+                                    @endif
+                                </div>
+                                
+                                <div>
+                                    @if($mcqs->currentPage() == $mcqs->lastPage())
+                                    <button type="submit" class="btn btn-success btn-lg">
                                         <i class="fas fa-check-circle me-2"></i>Submit Test
                                     </button>
+                                    @else
+                                    <button type="button" class="btn btn-outline-success" onclick="if(confirm('Are you sure you want to submit? You have {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }} pages completed.')) { document.getElementById('testForm').submit(); }">
+                                        <i class="fas fa-check-circle me-2"></i>Submit Now
+                                    </button>
+                                    @endif
                                 </div>
+                            </div>
+                            
+                            <!-- Pagination Links -->
+                            <div class="mt-3">
+                                {{ $mcqs->links() }}
                             </div>
                         </div>
                     @else
@@ -378,15 +409,20 @@
                 <div class="question-palette">
                     <h5 class="mb-3"><i class="fas fa-th me-2"></i>Question Palette</h5>
                     <div class="mb-3">
+                        <p class="small text-muted mb-2">Page {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }}</p>
                         @foreach($mcqs as $index => $mcq)
                         <a href="#question-{{ $mcq->id }}" 
                            class="palette-item" 
                            data-question-id="{{ $mcq->id }}"
                            id="palette-{{ $mcq->id }}"
                            onclick="scrollToQuestion(event, {{ $mcq->id }})">
-                            {{ $index + 1 }}
+                            {{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $index + 1 }}
                         </a>
                         @endforeach
+                    </div>
+                    <div class="alert alert-info small">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Showing questions {{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + 1 }} to {{ min($mcqs->currentPage() * $mcqs->perPage(), $mcqs->total()) }} of {{ $mcqs->total() }}
                     </div>
                     
                     <hr>
@@ -433,6 +469,55 @@
 @push('scripts')
 <script>
     let answeredQuestions = new Set();
+    const storageKey = 'mcq_answers_{{ $topic->id }}';
+    const totalQuestions = {{ $mcqs->total() }};
+
+    // Load saved answers from localStorage on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadSavedAnswers();
+        updateProgress();
+    });
+
+    function loadSavedAnswers() {
+        const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        
+        Object.keys(savedAnswers).forEach(mcqId => {
+            const answers = savedAnswers[mcqId];
+            const questionCard = document.getElementById(`question-${mcqId}`);
+            
+            if (questionCard) {
+                if (Array.isArray(answers)) {
+                    // Multiple choice
+                    answers.forEach(answerKey => {
+                        const checkbox = document.getElementById(`option-${mcqId}-${answerKey}`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            checkbox.closest('.option-item')?.classList.add('selected');
+                        }
+                    });
+                } else {
+                    // Single choice
+                    const radio = document.getElementById(`option-${mcqId}-${answers}`);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.closest('.option-item')?.classList.add('selected');
+                    }
+                }
+                
+                answeredQuestions.add(parseInt(mcqId));
+                const paletteItem = document.getElementById(`palette-${mcqId}`);
+                if (paletteItem) {
+                    paletteItem.classList.add('answered');
+                }
+            }
+        });
+    }
+
+    function saveAnswer(mcqId, answers) {
+        const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        savedAnswers[mcqId] = answers;
+        localStorage.setItem(storageKey, JSON.stringify(savedAnswers));
+    }
 
     function toggleDescription() {
         const preview = document.getElementById('descriptionPreview');
@@ -498,25 +583,85 @@
             }
         });
         
-        if (isAnswered) {
+        // Save answers to localStorage
+        const selectedAnswers = [];
+        inputs.forEach(input => {
+            if (input.checked) {
+                selectedAnswers.push(input.value);
+            }
+        });
+        
+        if (selectedAnswers.length > 0) {
             answeredQuestions.add(mcqId);
-            document.getElementById(`palette-${mcqId}`).classList.add('answered');
+            const paletteItem = document.getElementById(`palette-${mcqId}`);
+            if (paletteItem) {
+                paletteItem.classList.add('answered');
+            }
+            // Save to localStorage
+            if (isMultiple) {
+                saveAnswer(mcqId, selectedAnswers);
+            } else {
+                saveAnswer(mcqId, selectedAnswers[0]);
+            }
         } else {
             answeredQuestions.delete(mcqId);
-            document.getElementById(`palette-${mcqId}`).classList.remove('answered');
+            const paletteItem = document.getElementById(`palette-${mcqId}`);
+            if (paletteItem) {
+                paletteItem.classList.remove('answered');
+            }
+            // Remove from localStorage
+            const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+            delete savedAnswers[mcqId];
+            localStorage.setItem(storageKey, JSON.stringify(savedAnswers));
         }
         
         updateProgress();
     }
 
     function updateProgress() {
-        const answeredCount = answeredQuestions.size;
-        const totalQuestions = {{ $mcqs->total() }};
-        const percentage = (answeredCount / totalQuestions) * 100;
+        // Count all answered questions from localStorage
+        const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        const answeredCount = Object.keys(savedAnswers).length;
+        const percentage = totalQuestions > 0 ? (answeredCount / totalQuestions) * 100 : 0;
         
-        document.getElementById('progressBar').style.width = `${percentage}%`;
-        document.getElementById('answeredCount').textContent = answeredCount;
+        const progressBar = document.getElementById('progressBar');
+        const answeredCountEl = document.getElementById('answeredCount');
+        
+        if (progressBar) {
+            progressBar.style.width = `${percentage}%`;
+        }
+        if (answeredCountEl) {
+            answeredCountEl.textContent = answeredCount;
+        }
     }
+    
+    // Before form submit, add all answers from localStorage as hidden inputs
+    document.getElementById('testForm')?.addEventListener('submit', function(e) {
+        const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
+        
+        // Add all saved answers as hidden inputs
+        Object.keys(savedAnswers).forEach(mcqId => {
+            const answers = savedAnswers[mcqId];
+            if (Array.isArray(answers)) {
+                answers.forEach(answer => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = `answers[${mcqId}][]`;
+                    input.value = answer;
+                    this.appendChild(input);
+                });
+            } else {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = `answers[${mcqId}]`;
+                input.value = answers;
+                this.appendChild(input);
+            }
+        });
+        
+        // Clear localStorage after submission
+        localStorage.removeItem(storageKey);
+    });
 
     function scrollToQuestion(event, mcqId) {
         event.preventDefault();
@@ -551,6 +696,9 @@
             document.querySelectorAll('.palette-item').forEach(item => {
                 item.classList.remove('answered');
             });
+            
+            // Clear localStorage
+            localStorage.removeItem(storageKey);
             
             updateProgress();
         }

@@ -566,7 +566,7 @@
         <!-- Back to Subject Button (Only when topic is selected) -->
         @if(request('topic') && $topics->firstWhere('id', request('topic')))
             <div class="mb-4">
-                <a href="{{ route('subject-by-test-type', ['test_type' => $testType->slug, 'subject' => $subject->slug]) }}" 
+                <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}" 
                    class="back-to-subject-btn">
                     <i class="fas fa-arrow-left me-2"></i> 
                     Back to All {{ $subject->name }} Topics
@@ -949,12 +949,38 @@
                             </div>
                         @endforeach
 
-                        <!-- Pagination -->
-                        @if($mcqs->hasPages())
-                        <div class="mt-4">
-                            {{ $mcqs->links('pagination::bootstrap-5') }}
+                        <!-- Pagination and Navigation -->
+                        <div class="test-navigation mt-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <span class="text-muted">Showing {{ $mcqs->firstItem() }} to {{ $mcqs->lastItem() }} of {{ $mcqs->total() }} MCQs</span>
+                                    <span class="badge bg-info ms-2">Page {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                <div>
+                                    @if($mcqs->hasMorePages())
+                                    <a href="{{ $mcqs->nextPageUrl() }}" class="btn btn-primary">
+                                        <i class="fas fa-arrow-right me-2"></i>Next Page ({{ $mcqs->currentPage() + 1 }}/{{ $mcqs->lastPage() }})
+                                    </a>
+                                    @endif
+                                    
+                                    @if($mcqs->onFirstPage() == false)
+                                    <a href="{{ $mcqs->previousPageUrl() }}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Previous Page
+                                    </a>
+                                    @endif
+                                </div>
+                            </div>
+                            
+                            <!-- Pagination Links -->
+                            @if($mcqs->hasPages())
+                            <div class="mt-3">
+                                {{ $mcqs->links('pagination::bootstrap-5') }}
+                            </div>
+                            @endif
                         </div>
-                        @endif
                     </div>
                 </div>
                 @else

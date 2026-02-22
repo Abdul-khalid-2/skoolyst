@@ -495,9 +495,5 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('check-answer');
 });
 
-
-    Route::get('/mcqs/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('website.mcqs.practice');
-    Route::post('/mcqs/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])->name('website.mcqs.check-answer');
-
     require __DIR__ . '/auth.php';
 });
