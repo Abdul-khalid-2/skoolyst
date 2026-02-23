@@ -2,44 +2,172 @@
  * Videos pages – design system aligned.
  */
 
-/* ==================== VIDEOS HEADER SECTION ==================== */
-.videos-header {
-  background: var(--color-primary);
-  color: var(--color-white);
-  padding: var(--space-16) 0 var(--space-12);
-  text-align: center;
+/* ==================== VIDEOS HERO (compact) ==================== */
+.videos-hero-section {
   position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
   overflow: hidden;
+  padding: var(--space-8) var(--space-4);
 }
-.videos-header::before {
+.videos-hero-section::before,
+.videos-hero-section::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-  animation: videos-float 20s linear infinite;
+  width: 80px;
+  height: 80px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.08' stroke-width='2'%3E%3Crect x='2' y='2' width='20' height='20' rx='2.5'/%3E%3Cpath d='M10 8l6 4-6 4V8z'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  animation: videos-hero-float 6s ease-in-out infinite;
 }
-@keyframes videos-float {
-  0% { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(-100px) translateX(-100px); }
+.videos-hero-section::before {
+  top: 10%;
+  left: 5%;
+}
+.videos-hero-section::after {
+  bottom: 15%;
+  right: 8%;
+  animation-delay: 2s;
+}
+@keyframes videos-hero-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
 }
 
+.videos-hero-content {
+  text-align: center;
+  color: var(--color-white);
+  z-index: 1;
+  padding: var(--space-4);
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.videos-hero-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  width: 320px;
+  margin-bottom: var(--space-4);
+}
 .videos-hero-title {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-extrabold);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-3);
   color: var(--color-white);
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
-.videos-hero-subtitle {
-  font-size: var(--font-size-lg);
+.videos-hero-subheading {
+  font-size: var(--font-size-base);
+  margin: 0;
   opacity: 0.95;
-  max-width: 600px;
-  margin: 0 auto;
+  max-width: 520px;
   line-height: var(--line-height-relaxed);
   color: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .videos-hero-section {
+    min-height: 220px;
+  }
+  .videos-hero-image {
+    width: 400px;
+  }
+  .videos-hero-subheading {
+    font-size: var(--font-size-lg);
+  }
+}
+@media (max-width: 576px) {
+  .videos-hero-section {
+    min-height: 180px;
+    padding: var(--space-6) var(--space-4);
+  }
+  .videos-hero-image {
+    width: 260px;
+    margin-bottom: var(--space-3);
+  }
+  .videos-hero-title {
+    font-size: var(--font-size-2xl);
+  }
+  .videos-hero-subheading {
+    font-size: var(--font-size-sm);
+  }
+}
+
+/* ==================== VIDEOS SEARCH BAR SECTION (below hero) ==================== */
+.videos-search-section {
+  background: var(--color-white);
+  padding: var(--space-8) var(--space-4);
+  border-bottom: 1px solid var(--color-neutral-border);
+  margin-bottom: 0;
+}
+.videos-search-section .videos-search-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+.videos-search-section .videos-search-box {
+  display: flex;
+  align-items: stretch;
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.videos-search-section .videos-search-input {
+  flex: 1;
+  height: 48px;
+  border: none;
+  padding: 0 var(--space-4);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family);
+  outline: none;
+}
+.videos-search-section .videos-search-input::placeholder {
+  color: var(--color-neutral-muted-light);
+}
+.videos-search-section .videos-search-input:focus {
+  box-shadow: inset 0 0 0 2px var(--color-primary);
+}
+.videos-search-section .videos-search-btn {
+  flex-shrink: 0;
+  padding: 0 var(--space-6);
+  height: 48px;
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.videos-search-section .videos-search-btn:hover {
+  background: var(--color-primary-hover);
+}
+
+@media (max-width: 576px) {
+  .videos-search-section {
+    padding: var(--space-6) var(--space-4);
+  }
+  .videos-search-section .videos-search-box {
+    flex-direction: column;
+  }
+  .videos-search-section .videos-search-input {
+    height: 44px;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+  .videos-search-section .videos-search-btn {
+    height: 44px;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
 }
 
 /* ==================== VIDEO STATS ==================== */
