@@ -3,7 +3,7 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/videos.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/videos_show.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
@@ -199,7 +199,7 @@
                         <div class="row align-items-center">
                             <div class="col-auto">
                                 @if($video->user->profile_picture)
-                                <img src="{{ asset('storage/' . $video->user->profile_picture) }}" 
+                                <img src="{{ asset('website/' . $video->user->profile_picture) }}" 
                                      alt="{{ $video->user->name }}"
                                      class="lawyer-avatar">
                                 @else
@@ -281,7 +281,7 @@
                                 <div class="comment-header">
                                     <div>
                                         @if($comment->user && $comment->user->profile_picture)
-                                        <img src="{{ asset('storage/' . $comment->user->profile_picture) }}" 
+                                        <img src="{{ asset('website/' . $comment->user->profile_picture) }}" 
                                              alt="{{ $comment->user->name }}" class="comment-avatar">
                                         @elseif($comment->name)
                                         <div class="comment-avatar-placeholder">
@@ -327,7 +327,7 @@
                                         <div class="comment-header">
                                             <div>
                                                 @if($reply->user && $reply->user->profile_picture)
-                                                <img src="{{ asset('storage/' . $reply->user->profile_picture) }}" 
+                                                <img src="{{ asset('website/' . $reply->user->profile_picture) }}" 
                                                      alt="{{ $reply->user->name }}" 
                                                      style="width: 32px; height: 32px;" class="comment-avatar">
                                                 @elseif($reply->name)

@@ -290,17 +290,19 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Categories Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Video Categories</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-folder me-2"></i>Video Categories
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
+                    <div class="videos-sidebar-content">
+                        <div class="videos-category-list">
                             @foreach($categories as $category)
-                            <a href="{{ route('website.videos.category', $category->slug) }}"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                {{ $category->name }}
-                                <span class="badge bg-primary rounded-pill">{{ $category->videos->count() ?? 0 }}</span>
+                            <a href="{{ route('website.videos.category', $category->slug) }}" 
+                            class="videos-category-item">
+                                <span>{{ $category->name }}</span>
+                                <span class="videos-category-count">{{ $category->videos->count() ?? 0 }}</span>
                             </a>
                             @endforeach
                         </div>
@@ -309,33 +311,33 @@
 
                 <!-- Featured Videos Widget -->
                 @if($featuredVideos->count() > 0)
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-star me-2"></i>Featured Videos</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-star me-2"></i>Featured Videos
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="videos-sidebar-content">
                         @foreach($featuredVideos as $featuredVideo)
                         <div class="featured-video-item">
-                            <div class="featured-video-thumb">
+                            <div class="videos-featured-thumb">
                                 @if($featuredVideo->video_id)
                                 <img src="https://img.youtube.com/vi/{{ $featuredVideo->video_id }}/default.jpg" 
-                                     alt="{{ $featuredVideo->title }}">
+                                    alt="{{ $featuredVideo->title }}">
                                 @else
-                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-video text-muted"></i>
+                                <div class="videos-featured-placeholder">
+                                    <i class="fas fa-video"></i>
                                 </div>
                                 @endif
                             </div>
-                            <div class="featured-video-content">
-                                <h6 class="featured-video-title">
+                            <div class="videos-featured-content">
+                                <h6 class="videos-featured-title">
                                     <a href="{{ route('website.videos.show', $featuredVideo->slug) }}">
                                         {{ Str::limit($featuredVideo->title, 40) }}
                                     </a>
                                 </h6>
-                                <div class="featured-video-meta">
-                                    <small>
-                                        <i class="fas fa-eye me-1"></i>{{ number_format($featuredVideo->views) }}
-                                    </small>
+                                <div class="videos-featured-meta">
+                                    <i class="fas fa-eye me-1"></i>{{ number_format($featuredVideo->views) }}
                                 </div>
                             </div>
                         </div>
@@ -346,33 +348,33 @@
 
                 <!-- Popular Videos Widget -->
                 @if($popularVideos->count() > 0)
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Popular Videos</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-fire me-2"></i>Popular Videos
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="videos-sidebar-content">
                         @foreach($popularVideos as $popularVideo)
                         <div class="featured-video-item">
-                            <div class="featured-video-thumb">
+                            <div class="videos-featured-thumb">
                                 @if($popularVideo->video_id)
                                 <img src="https://img.youtube.com/vi/{{ $popularVideo->video_id }}/default.jpg" 
-                                     alt="{{ $popularVideo->title }}">
+                                    alt="{{ $popularVideo->title }}">
                                 @else
-                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-video text-muted"></i>
+                                <div class="videos-featured-placeholder">
+                                    <i class="fas fa-video"></i>
                                 </div>
                                 @endif
                             </div>
-                            <div class="featured-video-content">
-                                <h6 class="featured-video-title">
+                            <div class="videos-featured-content">
+                                <h6 class="videos-featured-title">
                                     <a href="{{ route('website.videos.show', $popularVideo->slug) }}">
                                         {{ Str::limit($popularVideo->title, 40) }}
                                     </a>
                                 </h6>
-                                <div class="featured-video-meta">
-                                    <small>
-                                        <i class="fas fa-eye me-1"></i>{{ number_format($popularVideo->views) }}
-                                    </small>
+                                <div class="videos-featured-meta">
+                                    <i class="fas fa-eye me-1"></i>{{ number_format($popularVideo->views) }}
                                 </div>
                             </div>
                         </div>
@@ -382,31 +384,31 @@
                 @endif
 
                 <!-- Schools Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-school me-2"></i>Schools</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-school me-2"></i>Schools
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
+                    <div class="videos-sidebar-content">
+                        <div class="videos-school-list">
                             @foreach($schools->take(5) as $school)
-                            <a href="{{ route('browseSchools.show', $school->uuid) }}"
-                                class="list-group-item list-group-item-action d-flex align-items-center">
+                            <a href="{{ route('browseSchools.show', $school->uuid) }}" 
+                            class="videos-school-item">
                                 @if($school->logo)
                                 <img src="{{ asset('website/' . $school->logo) }}" 
-                                     class="rounded-circle me-2"
-                                     style="width: 30px; height: 30px; object-fit: cover;"
-                                     alt="{{ $school->name }}">
+                                    class="videos-school-logo"
+                                    alt="{{ $school->name }}">
                                 @else
-                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                                     style="width: 30px; height: 30px;">
+                                <div class="videos-school-placeholder">
                                     <i class="fas fa-school"></i>
                                 </div>
                                 @endif
-                                <span>{{ Str::limit($school->name, 25) }}</span>
+                                <span class="videos-school-name">{{ Str::limit($school->name, 25) }}</span>
                             </a>
                             @endforeach
                             @if($schools->count() > 5)
-                            <a href="{{ route('browseSchools.index') }}" class="list-group-item list-group-item-action text-center text-primary">
+                            <a href="{{ route('browseSchools.index') }}" class="videos-view-all-link">
                                 View All Schools <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                             @endif
