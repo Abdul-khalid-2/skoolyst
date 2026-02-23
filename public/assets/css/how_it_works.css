@@ -1,11 +1,12 @@
 .hero-section {
     position: relative;
-    min-height: 60vh;
+    min-height: 220px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #4e89ffc9;
+    background: var(--color-primary);
     overflow: hidden;
+    padding: var(--space-8) var(--space-4);
 }
 
 .hero-section::before {
@@ -235,8 +236,8 @@
 .card-icon {
     width: 60px;
     height: 60px;
-    background: #0f4077;
-    border-radius: 12px;
+    background: var(--color-primary);
+    border-radius: var(--radius-lg);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -284,15 +285,15 @@
 }
 
 .blog-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
 }
 
 .blog-image {
     width: 100%;
     aspect-ratio: 16/9;
     object-fit: cover;
-    background: linear-gradient(135deg, #4361ee, #38b000, #ff9e00);
+    background: var(--color-primary);
 }
 
 .blog-content {
@@ -321,13 +322,13 @@
 }
 
 .blog-link:hover {
-    color: #38b000;
+    color: var(--color-primary-hover);
     text-decoration: underline;
 }
 
 /* ==================== FINAL CTA SECTION ==================== */
 .final-cta {
-    background: #0f4077;
+    background: var(--color-primary);
     padding: 5rem 0;
     text-align: center;
     color: white;
@@ -340,24 +341,24 @@
 }
 
 .final-cta-button {
-    display: inline-block;
-    padding: 1rem 3rem;
-    font-size: 1.2rem;
-    font-weight: 600;
-    background: white;
-    color: #38b000;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-4) var(--space-8);
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    background: var(--color-white);
+    color: var(--color-primary);
     border: none;
-    border-radius: 50px;
+    border-radius: var(--radius-md);
     text-decoration: none;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: background-color var(--transition-base), color var(--transition-base), transform var(--transition-base);
 }
-
 .final-cta-button:hover {
-    background: #1a1a1a;
-    color: white;
-    transform: translateY(-3px) scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: var(--color-neutral-bg);
+    color: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 576px) {
