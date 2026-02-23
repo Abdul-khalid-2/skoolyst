@@ -8,7 +8,7 @@
 @section('content')
 
 <!-- ==================== TEST TYPE HERO SECTION ==================== -->
-<section class="test-type-hero" style="background: linear-gradient(135deg, {{ $testType->color ?? '#4361ee' }} 0%, {{ $testType->color ?? '#3a0ca3' }} 100%);">
+<section class="test-type-hero" >
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-8">
