@@ -9,39 +9,44 @@
 
 @section('content')
 
+<!-- ==================== MCQS HEADER SECTION ==================== -->
 <section class="mcqs-header">
     <div class="container">
         <h1 class="mcqs-hero-title">Practice MCQs for Competitive Exams</h1>
         <p class="mcqs-hero-subtitle">
             Master your subjects with practice questions for NTS, PPSC, FPSC, MDCAT, ECAT and more.
         </p>
+    </div>
+</section>
 
-        <!-- Quick Stats -->
-        <div class="row justify-content-center mt-5">
+<!-- ==================== STATS SECTION ==================== -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row justify-content-center">
             <div class="col-md-10">
                 <div class="row g-4">
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ \App\Models\Mcq::where('status', 'published')->count() }}</div>
-                            <div class="text-muted">Total MCQs</div>
+                            <div class="stats-label">Total MCQs</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ \App\Models\Subject::where('status', 'active')->count() }}</div>
-                            <div class="text-muted">Subjects</div>
+                            <div class="stats-label">Subjects</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ \App\Models\TestType::where('status', 'active')->count() }}</div>
-                            <div class="text-muted">Test Types</div>
+                            <div class="stats-label">Test Types</div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ \App\Models\Topic::where('status', 'active')->count() }}</div>
-                            <div class="text-muted">Topics</div>
+                            <div class="stats-label">Topics</div>
                         </div>
                     </div>
                 </div>
@@ -53,53 +58,46 @@
 <!-- ==================== MAIN NAVIGATION SECTIONS ==================== -->
 <section class="py-5">
     <div class="container">
-        <!-- Three Main Options -->
         <div class="row g-4 mb-5">
             <!-- Test Type Wise -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-clipboard-list fa-3x text-primary"></i>
-                        </div>
-                        <h3 class="h4 mb-3">Test Type Wise</h3>
-                        <p class="text-muted mb-4">Browse MCQs by test types like NTS, GAT, PPSC, FPSC, MDCAT, ECAT</p>
-                        <a href="#test-types-section" class="btn btn-primary btn-lg w-100">
-                            Browse by Test Type <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+                <div class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-clipboard-list"></i>
                     </div>
+                    <h3>Test Type Wise</h3>
+                    <p>Browse MCQs by test types like NTS, GAT, PPSC, FPSC, MDCAT, ECAT</p>
+                    <a href="#test-types-section" class="btn btn-primary">
+                        Browse by Test Type <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
 
             <!-- Subject Wise -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-book fa-3x text-success"></i>
-                        </div>
-                        <h3 class="h4 mb-3">Subject Wise</h3>
-                        <p class="text-muted mb-4">Select a subject and practice MCQs topic by topic</p>
-                        <a href="#subjects-section" class="btn btn-success btn-lg w-100">
-                            Browse by Subject <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+                <div class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-book"></i>
                     </div>
+                    <h3>Subject Wise</h3>
+                    <p>Select a subject and practice MCQs topic by topic</p>
+                    <a href="#subjects-section" class="btn btn-success">
+                        Browse by Subject <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
 
             <!-- Mock Tests -->
             <div class="col-md-4">
-                <div class="card h-100 border-0 shadow-sm">
-                    <div class="card-body text-center p-4">
-                        <div class="mb-3">
-                            <i class="fas fa-tasks fa-3x text-warning"></i>
-                        </div>
-                        <h3 class="h4 mb-3">Mock Tests</h3>
-                        <p class="text-muted mb-4">Take full-length mock tests with time limits and detailed results</p>
-                        <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-warning btn-lg w-100">
-                            View Mock Tests <i class="fas fa-arrow-right ms-2"></i>
-                        </a>
+                <div class="nav-card">
+                    <div class="nav-card-icon">
+                        <i class="fas fa-tasks"></i>
                     </div>
+                    <h3>Mock Tests</h3>
+                    <p>Take full-length mock tests with time limits and detailed results</p>
+                    <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-warning">
+                        View Mock Tests <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -109,27 +107,23 @@
 <!-- ==================== TEST TYPES SECTION ==================== -->
 <section id="test-types-section" class="py-5 bg-light">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="h1 mb-3">Choose Your Test Type</h2>
-                <p class="text-muted">Select from various test categories to start your preparation</p>
-            </div>
+        <div class="section-title-wrapper">
+            <h2 class="section-title">Choose Your Test Type</h2>
+            <p class="section-subtitle">Select from various test categories to start your preparation</p>
         </div>
 
         <div class="row g-4">
             @foreach($testTypes as $testType)
             <div class="col-md-4 col-lg-3">
-                <a href="{{ route('website.mcqs.test-type', $testType->slug) }}" class="text-decoration-none">
-                    <div class="test-type-card">
-                        <div class="test-type-icon">
-                            <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
-                        </div>
-                        <h3 class="h5 mb-2">{{ $testType->name }}</h3>
-                        <p class="text-muted small mb-2">{{ Str::limit($testType->description ?? '', 80) }}</p>
-                        <div class="d-flex justify-content-between text-muted small">
-                            <span>{{ $testType->subjects_count }} Subjects</span>
-                            <span>{{ $testType->mcqs_count }} MCQs</span>
-                        </div>
+                <a href="{{ route('website.mcqs.test-type', $testType->slug) }}" class="test-type-card">
+                    <div class="test-type-icon">
+                        <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
+                    </div>
+                    <h3>{{ $testType->name }}</h3>
+                    <p>{{ Str::limit($testType->description ?? '', 80) }}</p>
+                    <div class="test-type-stats">
+                        <span><i class="fas fa-book me-1"></i>{{ $testType->subjects_count }} Subjects</span>
+                        <span><i class="fas fa-question-circle me-1"></i>{{ $testType->mcqs_count }} MCQs</span>
                     </div>
                 </a>
             </div>
@@ -141,11 +135,9 @@
 <!-- ==================== POPULAR SUBJECTS SECTION ==================== -->
 <section id="subjects-section" class="py-5">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="h1 mb-3">Popular Subjects</h2>
-                <p class="text-muted">Start practicing with our most popular subjects</p>
-            </div>
+        <div class="section-title-wrapper">
+            <h2 class="section-title">Popular Subjects</h2>
+            <p class="section-subtitle">Start practicing with our most popular subjects</p>
         </div>
 
         <div class="row g-4">
@@ -157,44 +149,37 @@
                             <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
                         </div>
                         <div class="subject-meta">
-                            <span class="badge bg-light text-dark">
-                                {{ $subject->mcqs_count }} Questions
-                            </span>
-                            <span class="badge bg-light text-dark">
-                                {{ $subject->topics_count }} Topics
-                            </span>
+                            <span class="badge">{{ $subject->mcqs_count }} Qs</span>
+                            <span class="badge">{{ $subject->topics_count }} Topics</span>
                         </div>
                     </div>
 
-                    <h4 class="h5 my-3">
-                        <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="text-decoration-none text-dark">
+                    <h4>
+                        <a href="{{ route('website.mcqs.subject', $subject->slug) }}">
                             {{ $subject->name }}
                         </a>
                     </h4>
 
                     @if($subject->description)
-                    <p class="text-muted small mb-3">{{ Str::limit($subject->description, 100) }}</p>
+                    <p class="subject-description">{{ Str::limit($subject->description, 100) }}</p>
                     @endif
 
-                    <!-- Test Types for this subject -->
-                    <!-- @if($subject->testTypes->count() > 0)
                     <div class="subject-test-types">
-                        <span class="text-muted small">Available for:</span>
-                        <div class="d-flex flex-wrap gap-1 mt-1">
+                        <span class="subject-test-types-label">Available for:</span>
+                        <div class="d-flex flex-wrap gap-1">
                             @foreach($subject->testTypes->take(3) as $testType)
                             <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}"
-                                class="badge bg-light text-dark text-decoration-none">
+                                class="badge">
                                 {{ $testType->name }}
                             </a>
                             @endforeach
                             @if($subject->testTypes->count() > 3)
-                            <span class="badge bg-secondary">+{{ $subject->testTypes->count() - 3 }}</span>
+                            <span class="badge">+{{ $subject->testTypes->count() - 3 }}</span>
                             @endif
                         </div>
                     </div>
-                    @endif -->
 
-                    <div class="mt-3">
+                    <div class="mt-4">
                         <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="btn btn-sm btn-outline-primary">
                             View Topics <i class="fas fa-arrow-right ms-1"></i>
                         </a>
@@ -204,54 +189,50 @@
             @endforeach
         </div>
 
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <a href="#" class="btn btn-lg btn-primary">
-                    <i class="fas fa-search me-2"></i>Browse All Subjects
-                </a>
-            </div>
+        <div class="text-center mt-5">
+            <a href="#" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>Browse All Subjects
+            </a>
         </div>
     </div>
 </section>
 
 <!-- ==================== HOW IT WORKS SECTION ==================== -->
-<section class="py-5">
+<section class="py-5 bg-light">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 text-center">
-                <h2 class="h1 mb-3">How It Works</h2>
-                <p class="text-muted">Three simple steps to improve your preparation</p>
-            </div>
+        <div class="section-title-wrapper">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Three simple steps to improve your preparation</p>
         </div>
 
         <div class="row g-4">
             <div class="col-md-4">
-                <div class="text-center">
-                    <div class="step-icon mb-3">
-                        <i class="fas fa-book-open fa-2x text-primary"></i>
+                <div class="step-item">
+                    <div class="step-icon">
+                        <i class="fas fa-book-open"></i>
                     </div>
-                    <h4 class="h5 mb-3">1. Choose Test Type or Subject</h4>
-                    <p class="text-muted">Select from various test types like NTS, PPSC, FPSC or browse by subject.</p>
+                    <h4>1. Choose Test Type or Subject</h4>
+                    <p>Select from various test types like NTS, PPSC, FPSC or browse by subject.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="text-center">
-                    <div class="step-icon mb-3">
-                        <i class="fas fa-folder-open fa-2x text-primary"></i>
+                <div class="step-item">
+                    <div class="step-icon">
+                        <i class="fas fa-folder-open"></i>
                     </div>
-                    <h4 class="h5 mb-3">2. Select Topic</h4>
-                    <p class="text-muted">Choose specific topics within your subject for focused practice.</p>
+                    <h4>2. Select Topic</h4>
+                    <p>Choose specific topics within your subject for focused practice.</p>
                 </div>
             </div>
 
             <div class="col-md-4">
-                <div class="text-center">
-                    <div class="step-icon mb-3">
-                        <i class="fas fa-question-circle fa-2x text-primary"></i>
+                <div class="step-item">
+                    <div class="step-icon">
+                        <i class="fas fa-question-circle"></i>
                     </div>
-                    <h4 class="h5 mb-3">3. Practice Questions</h4>
-                    <p class="text-muted">Practice with detailed explanations and track your progress.</p>
+                    <h4>3. Practice Questions</h4>
+                    <p>Practice with detailed explanations and track your progress.</p>
                 </div>
             </div>
         </div>
@@ -261,13 +242,14 @@
 <!-- ==================== RECENT MCQS SECTION ==================== -->
 <section class="py-5">
     <div class="container">
-        <div class="row mb-5">
-            <div class="col-12 d-flex justify-content-between align-items-center">
-                <h2 class="h1 mb-0">Recent Practice Questions</h2>
-                <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-primary">
-                    <i class="fas fa-clipboard-list me-2"></i>View All Mock Tests
-                </a>
+        <div class="d-flex justify-content-between align-items-center mb-5">
+            <div>
+                <h2 class="section-title mb-0">Recent Practice Questions</h2>
+                <p class="text-muted">Latest MCQs added to our database</p>
             </div>
+            <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-primary">
+                <i class="fas fa-clipboard-list me-2"></i>View All Mock Tests
+            </a>
         </div>
 
         <div class="row">
@@ -283,23 +265,26 @@
                         </span>
                     </div>
                     
-                    <h5 class="mb-3">
-                        <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}" class="text-decoration-none text-dark">
+                    <div class="mcq-question">
+                        <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}">
                             {!! Str::limit(strip_tags($mcq->question), 150) !!}
                         </a>
-                    </h5>
+                    </div>
                     
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <span class="badge bg-light text-dark me-2">
-                                <i class="fas fa-book me-1"></i>{{ $mcq->subject->name }}
-                            </span>
-                            @if($mcq->topic)
-                            <span class="badge bg-light text-dark">
-                                <i class="fas fa-folder me-1"></i>{{ $mcq->topic->title }}
-                            </span>
-                            @endif
-                        </div>
+                    <div class="mcq-meta">
+                        <span class="mcq-meta-item">
+                            <i class="fas fa-book"></i>
+                            {{ $mcq->subject->name }}
+                        </span>
+                        @if($mcq->topic)
+                        <span class="mcq-meta-item">
+                            <i class="fas fa-folder"></i>
+                            {{ $mcq->topic->title }}
+                        </span>
+                        @endif
+                    </div>
+
+                    <div class="text-end">
                         <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}" class="btn btn-sm btn-outline-primary">
                             Practice <i class="fas fa-arrow-right ms-1"></i>
                         </a>
@@ -309,23 +294,21 @@
             @endforeach
         </div>
 
-        <div class="row mt-5">
-            <div class="col-12 text-center">
-                <a href="#" class="btn btn-lg btn-primary">
-                    <i class="fas fa-search me-2"></i>Browse All Questions
-                </a>
-            </div>
+        <div class="text-center mt-5">
+            <a href="#" class="btn btn-primary btn-lg">
+                <i class="fas fa-search me-2"></i>Browse All Questions
+            </a>
         </div>
     </div>
 </section>
 
 <!-- ==================== CALL TO ACTION SECTION ==================== -->
-<section class="py-5 bg-primary text-white">
+<section class="cta-section">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h2 class="h1 mb-3">Ready to test your knowledge?</h2>
-                <p class="mb-0">Take our comprehensive mock tests and track your progress over time.</p>
+                <h2>Ready to test your knowledge?</h2>
+                <p class="mb-md-0">Take our comprehensive mock tests and track your progress over time.</p>
             </div>
             <div class="col-md-4 text-md-end">
                 <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-light btn-lg">
@@ -361,147 +344,4 @@
         });
     });
 </script>
-
-@push('styles')
-<style>
-    /* Hero Section */
-    .mcqs-header {
-        background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-        color: white;
-        padding: 100px 0;
-        text-align: center;
-    }
-
-    .mcqs-hero-title {
-        font-size: 3.5rem;
-        font-weight: 700;
-        margin-bottom: 1rem;
-    }
-
-    .mcqs-hero-subtitle {
-        font-size: 1.2rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    /* Stats Cards */
-    .stats-card {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 20px;
-        text-align: center;
-        backdrop-filter: blur(10px);
-    }
-
-    .stats-number {
-        font-size: 2.5rem;
-        font-weight: 750;
-        margin-bottom: 0.1rem;
-        /* color: white; */
-    }
-
-    /* Test Type Cards */
-    .test-type-card {
-        background: white;
-        border-radius: 10px;
-        padding: 25px;
-        text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-        border: 1px solid #eee;
-        height: 100%;
-    }
-
-    .test-type-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .test-type-icon {
-        width: 70px;
-        height: 70px;
-        background: #000000;
-        color: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-        font-size: 1.8rem;
-    }
-
-    /* Subject Cards */
-    .subject-card {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        transition: transform 0.3s, box-shadow 0.3s;
-        border: 1px solid #eee;
-        height: 100%;
-    }
-
-    .subject-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-
-    .subject-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: start;
-        margin-bottom: 15px;
-    }
-
-    .subject-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-    }
-
-    .subject-meta {
-        display: flex;
-        gap: 5px;
-    }
-
-    .subject-test-types {
-        border-top: 1px solid #eee;
-        padding-top: 15px;
-        margin-top: 15px;
-    }
-
-    /* Step Icons */
-    .step-icon {
-        width: 80px;
-        height: 80px;
-        background: #f8f9fa;
-        border-radius: 50%;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-        .mcqs-hero-title {
-            font-size: 2.5rem;
-        }
-        
-        .mcqs-hero-subtitle {
-            font-size: 1rem;
-        }
-        
-        .stats-number {
-            font-size: 2rem;
-        }
-    }
-    a {
-        color: rgb(0 0 0);
-        text-decoration: underline;
-    }
-</style>
-@endpush
 @endpush
