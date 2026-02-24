@@ -5,33 +5,58 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/blog.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<style>
+    .btn-outline-primary
+       {
+    --bs-btn-color: #022252;
+    --bs-btn-border-color: var(--color-primary);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--color-primary);
+    --bs-btn-hover-border-color: var(--color-primary);
+    --bs-btn-focus-shadow-rgb: 13, 110, 253;
+    --bs-btn-active-color: #fff;
+    --bs-btn-active-bg: var(--color-primary);
+    --bs-btn-active-border-color: var(--color-primary);
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: var(--color-primary);
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: var(--color-primary);
+    --bs-gradient: none;
+}
+
+
+</style>
 @endpush
 
 @section('content')
 
 <!-- ==================== BLOG HERO SECTION ==================== -->
-<section class="blog-header">
+<section class="blog-header" id="blog-hero">
     <div class="container">
-        <h1 class="blog-hero-title">Educational Insights & Articles</h1>
-        <p class="blog-hero-subtitle">
-            Discover the latest trends, insights, and stories from the world of education. 
-            Expert advice, school success stories, and educational innovations.
-        </p>
+        <div class="blog-hero-content">
+            <h1 class="blog-hero-title">Educational Insights & Articles</h1>
+            <p class="blog-hero-subtitle">
+                Discover the latest trends, insights, and stories from the world of education. 
+                Expert advice, school success stories, and educational innovations.
+            </p>
+        </div>
+    </div>
+</section>
 
-        <!-- Search Form -->
-        <form action="{{ route('website.blog.index') }}" method="GET" class="blog-search-form mt-4">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="Search articles..." value="{{ request('search') }}">
-                        <button class="btn btn-light" type="submit">
-                            <i class="fas fa-search me-2"></i> Search
-                        </button>
-                    </div>
+<!-- ==================== BLOG SEARCH BAR (below header) ==================== -->
+<section class="blog-search-section">
+    <div class="container">
+        <div class="blog-search-container">
+            <form action="{{ route('website.blog.index') }}" method="GET" class="blog-search-form">
+                <div class="blog-search-box">
+                    <input type="text" name="search" class="blog-search-input" 
+                        placeholder="Search articles by title or content..." value="{{ request('search') }}">
+                    <button class="blog-search-btn" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 
@@ -112,7 +137,7 @@
                                             class="rounded-circle me-2"
                                             style="width: 32px; height: 32px; object-fit: cover;">
                                         @else
-                                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
                                             style="width: 32px; height: 32px;">
                                             <i class="fas fa-user"></i>
                                         </div>
