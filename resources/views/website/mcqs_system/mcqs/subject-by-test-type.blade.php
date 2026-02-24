@@ -144,19 +144,31 @@
                             
                             <!-- Questions List -->
                             @if($mcqs->count() > 0)
-                                @foreach($mcqs as $index => $mcq)
+                               @foreach($mcqs as $index => $mcq)
                                     @php
-                                        $options = is_array($mcq->options) ? $mcq->options : [];
+                                        // Decode options properly
+                                        $options = is_array($mcq->options) ? $mcq->options : (is_string($mcq->options) ? json_decode($mcq->options, true) : []);
+                                        $options = is_array($options) ? $options : [];
+                                        
+                                        $correctAnswers = is_array($mcq->correct_answers) ? $mcq->correct_answers : (is_string($mcq->correct_answers) ? json_decode($mcq->correct_answers, true) : []);
+                                        $correctAnswers = is_array($correctAnswers) ? $correctAnswers : [];
+                                        
+                                        $isMultiple = count($correctAnswers) > 1 || $mcq->question_type === 'multiple';
                                     @endphp
                                     
                                     <div class="question-card" id="mcq-{{ $mcq->uuid }}">
                                         <div class="d-flex align-items-start gap-3">
-                                            <div class="question-counter">{{ $index + 1 }}</div>
+                                            <div class="question-counter">{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $index + 1 }}</div>
                                             <div class="flex-grow-1">
                                                 <div class="question-meta">
                                                     <span class="difficulty-badge {{ $mcq->difficulty_level }}">
                                                         {{ ucfirst($mcq->difficulty_level) }}
                                                     </span>
+                                                    @if($mcq->topic)
+                                                    <span class="topic-badge">
+                                                        <i class="fas fa-folder"></i>{{ $mcq->topic->title }}
+                                                    </span>
+                                                    @endif
                                                     <span class="marks-badge">
                                                         <i class="fas fa-star"></i>{{ $mcq->marks }} Mark{{ $mcq->marks > 1 ? 's' : '' }}
                                                     </span>
@@ -175,20 +187,27 @@
 
                                                 <!-- Options Container -->
                                                 <div class="options-container" id="options-{{ $mcq->uuid }}" 
-                                                     data-question-type="{{ $mcq->question_type }}">
+                                                    data-question-type="{{ $mcq->question_type }}">
                                                     @if(count($options) > 0)
-                                                        @foreach($options as $optIndex => $option)
-                                                        <div class="option-item">
-                                                            <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
-                                                                   id="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" 
-                                                                   name="mcq-{{ $mcq->uuid }}" 
-                                                                   value="{{ $optIndex }}"
-                                                                   class="option-input">
-                                                            <label for="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" class="option-label">
-                                                                <span class="option-marker">{{ chr(65 + $optIndex) }}</span>
-                                                                {{ $option }}
-                                                            </label>
-                                                        </div>
+                                                        @foreach($options as $key => $option)
+                                                            @php
+                                                                // Ensure key is treated as string for value
+                                                                $optionKey = (string)$key;
+                                                                // Calculate letter (A, B, C, D) - convert key to int for calculation
+                                                                $letterNum = is_numeric($key) ? (int)$key : (array_search($key, array_keys($options)) + 1);
+                                                                $letter = chr(64 + $letterNum);
+                                                            @endphp
+                                                            <div class="option-item">
+                                                                <input type="{{ $isMultiple ? 'checkbox' : 'radio' }}" 
+                                                                        id="mcq-{{ $mcq->uuid }}-option-{{ $optionKey }}" 
+                                                                        name="mcq-{{ $mcq->uuid }}{{ $isMultiple ? '[]' : '' }}" 
+                                                                        value="{{ $optionKey }}"
+                                                                        class="option-input">
+                                                                <label for="mcq-{{ $mcq->uuid }}-option-{{ $optionKey }}" class="option-label">
+                                                                    <span class="option-marker">{{ $letter }}</span>
+                                                                    {{ $option }}
+                                                                </label>
+                                                            </div>
                                                         @endforeach
                                                     @else
                                                         <div class="alert alert-warning">
@@ -311,7 +330,14 @@
                         <div class="filter-body">
                             @foreach($mcqs as $index => $mcq)
                                 @php
-                                    $options = is_array($mcq->options) ? $mcq->options : [];
+                                    // Decode options properly
+                                    $options = is_array($mcq->options) ? $mcq->options : (is_string($mcq->options) ? json_decode($mcq->options, true) : []);
+                                    $options = is_array($options) ? $options : [];
+                                    
+                                    $correctAnswers = is_array($mcq->correct_answers) ? $mcq->correct_answers : (is_string($mcq->correct_answers) ? json_decode($mcq->correct_answers, true) : []);
+                                    $correctAnswers = is_array($correctAnswers) ? $correctAnswers : [];
+                                    
+                                    $isMultiple = count($correctAnswers) > 1 || $mcq->question_type === 'multiple';
                                 @endphp
                                 
                                 <div class="question-card" id="mcq-{{ $mcq->uuid }}">
@@ -346,25 +372,32 @@
                                             <!-- Options Container -->
                                             <div class="options-container" id="options-{{ $mcq->uuid }}" 
                                                 data-question-type="{{ $mcq->question_type }}">
-                                            @if(count($options) > 0)
-                                                @foreach($options as $optIndex => $option)
-                                                <div class="option-item">
-                                                    <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
-                                                            id="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" 
-                                                            name="mcq-{{ $mcq->uuid }}" 
-                                                            value="{{ $optIndex }}"
-                                                            class="option-input">
-                                                    <label for="mcq-{{ $mcq->uuid }}-option-{{ $optIndex }}" class="option-label">
-                                                        <span class="option-marker">{{ chr(65 + $optIndex) }}</span>
-                                                        {{ $option }}
-                                                    </label>
-                                                </div>
-                                                @endforeach
-                                            @else
-                                                <div class="alert alert-warning">
-                                                    No options available for this question.
-                                                </div>
-                                            @endif
+                                                @if(count($options) > 0)
+                                                    @foreach($options as $key => $option)
+                                                        @php
+                                                            // Ensure key is treated as string for value
+                                                            $optionKey = (string)$key;
+                                                            // Calculate letter (A, B, C, D) - convert key to int for calculation
+                                                            $letterNum = is_numeric($key) ? (int)$key : (array_search($key, array_keys($options)) + 1);
+                                                            $letter = chr(64 + $letterNum);
+                                                        @endphp
+                                                        <div class="option-item">
+                                                            <input type="{{ $isMultiple ? 'checkbox' : 'radio' }}" 
+                                                                    id="mcq-{{ $mcq->uuid }}-option-{{ $optionKey }}" 
+                                                                    name="mcq-{{ $mcq->uuid }}{{ $isMultiple ? '[]' : '' }}" 
+                                                                    value="{{ $optionKey }}"
+                                                                    class="option-input">
+                                                            <label for="mcq-{{ $mcq->uuid }}-option-{{ $optionKey }}" class="option-label">
+                                                                <span class="option-marker">{{ $letter }}</span>
+                                                                {{ $option }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                @else
+                                                    <div class="alert alert-warning">
+                                                        No options available for this question.
+                                                    </div>
+                                                @endif
                                             </div>
 
                                             <!-- Action Buttons -->
@@ -584,17 +617,18 @@
     // Check answer
     async function checkAnswer(mcqUuid) {
         const questionElement = document.getElementById(`mcq-${mcqUuid}`);
-        const questionType = questionElement.querySelector('.options-container').dataset.questionType;
+        const optionsContainer = questionElement.querySelector('.options-container');
+        const questionType = optionsContainer.dataset.questionType;
         
         let selectedOptions = [];
         
-        // Get selected answers
+        // Get selected answers - handle both single and multiple
         if (questionType === 'multiple') {
-            questionElement.querySelectorAll(`input[name="mcq-${mcqUuid}"]:checked`).forEach(input => {
+            questionElement.querySelectorAll(`.option-input:checked`).forEach(input => {
                 selectedOptions.push(input.value);
             });
         } else {
-            const selected = questionElement.querySelector(`input[name="mcq-${mcqUuid}"]:checked`);
+            const selected = questionElement.querySelector(`.option-input:checked`);
             if (selected) {
                 selectedOptions.push(selected.value);
             }
