@@ -1,0 +1,113 @@
+''''''''
+complete documentation
+
+Project : Skoolyst
+Developr : Abdul Khalid
+Star Date : May : 2025
+
+what Why how? '/' I was thinking to buld some reate project to solve some real problem we are facing a lot so started to thing about that and asked to people/friends about some  '/' real issues we facing in you sociaty so I get feed back that there is alot of issue in you sociate which need attentation so was in thinking that  '/' there is alot of issues like helth, trafics, clean environment, global warming, polution, education system , businesses ,fastivals related issues, and so on '/' facing people in there life so I was thinking there is alot of issue which one will be the first I should work on and I realised that I cant complete  '/' this all so I was thinking thant tha world is too advance now a day so why we still facing this challanges finaly I realise thant a lake of knowledge  '/' with people awairnace and guidance traing etc. so I dont have any resource to guid all peoples but there is a resource by using it we can resolved thsi  '/' awairnace issue which is schools which is the root of solution to this issue because schools are the resource to guid and train poeple about there  '/' sociaty issues solution. but what I can do for school because there is alot of school are running traing and 90 to to 95 percent parent sending there  '/' child to school but still we have same issue why is there any issue with education system? the I research about that and once I was in office where  '/' the office boy of you company was in strased I asked him why you are in strased what the issue is evertink ok fawad bhi? he replay me that there some issue  '/' with there kids in school so school is droping out my kids from school and i'm not that rich but i'm paying big amout feeses sitll thay  '/' droping out them and I don't know where I should admit the in new school and I don't know which school will be batter for them do you know any better school? '/' aske me. I says yes but I don't know much about them like, school type, curriculum, feeses, classes, environment, faculty etc.  '/' so this is not just fawad issue only this is issue is facking 2/3 magoryty people not finding school with complete required information. and  '/' school just admiting student without provding complete details and later when parent and school requirement not match the they droping out kids from school '/' so this make very big impact on kid parent and schools too so finally I decide to create a platform to resolved this issues will solved other issues  '/' to when people will well educated and well traind form there child hood with best and and skilled schools so the I design and thing about Skoolyst
+''''''''
+Complete Documentation
+Project: Skoolyst
+Developer: Abdul Khalid
+Start Date: May 2025
+What, Why, and How?
+Introduction
+
+I wanted to build a real project that could solve a real problem in our society. I started thinking deeply about the major issues people face in their 
+daily lives. I also discussed these issues with friends and colleagues to understand real-world problems.
+
+
+I received feedback about many serious issues in our society, such as:
+
+Health problems
+Traffic issues
+Environmental pollution
+Global warming
+Weak education systems
+Business-related challenges
+Social and festival-related issues
+There are many problems, and I realized that it would not be possible for me to solve all of them alone. So I started thinking differently.
+The Root Cause
+
+I asked myself:
+
+The world is becoming advanced day by day, so why are we still facing these challenges?
+After research and reflection, I realized that one of the biggest root causes is lack of knowledge, awareness, guidance, and proper training among people.
+But how can we improve awareness and guidance at a large scale?
+The answer was clear: Schools.
+Schools are the foundation of society. They are responsible for guiding and training children from an early age. If children receive proper education, 
+awareness, and skill development, they grow up to become responsible and capable citizens.
+The Real Problem I Observed
+One day, I was in the office when our office assistant looked very stressed. I asked him what happened. He told me that his children were being dropped 
+from their school. He said:
+
+
+
+
+He was paying high fees.
+He was not financially strong.
+The school suddenly decided to remove his children.
+He did not know which school would be better for his kids.
+He had no proper information about other schools.
+He asked me if I could suggest a good school.
+I wanted to help, but I realized something important:
+
+I did not have complete information about schools either — such as:
+
+
+
+School type
+Curriculum
+Fee structure
+Facilities
+Faculty
+Environment
+Class levels
+This is not just one person’s problem. It is a problem faced by the majority of parents.
+The Core Issue
+
+
+Many parents:
+
+Do not have complete information about schools.
+Choose schools without understanding their requirements.
+Later face problems when expectations do not match reality.
+
+
+Many schools:
+
+Admit students without clearly communicating policies.
+Do not provide transparent information.
+Later remove students due to mismatched expectations.
+This creates stress for:
+
+Parents
+Students
+Schools
+
+And it negatively impacts children’s confidence and education.
+
+The Solution: Skoolys
+
+After observing and researching this issue, I decided to create a platform called Skoolyst.
+
+
+Vision of Skoolyst
+
+Skoolyst is designed to:
+
+Help parents find and compare schools easily.
+Provide complete and transparent school information.
+Allow schools to showcase their details properly.
+Reduce misunderstandings between parents and schools.
+Support better decision-making for children's education.
+When children receive the right education from the right institution, they grow into skilled, aware, and responsible individuals. 
+Over time, this can help improve many other societal problems as well.
+
+Conclusion
+
+Skoolyst is not just a school listing platform.
+
+It is a step toward improving education transparency and helping parents make informed decisions for their children’s future.
+By strengthening education from childhood, we can indirectly contribute to solving many larger societal challenges.

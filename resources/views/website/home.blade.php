@@ -322,6 +322,20 @@
 /* Recent Announcements Section */
 
 
+.visitor-count {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.visitor-count i {
+    margin-right: 5px;
+    color: #0f4077;
+    font-size: 0.85rem;
+}
 </style>
 @endpush
 @push('meta')
@@ -571,6 +585,11 @@
                         <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
                             <i class="fas fa-eye"></i> View Full Profile
                         </a>
+                        <p class="visitor-count">
+                            @if($school->profile->visitor_count > 0)
+                                <i class="fas fa-eye"></i> {{ $school->profile->visitor_count }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>
