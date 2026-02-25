@@ -13,7 +13,7 @@ class McqController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Mcq::with(['subject', 'topic', 'testType', 'createdBy'])
+        $query = Mcq::with(['subject', 'topic', 'testTypes', 'createdBy'])
             ->withCount('mockTests');
         
         // Filters
@@ -26,7 +26,9 @@ class McqController extends Controller
         }
         
         if ($request->filled('test_type_id')) {
-            $query->where('test_type_id', $request->test_type_id);
+            $query->whereHas('testTypes', function ($q) use ($request) {
+                $q->where('test_type_id', $request->test_type_id);
+            });
         }
         
         if ($request->filled('difficulty_level')) {
@@ -94,7 +96,8 @@ class McqController extends Controller
             'question_type' => 'required|in:single,multiple',
             'subject_id' => 'required|exists:subjects,id',
             'topic_id' => 'required|exists:topics,id',
-            'test_type_id' => 'nullable|exists:test_types,id',
+            'test_type_ids' => 'nullable|array',
+            'test_type_ids.*' => 'exists:test_types,id',
             
             // Options validation
             'options' => 'required|array|min:2',
@@ -147,7 +150,6 @@ class McqController extends Controller
             'question_type' => $request->question_type,
             'subject_id' => $request->subject_id,
             'topic_id' => $request->topic_id,
-            'test_type_id' => $request->test_type_id,
             'options' => json_encode($formattedOptions),
             'correct_answers' => json_encode($request->correct_answers),
             'explanation' => $request->explanation,
@@ -165,7 +167,16 @@ class McqController extends Controller
             'created_by' => auth()->id(),
         ];
 
-        Mcq::create($mcqData);
+        $mcq = Mcq::create($mcqData);
+
+        // Sync test types (many-to-many)
+        if ($request->has('test_type_ids')) {
+            $testTypeData = [];
+            foreach ($request->test_type_ids as $index => $testTypeId) {
+                $testTypeData[$testTypeId] = ['sort_order' => $index];
+            }
+            $mcq->testTypes()->sync($testTypeData);
+        }
 
         return redirect()->route('mcqs.index')
             ->with('success', 'MCQ created successfully.');
@@ -173,7 +184,7 @@ class McqController extends Controller
 
     public function show(Mcq $mcq)
     {
-        $mcq->load(['subject', 'topic', 'testType', 'createdBy', 'approvedBy']);
+        $mcq->load(['subject', 'topic', 'testTypes', 'createdBy', 'approvedBy']);
         return view('dashboard.mcqs_system.mcqs.show', compact('mcq'));
     }
 
@@ -188,7 +199,13 @@ class McqController extends Controller
         $correctAnswers = json_decode($mcq->correct_answers, true) ?? [];
         $tags = $mcq->tags ? implode(', ', json_decode($mcq->tags, true)) : '';
         
-        return view('dashboard.mcqs_system.mcqs.edit', compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags'));
+        // Load test types for this MCQ
+        $mcq->load('testTypes');
+        $selectedTestTypeIds = $mcq->testTypes->pluck('id')->toArray();
+        
+        return view('dashboard.mcqs_system.mcqs.edit', 
+            compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags', 'selectedTestTypeIds')
+        );
     }
 
     public function update(Request $request, Mcq $mcq)
@@ -198,7 +215,8 @@ class McqController extends Controller
             'question_type' => 'required|in:single,multiple',
             'subject_id' => 'required|exists:subjects,id',
             'topic_id' => 'required|exists:topics,id',
-            'test_type_id' => 'nullable|exists:test_types,id',
+            'test_type_ids' => 'nullable|array',
+            'test_type_ids.*' => 'exists:test_types,id',
             
             'options' => 'required|array|min:2',
             'options.*' => 'required|string',
@@ -231,7 +249,6 @@ class McqController extends Controller
             'question_type' => $request->question_type,
             'subject_id' => $request->subject_id,
             'topic_id' => $request->topic_id,
-            'test_type_id' => $request->test_type_id,
             'options' => json_encode($request->options),
             'correct_answers' => json_encode($request->correct_answers),
             'explanation' => $request->explanation,
@@ -246,6 +263,17 @@ class McqController extends Controller
             'is_premium' => $request->boolean('is_premium'),
             'status' => $request->status,
         ]);
+
+        // Sync test types (many-to-many)
+        if ($request->has('test_type_ids')) {
+            $testTypeData = [];
+            foreach ($request->test_type_ids as $index => $testTypeId) {
+                $testTypeData[$testTypeId] = ['sort_order' => $index];
+            }
+            $mcq->testTypes()->sync($testTypeData);
+        } else {
+            $mcq->testTypes()->detach();
+        }
 
         // Reset verification if question or answers changed
         if ($mcq->is_verified && (
@@ -387,5 +415,17 @@ class McqController extends Controller
             ->get();
             
         return response()->json($topics);
+    }
+
+    // Get test types by subject (AJAX)
+    public function getTestTypesBySubject(Request $request)
+    {
+        $subject = Subject::with('testTypes')->find($request->subject_id);
+        
+        if (!$subject) {
+            return response()->json([]);
+        }
+        
+        return response()->json($subject->testTypes);
     }
 }

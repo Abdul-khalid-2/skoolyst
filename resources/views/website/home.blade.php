@@ -322,19 +322,20 @@
 /* Recent Announcements Section */
 
 
-.announcement-link {
-    color: #495057;
-    text-decoration: none;
+.visitor-count {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    margin: 0;
     font-size: 0.85rem;
-    flex: 1;
-    transition: color 0.2s;
+    color: #6c757d;
 }
 
-.announcement-link:hover {
-    color: #007bff;
-    text-decoration: underline;
+.visitor-count i {
+    margin-right: 5px;
+    color: #0f4077;
+    font-size: 0.85rem;
 }
-
 </style>
 @endpush
 @push('meta')
@@ -382,19 +383,25 @@
 
 @section('content')
 
-<!-- ==================== HERO SECTION ==================== -->
+<!-- ==================== HERO SECTION (compact) ==================== -->
 <section class="hero-section" id="home">
     <div class="hero-content">
         <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Hero Image">
+        <p class="hero-subheading">Discover, compare, and connect with the best educational institutions</p>
+    </div>
+</section>
+
+<!-- ==================== SEARCH BAR (below header) ==================== -->
+<section class="search-section">
+    <div class="container">
         <div class="search-container">
             <div class="search-box">
                 <input type="text" class="search-input" id="mainSearch" placeholder="Search by school name, location, or curriculum...">
-                <button class="search-btn" onclick="performSearch()">
+                <button class="search-btn" type="button" onclick="performSearch()">
                     <i class="fas fa-search"></i> Search
                 </button>
             </div>
         </div>
-        <p class="hero-subheading">Discover, compare, and connect with the best educational institutions</p>
     </div>
 </section>
 
@@ -561,8 +568,8 @@
                                 <i class="far fa-star"></i>
                             @endfor
 
-                                <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
-                                <small style="color: #888; margin-left: 0.5rem;">({{ $school->reviews->count() }} reviews)</small>
+                                <span>{{ number_format($averageRating, 1) }}</span>
+                                <small>({{ $school->reviews->count() }} reviews)</small>
                         </div>
                         <p class="school-description">
                             {{ Str::limit($school->description, 120) ?: 'No description available.' }}
@@ -578,6 +585,11 @@
                         <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
                             <i class="fas fa-eye"></i> View Full Profile
                         </a>
+                        <p class="visitor-count">
+                            @if($school->profile->visitor_count > 0)
+                                <i class="fas fa-eye"></i> {{ $school->profile->visitor_count }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>
@@ -585,13 +597,13 @@
         </div>
 
         <div id="noResults" class="no-results" style="display: none;">
-            <i class="fas fa-search" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <i class="fas fa-search fa-3x site-muted mb-3 d-block"></i>
             <p>No schools found matching your criteria. Try adjusting your filters.</p>
         </div>
 
         @if($schools->count() == 0)
         <div class="no-results">
-            <i class="fas fa-school" style="font-size: 3rem; color: #ccc; margin-bottom: 1rem;"></i>
+            <i class="fas fa-school fa-3x site-muted mb-3 d-block"></i>
             <p>No schools available at the moment. Please check back later.</p>
         </div>
         @endif
@@ -749,8 +761,8 @@
         
         <!-- View All Testimonials Link -->
         <div class="text-center mt-4">
-            <a href="{{ route('testimonials.index') }}" class="btn btn-outline-primary">
-                View All Testimonials <i class="fas fa-arrow-right ms-2"></i>
+            <a href="{{ route('testimonials.index') }}" class="btn-site btn-site-outline">
+                View All Testimonials <i class="fas fa-arrow-right"></i>
             </a>
         </div>
     </div>

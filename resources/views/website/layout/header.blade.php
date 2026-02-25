@@ -51,7 +51,7 @@
 
                 <!-- Cart Icon with Count -->
                 <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="cart-icon position-relative text-decoration-none">
-                    <i class="fas fa-shopping-cart fa-lg" style="color: #4361ee;"></i>
+                    <i class="fas fa-shopping-cart fa-lg cart-icon"></i>
                     @php
                     $cartCount = 0;
                     if(session()->has('cart')) {
@@ -79,13 +79,13 @@
                     @else
                     <form method="POST" action="{{ LaravelLocalization::localizeUrl(route('logout', [], false)) }}">
                         @csrf
-                        <button type="submit" class="btn btn-danger btn-global-style">Logout</button>
+                        <button type="submit" class="btn-global-style">Logout</button>
                     </form>
                     @endif
                     @else
-                    <a href="{{ LaravelLocalization::localizeUrl(route('login', [], false)) }}" class="btn btn-outline-primary btn-login">Login</a>
+                    <a href="{{ LaravelLocalization::localizeUrl(route('login', [], false)) }}" class="btn-login">Login</a>
                     @if (Route::has('register'))
-                    <a href="{{ LaravelLocalization::localizeUrl(route('register', [], false)) }}" class="btn btn-primary btn-register">Register</a>
+                    <a href="{{ LaravelLocalization::localizeUrl(route('register', [], false)) }}" class="btn-register">Register</a>
                     @endif
                     @endauth
                     @endif

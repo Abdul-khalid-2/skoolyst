@@ -18,7 +18,7 @@ function renderSchools(schoolsToRender) {
     schoolsToRender.forEach(school => {
         const stars = generateStars(school.rating);
         const bannerImage = school.banner_image ?
-            `<img src="${school.banner_image}" alt="${school.name}" style="width: 100%; height: 200px; object-fit: cover;">` :
+            `<img src="${school.banner_image}" alt="${school.name}">` :
             `<i class="fas fa-school"></i>`;
 
         const schoolCard = `
@@ -40,8 +40,8 @@ function renderSchools(schoolsToRender) {
                         </div>
                         <div class="school-rating">
                             ${stars}
-                            <span style="color: #666; margin-left: 0.5rem;">${school.rating}</span>
-                            <small style="color: #888; margin-left: 0.5rem;">(${school.review_count} reviews)</small>
+                            <span>${school.rating}</span>
+                            <small>(${school.review_count} reviews)</small>
                         </div>
                         <p class="school-description">${school.description.substring(0, 120)}...</p>
                         <div class="school-features">

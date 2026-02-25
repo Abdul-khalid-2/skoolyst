@@ -41,9 +41,6 @@ class Mcq extends Model
         'tags' => 'array',
         'is_premium' => 'boolean',
         'is_verified' => 'boolean',
-        'time_limit_seconds' => 'integer',
-        'marks' => 'integer',
-        'negative_marks' => 'integer',
         'approved_at' => 'datetime',
     ];
 
@@ -58,9 +55,12 @@ class Mcq extends Model
         return $this->belongsTo(Subject::class);
     }
 
-    public function testType()
+    public function testTypes()
     {
-        return $this->belongsTo(TestType::class);
+        return $this->belongsToMany(TestType::class, 'mcq_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
     }
 
     public function createdBy()

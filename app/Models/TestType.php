@@ -26,12 +26,16 @@ class TestType extends Model
     // Relationships
     public function subjects()
     {
-        return $this->hasMany(Subject::class);
+        return $this->belongsToMany(Subject::class, 'subject_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps();
     }
 
     public function mcqs()
     {
-        return $this->hasMany(Mcq::class);
+        return $this->belongsToMany(Mcq::class, 'mcq_test_type')
+            ->withPivot('sort_order')
+            ->withTimestamps();
     }
 
     public function mockTests()

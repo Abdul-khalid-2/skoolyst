@@ -66,7 +66,7 @@
         display: none;
     }
 
-    .option-input:checked + .option-label {
+    .option-input:checked+.option-label {
         background: #4361ee;
         border-color: #4361ee;
         color: white;
@@ -88,7 +88,7 @@
         background: white;
     }
 
-    .option-input:checked + .option-label .option-marker {
+    .option-input:checked+.option-label .option-marker {
         background: white;
         color: #4361ee;
         border-color: white;
@@ -109,8 +109,15 @@
     }
 
     @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(-10px); }
-        to { opacity: 1; transform: translateY(0); }
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 
     .difficulty-badge {
@@ -165,7 +172,7 @@
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.test-type', $mcq->testType->slug) }}">{{ $mcq->testType->name }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug]) }}">{{ $mcq->subject->name }}</a></li>
+                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug]) }}">{{ $mcq->subject->name }}</a></li>
                 @if($mcq->topic)
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.topic', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug, 'topic' => $mcq->topic->slug]) }}">{{ $mcq->topic->title }}</a></li>
                 @endif
@@ -221,11 +228,11 @@
                 <div class="options-container" data-question-type="{{ $mcq->question_type }}">
                     @foreach($mcq->options as $index => $option)
                     <div class="option-item">
-                        <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}" 
-                               id="option{{ $index }}" 
-                               name="answer" 
-                               value="{{ $index }}" 
-                               class="option-input">
+                        <input type="{{ $mcq->question_type == 'multiple' ? 'checkbox' : 'radio' }}"
+                            id="option{{ $index }}"
+                            name="answer"
+                            value="{{ $index }}"
+                            class="option-input">
                         <label for="option{{ $index }}" class="option-label">
                             <span class="option-marker">{{ chr(65 + $index) }}</span>
                             {{ $option }}
@@ -322,7 +329,11 @@
 
 @push('scripts')
 <script>
-    let timeLimit = {{ $mcq->time_limit_seconds ?? 0 }};
+    let timeLimit = {
+        {
+            $mcq - > time_limit_seconds ?? 0
+        }
+    };
     let timerInterval;
     let timeLeft = timeLimit;
 
@@ -335,7 +346,7 @@
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimerDisplay();
-            
+
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
                 checkAnswer(); // Auto-submit when time's up
@@ -346,7 +357,7 @@
     function updateTimerDisplay() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        document.getElementById('timer').textContent = 
+        document.getElementById('timer').textContent =
             `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
 
@@ -361,7 +372,7 @@
     function checkAnswer() {
         const questionType = document.querySelector('.options-container').dataset.questionType;
         const selectedOptions = [];
-        
+
         if (questionType === 'multiple') {
             document.querySelectorAll('.option-input:checked').forEach(input => {
                 selectedOptions.push(input.value);
@@ -380,56 +391,56 @@
 
         // Send request to check answer
         fetch('{{ route("website.mcqs.check-answer", $mcq->uuid) }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({
-                selected_answers: selectedOptions,
-                time_taken: timeLimit ? timeLimit - timeLeft : 0
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    selected_answers: selectedOptions,
+                    time_taken: timeLimit ? timeLimit - timeLeft : 0
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            // Show explanation
-            if (data.explanation) {
-                document.getElementById('explanationBox').classList.add('show');
-            }
-            
-            // Mark correct/incorrect options
-            const correctAnswers = data.correct_answers;
-            document.querySelectorAll('.option-item').forEach(item => {
-                const input = item.querySelector('.option-input');
-                const label = item.querySelector('.option-label');
-                const marker = item.querySelector('.option-marker');
-                
-                if (correctAnswers.includes(input.value)) {
-                    label.classList.add('correct');
-                    label.style.backgroundColor = '#d4edda';
-                    label.style.borderColor = '#28a745';
-                    label.style.color = '#155724';
-                    marker.style.backgroundColor = '#28a745';
-                    marker.style.color = 'white';
-                } else if (selectedOptions.includes(input.value) && !data.correct) {
-                    label.classList.add('incorrect');
-                    label.style.backgroundColor = '#f8d7da';
-                    label.style.borderColor = '#dc3545';
-                    label.style.color = '#721c24';
-                    marker.style.backgroundColor = '#dc3545';
-                    marker.style.color = 'white';
+            .then(response => response.json())
+            .then(data => {
+                // Show explanation
+                if (data.explanation) {
+                    document.getElementById('explanationBox').classList.add('show');
                 }
-            });
 
-            // Disable all inputs
-            document.querySelectorAll('.option-input').forEach(input => {
-                input.disabled = true;
+                // Mark correct/incorrect options
+                const correctAnswers = data.correct_answers;
+                document.querySelectorAll('.option-item').forEach(item => {
+                    const input = item.querySelector('.option-input');
+                    const label = item.querySelector('.option-label');
+                    const marker = item.querySelector('.option-marker');
+
+                    if (correctAnswers.includes(input.value)) {
+                        label.classList.add('correct');
+                        label.style.backgroundColor = '#d4edda';
+                        label.style.borderColor = '#28a745';
+                        label.style.color = '#155724';
+                        marker.style.backgroundColor = '#28a745';
+                        marker.style.color = 'white';
+                    } else if (selectedOptions.includes(input.value) && !data.correct) {
+                        label.classList.add('incorrect');
+                        label.style.backgroundColor = '#f8d7da';
+                        label.style.borderColor = '#dc3545';
+                        label.style.color = '#721c24';
+                        marker.style.backgroundColor = '#dc3545';
+                        marker.style.color = 'white';
+                    }
+                });
+
+                // Disable all inputs
+                document.querySelectorAll('.option-input').forEach(input => {
+                    input.disabled = true;
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error checking answer. Please try again.');
             });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error checking answer. Please try again.');
-        });
     }
 
     function resetAnswer() {
@@ -438,7 +449,7 @@
             input.checked = false;
             input.disabled = false;
         });
-        
+
         // Reset styles
         document.querySelectorAll('.option-label').forEach(label => {
             label.classList.remove('correct', 'incorrect');
@@ -446,16 +457,16 @@
             label.style.borderColor = '';
             label.style.color = '';
         });
-        
+
         document.querySelectorAll('.option-marker').forEach(marker => {
             marker.style.backgroundColor = '';
             marker.style.color = '';
         });
-        
+
         // Hide explanation
         document.getElementById('explanationBox')?.classList.remove('show');
         document.getElementById('hintBox')?.classList.remove('show');
-        
+
         // Reset timer if exists
         if (timeLimit > 0) {
             resetTimer();

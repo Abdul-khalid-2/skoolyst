@@ -13,6 +13,7 @@ use App\Models\UserMcqAnswer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class WebsiteMcqController extends Controller
 {
@@ -24,10 +25,11 @@ class WebsiteMcqController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $popularSubjects = Subject::withCount(['mcqs', 'topics'])
+        // Get all active subjects with their test types and counts
+        $subjects = Subject::with(['testTypes'])
+            ->withCount(['mcqs', 'topics'])
             ->where('status', 'active')
-            ->orderBy('mcqs_count', 'desc')
-            ->limit(8)
+            ->orderBy('sort_order')
             ->get();
 
         $recentMcqs = Mcq::with(['subject', 'topic'])
@@ -36,76 +38,71 @@ class WebsiteMcqController extends Controller
             ->limit(10)
             ->get();
 
-        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'popularSubjects', 'recentMcqs'));
+        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs'));
     }
 
     // Test Type page (e.g., Entry Test, Job Test)
     public function testType(TestType $testType, Request $request)
     {
-        $subjects = Subject::where('test_type_id', $testType->id)
+        // Get subjects associated with this test type through pivot
+        $subjects = $testType->subjects()
             ->where('status', 'active')
-            ->withCount(['mcqs', 'topics'])
-            ->orderBy('sort_order')
+            ->withCount(['mcqs' => function($query) use ($testType) {
+                $query->whereHas('testTypes', function($q) use ($testType) {
+                    $q->where('test_types.id', $testType->id);
+                })->where('status', 'published');
+            }])
+            ->orderByPivot('sort_order')
             ->get();
 
-        $topics = Topic::whereIn('subject_id', $subjects->pluck('id'))
-            ->withCount('mcqs')
-            ->orderBy('sort_order')
-            ->get();
-
-        $featuredMcqs = Mcq::whereHas('subject', function($query) use ($testType) {
-                $query->where('test_type_id', $testType->id);
-            })
-            ->where('status', 'published')
-            ->where('is_premium', false)
-            ->inRandomOrder()
-            ->limit(6)
-            ->get();
-
-        return view('website.mcqs_system.mcqs.test-type', compact('testType', 'subjects', 'topics', 'featuredMcqs'));
-    }
-
-    // Subject page
-    public function subject(TestType $testType, Subject $subject, Request $request)
-    {
-        $topics = Topic::where('subject_id', $subject->id)
-            ->withCount('mcqs')
-            ->orderBy('sort_order')
-            ->get();
-
-        // Get the current selected topic if any
-        $currentTopic = null;
-        if ($request->filled('topic')) {
-            $currentTopic = Topic::find($request->topic);
+        // Load topics for each subject with MCQs count for this test type
+        foreach ($subjects as $subject) {
+            $subject->topics = Topic::where('subject_id', $subject->id)
+                ->where('status', 'active')
+                ->withCount(['mcqs' => function($query) use ($testType, $subject) {
+                    $query->where('subject_id', $subject->id)
+                          ->whereHas('testTypes', function($q) use ($testType) {
+                              $q->where('test_types.id', $testType->id);
+                          })
+                          ->where('status', 'published');
+                }])
+                ->having('mcqs_count', '>', 0)
+                ->orderBy('sort_order')
+                ->get();
         }
 
-        $mcqs = Mcq::where('subject_id', $subject->id)
-            ->where('status', 'published')
-            ->with('topic')
-            ->when($request->filled('difficulty'), function($query) use ($request) {
-                $query->where('difficulty_level', $request->difficulty);
-            })
-            ->when($request->filled('topic'), function($query) use ($request) {
-                $query->where('topic_id', $request->topic);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        // Get total MCQs count for this test type
+        $totalMcqs = Mcq::whereHas('testTypes', function($query) use ($testType) {
+            $query->where('test_types.id', $testType->id);
+        })->where('status', 'published')->count();
 
-        // Ensure options are arrays for each MCQ
-        $mcqs->transform(function ($mcq) {
-            // Decode options if it's a string
-            if (is_string($mcq->options)) {
-                $mcq->options = json_decode($mcq->options, true);
-            }
-            
-            // Ensure it's always an array
-            if (!is_array($mcq->options)) {
-                $mcq->options = [];
-            }
-            
-            return $mcq;
-        });
+        return view('website.mcqs_system.mcqs.test-type', compact(
+            'testType', 'subjects', 'totalMcqs'
+        ));
+    }
 
+    // Subject page - Shows test types and topics
+    public function subject(Subject $subject, Request $request)
+    {
+        // Get test types associated with this subject
+        $testTypes = $subject->testTypes()
+            ->where('status', 'active')
+            ->withCount(['mcqs' => function($query) use ($subject) {
+                $query->where('subject_id', $subject->id);
+            }])
+            ->orderByPivot('sort_order')
+            ->get();
+
+        // Get topics for this subject
+        $topics = Topic::where('subject_id', $subject->id)
+            ->where('status', 'active')
+            ->withCount(['mcqs' => function($query) {
+                $query->where('status', 'published');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
+        // Get overall subject statistics
         $difficultyStats = Mcq::where('subject_id', $subject->id)
             ->where('status', 'published')
             ->selectRaw('difficulty_level, COUNT(*) as count')
@@ -113,33 +110,117 @@ class WebsiteMcqController extends Controller
             ->get()
             ->keyBy('difficulty_level');
 
+        // Get recent MCQs for preview (from any test type)
+        $recentMcqs = Mcq::where('subject_id', $subject->id)
+            ->where('status', 'published')
+            ->with(['topic', 'testTypes'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Process options for preview
+        $recentMcqs->transform(function ($mcq) {
+            $mcq->options = is_string($mcq->options) ? 
+                json_decode($mcq->options, true) : $mcq->options;
+            return $mcq;
+        });
+
         return view('website.mcqs_system.mcqs.subject', compact(
-            'testType',
             'subject',
+            'testTypes',
             'topics',
-            'mcqs',
             'difficultyStats',
-            'currentTopic'
+            'recentMcqs'
         ));
     }
 
-    // Topic page
-    public function topic(TestType $testType, Subject $subject, Topic $topic)
+
+
+    // Test Type + Subject page - Shows MCQs filtered by test type and subject
+    public function subjectByTestType(TestType $testType, Subject $subject, Request $request)
     {
+        // Verify subject belongs to this test type
+        if (!$subject->testTypes->contains($testType->id)) {
+            abort(404);
+        }
+
+        // Get MCQs filtered by both subject and test type
+        $mcqs = Mcq::where('subject_id', $subject->id)
+            ->whereHas('testTypes', function($query) use ($testType) {
+                $query->where('test_types.id', $testType->id);
+            })
+            ->where('status', 'published')
+            ->with(['topic', 'testTypes'])
+            ->when($request->filled('difficulty'), function($query) use ($request) {
+                $query->where('difficulty_level', $request->difficulty);
+            })
+            ->when($request->filled('topic'), function($query) use ($request) {
+                $query->where('topic_id', $request->topic);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
+
+        // Get topics for this subject
+        $topics = Topic::where('subject_id', $subject->id)
+            ->where('status', 'active')
+            ->withCount(['mcqs' => function($query) use ($testType, $subject) {
+                $query->where('subject_id', $subject->id)
+                      ->whereHas('testTypes', function($q) use ($testType) {
+                          $q->where('test_types.id', $testType->id);
+                      })
+                      ->where('status', 'published');
+            }])
+            ->orderBy('sort_order')
+            ->get();
+
+        $difficultyStats = Mcq::where('subject_id', $subject->id)
+            ->whereHas('testTypes', function($query) use ($testType) {
+                $query->where('test_types.id', $testType->id);
+            })
+            ->where('status', 'published')
+            ->selectRaw('difficulty_level, COUNT(*) as count')
+            ->groupBy('difficulty_level')
+            ->get()
+            ->keyBy('difficulty_level');
+
+        return view('website.mcqs_system.mcqs.subject-by-test-type', compact(
+            'testType', 'subject', 'mcqs', 'topics', 'difficultyStats'
+        ));
+    }
+    // Topic page - Shows all MCQs for that topic
+    public function topic(Subject $subject, Topic $topic, Request $request)
+    {
+        if ($topic->subject_id !== $subject->id) {
+            abort(404);
+        }
+
+        // Get MCQs for this topic (from any test type)
         $mcqs = Mcq::where('topic_id', $topic->id)
             ->where('status', 'published')
-            ->with(['subject', 'topic'])
-            ->orderBy('difficulty_level')
-            ->paginate(15);
+            ->with(['subject', 'topic', 'testTypes'])
+            ->when($request->filled('difficulty'), function($query) use ($request) {
+                $query->where('difficulty_level', $request->difficulty);
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         $relatedTopics = Topic::where('subject_id', $subject->id)
             ->where('id', '!=', $topic->id)
+            ->where('status', 'active')
             ->withCount('mcqs')
             ->orderBy('sort_order')
             ->limit(5)
             ->get();
 
-        return view('website.mcqs_system.mcqs.topic', compact('testType', 'subject', 'topic', 'mcqs', 'relatedTopics'));
+        // Get test types for this topic's MCQs
+        $testTypes = TestType::whereHas('mcqs', function($query) use ($topic) {
+            $query->where('topic_id', $topic->id)
+                  ->where('status', 'published');
+        })->get();
+
+        return view('website.mcqs_system.mcqs.topic', compact(
+            'subject', 'topic', 'mcqs', 'relatedTopics', 'testTypes'
+        ));
     }
 
     // Practice individual MCQ
@@ -150,19 +231,20 @@ class WebsiteMcqController extends Controller
         }
 
         // Ensure options and correct_answers are arrays
-        if (is_string($mcq->options)) {
-            $mcq->options = json_decode($mcq->options, true);
-        }
-        
-        if (is_string($mcq->correct_answers)) {
-            $mcq->correct_answers = json_decode($mcq->correct_answers, true);
-        }
+        $mcq->options = is_string($mcq->options) ? 
+            json_decode($mcq->options, true) : $mcq->options;
+        $mcq->correct_answers = is_string($mcq->correct_answers) ? 
+            json_decode($mcq->correct_answers, true) : $mcq->correct_answers;
 
-        // Get similar questions
+        // Load relationships
+        $mcq->load(['subject', 'topic', 'testTypes']);
+
+        // Get similar questions from the same topic and subject
         $similarMcqs = Mcq::where('subject_id', $mcq->subject_id)
             ->where('topic_id', $mcq->topic_id)
             ->where('id', '!=', $mcq->id)
             ->where('status', 'published')
+            ->with(['subject', 'topic'])
             ->inRandomOrder()
             ->limit(5)
             ->get();
@@ -180,18 +262,8 @@ class WebsiteMcqController extends Controller
         // Ensure selected answers are properly formatted
         $selectedAnswers = (array) $request->selected_answers;
         
-        // Ensure correct_answers is an array (handle both string and array)
-        if (is_string($mcq->correct_answers)) {
-            $correctAnswers = json_decode($mcq->correct_answers, true);
-            // If decoding fails, try to handle it as a single answer
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $correctAnswers = [$mcq->correct_answers];
-            }
-        } else {
-            $correctAnswers = (array) $mcq->correct_answers;
-        }
-        
-      
+        $correctAnswers = is_string($mcq->correct_answers) ? 
+            json_decode($mcq->correct_answers, true) : $mcq->correct_answers;
 
         // Check if answers are correct
         // For single choice questions, we need exact match
@@ -422,6 +494,136 @@ class WebsiteMcqController extends Controller
         ]);
 
         return redirect()->route('website.mcqs.test-result', $attempt->uuid);
+    }
+
+
+    public function submitTopicTest(Request $request)
+    {
+        $request->validate([
+            'topic_id' => 'required|exists:topics,id',
+            'subject_id' => 'required|exists:subjects,id',
+            'answers' => 'required|array'
+        ]);
+
+        $topic = Topic::findOrFail($request->topic_id);
+        $subject = Subject::findOrFail($request->subject_id);
+        
+        // Get all MCQs for this topic
+        $mcqs = Mcq::where('topic_id', $topic->id)
+            ->where('status', 'published')
+            ->get();
+        
+        $results = [];
+        $totalMarks = 0;
+        $obtainedMarks = 0;
+        $correctCount = 0;
+        $wrongCount = 0;
+        
+        foreach ($mcqs as $mcq) {
+            $userAnswer = $request->answers[$mcq->id] ?? null;
+            $correctAnswers = json_decode($mcq->correct_answers, true);
+            $isCorrect = false;
+            
+            $totalMarks += $mcq->marks;
+            
+            if ($userAnswer) {
+                // Check if answer is correct
+                if (is_array($userAnswer)) {
+                    // Multiple correct answers
+                    sort($userAnswer);
+                    sort($correctAnswers);
+                    $isCorrect = $userAnswer == $correctAnswers;
+                } else {
+                    // Single answer
+                    $isCorrect = in_array($userAnswer, $correctAnswers);
+                }
+                
+                if ($isCorrect) {
+                    $correctCount++;
+                    $obtainedMarks += $mcq->marks;
+                } else {
+                    $wrongCount++;
+                    $obtainedMarks -= $mcq->negative_marks ?? 0;
+                }
+            }
+            
+            $results[] = [
+                'mcq' => $mcq,
+                'user_answer' => $userAnswer,
+                'correct_answers' => $correctAnswers,
+                'is_correct' => $isCorrect
+            ];
+        }
+        
+        // Save test attempt if user is logged in
+        if (auth()->check()) {
+            $attempt = UserTestAttempt::create([
+                'uuid' => Str::uuid(),
+                'user_id' => auth()->id(),
+                'topic_id' => $topic->id,
+                'subject_id' => $subject->id,
+                'total_questions' => $mcqs->count(),
+                'attempted_questions' => count($request->answers),
+                'correct_answers' => $correctCount,
+                'wrong_answers' => $wrongCount,
+                'skipped_questions' => $mcqs->count() - count($request->answers),
+                'total_marks' => $totalMarks,
+                'obtained_marks' => max(0, $obtainedMarks),
+                'percentage' => $totalMarks > 0 ? ($obtainedMarks / $totalMarks) * 100 : 0,
+                'answers_data' => json_encode($request->answers),
+                'status' => 'completed',
+                'completed_at' => now()
+            ]);
+            
+            // Save individual answers
+            foreach ($results as $result) {
+                if ($result['user_answer']) {
+                    UserMcqAnswer::create([
+                        'user_id' => auth()->id(),
+                        'mcq_id' => $result['mcq']->id,
+                        'test_attempt_id' => $attempt->id,
+                        'topic_id' => $topic->id,
+                        'selected_answers' => json_encode($result['user_answer']),
+                        'is_correct' => $result['is_correct'],
+                        'answered_at' => now()
+                    ]);
+                }
+            }
+        }
+        
+        // Store results in session to show on results page
+        session()->flash('test_results', [
+            'topic' => $topic,
+            'subject' => $subject,
+            'results' => $results,
+            'total_questions' => $mcqs->count(),
+            'attempted' => count($request->answers),
+            'correct' => $correctCount,
+            'wrong' => $wrongCount,
+            'skipped' => $mcqs->count() - count($request->answers),
+            'total_marks' => $totalMarks,
+            'obtained_marks' => max(0, $obtainedMarks),
+            'percentage' => $totalMarks > 0 ? round(($obtainedMarks / $totalMarks) * 100, 2) : 0,
+            'attempt_uuid' => auth()->check() ? $attempt->uuid : null
+        ]);
+        
+        return redirect()->route('website.mcqs.test-results', ['topic' => $topic->slug]);
+    }
+
+    public function topicTestResults(Request $request, Topic $topic)
+    {
+        $testResults = session('test_results');
+        
+        if (!$testResults || $testResults['topic']->id !== $topic->id) {
+            return redirect()->route('website.mcqs.topic', [
+                'subject' => $topic->subject->slug,
+                'topic' => $topic->slug
+            ])->with('error', 'No test results found. Please take the test first.');
+        }
+        
+        $subject = $topic->subject;
+        
+        return view('website.mcqs_system.mcqs.test-results', compact('topic', 'subject', 'testResults'));
     }
 
 }

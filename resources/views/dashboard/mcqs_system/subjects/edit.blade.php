@@ -9,6 +9,7 @@
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb mb-0">
                                 <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('subjects.show', $subject) }}">{{ $subject->name }}</a></li>
                                 <li class="breadcrumb-item active">Edit {{ $subject->name }}</li>
                             </ol>
                         </nav>
@@ -57,20 +58,40 @@
                                         @enderror
                                     </div>
                                     
-                                    <div class="col-md-6">
-                                        <label for="test_type_id" class="form-label">Test Type</label>
-                                        <select class="form-select @error('test_type_id') is-invalid @enderror" 
-                                                id="test_type_id" name="test_type_id">
-                                            <option value="">Select Test Type (Optional)</option>
-                                            @foreach($testTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('test_type_id', $subject->test_type_id) == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('test_type_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+                                    <div class="col-12">
+                                        <label class="form-label">Test Types</label>
+                                        <div class="border rounded p-3 @error('test_type_ids') border-danger @enderror">
+                                            <div class="row g-2">
+                                                @php
+                                                    $selectedTestTypeIds = $subject->testTypes->pluck('id')->toArray();
+                                                    $oldTestTypeIds = old('test_type_ids', $selectedTestTypeIds);
+                                                @endphp
+                                                @foreach($testTypes as $type)
+                                                <div class="col-md-4 col-sm-6">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" 
+                                                               name="test_type_ids[]" 
+                                                               value="{{ $type->id }}" 
+                                                               id="test_type_{{ $type->id }}"
+                                                               {{ is_array($oldTestTypeIds) && in_array($type->id, $oldTestTypeIds) ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="test_type_{{ $type->id }}">
+                                                            @if($type->icon)
+                                                                <i class="{{ $type->icon }} me-1"></i>
+                                                            @endif
+                                                            {{ $type->name }}
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            @if($testTypes->isEmpty())
+                                                <p class="text-muted mb-0">No test types available. <a href="{{ route('test-types.create') }}">Create test types first</a></p>
+                                            @endif
+                                        </div>
+                                        @error('test_type_ids')
+                                            <div class="text-danger small">{{ $message }}</div>
                                         @enderror
+                                        <small class="text-muted">Select multiple test types for this subject. Leave empty if subject is general.</small>
                                     </div>
                                     
                                     <div class="col-md-6">
@@ -110,6 +131,7 @@
                                         @error('color_code')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                        <small class="text-muted">Hex color code for subject</small>
                                     </div>
                                     
                                     <div class="col-md-6">
@@ -119,6 +141,7 @@
                                         @error('sort_order')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
+                                        <small class="text-muted">Lower numbers appear first</small>
                                     </div>
                                     
                                     <div class="col-12">
@@ -155,65 +178,76 @@
                 <div class="col-lg-4">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Subject Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-warning">
-                                <h6><i class="fas fa-exclamation-triangle me-2"></i>Important</h6>
-                                <p class="mb-0">Changing the name will update the slug. This may affect existing links.</p>
+                            <div class="mb-3">
+                                <h6 class="mb-2">Current Test Types:</h6>
+                                @if($subject->testTypes->count() > 0)
+                                    <div class="d-flex flex-wrap gap-1">
+                                        @foreach($subject->testTypes as $testType)
+                                            <span class="badge bg-light text-dark">
+                                                @if($testType->icon)
+                                                    <i class="{{ $testType->icon }} me-1"></i>
+                                                @endif
+                                                {{ $testType->name }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <p class="text-muted mb-0">No test types assigned</p>
+                                @endif
                             </div>
                             
-                            <div class="mt-3">
-                                <h6 class="mb-2">Subject Details:</h6>
+                            <div class="mb-3">
+                                <h6 class="mb-2">Statistics:</h6>
                                 <ul class="list-group list-group-flush">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span>Created</span>
-                                        <span>{{ $subject->created_at->format('M d, Y') }}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <span>Last Updated</span>
-                                        <span>{{ $subject->updated_at->format('M d, Y') }}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
                                         <span>Topics</span>
-                                        <a href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" 
-                                           class="badge bg-info">
-                                            {{ $subject->topics_count ?? 0 }} topics
-                                        </a>
+                                        <span class="badge bg-primary">{{ $subject->topics_count ?? 0 }}</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
                                         <span>MCQs</span>
-                                        <a href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" 
-                                           class="badge bg-warning">
-                                            {{ $subject->mcqs_count ?? 0 }} MCQs
-                                        </a>
+                                        <span class="badge bg-success">{{ $subject->mcqs_count ?? 0 }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                        <span>Created</span>
+                                        <small class="text-muted">{{ $subject->created_at->format('M d, Y') }}</small>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
+                                        <span>Last Updated</span>
+                                        <small class="text-muted">{{ $subject->updated_at->format('M d, Y') }}</small>
                                     </li>
                                 </ul>
                             </div>
                             
-                            @if($subject->topics_count > 0 || $subject->mcqs_count > 0)
-                            <div class="alert alert-info mt-3">
-                                <h6><i class="fas fa-link me-2"></i>Connected Data</h6>
-                                <p class="mb-0">This subject has topics and MCQs. Deleting it will affect all connected data.</p>
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-lightbulb me-2"></i>Editing Tips</h6>
+                                <ul class="mb-0 ps-3 small">
+                                    <li>Changing test types will update all related MCQs</li>
+                                    <li>Subjects can belong to multiple test types</li>
+                                    <li>Color changes will reflect on the subject cards</li>
+                                    <li>Sort order affects display sequence</li>
+                                </ul>
                             </div>
-                            @endif
                         </div>
                     </div>
                     
                     <!-- Color Preview -->
                     <div class="card mt-4">
                         <div class="card-header">
-                            <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Current Color</h5>
+                            <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Color Preview</h5>
                         </div>
                         <div class="card-body">
                             <div class="color-preview mb-3">
-                                <div class="color-box" 
-                                     style="background-color: {{ $subject->color_code }};"></div>
+                                <div class="color-box" id="colorPreview" 
+                                     style="background-color: {{ old('color_code', $subject->color_code) }};"></div>
                                 <div class="ms-3">
-                                    <h6 class="mb-1">{{ $subject->color_code }}</h6>
-                                    <small class="text-muted">Current subject color</small>
+                                    <h6 class="mb-1" id="colorText">{{ old('color_code', $subject->color_code) }}</h6>
+                                    <small class="text-muted">Subject color preview</small>
                                 </div>
                             </div>
+                            <small class="text-muted">This color will be used for subject cards and indicators.</small>
                         </div>
                     </div>
                 </div>
@@ -229,18 +263,50 @@
             const colorPreview = document.getElementById('colorPreview');
             const colorText = document.getElementById('colorText');
             
-            if (colorPicker && colorCode) {
-                // Update color code when color picker changes
-                colorPicker.addEventListener('input', function() {
-                    colorCode.value = this.value;
+            // Update color code when color picker changes
+            colorPicker.addEventListener('input', function() {
+                colorCode.value = this.value;
+                updateColorPreview(this.value);
+            });
+            
+            // Update color preview when color code changes
+            colorCode.addEventListener('input', function() {
+                const color = this.value;
+                if (/^#[0-9A-F]{6}$/i.test(color)) {
+                    colorPicker.value = color;
+                    updateColorPreview(color);
+                }
+            });
+            
+            function updateColorPreview(color) {
+                colorPreview.style.backgroundColor = color;
+                colorText.textContent = color;
+            }
+            
+            // Add select all/deselect all functionality for test types
+            const testTypesContainer = document.querySelector('.border.rounded.p-3');
+            if (testTypesContainer) {
+                const checkboxes = testTypesContainer.querySelectorAll('input[type="checkbox"]');
+                
+                // Create select all/deselect all buttons
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'd-flex gap-2 mb-2';
+                buttonGroup.innerHTML = `
+                    <button type="button" class="btn btn-sm btn-outline-primary" id="selectAllTestTypes">
+                        <i class="fas fa-check-square me-1"></i> Select All
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllTestTypes">
+                        <i class="fas fa-square me-1"></i> Deselect All
+                    </button>
+                `;
+                testTypesContainer.prepend(buttonGroup);
+                
+                document.getElementById('selectAllTestTypes').addEventListener('click', function() {
+                    checkboxes.forEach(checkbox => checkbox.checked = true);
                 });
                 
-                // Update color picker when color code changes
-                colorCode.addEventListener('input', function() {
-                    const color = this.value;
-                    if (/^#[0-9A-F]{6}$/i.test(color)) {
-                        colorPicker.value = color;
-                    }
+                document.getElementById('deselectAllTestTypes').addEventListener('click', function() {
+                    checkboxes.forEach(checkbox => checkbox.checked = false);
                 });
             }
         });
@@ -264,6 +330,14 @@
             width: 50px;
             height: 38px;
             padding: 2px;
+        }
+        
+        .form-check-label {
+            cursor: pointer;
+        }
+        
+        .badge {
+            font-size: 0.85em;
         }
     </style>
 </x-app-layout>

@@ -1,40 +1,86 @@
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
+/**
+ * Global base styles – uses design-system variables.
+ * No random colors; overrides only where needed.
+ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    body {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        overflow-x: hidden;
-        color: #1a1a1a;
-    }
+html {
+  scroll-behavior: smooth;
+}
 
-    html {
-        scroll-behavior: smooth;
-    }
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-neutral-text);
+  background: var(--color-white);
+  overflow-x: hidden;
+}
 
+/* Global button style (legacy class – prefer .btn-site-primary) */
+.btn-global-style {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-primary);
+  color: var(--color-white);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+  text-decoration: none;
+  transition: background-color var(--transition-base), border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
+}
+.btn-global-style:hover {
+  background: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+  color: var(--color-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-global-style:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
 
+/* Bootstrap overrides for public site – align with design system */
+.container {
+  max-width: 1200px;
+}
 
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
 
-    /* buttons style  */
-
-    .btn-global-style {
-        display: block;
-        width: 100%;
-        padding: 0.8rem;
-        background: #0f4077;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        text-align: center;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-
-    .btn-global-style:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
-        color: white;
-    }
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  border-color: var(--color-primary-hover);
+}
+.btn-outline-primary {
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-semibold);
+  border-width: 2px;
+  color: var(--color-secondary);
+  border-color: var(--color-secondary);
+}
+.btn-outline-primary:hover {
+  background-color: var(--color-secondary-light);
+  color: var(--color-secondary-hover);
+  border-color: var(--color-secondary-hover);
+}

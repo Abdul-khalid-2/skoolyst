@@ -3,400 +3,37 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
-<style>
-    /* ==================== VIDEOS HEADER SECTION ==================== */
-    .videos-header {
-        background: #0f4077;
-        color: white;
-        padding: 100px 0 80px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .videos-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-        animation: float 20s linear infinite;
-    }
-
-    @keyframes float {
-        0% {
-            transform: translateY(0px) translateX(0px);
-        }
-        100% {
-            transform: translateY(-100px) translateX(-100px);
-        }
-    }
-
-    .videos-hero-title {
-        font-size: 3.5rem;
-        font-weight: 800;
-        margin-bottom: 1.5rem;
-        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-    }
-
-    .videos-hero-subtitle {
-        font-size: 1.3rem;
-        opacity: 0.95;
-        max-width: 600px;
-        margin: 0 auto;
-        line-height: 1.6;
-    }
-
-    /* ==================== VIDEO STATS ==================== */
-    .video-stats {
-        background: white;
-        border-radius: 15px;
-        padding: 30px;
-        margin-top: -40px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        position: relative;
-        z-index: 10;
-    }
-
-    .stat-item {
-        text-align: center;
-    }
-
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 800;
-        color: #4361ee;
-        line-height: 1;
-    }
-
-    .stat-label {
-        font-size: 0.9rem;
-        color: #666;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 5px;
-    }
-
-    /* ==================== VIDEO CONTENT STYLES ==================== */
-    .videos-search-form .form-control {
-        border: none;
-        border-radius: 50px;
-        padding: 15px 25px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .videos-search-form .btn {
-        border: none;
-        border-radius: 50px;
-        padding: 15px 30px;
-        margin-left: 10px;
-    }
-
-    .video-card {
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: none;
-        border-radius: 15px;
-        overflow: hidden;
-        height: 100%;
-    }
-
-    .video-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
-    }
-
-    .video-card .card-img-top {
-        height: 200px;
-        object-fit: cover;
-        position: relative;
-    }
-
-    .video-card:hover .card-img-top {
-        transform: scale(1.05);
-    }
-
-    .video-play-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .video-card:hover .video-play-overlay {
-        opacity: 1;
-    }
-
-    .play-icon {
-        width: 60px;
-        height: 60px;
-        background: white;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
-        color: #4361ee;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .video-card .card-title a {
-        color: #1a1a1a;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
-
-    .video-card .card-title a:hover {
-        color: #4361ee !important;
-    }
-
-    .video-category-badge {
-        background: #0f4077;
-        border: none;
-        border-radius: 50px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    /* ==================== FILTERS STYLES ==================== */
-    .filters-container {
-        background: white;
-        border-radius: 15px;
-        padding: 20px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        margin-bottom: 30px;
-    }
-
-    .filter-group {
-        margin-bottom: 15px;
-    }
-
-    .filter-group label {
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-        color: #333;
-    }
-
-    .filter-select {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 10px 15px;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-    }
-
-    .filter-select:focus {
-        border-color: #4361ee;
-        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
-    }
-
-    .quick-filters {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-        margin-top: 10px;
-    }
-
-    .quick-filter-btn {
-        padding: 8px 15px;
-        border-radius: 25px;
-        border: 2px solid #e9ecef;
-        background: white;
-        color: #666;
-        font-size: 0.9rem;
-        transition: all 0.3s ease;
-    }
-
-    .quick-filter-btn:hover,
-    .quick-filter-btn.active {
-        background: #4361ee;
-        color: white;
-        border-color: #4361ee;
-    }
-
-    /* ==================== SIDEBAR STYLES ==================== */
-    .sidebar-widget {
-        border: none;
-        border-radius: 15px;
-        overflow: hidden;
-        margin-bottom: 30px;
-    }
-
-    .sidebar-widget .card-header {
-        background: #0f4077;
-        color: white;
-        border: none;
-        font-weight: 700;
-        padding: 15px 20px;
-    }
-
-    .sidebar-widget .list-group-item {
-        border: none;
-        padding: 12px 0;
-        background: transparent;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .sidebar-widget .list-group-item:last-child {
-        border-bottom: none;
-    }
-
-    .sidebar-widget .list-group-item:hover {
-        background: transparent;
-        color: #4361ee;
-    }
-
-    /* ==================== FEATURED VIDEOS ==================== */
-    .featured-video-item {
-        display: flex;
-        margin-bottom: 15px;
-        padding-bottom: 15px;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .featured-video-item:last-child {
-        border-bottom: none;
-        margin-bottom: 0;
-        padding-bottom: 0;
-    }
-
-    .featured-video-thumb {
-        width: 80px;
-        height: 60px;
-        border-radius: 8px;
-        overflow: hidden;
-        margin-right: 15px;
-        flex-shrink: 0;
-    }
-
-    .featured-video-thumb img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .featured-video-content {
-        flex-grow: 1;
-    }
-
-    .featured-video-title {
-        font-size: 0.9rem;
-        margin-bottom: 5px;
-        line-height: 1.3;
-    }
-
-    .featured-video-title a {
-        color: #333;
-        text-decoration: none;
-    }
-
-    .featured-video-title a:hover {
-        color: #4361ee;
-    }
-
-    .featured-video-meta {
-        font-size: 0.8rem;
-        color: #666;
-    }
-
-    /* ==================== PAGINATION STYLES ==================== */
-    .pagination .page-link {
-        border-radius: 10px;
-        margin: 0 3px;
-        border: none;
-        color: #4361ee;
-        font-weight: 600;
-    }
-
-    .pagination .page-item.active .page-link {
-        background: #0f4077;
-        border-color: #4361ee;
-    }
-
-    /* ==================== EMPTY STATE ==================== */
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-    }
-
-    .empty-state-icon {
-        font-size: 4rem;
-        color: #ddd;
-        margin-bottom: 20px;
-    }
-
-    /* ==================== RESPONSIVE DESIGN ==================== */
-    @media (max-width: 768px) {
-        .videos-hero-title {
-            font-size: 2.5rem;
-        }
-
-        .videos-hero-subtitle {
-            font-size: 1.1rem;
-        }
-
-        .videos-search-form .btn {
-            width: 100%;
-            margin-left: 0;
-            margin-top: 10px;
-        }
-
-        .video-stats {
-            margin-top: -20px;
-            padding: 20px;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-        }
-
-        .quick-filters {
-            justify-content: center;
-        }
-
-        .filter-select {
-            font-size: 0.8rem;
-            padding: 8px 12px;
-        }
-    }
-</style>
+<link rel="stylesheet" href="{{ asset('assets/css/videos.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
 @section('content')
 
-<!-- ==================== VIDEOS HERO SECTION ==================== -->
-<section class="videos-header">
-    <div class="container">
+<!-- ==================== VIDEOS HERO SECTION (compact) ==================== -->
+<section class="videos-hero-section" id="videos-hero">
+    <div class="videos-hero-content">
         <h1 class="videos-hero-title">SKOOLYST EduVideos</h1>
-        <p class="videos-hero-subtitle">
+        <p class="videos-hero-subheading">
             Explore our collection of educational videos from schools and shops. 
             Learn, discover, and get inspired with quality content.
         </p>
+    </div>
+</section>
 
-        <!-- Search Form -->
-        <form action="{{ route('website.videos.index') }}" method="GET" class="videos-search-form mt-4">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="Search videos by title or description..." value="{{ request('search') }}">
-                        <button class="btn btn-light" type="submit">
-                            <i class="fas fa-search me-2"></i> Search
-                        </button>
-                    </div>
+<!-- ==================== VIDEOS SEARCH BAR (below header) ==================== -->
+<section class="videos-search-section">
+    <div class="container">
+        <div class="videos-search-container">
+            <form action="{{ route('website.videos.index') }}" method="GET" class="videos-search-form">
+                <div class="videos-search-box">
+                    <input type="text" name="search" class="videos-search-input" 
+                        placeholder="Search videos by title or description..." value="{{ request('search') }}">
+                    <button class="videos-search-btn" type="submit">
+                        <i class="fas fa-search"></i> Search
+                    </button>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </section>
 
@@ -653,17 +290,19 @@
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Categories Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Video Categories</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-folder me-2"></i>Video Categories
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
+                    <div class="videos-sidebar-content">
+                        <div class="videos-category-list">
                             @foreach($categories as $category)
-                            <a href="{{ route('website.videos.category', $category->slug) }}"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                {{ $category->name }}
-                                <span class="badge bg-primary rounded-pill">{{ $category->videos->count() ?? 0 }}</span>
+                            <a href="{{ route('website.videos.category', $category->slug) }}" 
+                            class="videos-category-item">
+                                <span>{{ $category->name }}</span>
+                                <span class="videos-category-count">{{ $category->videos->count() ?? 0 }}</span>
                             </a>
                             @endforeach
                         </div>
@@ -672,33 +311,33 @@
 
                 <!-- Featured Videos Widget -->
                 @if($featuredVideos->count() > 0)
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-star me-2"></i>Featured Videos</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-star me-2"></i>Featured Videos
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="videos-sidebar-content">
                         @foreach($featuredVideos as $featuredVideo)
                         <div class="featured-video-item">
-                            <div class="featured-video-thumb">
+                            <div class="videos-featured-thumb">
                                 @if($featuredVideo->video_id)
                                 <img src="https://img.youtube.com/vi/{{ $featuredVideo->video_id }}/default.jpg" 
-                                     alt="{{ $featuredVideo->title }}">
+                                    alt="{{ $featuredVideo->title }}">
                                 @else
-                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-video text-muted"></i>
+                                <div class="videos-featured-placeholder">
+                                    <i class="fas fa-video"></i>
                                 </div>
                                 @endif
                             </div>
-                            <div class="featured-video-content">
-                                <h6 class="featured-video-title">
+                            <div class="videos-featured-content">
+                                <h6 class="videos-featured-title">
                                     <a href="{{ route('website.videos.show', $featuredVideo->slug) }}">
                                         {{ Str::limit($featuredVideo->title, 40) }}
                                     </a>
                                 </h6>
-                                <div class="featured-video-meta">
-                                    <small>
-                                        <i class="fas fa-eye me-1"></i>{{ number_format($featuredVideo->views) }}
-                                    </small>
+                                <div class="videos-featured-meta">
+                                    <i class="fas fa-eye me-1"></i>{{ number_format($featuredVideo->views) }}
                                 </div>
                             </div>
                         </div>
@@ -709,33 +348,33 @@
 
                 <!-- Popular Videos Widget -->
                 @if($popularVideos->count() > 0)
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Popular Videos</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-fire me-2"></i>Popular Videos
+                        </h5>
                     </div>
-                    <div class="card-body">
+                    <div class="videos-sidebar-content">
                         @foreach($popularVideos as $popularVideo)
                         <div class="featured-video-item">
-                            <div class="featured-video-thumb">
+                            <div class="videos-featured-thumb">
                                 @if($popularVideo->video_id)
                                 <img src="https://img.youtube.com/vi/{{ $popularVideo->video_id }}/default.jpg" 
-                                     alt="{{ $popularVideo->title }}">
+                                    alt="{{ $popularVideo->title }}">
                                 @else
-                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-video text-muted"></i>
+                                <div class="videos-featured-placeholder">
+                                    <i class="fas fa-video"></i>
                                 </div>
                                 @endif
                             </div>
-                            <div class="featured-video-content">
-                                <h6 class="featured-video-title">
+                            <div class="videos-featured-content">
+                                <h6 class="videos-featured-title">
                                     <a href="{{ route('website.videos.show', $popularVideo->slug) }}">
                                         {{ Str::limit($popularVideo->title, 40) }}
                                     </a>
                                 </h6>
-                                <div class="featured-video-meta">
-                                    <small>
-                                        <i class="fas fa-eye me-1"></i>{{ number_format($popularVideo->views) }}
-                                    </small>
+                                <div class="videos-featured-meta">
+                                    <i class="fas fa-eye me-1"></i>{{ number_format($popularVideo->views) }}
                                 </div>
                             </div>
                         </div>
@@ -745,31 +384,31 @@
                 @endif
 
                 <!-- Schools Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
+                <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-school me-2"></i>Schools</h5>
+                        <h5 class="videos-sidebar-title">
+                            <i class="fas fa-school me-2"></i>Schools
+                        </h5>
                     </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
+                    <div class="videos-sidebar-content">
+                        <div class="videos-school-list">
                             @foreach($schools->take(5) as $school)
-                            <a href="{{ route('browseSchools.show', $school->uuid) }}"
-                                class="list-group-item list-group-item-action d-flex align-items-center">
+                            <a href="{{ route('browseSchools.show', $school->uuid) }}" 
+                            class="videos-school-item">
                                 @if($school->logo)
                                 <img src="{{ asset('website/' . $school->logo) }}" 
-                                     class="rounded-circle me-2"
-                                     style="width: 30px; height: 30px; object-fit: cover;"
-                                     alt="{{ $school->name }}">
+                                    class="videos-school-logo"
+                                    alt="{{ $school->name }}">
                                 @else
-                                <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
-                                     style="width: 30px; height: 30px;">
+                                <div class="videos-school-placeholder">
                                     <i class="fas fa-school"></i>
                                 </div>
                                 @endif
-                                <span>{{ Str::limit($school->name, 25) }}</span>
+                                <span class="videos-school-name">{{ Str::limit($school->name, 25) }}</span>
                             </a>
                             @endforeach
                             @if($schools->count() > 5)
-                            <a href="{{ route('browseSchools.index') }}" class="list-group-item list-group-item-action text-center text-primary">
+                            <a href="{{ route('browseSchools.index') }}" class="videos-view-all-link">
                                 View All Schools <i class="fas fa-arrow-right ms-1"></i>
                             </a>
                             @endif

@@ -60,7 +60,7 @@
                                         <select class="form-select @error('topic_id') is-invalid @enderror" 
                                                 id="topic_id" name="topic_id" required>
                                             <option value="">Select Topic</option>
-                                            @foreach($topics as $topic)
+                                            @foreach($topics->where('subject_id', $mcq->subject_id) as $topic)
                                             <option value="{{ $topic->id }}" 
                                                 {{ old('topic_id', $mcq->topic_id) == $topic->id ? 'selected' : '' }}>
                                                 {{ $topic->title }}
@@ -99,20 +99,45 @@
                                         @enderror
                                     </div>
                                     
-                                    <div class="col-md-4">
-                                        <label for="test_type_id" class="form-label">Test Type</label>
-                                        <select class="form-select @error('test_type_id') is-invalid @enderror" 
-                                                id="test_type_id" name="test_type_id">
-                                            <option value="">Select Test Type (Optional)</option>
-                                            @foreach($testTypes as $type)
-                                            <option value="{{ $type->id }}" {{ old('test_type_id', $mcq->test_type_id) == $type->id ? 'selected' : '' }}>
-                                                {{ $type->name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                        @error('test_type_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                    <!-- Replace the test_type_id select with this checkbox group -->
+                                    <div class="col-12">
+                                        <label class="form-label">Test Types</label>
+                                        <div class="border rounded p-3 @error('test_type_ids') border-danger @enderror">
+                                            <div id="test-types-container" class="row g-2">
+                                                @if($mcq->subject_id)
+                                                    @php
+                                                        $subject = \App\Models\Subject::with('testTypes')->find($mcq->subject_id);
+                                                    @endphp
+                                                    @if($subject && $subject->testTypes->count() > 0)
+                                                        @foreach($subject->testTypes as $type)
+                                                            <div class="col-md-4 col-sm-6">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" 
+                                                                        name="test_type_ids[]" 
+                                                                        value="{{ $type->id }}" 
+                                                                        id="test_type_{{ $type->id }}"
+                                                                        {{ in_array($type->id, $selectedTestTypeIds) ? 'checked' : '' }}>
+                                                                    <label class="form-check-label" for="test_type_{{ $type->id }}">
+                                                                        @if($type->icon)
+                                                                            <i class="{{ $type->icon }} me-1"></i>
+                                                                        @endif
+                                                                        {{ $type->name }}
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                        @endforeach
+                                                    @else
+                                                        <p class="text-muted mb-0">No test types available for this subject.</p>
+                                                    @endif
+                                                @else
+                                                    <p class="text-muted mb-0">Select a subject to see available test types.</p>
+                                                @endif
+                                            </div>
+                                            @error('test_type_ids')
+                                                <div class="text-danger small mt-2">{{ $message }}</div>
+                                            @enderror
+                                            <small class="text-muted d-block mt-2">Select multiple test types for this question</small>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -164,8 +189,8 @@
                                                    type="{{ $mcq->question_type == 'single' ? 'radio' : 'checkbox' }}" 
                                                    name="correct_answers[]" 
                                                    id="correct_{{ $index }}" 
-                                                   value="{{ $index }}"
-                                                   {{ in_array($index, $correctAnswers) ? 'checked' : '' }}>
+                                                   value="{{ $index + 1 }}"
+                                                   {{ in_array($index + 1, $correctAnswers) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="correct_{{ $index }}">
                                                 <span class="badge bg-light text-dark">{{ chr(65 + $index) }}</span>
                                             </label>
@@ -398,6 +423,12 @@
             const correctAnswersContainer = document.getElementById('correct-answers-container');
             const correctAnswerHint = document.getElementById('correct-answer-hint');
             const questionTypeSelect = document.getElementById('question_type');
+            const subjectSelect = document.getElementById('subject_id');
+            const topicSelect = document.getElementById('topic_id');
+            const testTypesContainer = document.getElementById('test-types-container');
+            
+            // Initialize correct answers from existing data
+            let selectedCorrectAnswers = @json($correctAnswers).map(String);
             
             // Add option
             document.getElementById('add-option').addEventListener('click', function() {
@@ -436,9 +467,10 @@
                     
                     // Check if this option is selected as correct answer
                     const optionIndex = Array.from(optionsContainer.children).indexOf(optionItem);
-                    const correctCheckbox = document.querySelector(`input[name="correct_answers[]"][value="${optionIndex}"]`);
+                    const optionNumber = optionIndex + 1; // 1-based index
+                    const isCorrect = selectedCorrectAnswers.includes(optionNumber.toString());
                     
-                    if (correctCheckbox && correctCheckbox.checked) {
+                    if (isCorrect) {
                         alert('Cannot remove an option that is marked as correct answer');
                         return;
                     }
@@ -471,14 +503,16 @@
                 
                 optionInputs.forEach((input, index) => {
                     const optionLetter = String.fromCharCode(65 + index);
-                    const checkboxId = `correct_${index}`;
-                    const isChecked = document.querySelector(`input[name="correct_answers[]"][value="${index}"]`)?.checked || false;
+                    const optionNumber = index + 1; // 1-based index
+                    const checkboxId = `correct_${optionNumber}`;
+                    const isSelected = selectedCorrectAnswers.includes(optionNumber.toString());
                     
                     const div = document.createElement('div');
                     div.className = 'form-check form-check-inline';
                     div.innerHTML = `
                         <input class="form-check-input" type="${questionTypeSelect.value === 'single' ? 'radio' : 'checkbox'}" 
-                               name="correct_answers[]" id="${checkboxId}" value="${index}" ${isChecked ? 'checked' : ''}>
+                            name="correct_answers[]" id="${checkboxId}" value="${optionNumber}"
+                            ${isSelected ? 'checked' : ''}>
                         <label class="form-check-label" for="${checkboxId}">
                             <span class="badge bg-light text-dark">${optionLetter}</span>
                         </label>
@@ -489,11 +523,22 @@
                     // Add event listener to the checkbox/radio
                     const checkbox = div.querySelector('input');
                     checkbox.addEventListener('change', function() {
-                        if (questionTypeSelect.value === 'single' && this.type === 'radio') {
-                            // For radio buttons, uncheck others
-                            correctAnswersContainer.querySelectorAll('input[type="radio"]').forEach(cb => {
+                        if (questionTypeSelect.value === 'single') {
+                            // For single choice, clear and add selected one
+                            selectedCorrectAnswers = [this.value];
+                            // Uncheck others
+                            correctAnswersContainer.querySelectorAll('input[name="correct_answers[]"]').forEach(cb => {
                                 if (cb !== this) cb.checked = false;
                             });
+                        } else {
+                            // For multiple choice
+                            if (this.checked) {
+                                if (!selectedCorrectAnswers.includes(this.value)) {
+                                    selectedCorrectAnswers.push(this.value);
+                                }
+                            } else {
+                                selectedCorrectAnswers = selectedCorrectAnswers.filter(val => val !== this.value);
+                            }
                         }
                     });
                 });
@@ -506,7 +551,145 @@
                     ? 'Select one correct answer' 
                     : 'Select one or more correct answers';
             });
+            
+            // Load topics and test types when subject changes
+            subjectSelect.addEventListener('change', function() {
+                const subjectId = this.value;
+                
+                // Load topics
+                loadTopics(subjectId);
+                
+                // Load test types
+                loadTestTypes(subjectId);
+            });
+            
+            // Function to load topics
+            function loadTopics(subjectId) {
+                if (!subjectId) {
+                    topicSelect.innerHTML = '<option value="">Select Topic</option>';
+                    return;
+                }
+                
+                // Show loading state
+                topicSelect.innerHTML = '<option value="">Loading topics...</option>';
+                
+                fetch(`/dashboard/mcqs/get-topics?subject_id=${subjectId}`)
+                    .then(response => response.json())
+                    .then(topics => {
+                        let options = '<option value="">Select Topic</option>';
+                        topics.forEach(topic => {
+                            const selected = (topic.id == {{ $mcq->topic_id }}) ? 'selected' : '';
+                            options += `<option value="${topic.id}" ${selected}>${topic.title}</option>`;
+                        });
+                        topicSelect.innerHTML = options;
+                    })
+                    .catch(error => {
+                        console.error('Error loading topics:', error);
+                        topicSelect.innerHTML = '<option value="">Error loading topics</option>';
+                    });
+            }
+            
+            // Function to load test types
+            function loadTestTypes(subjectId) {
+                if (!subjectId) {
+                    testTypesContainer.innerHTML = '<div class="row g-2"><div class="col-12"><p class="text-muted mb-0">Select a subject to see available test types.</p></div></div>';
+                    return;
+                }
+                
+                // Show loading state
+                testTypesContainer.innerHTML = `
+                    <div class="row g-2">
+                        <div class="col-12">
+                            <div class="d-flex align-items-center text-muted">
+                                <div class="spinner-border spinner-border-sm me-2" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <span>Loading test types...</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                fetch(`/dashboard/mcqs/get-test-types?subject_id=${subjectId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(testTypes => {
+                        if (!testTypes || testTypes.length === 0) {
+                            testTypesContainer.innerHTML = '<div class="row g-2"><div class="col-12"><p class="text-muted mb-0">No test types available for this subject.</p></div></div>';
+                            return;
+                        }
+                        
+                        let html = '<div class="row g-2">';
+                        const selectedTestTypeIds = @json($selectedTestTypeIds);
+                        
+                        testTypes.forEach((type) => {
+                            const isChecked = selectedTestTypeIds.includes(type.id);
+                            
+                            html += `
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" 
+                                            name="test_type_ids[]" 
+                                            value="${type.id}" 
+                                            id="test_type_${type.id}"
+                                            ${isChecked ? 'checked' : ''}>
+                                        <label class="form-check-label" for="test_type_${type.id}">
+                                            ${type.icon ? `<i class="${type.icon} me-1"></i>` : ''}
+                                            ${type.name}
+                                        </label>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += '</div>';
+                        testTypesContainer.innerHTML = html;
+                    })
+                    .catch(error => {
+                        console.error('Error loading test types:', error);
+                        testTypesContainer.innerHTML = `
+                            <div class="row g-2">
+                                <div class="col-12">
+                                    <p class="text-danger mb-0">
+                                        <i class="fas fa-exclamation-circle me-1"></i>
+                                        Error loading test types. Please try again.
+                                    </p>
+                                </div>
+                            </div>
+                        `;
+                    });
+            }
+            
+            // Initialize correct answers
+            updateCorrectAnswers();
         });
     </script>
     @endpush
+
+    <style>
+        .option-item .input-group-text {
+            min-width: 40px;
+            justify-content: center;
+        }
+        
+        .remove-option {
+            width: 40px;
+        }
+        
+        .form-check-inline {
+            margin-right: 0.5rem;
+        }
+        
+        .form-check-inline .form-check-input {
+            margin-right: 0.25rem;
+        }
+        
+        #test-types-container {
+            min-height: 100px;
+        }
+    </style>
 </x-app-layout>
