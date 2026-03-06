@@ -1,5 +1,26 @@
 <x-app-layout>
+    @push('styles')
+    <style>
+        /* Your existing styles */
+        .ck-editor__editable {
+            min-height: 300px;
+            max-height: 500px;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+    </style>
+    @endpush
+
     <main class="main-content">
+        <!-- Your existing HTML content remains the same until the form -->
         <div class="container-fluid">
             <!-- Page Header -->
             <div class="page-header mb-4">
@@ -120,16 +141,16 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
-                                    
-                                    <div class="col-12">
-                                        <label for="content" class="form-label">Full Content</label>
-                                        <textarea class="form-control @error('content') is-invalid @enderror" 
-                                                  id="content" name="content" rows="10"
-                                                  placeholder="Detailed content for this topic. You can use HTML for formatting...">{{ old('content') }}</textarea>
-                                        @error('content')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                        <small class="text-muted">Full topic content with explanations, examples, etc.</small>
+                                
+                                <div class="col-12">
+                                    <label for="content" class="form-label">Full Content</label>
+                                    <textarea class="form-control @error('content') is-invalid @enderror" 
+                                              id="content" name="content" rows="10"
+                                              placeholder="Detailed content for this topic...">{{ old('content') }}</textarea>
+                                    @error('content')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">Full topic content with explanations, examples, etc.</small>
                                     </div>
                                 </div>
                                 
@@ -207,8 +228,76 @@
     </main>
 
     @push('js')
+    <!-- Load CKEditor 5 from CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize CKEditor
+            let editor;
+            
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'underline',
+                            'strikethrough',
+                            '|',
+                            'bulletedList',
+                            'numberedList',
+                            '|',
+                            'alignment',
+                            'outdent',
+                            'indent',
+                            '|',
+                            'link',
+                            'blockQuote',
+                            'insertTable',
+                            'mediaEmbed',
+                            '|',
+                            'undo',
+                            'redo'
+                        ]
+                    },
+                    heading: {
+                        options: [
+                            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' }
+                        ]
+                    },
+                    table: {
+                        contentToolbar: [ 'tableColumn', 'tableRow', 'mergeTableCells' ]
+                    },
+                    // Enable HTML support
+                    htmlSupport: {
+                        allow: [
+                            {
+                                name: /.*/,
+                                attributes: true,
+                                classes: true,
+                                styles: true
+                            }
+                        ]
+                    },
+                    // Remove the default placeholder if needed
+                    placeholder: 'Write your topic content here...',
+                })
+                .then(newEditor => {
+                    editor = newEditor;
+                    
+                    // Auto-sync with textarea (CKEditor does this automatically)
+                    // But you can add custom event listeners if needed
+                })
+                .catch(error => {
+                    console.error('CKEditor initialization error:', error);
+                });
+
             // Auto-generate slug from title (optional)
             const titleInput = document.getElementById('title');
             const slugPreview = document.getElementById('slugPreview');
@@ -221,78 +310,23 @@
                     slugPreview.textContent = slug;
                 });
             }
-            
-            // Initialize text editor for content (if using)
-            const contentTextarea = document.getElementById('content');
-            if (contentTextarea) {
-                // Simple formatting buttons (optional enhancement)
-                const editorButtons = document.createElement('div');
-                editorButtons.className = 'mb-2';
-                editorButtons.innerHTML = `
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('bold')">
-                            <i class="fas fa-bold"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('italic')">
-                            <i class="fas fa-italic"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('underline')">
-                            <i class="fas fa-underline"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('list')">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
-                `;
-                
-                contentTextarea.parentNode.insertBefore(editorButtons, contentTextarea);
+
+            // Form validation to ensure CKEditor content is included
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    // CKEditor automatically updates the textarea on form submit
+                    // But we can add custom validation if needed
+                    if (editor) {
+                        const content = editor.getData();
+                        if (content.trim() === '') {
+                            e.preventDefault();
+                            alert('Please enter some content for the topic.');
+                        }
+                    }
+                });
             }
         });
-        
-        function formatText(command) {
-            const textarea = document.getElementById('content');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = textarea.value.substring(start, end);
-            
-            let formattedText = '';
-            switch(command) {
-                case 'bold':
-                    formattedText = `<strong>${selectedText}</strong>`;
-                    break;
-                case 'italic':
-                    formattedText = `<em>${selectedText}</em>`;
-                    break;
-                case 'underline':
-                    formattedText = `<u>${selectedText}</u>`;
-                    break;
-                case 'list':
-                    formattedText = `<ul><li>${selectedText}</li></ul>`;
-                    break;
-            }
-            
-            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
-            textarea.focus();
-            textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
-        }
     </script>
     @endpush
-
-    <style>
-        .card-hover:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus {
-            border-color: #86b7fe;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-        }
-        
-        textarea.form-control {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 0.9rem;
-        }
-    </style>
 </x-app-layout>
