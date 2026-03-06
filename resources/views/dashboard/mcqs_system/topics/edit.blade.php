@@ -1,4 +1,32 @@
 <x-app-layout>
+    @push('styles')
+    <style>
+        /* CKEditor customization */
+        .ck-editor__editable {
+            min-height: 350px;
+            max-height: 600px;
+        }
+        
+        /* Your existing styles */
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+        
+        /* Style for read-only slug field */
+        input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+    </style>
+    @endpush
+
     <main class="main-content">
         <div class="container-fluid">
             <!-- Page Header -->
@@ -29,7 +57,7 @@
                             <h5 class="mb-0">Edit Topic: {{ $topic->title }}</h5>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('topics.update', $topic) }}" method="POST">
+                            <form action="{{ route('topics.update', $topic) }}" method="POST" id="topicForm">
                                 @csrf
                                 @method('PUT')
                                 
@@ -113,7 +141,7 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Slug</label>
                                         <input type="text" class="form-control" value="{{ $topic->slug }}" readonly>
-                                        <small class="text-muted">Auto-generated from title</small>
+                                        <small class="text-muted">Auto-generated from title (read-only)</small>
                                     </div>
                                     
                                     <div class="col-12">
@@ -177,7 +205,7 @@
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>MCQs</span>
                                         <a href="{{ route('mcqs.index', ['topic_id' => $topic->id]) }}" 
-                                           class="badge bg-warning">
+                                           class="badge bg-warning text-decoration-none">
                                             {{ $topic->mcqs_count ?? 0 }} MCQs
                                         </a>
                                     </li>
@@ -204,60 +232,195 @@
     </main>
 
     @push('js')
+    <!-- Load CKEditor 5 from CDN -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize text editor for content
-            const contentTextarea = document.getElementById('content');
-            if (contentTextarea) {
-                const editorButtons = document.createElement('div');
-                editorButtons.className = 'mb-2';
-                editorButtons.innerHTML = `
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('bold')">
-                            <i class="fas fa-bold"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('italic')">
-                            <i class="fas fa-italic"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('underline')">
-                            <i class="fas fa-underline"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="formatText('list')">
-                            <i class="fas fa-list"></i>
-                        </button>
-                    </div>
-                `;
-                
-                contentTextarea.parentNode.insertBefore(editorButtons, contentTextarea);
+            let editor;
+            let isEditorDirty = false;
+            
+            // Initialize CKEditor for content field
+            ClassicEditor
+                .create(document.querySelector('#content'), {
+                    toolbar: {
+                        items: [
+                            'heading',
+                            '|',
+                            'bold',
+                            'italic',
+                            'underline',
+                            'strikethrough',
+                            '|',
+                            'bulletedList',
+                            'numberedList',
+                            '|',
+                            'alignment',
+                            'outdent',
+                            'indent',
+                            '|',
+                            'link',
+                            'blockQuote',
+                            'insertTable',
+                            'mediaEmbed',
+                            '|',
+                            'undo',
+                            'redo',
+                            '|',
+                            'removeFormat'
+                        ]
+                    },
+                    heading: {
+                        options: [
+                            { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                            { model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1' },
+                            { model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2' },
+                            { model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3' },
+                            { model: 'heading4', view: 'h4', title: 'Heading 4', class: 'ck-heading_heading4' }
+                        ]
+                    },
+                    table: {
+                        contentToolbar: [
+                            'tableColumn',
+                            'tableRow',
+                            'mergeTableCells',
+                            'tableProperties',
+                            'tableCellProperties'
+                        ]
+                    },
+                    // Enable HTML support
+                    htmlSupport: {
+                        allow: [
+                            {
+                                name: /.*/,
+                                attributes: true,
+                                classes: true,
+                                styles: true
+                            }
+                        ]
+                    },
+                    placeholder: 'Write your topic content here...',
+                    // Set initial data from the textarea
+                    initialData: document.querySelector('#content').value
+                })
+                .then(newEditor => {
+                    editor = newEditor;
+                    
+                    // Mark editor as dirty when content changes
+                    editor.model.document.on('change:data', () => {
+                        isEditorDirty = true;
+                    });
+                    
+                    console.log('CKEditor initialized successfully for edit page');
+                })
+                .catch(error => {
+                    console.error('CKEditor initialization error:', error);
+                });
+
+            // Auto-generate slug preview when title changes (optional)
+            const titleInput = document.getElementById('title');
+            const slugDisplay = document.querySelector('input[readonly]');
+            
+            if (titleInput && slugDisplay) {
+                titleInput.addEventListener('blur', function() {
+                    // Just for preview, actual slug is managed by backend
+                    const slug = this.value.toLowerCase()
+                        .replace(/[^\w\s]/gi, '')
+                        .replace(/\s+/g, '-');
+                    
+                    // Update the readonly field's value (for visual feedback only)
+                    // Note: This doesn't actually change the slug in the database
+                    // Slug should be handled by the backend
+                    if (slugDisplay) {
+                        slugDisplay.value = slug;
+                        slugDisplay.style.backgroundColor = '#fff3cd';
+                        setTimeout(() => {
+                            slugDisplay.style.backgroundColor = '#f8f9fa';
+                        }, 1000);
+                    }
+                });
+            }
+
+            // Form submission handling
+            const form = document.getElementById('topicForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    if (editor) {
+                        // Get the content from CKEditor and update the textarea
+                        const content = editor.getData();
+                        document.querySelector('#content').value = content;
+                        
+                        // Optional: Validate content
+                        if (content.trim() === '') {
+                            e.preventDefault();
+                            alert('Please enter some content for the topic.');
+                            return;
+                        }
+                        
+                        // Optional: Show warning if content is very long
+                        if (content.length > 100000) {
+                            if (!confirm('The content is very long. Are you sure you want to save?')) {
+                                e.preventDefault();
+                                return;
+                            }
+                        }
+                    }
+                });
+
+                // Warn user about unsaved changes if they try to leave
+                let formSubmitted = false;
+                form.addEventListener('submit', function() {
+                    formSubmitted = true;
+                });
+
+                window.addEventListener('beforeunload', function(e) {
+                    if (!formSubmitted && isEditorDirty) {
+                        e.preventDefault();
+                        e.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+                        return e.returnValue;
+                    }
+                });
+            }
+
+            // Preview functionality (optional)
+            const previewButton = document.createElement('button');
+            previewButton.type = 'button';
+            previewButton.className = 'btn btn-outline-info btn-sm float-end';
+            previewButton.innerHTML = '<i class="fas fa-eye me-1"></i> Preview Content';
+            previewButton.onclick = function() {
+                if (editor) {
+                    const content = editor.getData();
+                    const previewWindow = window.open('', '_blank');
+                    previewWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>Content Preview</title>
+                                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+                                <style>
+                                    body { padding: 20px; }
+                                    .preview-container { max-width: 800px; margin: 0 auto; }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="preview-container">
+                                    <h2>Content Preview</h2>
+                                    <hr>
+                                    ${content}
+                                </div>
+                            </body>
+                        </html>
+                    `);
+                    previewWindow.document.close();
+                }
+            };
+            
+            // Add preview button near the content label
+            const contentLabel = document.querySelector('label[for="content"]');
+            if (contentLabel) {
+                contentLabel.classList.add('d-flex', 'justify-content-between', 'align-items-center');
+                contentLabel.appendChild(previewButton);
             }
         });
-        
-        function formatText(command) {
-            const textarea = document.getElementById('content');
-            const start = textarea.selectionStart;
-            const end = textarea.selectionEnd;
-            const selectedText = textarea.value.substring(start, end);
-            
-            let formattedText = '';
-            switch(command) {
-                case 'bold':
-                    formattedText = `<strong>${selectedText}</strong>`;
-                    break;
-                case 'italic':
-                    formattedText = `<em>${selectedText}</em>`;
-                    break;
-                case 'underline':
-                    formattedText = `<u>${selectedText}</u>`;
-                    break;
-                case 'list':
-                    formattedText = `<ul><li>${selectedText}</li></ul>`;
-                    break;
-            }
-            
-            textarea.value = textarea.value.substring(0, start) + formattedText + textarea.value.substring(end);
-            textarea.focus();
-            textarea.setSelectionRange(start + formattedText.length, start + formattedText.length);
-        }
     </script>
     @endpush
 </x-app-layout>
