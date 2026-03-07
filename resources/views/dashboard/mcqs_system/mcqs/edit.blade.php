@@ -189,8 +189,8 @@
                                                    type="{{ $mcq->question_type == 'single' ? 'radio' : 'checkbox' }}" 
                                                    name="correct_answers[]" 
                                                    id="correct_{{ $index }}" 
-                                                   value="{{ $index + 1 }}"
-                                                   {{ in_array($index + 1, $correctAnswers) ? 'checked' : '' }}>
+                                                   value="{{ $index}}"
+                                                   {{ in_array($index , $correctAnswers) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="correct_{{ $index }}">
                                                 <span class="badge bg-light text-dark">{{ chr(65 + $index) }}</span>
                                             </label>
@@ -467,7 +467,7 @@
                     
                     // Check if this option is selected as correct answer
                     const optionIndex = Array.from(optionsContainer.children).indexOf(optionItem);
-                    const optionNumber = optionIndex + 1; // 1-based index
+                    const optionNumber = optionIndex; // 1-based index
                     const isCorrect = selectedCorrectAnswers.includes(optionNumber.toString());
                     
                     if (isCorrect) {
@@ -503,7 +503,7 @@
                 
                 optionInputs.forEach((input, index) => {
                     const optionLetter = String.fromCharCode(65 + index);
-                    const optionNumber = index + 1; // 1-based index
+                    const optionNumber = index; 
                     const checkboxId = `correct_${optionNumber}`;
                     const isSelected = selectedCorrectAnswers.includes(optionNumber.toString());
                     
