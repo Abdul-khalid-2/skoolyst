@@ -190,13 +190,6 @@
                                     @endif
                                 </div>
                             </div>
-                            
-                            <!-- Pagination Links -->
-                            @if($mcqs->hasPages())
-                            <div class="pagination-wrapper">
-                                {{ $mcqs->links() }}
-                            </div>
-                            @endif
                         </div>
                     @else
                         <div class="empty-state">

@@ -471,12 +471,6 @@
                                     </div>
                                 </div>
                                 
-                                <!-- Pagination Links -->
-                                @if($mcqs->hasPages())
-                                <div class="mt-3">
-                                    {{ $mcqs->links('pagination::bootstrap-5') }}
-                                </div>
-                                @endif
                             </div>
                         </div>
                     </div>
