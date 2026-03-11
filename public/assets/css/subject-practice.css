@@ -457,9 +457,9 @@
 }
 
 /* ==================== QUESTIONS SECTION ==================== */
-.questions-section {
+/* .questions-section {
     display: none;
-}
+} */
 
 .questions-section.active {
     display: block;
@@ -668,7 +668,7 @@
 }
 
 /* Options Container */
-.options-container {
+/* .options-container {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease;
@@ -677,7 +677,7 @@
 
 .options-container.expanded {
     max-height: 500px;
-}
+} */
 
 .option-item {
     margin-bottom: var(--space-2);

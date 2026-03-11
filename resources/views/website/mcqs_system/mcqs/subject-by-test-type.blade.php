@@ -179,11 +179,6 @@
                                                     {!! $mcq->question !!}
                                                 </div>
 
-                                                <!-- Options Toggle Button -->
-                                                <button class="options-toggle-btn" onclick="toggleOptions('{{ $mcq->uuid }}')">
-                                                    <i class="fas fa-chevron-down" id="toggle-icon-{{ $mcq->uuid }}"></i>
-                                                    <span>Show Options</span>
-                                                </button>
 
                                                 <!-- Options Container -->
                                                 <div class="options-container" id="options-{{ $mcq->uuid }}" 
@@ -362,12 +357,6 @@
                                             <div class="question-text">
                                                 {!! $mcq->question !!}
                                             </div>
-
-                                            <!-- Options Toggle Button -->
-                                            <button class="options-toggle-btn" onclick="toggleOptions('{{ $mcq->uuid }}')">
-                                                <i class="fas fa-chevron-down" id="toggle-icon-{{ $mcq->uuid }}"></i>
-                                                <span>Show Options</span>
-                                            </button>
 
                                             <!-- Options Container -->
                                             <div class="options-container" id="options-{{ $mcq->uuid }}" 
