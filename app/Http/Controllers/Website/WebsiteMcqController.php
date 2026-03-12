@@ -169,15 +169,36 @@ class WebsiteMcqController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        // Get topics for this subject
+        // Check if it's an AJAX request
+        if ($request->ajax() || $request->wantsJson()) {
+            $html = view('website.mcqs_system.mcqs.partials.test-mcqs-content', [
+                'mcqs' => $mcqs,
+                'testType' => $testType,
+                'subject' => $subject
+            ])->render();
+
+            return response()->json([
+                'success' => true,
+                'html' => $html,
+                'mcqs' => [
+                    'current_page' => $mcqs->currentPage(),
+                    'data' => $mcqs->items(),
+                    'last_page' => $mcqs->lastPage(),
+                    'per_page' => $mcqs->perPage(),
+                    'total' => $mcqs->total()
+                ]
+            ]);
+        }
+
+        // Get topics for this subject (for non-AJAX requests)
         $topics = Topic::where('subject_id', $subject->id)
             ->where('status', 'active')
             ->withCount(['mcqs' => function($query) use ($testType, $subject) {
                 $query->where('subject_id', $subject->id)
-                      ->whereHas('testTypes', function($q) use ($testType) {
-                          $q->where('test_types.id', $testType->id);
-                      })
-                      ->where('status', 'published');
+                    ->whereHas('testTypes', function($q) use ($testType) {
+                        $q->where('test_types.id', $testType->id);
+                    })
+                    ->where('status', 'published');
             }])
             ->orderBy('sort_order')
             ->get();
@@ -516,7 +537,7 @@ class WebsiteMcqController extends Controller
             'time_taken' => 'nullable|integer'
         ]);
 
-        // try {
+        try {
             $dto = TestSubmissionDTO::fromRequest($request->all());
             $results = $this->testSubmissionService->storeSubmission($dto);
 
@@ -530,10 +551,10 @@ class WebsiteMcqController extends Controller
             $subject = Subject::find($dto->getSubjectId());
             return redirect()->route('website.mcqs.subject-results', ['subject' => $subject->slug]);
 
-        // } catch (\Exception $e) {
-        //     // Log::error('Test submission failed: ' . $e->getMessage());
-        //     return back()->with('error', 'Failed to submit test. Please try again.');
-        // }
+        } catch (\Exception $e) {
+            // Log::error('Test submission failed: ' . $e->getMessage());
+            return back()->with('error', 'Failed to submit test. Please try again.');
+        }
     }
 
     // For backward compatibility

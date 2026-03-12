@@ -571,134 +571,18 @@
 
         <div class="row">
             <!-- Main Content -->
-            <div class="col-lg-8">
-                <form id="testForm" method="POST" action="{{ route('website.mcqs.submit-test') }}">
-                    @csrf
-                    <input type="hidden" name="topic_id" value="{{ request('topic') ?? ($topic->id ?? '') }}">
-                    <input type="hidden" name="subject_id" value="{{ $subject->id ?? '' }}">
-                    <input type="hidden" name="test_type_id" value="{{ $testType->id ?? '' }}">
-                    <input type="hidden" name="time_taken" id="timeTaken" value="0">
-                    
-                    @if(isset($mcqs) && $mcqs->count() > 0)
-                        @foreach($mcqs as $index => $mcq)
-                        <div class="question-card" id="question-{{ $mcq->id }}" data-question-id="{{ $mcq->id }}">
-                            <div class="question-header">
-                                <span class="question-number">{{ $index + 1 }}</span>
-                                <div class="question-text">{!! $mcq->question !!}</div>
-                            </div>
-                            
-                            <div class="question-meta">
-                                <span class="difficulty-badge {{ $mcq->difficulty_level ?? 'medium' }}">
-                                    {{ ucfirst($mcq->difficulty_level ?? 'medium') }}
-                                </span>
-                                <span class="marks-badge">
-                                    <i class="fas fa-star"></i>{{ $mcq->marks ?? 1 }} Mark{{ ($mcq->marks ?? 1) > 1 ? 's' : '' }}
-                                </span>
-                                @if(!empty($mcq->hint))
-                                <button type="button" class="hint-btn" onclick="toggleHint({{ $mcq->id }})">
-                                    <i class="fas fa-lightbulb"></i> Hint
-                                </button>
-                                @endif
-                            </div>
-
-                            <!-- Hint Section -->
-                            @if(!empty($mcq->hint))
-                            <div class="hint-section" id="hint-{{ $mcq->id }}">
-                                <i class="fas fa-lightbulb"></i>
-                                <span>{{ $mcq->hint }}</span>
-                            </div>
-                            @endif
-
-                            <!-- Options -->
-                            <div class="options-container">
-                                @php
-                                    $options = is_array($mcq->options) ? $mcq->options : (is_string($mcq->options) ? json_decode($mcq->options, true) : []);
-                                    $correctAnswers = is_array($mcq->correct_answers) ? $mcq->correct_answers : (is_string($mcq->correct_answers) ? json_decode($mcq->correct_answers, true) : []);
-                                    $isMultiple = (count($correctAnswers) > 1 || ($mcq->question_type ?? 'single') === 'multiple');
-                                @endphp
-
-                                @if(!empty($options) && is_array($options))
-                                    @foreach($options as $key => $option)
-                                    <div class="option-item" onclick="selectOption(this, '{{ $mcq->id }}', '{{ $key }}', {{ $isMultiple ? 'true' : 'false' }})">
-                                        @if($isMultiple)
-                                        <input type="checkbox" 
-                                               name="answers[{{ $mcq->id }}][]" 
-                                               value="{{ $key }}"
-                                               id="option-{{ $mcq->id }}-{{ $key }}"
-                                               class="d-none"
-                                               data-question-id="{{ $mcq->id }}">
-                                        @else
-                                        <input type="radio" 
-                                               name="answers[{{ $mcq->id }}]" 
-                                               value="{{ $key }}"
-                                               id="option-{{ $mcq->id }}-{{ $key }}"
-                                               class="d-none"
-                                               data-question-id="{{ $mcq->id }}">
-                                        @endif
-                                        <span class="option-letter">{{ chr(65 + $key) }}</span>
-                                        <span class="option-text">{{ $option }}</span>
-                                    </div>
-                                    @endforeach
-                                @else
-                                    <div class="alert alert-warning">
-                                        No options available for this question.
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        @endforeach
-
-                        <!-- Test Navigation -->
-                        <div class="test-navigation">
-                            <div class="progress-indicator">
-                                <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
-                            </div>
-                            
-                            <div class="navigation-info">
-                                <span>
-                                    <i class="fas fa-check-circle me-1"></i>
-                                    <span id="answeredCount">0</span>/{{ $mcqs->total() }} Answered
-                                </span>
-                                <span>
-                                    <i class="fas fa-clock me-1"></i>
-                                    <span id="timer">00:00</span>
-                                </span>
-                            </div>
-                            
-                            <div class="pagination-buttons">
-                                <div class="d-flex gap-2">
-                                    @if($mcqs->onFirstPage() == false)
-                                    <a href="{{ $mcqs->previousPageUrl() }}" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left"></i> Previous
-                                    </a>
-                                    @endif
-                                    
-                                    @if($mcqs->hasMorePages())
-                                    <a href="{{ $mcqs->nextPageUrl() }}" class="btn btn-primary">
-                                        Next <i class="fas fa-arrow-right"></i>
-                                    </a>
-                                    @endif
-                                </div>
-                                
-                                <div class="d-flex gap-2">
-                                    <button type="button" class="clear-btn" onclick="clearTest()">
-                                        <i class="fas fa-undo"></i> Clear All
-                                    </button>
-                                    
-                                    <button type="button" class="btn btn-success" onclick="submitTest()">
-                                        <i class="fas fa-check-circle"></i> Submit Test
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <div class="empty-state">
-                            <i class="fas fa-question-circle"></i>
-                            <h5>No questions available</h5>
-                            <p>Questions for this topic will be added soon.</p>
-                        </div>
-                    @endif
-                </form>
+            <div id="mcqsPracticeSection" class="col-lg-8">
+                <div id="mcqsContent">
+                    @include('website.mcqs_system.mcqs.partials.test-mcqs-content', ['mcqs' => $mcqs])
+                </div>
+                
+                <!-- Loading Spinner -->
+                <div id="loadingSpinner" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading questions...</p>
+                </div>
             </div>
 
             <!-- Sidebar - Question Palette -->
@@ -782,11 +666,14 @@
 @endsection
 
 @push('scripts')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     // State management
     let answeredQuestions = new Set();
     let startTime = Date.now();
     let timerInterval;
+    let currentPage = {{ $mcqs->currentPage() }};
+    let isLoading = false;
     
     // Get topic ID for storage key
     const topicId = '{{ request('topic') ?? ($topic->id ?? 'general') }}';
@@ -801,18 +688,152 @@
         
         // Add scroll spy for palette
         setupScrollSpy();
+        setupPagination();
     });
 
     // Timer function
     function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(function() {
             const elapsed = Math.floor((Date.now() - startTime) / 1000);
             const minutes = Math.floor(elapsed / 60);
             const seconds = elapsed % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            document.getElementById('timeTaken').value = elapsed;
+            const timer = document.getElementById('timer');
+            if (timer) {
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+            const timeTaken = document.getElementById('timeTaken');
+            if (timeTaken) {
+                timeTaken.value = elapsed;
+            }
         }, 1000);
+    }
+
+    // Setup pagination with AJAX
+    function setupPagination() {
+        $(document).on('click', '.prev-page, .next-page', function(e) {
+            e.preventDefault();
+            
+            if ($(this).prop('disabled') || isLoading) return;
+            
+            const page = $(this).data('page');
+            loadPage(page);
+        });
+    }
+
+    // Load page via AJAX
+    function loadPage(page) {
+        if (isLoading) return;
+        
+        isLoading = true;
+        showLoading(true);
+        
+        // Get current URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('page', page);
+        
+        // Add other filters
+        const difficulty = urlParams.get('difficulty');
+        const topic = urlParams.get('topic');
+        
+        // Store current scroll position
+        const scrollPosition = window.scrollY;
+        
+        $.ajax({
+            url: window.location.pathname + '?' + urlParams.toString(),
+            type: 'GET',
+            dataType: 'json',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Update MCQs content
+                    $('#mcqsContent').html(response.html);
+                    
+                    // Update pagination buttons state
+                    updatePaginationButtons(response.mcqs);
+                    
+                    // Update question palette
+                    updateQuestionPalette(response.mcqs);
+                    
+                    // Update total questions in stats
+                    $('#totalQuestions').text(response.mcqs.total);
+                    
+                    // Reload saved answers for the new page
+                    loadSavedAnswers();
+                    
+                    // Update progress
+                    updateProgress();
+                    
+                    // Update current page
+                    currentPage = page;
+                    
+                    // Update URL without reloading
+                    urlParams.set('page', page);
+                    const newUrl = window.location.pathname + '?' + urlParams.toString();
+                    window.history.pushState({ path: newUrl }, '', newUrl);
+                    
+                    // Scroll to top of questions
+                    $('html, body').animate({
+                        scrollTop: $('#mcqsContent').offset().top - 100
+                    }, 500);
+                }
+            },
+            error: function(xhr) {
+                console.error('Error loading page:', xhr);
+                alert('Error loading questions. Please try again.');
+            },
+            complete: function() {
+                isLoading = false;
+                showLoading(false);
+            }
+        });
+    }
+
+    // Update pagination buttons state
+    function updatePaginationButtons(mcqs) {
+        $('.prev-page').prop('disabled', mcqs.current_page === 1)
+                      .data('page', mcqs.current_page - 1);
+        
+        $('.next-page').prop('disabled', mcqs.current_page === mcqs.last_page)
+                      .data('page', mcqs.current_page + 1);
+    }
+
+    // Update question palette
+    function updateQuestionPalette(mcqs) {
+        let paletteHtml = '';
+        
+        if (mcqs.data && mcqs.data.length > 0) {
+            mcqs.data.forEach((mcq, index) => {
+                const questionNumber = index + 1 + ((mcqs.current_page - 1) * mcqs.per_page);
+                paletteHtml += `<a href="#question-${mcq.id}" 
+                                   class="palette-item" 
+                                   data-question-id="${mcq.id}"
+                                   id="palette-${mcq.id}"
+                                   onclick="scrollToQuestion(event, ${mcq.id})">
+                                    ${questionNumber}
+                                </a>`;
+            });
+        }
+        
+        $('#paletteGrid').html(paletteHtml);
+        
+        // Mark answered questions in palette
+        answeredQuestions.forEach(id => {
+            updatePaletteItem(id, true);
+        });
+    }
+
+    // Show/hide loading spinner
+    function showLoading(show) {
+        if (show) {
+            $('#mcqsContent').hide();
+            $('#loadingSpinner').show();
+        } else {
+            $('#mcqsContent').show();
+            $('#loadingSpinner').hide();
+        }
     }
 
     // Load saved answers from localStorage
@@ -820,31 +841,43 @@
         try {
             const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
             
+            // Clear current answered set for visible questions
+            const visibleQuestions = new Set();
+            $('.question-card').each(function() {
+                const mcqId = $(this).data('question-id');
+                visibleQuestions.add(mcqId.toString());
+            });
+            
             Object.keys(savedAnswers).forEach(mcqId => {
-                const answers = savedAnswers[mcqId];
-                const questionCard = document.getElementById(`question-${mcqId}`);
-                
-                if (questionCard) {
-                    if (Array.isArray(answers)) {
-                        // Multiple choice
-                        answers.forEach(answerKey => {
-                            const checkbox = document.getElementById(`option-${mcqId}-${answerKey}`);
-                            if (checkbox) {
-                                checkbox.checked = true;
-                                checkbox.closest('.option-item')?.classList.add('selected');
-                            }
-                        });
-                    } else {
-                        // Single choice
-                        const radio = document.getElementById(`option-${mcqId}-${answers}`);
-                        if (radio) {
-                            radio.checked = true;
-                            radio.closest('.option-item')?.classList.add('selected');
-                        }
-                    }
+                if (visibleQuestions.has(mcqId)) {
+                    const answers = savedAnswers[mcqId];
+                    const questionCard = document.getElementById(`question-${mcqId}`);
                     
+                    if (questionCard) {
+                        if (Array.isArray(answers)) {
+                            // Multiple choice
+                            answers.forEach(answerKey => {
+                                const checkbox = document.getElementById(`option-${mcqId}-${answerKey}`);
+                                if (checkbox) {
+                                    checkbox.checked = true;
+                                    $(checkbox).closest('.option-item').addClass('selected');
+                                }
+                            });
+                        } else {
+                            // Single choice
+                            const radio = document.getElementById(`option-${mcqId}-${answers}`);
+                            if (radio) {
+                                radio.checked = true;
+                                $(radio).closest('.option-item').addClass('selected');
+                            }
+                        }
+                        
+                        answeredQuestions.add(parseInt(mcqId));
+                        updatePaletteItem(mcqId, true);
+                    }
+                } else {
+                    // Keep answer in set even if not visible
                     answeredQuestions.add(parseInt(mcqId));
-                    updatePaletteItem(mcqId, true);
                 }
             });
         } catch (e) {
@@ -1093,6 +1126,15 @@
             });
         });
     }
+
+    // Handle browser back/forward buttons
+    window.addEventListener('popstate', function(event) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const page = urlParams.get('page') || 1;
+        if (parseInt(page) !== currentPage) {
+            loadPage(page);
+        }
+    });
 
     // Clean up on page unload
     window.addEventListener('beforeunload', function() {
