@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\DTOs\TestSubmissionDTO;
 use App\Http\Controllers\Controller;
 use App\Models\Mcq;
 use App\Models\TestType;
@@ -10,6 +11,7 @@ use App\Models\Topic;
 use App\Models\MockTest;
 use App\Models\UserTestAttempt;
 use App\Models\UserMcqAnswer;
+use App\Services\TestSubmissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -17,6 +19,13 @@ use Illuminate\Support\Str;
 
 class WebsiteMcqController extends Controller
 {
+
+    protected $testSubmissionService;
+
+    public function __construct(TestSubmissionService $testSubmissionService)
+    {
+        $this->testSubmissionService = $testSubmissionService;
+    }
     // Main MCQs index page
     public function index(Request $request)
     {
@@ -497,119 +506,42 @@ class WebsiteMcqController extends Controller
     }
 
 
-    public function submitTopicTest(Request $request)
+    public function submitTest(Request $request)
     {
         $request->validate([
-            'topic_id' => 'required|exists:topics,id',
             'subject_id' => 'required|exists:subjects,id',
-            'answers' => 'required|array'
+            'answers' => 'required|array',
+            'topic_id' => 'nullable|exists:topics,id',
+            'test_type_id' => 'nullable|exists:test_types,id',
+            'time_taken' => 'nullable|integer'
         ]);
 
-        $topic = Topic::findOrFail($request->topic_id);
-        $subject = Subject::findOrFail($request->subject_id);
-        
-        // Get all MCQs for this topic
-        $mcqs = Mcq::where('topic_id', $topic->id)
-            ->where('status', 'published')
-            ->get();
-        
-        $results = [];
-        $totalMarks = 0;
-        $obtainedMarks = 0;
-        $correctCount = 0;
-        $wrongCount = 0;
-        
-        foreach ($mcqs as $mcq) {
-            $userAnswer = $request->answers[$mcq->id] ?? null;
-            $correctAnswers = json_decode($mcq->correct_answers, true);
-            $isCorrect = false;
-            
-            $totalMarks += $mcq->marks;
-            
-            if ($userAnswer) {
-                // Check if answer is correct
-                if (is_array($userAnswer)) {
-                    // Multiple correct answers
-                    sort($userAnswer);
-                    sort($correctAnswers);
-                    $isCorrect = $userAnswer == $correctAnswers;
-                } else {
-                    // Single answer
-                    $isCorrect = in_array($userAnswer, $correctAnswers);
-                }
-                
-                if ($isCorrect) {
-                    $correctCount++;
-                    $obtainedMarks += $mcq->marks;
-                } else {
-                    $wrongCount++;
-                    $obtainedMarks -= $mcq->negative_marks ?? 0;
-                }
+        // try {
+            $dto = TestSubmissionDTO::fromRequest($request->all());
+            $results = $this->testSubmissionService->storeSubmission($dto);
+
+            session()->flash('test_results', $results);
+
+            if ($dto->hasTopic()) {
+                $topic = Topic::find($dto->getTopicId());
+                return redirect()->route('website.mcqs.test-results', ['topic' => $topic->slug]);
             }
-            
-            $results[] = [
-                'mcq' => $mcq,
-                'user_answer' => $userAnswer,
-                'correct_answers' => $correctAnswers,
-                'is_correct' => $isCorrect
-            ];
-        }
-        
-        // Save test attempt if user is logged in
-        if (auth()->check()) {
-            $attempt = UserTestAttempt::create([
-                'uuid' => Str::uuid(),
-                'user_id' => auth()->id(),
-                'topic_id' => $topic->id,
-                'subject_id' => $subject->id,
-                'total_questions' => $mcqs->count(),
-                'attempted_questions' => count($request->answers),
-                'correct_answers' => $correctCount,
-                'wrong_answers' => $wrongCount,
-                'skipped_questions' => $mcqs->count() - count($request->answers),
-                'total_marks' => $totalMarks,
-                'obtained_marks' => max(0, $obtainedMarks),
-                'percentage' => $totalMarks > 0 ? ($obtainedMarks / $totalMarks) * 100 : 0,
-                'answers_data' => json_encode($request->answers),
-                'status' => 'completed',
-                'completed_at' => now()
-            ]);
-            
-            // Save individual answers
-            foreach ($results as $result) {
-                if ($result['user_answer']) {
-                    UserMcqAnswer::create([
-                        'user_id' => auth()->id(),
-                        'mcq_id' => $result['mcq']->id,
-                        'test_attempt_id' => $attempt->id,
-                        'topic_id' => $topic->id,
-                        'selected_answers' => json_encode($result['user_answer']),
-                        'is_correct' => $result['is_correct'],
-                        'answered_at' => now()
-                    ]);
-                }
-            }
-        }
-        
-        // Store results in session to show on results page
-        session()->flash('test_results', [
-            'topic' => $topic,
-            'subject' => $subject,
-            'results' => $results,
-            'total_questions' => $mcqs->count(),
-            'attempted' => count($request->answers),
-            'correct' => $correctCount,
-            'wrong' => $wrongCount,
-            'skipped' => $mcqs->count() - count($request->answers),
-            'total_marks' => $totalMarks,
-            'obtained_marks' => max(0, $obtainedMarks),
-            'percentage' => $totalMarks > 0 ? round(($obtainedMarks / $totalMarks) * 100, 2) : 0,
-            'attempt_uuid' => auth()->check() ? $attempt->uuid : null
-        ]);
-        
-        return redirect()->route('website.mcqs.test-results', ['topic' => $topic->slug]);
+
+            $subject = Subject::find($dto->getSubjectId());
+            return redirect()->route('website.mcqs.subject-results', ['subject' => $subject->slug]);
+
+        // } catch (\Exception $e) {
+        //     // Log::error('Test submission failed: ' . $e->getMessage());
+        //     return back()->with('error', 'Failed to submit test. Please try again.');
+        // }
     }
 
+    // For backward compatibility
+    public function submitTopicTest(Request $request)
+    {
+        return $this->submitTest($request);
+    }
+    
     public function topicTestResults(Request $request, Topic $topic)
     {
         $testResults = session('test_results');
@@ -624,6 +556,22 @@ class WebsiteMcqController extends Controller
         $subject = $topic->subject;
         
         return view('website.mcqs_system.mcqs.test-results', compact('topic', 'subject', 'testResults'));
+    }
+
+    // app/Http/Controllers/Website/WebsiteMcqController.php
+    public function subjectTestResults(Request $request, Subject $subject)
+    {
+        $testResults = session('test_results');
+        
+        if (!$testResults || ($testResults['subject']->id ?? null) !== $subject->id) {
+            return redirect()->route('website.mcqs.subject', $subject->slug)
+                ->with('error', 'No test results found. Please take the test first.');
+        }
+        
+        // Get topic if it exists in results (for mixed subject-topic tests)
+        $topic = $testResults['topic'] ?? null;
+        
+        return view('website.mcqs_system.mcqs.test-subject-results', compact('subject', 'topic', 'testResults'));
     }
 
 }

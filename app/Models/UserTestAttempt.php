@@ -13,6 +13,9 @@ class UserTestAttempt extends Model
         'uuid',
         'user_id',
         'mock_test_id',
+        'topic_id',
+        'subject_id',
+        'test_type_id',
         'started_at',
         'completed_at',
         'submitted_at',
@@ -22,14 +25,19 @@ class UserTestAttempt extends Model
         'wrong_answers',
         'skipped_questions',
         'total_marks_obtained',
+        'negative_marks_obtained',
         'total_possible_marks',
         'percentage',
+        'accuracy',
         'result_status',
         'time_taken_seconds',
         'remaining_time_seconds',
         'answers_data',
         'question_analysis',
-        'status'
+        'status',
+        'test_source',
+        'ip_address',
+        'user_agent'
     ];
 
     protected $casts = [

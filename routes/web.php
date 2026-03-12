@@ -464,8 +464,8 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::post('/attempt/{attempt:uuid}/save', [WebsiteMockMcqController::class, 'saveAnswer'])
         ->name('save-answer');
 
-    Route::post('/attempt/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])
-        ->name('submit-test');
+    // Route::post('/attempt/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])
+    //     ->name('submit-test');
 
     Route::get('/test-attempts/{attempt:uuid}', [WebsiteMockMcqController::class, 'testResult'])
         ->name('test-result');
@@ -473,6 +473,9 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     // ✅ TOPIC TEST RESULTS ROUTE - ADD THIS NEW ROUTE
     Route::get('/topic/{topic:slug}/results', [WebsiteMcqController::class, 'topicTestResults'])
         ->name('test-results');
+
+    Route::get('/subject/{subject:slug}/results', [WebsiteMcqController::class, 'subjectTestResults'])
+    ->name('subject-results');
 
     // ✅ THEN DYNAMIC ROUTES
     Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
@@ -487,7 +490,7 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::get('/subject/{subject:slug}/topic/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
 
     Route::post('/mcqs/submit-topic-test', [WebsiteMcqController::class, 'submitTopicTest'])->name('submit-topic-test');
-    
+    Route::post('/submit-test', [WebsiteMcqController::class, 'submitTest'])->name('submit-test');
     // Test Type + Subject routes
     Route::get('/test/{test_type:slug}/subject/{subject:slug}', [WebsiteMcqController::class, 'subjectByTestType'])->name('subject-by-test-type');
 
