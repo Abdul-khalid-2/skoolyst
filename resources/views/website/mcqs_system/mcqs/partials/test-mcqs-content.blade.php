@@ -1,7 +1,7 @@
 @if(isset($mcqs) && $mcqs->count() > 0)
     <form id="testForm" method="POST" action="{{ route('website.mcqs.submit-test') }}">
         @csrf
-        <input type="hidden" name="topic_id" value="{{ request('topic') ?? ($topic->id ?? '') }}">
+        <input type="hidden" name="topic_id" value="{{ request()->get('topic') }}">
         <input type="hidden" name="subject_id" value="{{ $subject->id ?? '' }}">
         <input type="hidden" name="test_type_id" value="{{ $testType->id ?? '' }}">
         <input type="hidden" name="time_taken" id="timeTaken" value="0">
