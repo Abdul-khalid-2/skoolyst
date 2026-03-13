@@ -543,13 +543,14 @@ class WebsiteMcqController extends Controller
 
             session()->flash('test_results', $results);
 
-            if ($dto->hasTopic()) {
+            if ($dto->hasTopic() && !$dto->hasTestType()) {
                 $topic = Topic::find($dto->getTopicId());
                 return redirect()->route('website.mcqs.test-results', ['topic' => $topic->slug]);
             }
 
             $subject = Subject::find($dto->getSubjectId());
-            return redirect()->route('website.mcqs.subject-results', ['subject' => $subject->slug]);
+            $testType = TestType::find($dto->getTestTypeId());
+            return redirect()->route('website.mcqs.subject-results', [$testType->slug, $subject->slug]);
 
         } catch (\Exception $e) {
             // Log::error('Test submission failed: ' . $e->getMessage());
@@ -580,19 +581,19 @@ class WebsiteMcqController extends Controller
     }
 
     // app/Http/Controllers/Website/WebsiteMcqController.php
-    public function subjectTestResults(Request $request, Subject $subject)
+    public function subjectTestResults(Request $request, TestType $testType, Subject $subject)
     {
         $testResults = session('test_results');
         
         if (!$testResults || ($testResults['subject']->id ?? null) !== $subject->id) {
-            return redirect()->route('website.mcqs.subject', $subject->slug)
+            return redirect()->route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug] )
                 ->with('error', 'No test results found. Please take the test first.');
         }
         
         // Get topic if it exists in results (for mixed subject-topic tests)
         $topic = $testResults['topic'] ?? null;
         
-        return view('website.mcqs_system.mcqs.test-subject-results', compact('subject', 'topic', 'testResults'));
+        return view('website.mcqs_system.mcqs.test-subject-results', compact('subject', 'topic', 'testResults','testType'));
     }
 
 }

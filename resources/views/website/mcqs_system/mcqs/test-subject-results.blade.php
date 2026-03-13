@@ -337,7 +337,7 @@
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject', $subject->slug) }}">{{ $subject->name }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}">{{ $subject->name }}</a></li>
                     @if($topic)
                         <li class="breadcrumb-item"><a href="{{ route('website.mcqs.topic', ['subject' => $subject->slug, 'topic' => $topic->slug]) }}">{{ $topic->title }}</a></li>
                     @endif

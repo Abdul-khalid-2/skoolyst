@@ -474,7 +474,7 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::get('/topic/{topic:slug}/results', [WebsiteMcqController::class, 'topicTestResults'])
         ->name('test-results');
 
-    Route::get('/subject/{subject:slug}/results', [WebsiteMcqController::class, 'subjectTestResults'])
+    Route::get('/test/{test_type:slug}/subject/{subject:slug}/results', [WebsiteMcqController::class, 'subjectTestResults'])
     ->name('subject-results');
 
     // ✅ THEN DYNAMIC ROUTES

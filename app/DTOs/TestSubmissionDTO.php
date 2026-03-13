@@ -29,6 +29,10 @@ class TestSubmissionDTO
     {
         return !is_null($this->topic_id) && $this->topic_id !== 'null';
     }
+    public function hasTestType(): bool
+    {
+        return !is_null($this->test_type_id) && $this->test_type_id !== 'null';
+    }
 
     public function getTopicId(): ?int
     {
@@ -38,5 +42,9 @@ class TestSubmissionDTO
     public function getSubjectId(): int
     {
         return (int)$this->subject_id;
+    }
+    public function getTestTypeId(): ?int
+    {
+        return $this->hasTestType() ? (int)$this->test_type_id : null;
     }
 }
