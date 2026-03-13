@@ -104,7 +104,7 @@
                 
                 <div class="d-flex gap-2">
                     <button type="button" class="clear-btn" onclick="clearTest()">
-                        <i class="fas fa-undo"></i> Clear All
+                        <i class="fas fa-undo"></i> Clear
                     </button>
                     
                     <button type="button" class="btn btn-success" onclick="submitTest()">

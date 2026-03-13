@@ -27,8 +27,8 @@
     }
     
     .question-number {
-        background: #667eea;
-        color: white;
+        background: var(--color-primary);
+        color: var(--color-white);
         width: 35px;
         height: 35px;
         border-radius: 50%;
@@ -144,7 +144,7 @@
     }
     
     .option-item.selected {
-        background: #667eea;
+        background: var(--color-primary);
         border-color: #667eea;
         color: white;
     }
@@ -271,20 +271,20 @@
     }
     
     .palette-item.answered {
-        background: #28a745;
+        background: var(--color-primary);
         color: white;
-        border-color: #28a745;
+        border-color: var(--color-secondary);
     }
     
     .palette-item.current {
-        background: #ffc107;
-        color: #000;
-        border-color: #ffc107;
+        background: var(--color-secondary);
+        color: #ffffff;
+        border-color: var(--color-primary-light);
         font-weight: bold;
     }
     
     .instructions {
-        background: #f8f9fa;
+        background: #ffffff;
         border-radius: 8px;
         padding: 15px;
         margin-bottom: 20px;
@@ -397,82 +397,7 @@
         background: #667eea;
         color: white;
     }
-    
-    .breadcrumb-wrapper {
-        margin-bottom: 20px;
-    }
-    
-    .breadcrumb {
-        background: #f8f9fa;
-        padding: 10px 15px;
-        border-radius: 5px;
-    }
-    
-    .breadcrumb-item a {
-        color: #667eea;
-        text-decoration: none;
-    }
-    
-    .breadcrumb-item.active {
-        color: #6c757d;
-    }
-    
-    .practice-hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 60px 0;
-    }
-    
-    .practice-hero-content {
-        display: flex;
-        align-items: center;
-        gap: 30px;
-    }
-    
-    .practice-hero-icon {
-        width: 100px;
-        height: 100px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255,255,255,0.2);
-    }
-    
-    .practice-hero-icon i {
-        font-size: 48px;
-        color: white;
-    }
-    
-    .practice-hero-text h1 {
-        font-size: 36px;
-        margin-bottom: 10px;
-    }
-    
-    .practice-hero-text p {
-        font-size: 18px;
-        opacity: 0.9;
-        margin: 0;
-    }
-    
-    @media (max-width: 768px) {
-        .practice-hero-content {
-            flex-direction: column;
-            text-align: center;
-        }
-        
-        .pagination-buttons {
-            flex-direction: column;
-        }
-        
-        .pagination-buttons .d-flex {
-            width: 100%;
-        }
-        
-        .pagination-buttons .btn {
-            flex: 1;
-        }
-    }
+
 </style>
 @endpush
 
@@ -564,7 +489,7 @@
                 <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug ?? '', $subject->slug ?? '']) }}" 
                    class="back-btn">
                     <i class="fas fa-arrow-left"></i> 
-                    Back to All {{ $subject->name ?? 'Subject' }} Topics
+                    Back to {{ $subject->name ?? 'Subject' }}
                 </a>
             </div>
         @endif
