@@ -6,7 +6,7 @@
             <!-- Welcome Message -->
             <div class="row mb-4">
                 <div class="col-12">
-                    <div class="card bg-primary text-white">
+                    <div class="card">
                         <div class="card-body">
                             <h4 class="mb-1">
                                 @if(auth()->user()->hasRole('super-admin'))
@@ -32,7 +32,7 @@
                 @if(auth()->user()->hasRole('super-admin'))
                     <!-- Super Admin Stats -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="card stats-card text-white" style="background:  #092d63">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <div class="card stats-card text-white" style="background:  #092d63">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
@@ -66,7 +66,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                        <div class="card stats-card text-white" style="background:  #092d63">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);">
+                        <div class="card stats-card text-white" style="background:  #092d63">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>

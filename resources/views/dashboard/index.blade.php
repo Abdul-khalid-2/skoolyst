@@ -37,7 +37,7 @@
         .sidebar {
             width: var(--sidebar-width);
             height: 100vh;
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            background: #051f47;
             position: fixed;
             left: 0;
             top: 0;
