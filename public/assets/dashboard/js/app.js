@@ -14,6 +14,10 @@ function toggleSidebar() {
         sidebar.classList.toggle("collapsed");
         header.classList.toggle("collapsed");
         mainContent.classList.toggle("collapsed");
+        
+        // Save the sidebar state to localStorage
+        const isCollapsed = sidebar.classList.contains("collapsed");
+        localStorage.setItem("sidebarCollapsed", isCollapsed);
     }
 }
 
@@ -24,17 +28,52 @@ function closeSidebar() {
     sidebar.classList.remove("active");
     overlay.classList.remove("active");
 }
+
+// Restore sidebar state on page load
+function restoreSidebarState() {
+    const sidebar = document.getElementById("sidebar");
+    const header = document.querySelector(".header");
+    const mainContent = document.querySelector(".main-content");
+    
+    // Check if we're on desktop
+    if (window.innerWidth >= 768) {
+        // Get saved state from localStorage
+        const isCollapsed = localStorage.getItem("sidebarCollapsed") === "true";
+        
+        if (isCollapsed) {
+            sidebar.classList.add("collapsed");
+            header.classList.add("collapsed");
+            mainContent.classList.add("collapsed");
+        } else {
+            sidebar.classList.remove("collapsed");
+            header.classList.remove("collapsed");
+            mainContent.classList.remove("collapsed");
+        }
+    }
+}
+
 // Handle window resize
 window.addEventListener('resize', function () {
     if (window.innerWidth >= 768) {
         closeSidebar();
+        // Restore desktop state when switching to desktop view
+        restoreSidebarState();
+    } else {
+        // On mobile, remove collapsed classes
+        const sidebar = document.getElementById("sidebar");
+        const header = document.querySelector(".header");
+        const mainContent = document.querySelector(".main-content");
+        
+        sidebar.classList.remove("collapsed");
+        header.classList.remove("collapsed");
+        mainContent.classList.remove("collapsed");
     }
 });
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', function () {
     // Show dashboard by default
-
+    restoreSidebarState();
 
     // Initialize tooltips if needed
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
