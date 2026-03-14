@@ -195,7 +195,7 @@
 
         /* ===================== FORMS & BUTTONS ===================== */
         .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            background: #051f47;
             border: none;
             border-radius: 10px;
             padding: 0.75rem 2rem;

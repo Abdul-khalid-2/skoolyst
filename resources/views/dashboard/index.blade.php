@@ -166,19 +166,19 @@
             vertical-align: middle;
         }
 
-        .btn-primary {
+        /* .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             border: none;
             border-radius: 10px;
             padding: 0.75rem 2rem;
             font-weight: 500;
             transition: all 0.3s ease;
-        }
+        } */
 
-        .btn-primary:hover {
+        /* .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
-        }
+            box-shadow: 0 5px 15px rgba(3, 19, 44, 0.4);
+        } */
 
         .form-control {
             border: 2px solid #e2e8f0;
