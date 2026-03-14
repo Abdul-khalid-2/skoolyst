@@ -25,7 +25,7 @@
   color: var(--color-neutral-text);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-size-sm);
-  margin: 0 var(--space-3);
+  margin: 0 var(--space-7);
   padding: var(--space-2) 0;
   transition: color var(--transition-fast);
 }
@@ -37,12 +37,12 @@
 .auth-buttons {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-7);
 }
 
 /* Nav buttons use design system variants */
 .btn-login {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--space-7) var(--space-5);
   border: 2px solid var(--color-secondary);
   color: var(--color-secondary);
   background: transparent;
@@ -60,7 +60,7 @@
 }
 
 .btn-register {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--space-7) var(--space-5);
   background: var(--color-primary);
   color: var(--color-white);
   border: 2px solid var(--color-primary);

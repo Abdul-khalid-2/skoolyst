@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="{{ LaravelLocalization::localizeUrl('/') }}">SKOOLYST</a>
+        <a class="navbar-brand" href="{{ LaravelLocalization::localizeUrl('/') }}"><img src="{{ asset('assets/assets/skoolyst-header-logo1.png') }}" width="50" height="50" alt="">Skoolyst</a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>

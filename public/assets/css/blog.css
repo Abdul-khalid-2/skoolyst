@@ -47,7 +47,7 @@
 .blog-hero-title {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-extrabold);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-7);
   color: var(--color-white);
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
@@ -188,7 +188,7 @@
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-radius: var(--radius-full);
-  padding: var(--space-3) var(--space-6);
+  padding: var(--space-7) var(--space-6);
   display: inline-block;
   margin-top: var(--space-5);
 }
@@ -232,7 +232,7 @@
   border: none;
   border-radius: var(--radius-md);
   padding: var(--space-4) var(--space-8);
-  margin-left: var(--space-3);
+  margin-left: var(--space-7);
   height: 44px;
 }
 
@@ -294,7 +294,7 @@
 }
 .sidebar-widget .list-group-item {
   border: none;
-  padding: var(--space-3) 0;
+  padding: var(--space-7) 0;
   background: transparent;
   color: var(--color-neutral-muted);
   transition: color var(--transition-fast);
@@ -316,7 +316,7 @@
   border: 1px solid var(--color-neutral-border);
   color: var(--color-secondary);
   font-weight: var(--font-weight-semibold);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-7) var(--space-4);
   transition: background-color var(--transition-fast), color var(--transition-fast), border-color var(--transition-fast);
 }
 .pagination .page-link:hover {
@@ -455,7 +455,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-7);
 }
 .comment-author {
   font-weight: var(--font-weight-semibold);
@@ -560,7 +560,7 @@
   .blog-search-form .btn {
     width: 100%;
     margin-left: 0;
-    margin-top: var(--space-3);
+    margin-top: var(--space-7);
   }
   .blog-post-title {
     font-size: var(--font-size-xl);

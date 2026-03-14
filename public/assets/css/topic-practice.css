@@ -85,7 +85,7 @@
 }
 
 .topic-difficulty-badge {
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
@@ -97,7 +97,7 @@
 .topic-stats-badge {
     background: rgba(255, 255, 255, 0.15);
     color: var(--color-white);
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
@@ -119,7 +119,7 @@
     background: rgba(255, 255, 255, 0.2);
     border: 1px solid rgba(255, 255, 255, 0.3);
     color: var(--color-white);
-    padding: var(--space-3) var(--space-6);
+    padding: var(--space-7) var(--space-6);
     border-radius: 8px;
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-base);
@@ -185,7 +185,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
 }
 
 .description-header h5 {
@@ -295,13 +295,13 @@
 .question-meta {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-7);
     margin-bottom: var(--space-4);
     flex-wrap: wrap;
 }
 
 .difficulty-badge {
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
@@ -325,7 +325,7 @@
 .marks-badge {
     background: var(--color-neutral-bg-light);
     color: var(--color-neutral-muted);
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
@@ -343,7 +343,7 @@
     background: transparent;
     border: 1px solid #ffc107;
     color: #ffc107;
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
@@ -391,7 +391,7 @@
 .option-item {
     display: flex;
     align-items: center;
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-7) var(--space-4);
     border: 1px solid var(--color-neutral-border);
     border-radius: 8px;
     margin-bottom: var(--space-2);
@@ -419,7 +419,7 @@
     justify-content: center;
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-sm);
-    margin-right: var(--space-3);
+    margin-right: var(--space-7);
     color: var(--color-neutral-text);
     flex-shrink: 0;
 }
@@ -503,7 +503,7 @@
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-7);
     margin-bottom: var(--space-4);
 }
 
@@ -625,7 +625,7 @@
 .palette-info {
     background: var(--color-neutral-bg-light);
     border-radius: 8px;
-    padding: var(--space-3);
+    padding: var(--space-7);
     margin-bottom: var(--space-4);
     font-size: var(--font-size-xs);
     color: var(--color-neutral-muted);
@@ -648,7 +648,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-neutral-text);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
 }
 
 .instructions ul {
@@ -680,7 +680,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-neutral-text);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
 }
 
 .difficulty-stat-row {
@@ -734,7 +734,7 @@
     border: 1px solid var(--color-neutral-border);
     color: var(--color-neutral-muted);
     font-size: var(--font-size-sm);
-    padding: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-7);
     transition: all var(--transition-fast);
 }
 
@@ -841,7 +841,7 @@
     }
     
     .option-item {
-        padding: var(--space-2) var(--space-3);
+        padding: var(--space-2) var(--space-7);
     }
     
     .option-letter {

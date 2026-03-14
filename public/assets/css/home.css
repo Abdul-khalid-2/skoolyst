@@ -81,7 +81,7 @@
   }
   .hero-image {
     width: 260px;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
   }
   .hero-subheading {
     font-size: var(--font-size-sm);
@@ -199,7 +199,7 @@
   box-shadow: 0 0 0 3px var(--color-primary-light);
 }
 .clear-filters-btn {
-  padding: var(--space-3) var(--space-5);
+  padding: var(--space-7) var(--space-5);
   height: 44px;
   background: var(--color-neutral-muted);
   color: var(--color-white);
@@ -227,7 +227,7 @@
   text-align: center;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-7);
   color: var(--color-neutral-text);
 }
 .directory-section .section-subtitle {
@@ -294,7 +294,7 @@
 }
 .school-type-badge {
   display: inline-block;
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-7);
   background: var(--color-primary);
   color: var(--color-white);
   border-radius: var(--radius-full);
@@ -333,7 +333,7 @@
   margin-bottom: var(--space-5);
 }
 .feature-tag {
-  padding: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--space-7);
   background: var(--color-neutral-bg);
   border: 1px solid var(--color-neutral-border);
   border-radius: var(--radius-full);
@@ -346,7 +346,7 @@
   justify-content: center;
   gap: var(--space-2);
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-7) var(--space-4);
   background: var(--color-primary);
   color: var(--color-white);
   border: none;
@@ -374,11 +374,11 @@
 /* New announcement badge */
 .new-announcement-badge {
   position: absolute;
-  top: var(--space-3);
-  right: var(--space-3);
+  top: var(--space-7);
+  right: var(--space-7);
   background: var(--color-secondary);
   color: var(--color-white);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-2) var(--space-7);
   border-radius: var(--radius-full);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-semibold);
@@ -412,7 +412,7 @@
   text-align: center;
   font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-7);
   color: var(--color-neutral-text);
 }
 .testimonials-section .section-subtitle {

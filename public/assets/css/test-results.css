@@ -340,7 +340,7 @@
 }
 
 .result-badge {
-    padding: var(--space-1) var(--space-3);
+    padding: var(--space-1) var(--space-7);
     border-radius: 20px;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-semibold);
@@ -361,7 +361,7 @@
     color: var(--color-neutral-text);
     line-height: 1.6;
     margin-bottom: var(--space-4);
-    padding: var(--space-3);
+    padding: var(--space-7);
     background: var(--color-neutral-bg-light);
     border-radius: 8px;
 }
@@ -375,13 +375,13 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-semibold);
     color: var(--color-neutral-text);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-7);
 }
 
 .option-review-item {
     display: flex;
     align-items: flex-start;
-    padding: var(--space-3);
+    padding: var(--space-7);
     margin-bottom: var(--space-2);
     border-radius: 8px;
     border: 1px solid transparent;
@@ -415,7 +415,7 @@
     justify-content: center;
     font-weight: var(--font-weight-semibold);
     font-size: var(--font-size-sm);
-    margin-right: var(--space-3);
+    margin-right: var(--space-7);
     color: var(--color-neutral-text);
     flex-shrink: 0;
 }
@@ -502,7 +502,7 @@
 }
 
 .action-buttons .btn {
-    padding: var(--space-3) var(--space-6);
+    padding: var(--space-7) var(--space-6);
     border-radius: 8px;
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-semibold);

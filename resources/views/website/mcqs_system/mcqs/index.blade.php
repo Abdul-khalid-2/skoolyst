@@ -164,7 +164,7 @@
                     <p class="subject-description">{{ Str::limit($subject->description, 100) }}</p>
                     @endif
 
-                    <div class="subject-test-types">
+                    <!-- <div class="subject-test-types">
                         <span class="subject-test-types-label">Available for:</span>
                         <div class="d-flex flex-wrap gap-1">
                             @foreach($subject->testTypes->take(3) as $testType)
@@ -177,7 +177,7 @@
                             <span class="badge">+{{ $subject->testTypes->count() - 3 }}</span>
                             @endif
                         </div>
-                    </div>
+                    </div> -->
 
                     <div class="mt-4">
                         <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="btn btn-sm btn-outline-primary">
