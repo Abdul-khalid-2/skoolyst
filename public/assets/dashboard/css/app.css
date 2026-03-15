@@ -93,7 +93,7 @@
         }
 
         .nav-link {
-            color: #cbd5e1 !important;
+            color: #030d1a !important;
             padding: 0.75rem 1rem;
             border-radius: 0.5rem;
             display: flex;
@@ -113,7 +113,7 @@
         .nav-link:hover,
         .nav-link.active {
             background-color: rgba(255, 255, 255, 0.12);
-            color: #ffffff !important;
+            color: #070000 !important;
             transform: translateX(5px);
         }
 

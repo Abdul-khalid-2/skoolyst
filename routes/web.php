@@ -46,6 +46,7 @@ use App\Http\Controllers\StudyMaterialController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TestTypeController;
 use App\Http\Controllers\TopicController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoCategoryController;
 use App\Http\Controllers\VideoCommentController;
 use App\Http\Controllers\VideoController;
@@ -75,6 +76,9 @@ Route::group([
 
         // Add the custom create route separately
         Route::resource('schools', SchoolController::class);
+        // User Management Routes
+        Route::resource('users', UserController::class);
+        Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])->name('users.update-status');
 
         // Route::get('/school/create', [SchoolController::class, 'create'])->name('schools.create');
 

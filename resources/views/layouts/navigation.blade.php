@@ -30,6 +30,13 @@
                         <span>Schools</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('users.index') }}" 
+                    class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                        <i class="fas fa-users"></i>
+                        <span>Users</span>
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a href="{{ route('announcements.index') }}"

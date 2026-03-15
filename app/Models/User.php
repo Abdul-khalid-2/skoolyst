@@ -62,6 +62,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(School::class);
     }
+    
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
 
     public function isSuperAdmin()
     {
