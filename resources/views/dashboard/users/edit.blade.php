@@ -84,7 +84,7 @@
                             </div>
 
                             @role('super-admin')
-                            <div class="col-md-6">
+                            <!-- <div class="col-md-6">
                                 <label for="school_id" class="form-label">School</label>
                                 <select class="form-select @error('school_id') is-invalid @enderror" 
                                         id="school_id" 
@@ -99,7 +99,7 @@
                                 @error('school_id')
                                 <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                            </div>
+                            </div> -->
                             @endrole
                         </div>
 

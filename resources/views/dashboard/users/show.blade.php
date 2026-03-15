@@ -95,7 +95,7 @@
                 <div class="card-header">
                     <ul class="nav nav-tabs card-header-tabs" id="userTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" 
+                            <button class="nav-link-custom active" 
                                     id="profile-tab" 
                                     data-bs-toggle="tab" 
                                     data-bs-target="#profile" 
@@ -105,7 +105,7 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" 
+                            <button class="nav-link-custom" 
                                     id="activity-tab" 
                                     data-bs-toggle="tab" 
                                     data-bs-target="#activity" 
@@ -115,7 +115,7 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" 
+                            <button class="nav-link-custom" 
                                     id="reviews-tab" 
                                     data-bs-toggle="tab" 
                                     data-bs-target="#reviews" 
@@ -125,7 +125,7 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" 
+                            <button class="nav-link-custom" 
                                     id="security-tab" 
                                     data-bs-toggle="tab" 
                                     data-bs-target="#security" 
