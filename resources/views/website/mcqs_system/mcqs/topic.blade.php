@@ -142,7 +142,7 @@
                         </div>
                         @endforeach
 
-                        <!-- Test Navigation -->
+                        <!-- Test Navigation (non-fixed, with timer like subject-by-test-type) -->
                         <div class="test-navigation">
                             <div class="progress-indicator">
                                 <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
@@ -154,7 +154,8 @@
                                     <span id="answeredCount">0</span>/{{ $mcqs->total() }} Answered
                                 </span>
                                 <span>
-                                    Page {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }}
+                                    <i class="fas fa-clock me-1"></i>
+                                    <span id="timer">00:00</span>
                                 </span>
                             </div>
                             
@@ -205,15 +206,15 @@
             <div class="col-lg-4">
                 <div class="question-palette">
                     <h5 class="palette-title">
-                        <i class="fas fa-th"></i>Question Palette
+                        <i class="fas fa-th"></i> Question Palette
                     </h5>
                     
                     <div class="palette-info">
                         <i class="fas fa-info-circle"></i>
-                        Page {{ $mcqs->currentPage() }} of {{ $mcqs->lastPage() }}
+                        <span id="answeredStats">0/{{ $mcqs->total() }}</span> Answered
                     </div>
                     
-                    <div class="palette-grid">
+                    <div class="palette-grid" id="paletteGrid">
                         @foreach($mcqs as $index => $mcq)
                         <a href="#question-{{ $mcq->id }}" 
                            class="palette-item" 
@@ -281,14 +282,36 @@
     let answeredQuestions = new Set();
     const storageKey = 'mcq_answers_{{ $topic->id }}';
     const totalQuestions = {{ $mcqs->total() }};
+    let startTime = Date.now();
+    let timerInterval;
 
     // Load saved answers from localStorage on page load
     document.addEventListener('DOMContentLoaded', function() {
         loadSavedAnswers();
         updateProgress();
+        startTimer();
     });
 
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(function() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+
+            const timer = document.getElementById('timer');
+            if (timer) {
+                timer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    }
+
     function loadSavedAnswers() {
+        // ensure timer is stopped
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+
         const savedAnswers = JSON.parse(localStorage.getItem(storageKey) || '{}');
         
         Object.keys(savedAnswers).forEach(mcqId => {
@@ -431,12 +454,16 @@
         
         const progressBar = document.getElementById('progressBar');
         const answeredCountEl = document.getElementById('answeredCount');
+        const answeredStatsEl = document.getElementById('answeredStats');
         
         if (progressBar) {
             progressBar.style.width = `${percentage}%`;
         }
         if (answeredCountEl) {
             answeredCountEl.textContent = answeredCount;
+        }
+        if (answeredStatsEl) {
+            answeredStatsEl.textContent = `${answeredCount}/${totalQuestions}`;
         }
     }
     

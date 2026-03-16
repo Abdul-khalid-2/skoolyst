@@ -253,9 +253,8 @@
         </div>
 
         <div class="row">
-            comming soon
             @foreach($recentMcqs as $mcq)
-            <!-- <div class="col-md-6">
+            <div class="col-md-6">
                 <div class="mcq-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <span class="mcq-difficulty difficulty-{{ $mcq->difficulty_level }}">
@@ -291,7 +290,7 @@
                         </a>
                     </div>
                 </div>
-            </div> -->
+            </div>
             @endforeach
         </div>
 

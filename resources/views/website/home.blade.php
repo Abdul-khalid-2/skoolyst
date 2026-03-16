@@ -340,8 +340,22 @@
 @endpush
 @push('meta')
     <title>Find & Compare the Best Schools in Pakistan | SKOOLYST</title>
-    <meta name="description" content="Explore and compare the best schools in Pakistan with SKOOLYST. Search by city, curriculum, and type to find the perfect school in Karachi, Lahore, Islamabad, and beyond.">
-    <meta name="keywords" content="best schools in Pakistan, Karachi schools, Lahore schools, Islamabad schools, O Level schools, Montessori schools, A Level schools, school admissions Pakistan, compare schools Pakistan">
+    <meta name="description" content="Discover, explore, and compare schools in Pakistan with SKOOLYST. Search by country, city, curriculum, and type to find the perfect school for your child anywhere in the world.">
+    <meta name="keywords" content="best schools in Pakistan, international schools, global school search, O Level schools, Montessori schools, A Level schools, IB schools, school admissions, compare schools">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph for social sharing -->
+    <meta property="og:title" content="Find & Compare the Best Schools in Pakistan | SKOOLYST">
+    <meta property="og:description" content="Discover and compare schools around the world by location, curriculum, and type with SKOOLYST.">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Find & Compare the Best Schools in Pakistan | SKOOLYST">
+    <meta name="twitter:description" content="Discover and compare schools around the world by location, curriculum, and type with SKOOLYST.">
+    <meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
@@ -352,7 +366,7 @@
         'description' => 'Search and compare top schools across Pakistan by location, curriculum, and reviews.',
         'publisher' => [
             '@type' => 'Organization',
-            'name' => 'SKOOLYST Pakistan',
+            'name' => 'SKOOLYST',
             'url' => url('/'),
             'logo' => [
                 '@type' => 'ImageObject',
@@ -519,12 +533,12 @@
             <!-- Schools will be dynamically loaded here -->
             @foreach($schools as $school)
             <div class="col-lg-4 col-md-6 school-card-col">
-                <div class="school-card">
+                <article class="school-card" itemscope itemtype="https://schema.org/School">
                     <div class="school-image">
                         @if($school->banner_image)
-                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
                         @else
-                        <i class="fas fa-school"></i>
+                        <i class="fas fa-school" aria-hidden="true"></i>
                         @endif
                         <!-- New Announcement Badge -->
                         @if($school->hasNewAnnouncements())
@@ -540,15 +554,15 @@
                     <div class="school-content">
                         <div class="school-header">
                             <div>
-                                <h3 class="school-name">{{ $school->name }}</h3>
+                                <h3 class="school-name" itemprop="name">{{ $school->name }}</h3>
                                 <div class="school-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ $school->city ?? 'Location not specified' }}</span>
+                                    <span itemprop="addressLocality">{{ $school->city ?? 'Location not specified' }}</span>
                                 </div>
                             </div>
                             <span class="school-type-badge">{{ $school->school_type }}</span>
                         </div>
-                        <div class="school-rating">
+                        <div class="school-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
                             @php
                                 $averageRating = $school->reviews->avg('rating') ?? 0;
                                 $fullStars = floor($averageRating);
@@ -570,9 +584,11 @@
 
                                 <span>{{ number_format($averageRating, 1) }}</span>
                                 <small>({{ $school->reviews->count() }} reviews)</small>
+                                <meta itemprop="ratingValue" content="{{ number_format($averageRating, 1) }}">
+                                <meta itemprop="reviewCount" content="{{ $school->reviews->count() }}">
                         </div>
-                        <p class="school-description">
-                            {{ Str::limit($school->description, 120) ?: 'No description available.' }}
+                        <p class="school-description" itemprop="description">
+                            {{ Str::limit($school->description, 160) ?: 'No description available for this school yet. View the full profile to learn more about its curriculum, campus, and facilities.' }}
                         </p>
                         <div class="school-features">
                             @if($school->curriculums->count() > 0)
@@ -582,7 +598,7 @@
                                 <span class="feature-tag">{{ $feature->name }}</span>
                             @endforeach
                         </div>
-                        <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
+                        <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn" itemprop="url">
                             <i class="fas fa-eye"></i> View Full Profile
                         </a>
                         <p class="visitor-count">
@@ -591,7 +607,7 @@
                             @endif
                         </p>
                     </div>
-                </div>
+                </article>
             </div>
             @endforeach
         </div>

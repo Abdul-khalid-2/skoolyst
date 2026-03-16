@@ -171,10 +171,28 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.test-type', $mcq->testType->slug) }}">{{ $mcq->testType->name }}</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug]) }}">{{ $mcq->subject->name }}</a></li>
-                @if($mcq->topic)
-                <li class="breadcrumb-item"><a href="{{ route('website.mcqs.topic', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug, 'topic' => $mcq->topic->slug]) }}">{{ $mcq->topic->title }}</a></li>
+                @if(!empty($mcq->testType) && !empty($mcq->testType->slug))
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('website.mcqs.test-type', $mcq->testType->slug) }}">
+                            {{ $mcq->testType->name }}
+                        </a>
+                    </li>
+                @endif
+
+                @if(!empty($mcq->testType) && !empty($mcq->subject) && !empty($mcq->subject->slug) && !empty($mcq->testType->slug))
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('website.mcqs.subject.test-type', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug]) }}">
+                            {{ $mcq->subject->name }}
+                        </a>
+                    </li>
+                @endif
+
+                @if(!empty($mcq->topic) && !empty($mcq->topic->slug) && !empty($mcq->testType) && !empty($mcq->subject))
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('website.mcqs.topic', ['test_type' => $mcq->testType->slug, 'subject' => $mcq->subject->slug, 'topic' => $mcq->topic->slug]) }}">
+                            {{ $mcq->topic->title }}
+                        </a>
+                    </li>
                 @endif
                 <li class="breadcrumb-item active">Practice</li>
             </ol>
@@ -329,11 +347,7 @@
 
 @push('scripts')
 <script>
-    let timeLimit = {
-        {
-            $mcq - > time_limit_seconds ?? 0
-        }
-    };
+    let timeLimit = {{ $mcq->time_limit_seconds ?? 0 }};
     let timerInterval;
     let timeLeft = timeLimit;
 

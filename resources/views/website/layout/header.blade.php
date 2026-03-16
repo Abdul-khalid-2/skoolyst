@@ -1,8 +1,34 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand" href="{{ LaravelLocalization::localizeUrl('/') }}"><img src="{{ asset('assets/assets/skoolyst-header-logo1.png') }}" width="50" height="50" alt="">Skoolyst</a>
+        <a class="navbar-brand d-flex align-items-center" href="{{ LaravelLocalization::localizeUrl('/') }}">
+            <img src="{{ asset('assets/assets/skoolyst-header-logo1.png') }}" width="50" height="50" alt="Skoolyst logo">
+            <span class="ms-2 d-none d-lg-inline">Skoolyst</span>
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        @php
+            $cartCount = 0;
+            if(session()->has('cart')) {
+                $cart = session('cart');
+                $cartCount = array_sum(array_column($cart, 'quantity'));
+            }
+        @endphp
+
+        <div class="d-flex align-items-center ms-auto d-lg-none">
+            <!-- Mobile Cart Icon (right side, before toggler) -->
+            <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="position-relative text-decoration-none me-2">
+                <i class="fas fa-shopping-cart fa-lg cart-icon"></i>
+                <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
+                    {{ $cartCount > 99 ? '99+' : $cartCount }}
+                </span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
+        <!-- Desktop toggler (kept for alignment, hidden on mobile) -->
+        <button class="navbar-toggler d-lg-none d-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -49,25 +75,12 @@
                 <!-- Language Switcher -->
                 <x-language-switcher />
 
-                <!-- Cart Icon with Count -->
-                <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="cart-icon position-relative text-decoration-none">
+                <!-- Cart Icon with Count (shown inside collapse / on desktop) -->
+                <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="cart-icon position-relative text-decoration-none d-none d-lg-inline-flex  me-2">
                     <i class="fas fa-shopping-cart fa-lg cart-icon"></i>
-                    @php
-                    $cartCount = 0;
-                    if(session()->has('cart')) {
-                    $cart = session('cart');
-                    $cartCount = array_sum(array_column($cart, 'quantity'));
-                    }
-                    @endphp
-                    @if($cartCount > 0)
-                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
                         {{ $cartCount > 99 ? '99+' : $cartCount }}
                     </span>
-                    @else
-                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        0
-                    </span>
-                    @endif
                 </a>
 
                 <!-- Auth Buttons -->

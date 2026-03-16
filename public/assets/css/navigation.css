@@ -87,6 +87,9 @@
 .cart-badge {
   font-size: var(--font-size-xs);
 }
+.d-lg-inline-flex .cart-icon {
+  margin-top: 10px;
+}
 
 .navbar-toggler {
   border: none;
