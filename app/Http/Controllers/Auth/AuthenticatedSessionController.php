@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Mail\AdminUserActivityMail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -27,6 +29,13 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        // Notify admin on successful login
+        if ($request->user()) {
+            Mail::to('skoolyst@gmail.com')->send(
+                new AdminUserActivityMail($request->user(), 'login')
+            );
+        }
 
         return redirect()->intended(route('website.home', absolute: false));
     }
