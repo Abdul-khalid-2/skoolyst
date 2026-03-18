@@ -881,3 +881,385 @@
         transform: none;
     }
 }
+/* === REVIEW MODAL STYLES === */
+.review-modal {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    overflow-y: auto;
+}
+
+.review-modal .modal-content {
+    background-color: #ffffff;
+    margin: 3rem auto;
+    padding: 0;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    animation: reviewModalSlideIn 0.3s ease-out;
+}
+
+@keyframes reviewModalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.review-modal .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(135deg, #f8fafc, #ffffff);
+    border-radius: 16px 16px 0 0;
+}
+
+.review-modal .modal-header h3 {
+    margin: 0;
+    color: #0f172a;
+    font-size: 1.5rem;
+    font-weight: 700;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.review-modal .close-modal {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.review-modal .close-modal:hover {
+    background-color: #fee2e2;
+    color: #ef4444;
+    transform: rotate(90deg);
+}
+
+.review-modal .modal-body {
+    padding: 2rem;
+}
+
+/* Star Rating */
+.review-modal .star-rating-container {
+    margin-bottom: 2rem;
+}
+
+.review-modal .star-rating-label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.review-modal .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.review-modal .star-rating input {
+    display: none;
+}
+
+.review-modal .star-rating .star-label {
+    font-size: 2.5rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    line-height: 1;
+}
+
+.review-modal .star-rating .star-label i {
+    transition: all 0.2s ease;
+}
+
+.review-modal .star-rating .star-label:hover,
+.review-modal .star-rating .star-label:hover ~ .star-label {
+    color: #fbbf24;
+}
+
+.review-modal .star-rating input:checked ~ .star-label {
+    color: #fbbf24;
+}
+
+.review-modal .rating-text {
+    margin-top: 0.75rem;
+    color: #64748b;
+    font-style: italic;
+    font-size: 0.95rem;
+    min-height: 1.5rem;
+}
+
+/* Review Form */
+.review-modal .review-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.review-modal .review-form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 1rem;
+}
+
+.review-modal .review-form-group textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.6;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    min-height: 120px;
+}
+
+.review-modal .review-form-group textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.review-modal .review-form-group textarea::placeholder {
+    color: #94a3b8;
+    opacity: 0.7;
+}
+
+/* Form Actions */
+.review-modal .modal-form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+}
+
+.review-modal .btn-cancel-review {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    color: #64748b;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.review-modal .btn-cancel-review:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+    color: #475569;
+}
+
+.review-modal .btn-submit-review {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.review-modal .btn-submit-review:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.review-modal .btn-submit-review:active {
+    transform: translateY(0);
+}
+
+.review-modal .btn-submit-review:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Login Required Section */
+.review-modal .login-required {
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.review-modal .login-icon {
+    font-size: 4rem;
+    color: #2563eb;
+    margin-bottom: 1.5rem;
+}
+
+.review-modal .login-required h4 {
+    color: #0f172a;
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.review-modal .login-required p {
+    color: #64748b;
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    max-width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.review-modal .auth-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.review-modal .btn-login-modal {
+    padding: 0.75rem 2rem;
+    background-color: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.review-modal .btn-login-modal:hover {
+    background-color: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.review-modal .btn-register-modal {
+    padding: 0.75rem 2rem;
+    background-color: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.review-modal .btn-register-modal:hover {
+    background-color: #1e293b;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Verified Badge */
+.review-modal .verified-badge {
+    background-color: #10b981;
+    color: #ffffff;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-left: 0.5rem;
+    display: inline-block;
+    font-weight: 500;
+}
+
+/* Loading State */
+.review-modal .btn-submit-review.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.review-modal .btn-submit-review.loading::after {
+    content: '';
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.6rem;
+    margin-top: -0.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #ffffff;
+    animation: reviewButtonSpin 0.8s linear infinite;
+}
+
+@keyframes reviewButtonSpin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .review-modal .modal-content {
+        margin: 1rem auto;
+        width: 95%;
+    }
+    
+    .review-modal .modal-header {
+        padding: 1.25rem;
+    }
+    
+    .review-modal .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .review-modal .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .review-modal .star-rating .star-label {
+        font-size: 2rem;
+    }
+    
+    .review-modal .modal-form-actions {
+        flex-direction: column;
+    }
+    
+    .review-modal .btn-cancel-review,
+    .review-modal .btn-submit-review {
+        width: 100%;
+    }
+    
+    .review-modal .auth-buttons {
+        flex-direction: column;
+    }
+    
+    .review-modal .btn-login-modal,
+    .review-modal .btn-register-modal {
+        width: 100%;
+        text-align: center;
+    }
+}

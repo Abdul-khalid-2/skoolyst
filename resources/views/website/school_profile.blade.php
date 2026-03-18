@@ -330,53 +330,43 @@
                     </section> --}}
 
                     <!-- Review Modal -->
-                    <div id="reviewModal" class="modal">
+                    <div id="reviewModal" class="review-modal">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <h3>Write a Review</h3>
-                                <span class="close">&times;</span>
+                                <button type="button" class="close-modal">&times;</button>
                             </div>
                             <div class="modal-body">
                                 @auth
                                     <form id="reviewForm" action="{{ route('reviews.store', $school->id) }}" method="POST">
                                         @csrf
-                                        <div class="form-group">
-                                            <label for="rating">Your Rating *</label>
+                                        <div class="star-rating-container">
+                                            <label class="star-rating-label">Your Rating *</label>
                                             <div class="star-rating">
-                                                <input type="radio" id="star1" name="rating" value="1" required>
-                                                <label for="star1" class="star-label">
-                                                    <i class="far fa-star"></i>
-                                                </label>
-                                                <input type="radio" id="star2" name="rating" value="2" required>
-                                                <label for="star2" class="star-label">
-                                                    <i class="far fa-star"></i>
-                                                </label>
-                                                <input type="radio" id="star3" name="rating" value="3" required>
-                                                <label for="star3" class="star-label">
-                                                    <i class="far fa-star"></i>
-                                                </label>
-                                                <input type="radio" id="star4" name="rating" value="4" required>
-                                                <label for="star4" class="star-label">
-                                                    <i class="far fa-star"></i>
-                                                </label>
-                                                <input type="radio" id="star5" name="rating" value="5" required>
-                                                <label for="star5" class="star-label">
-                                                    <i class="far fa-star"></i>
-                                                </label>
+                                                <input type="radio" id="star5" name="rating" value="5">
+                                                <label for="star5" class="star-label"><i class="fas fa-star"></i></label>
+                                                <input type="radio" id="star4" name="rating" value="4">
+                                                <label for="star4" class="star-label"><i class="fas fa-star"></i></label>
+                                                <input type="radio" id="star3" name="rating" value="3">
+                                                <label for="star3" class="star-label"><i class="fas fa-star"></i></label>
+                                                <input type="radio" id="star2" name="rating" value="2">
+                                                <label for="star2" class="star-label"><i class="fas fa-star"></i></label>
+                                                <input type="radio" id="star1" name="rating" value="1">
+                                                <label for="star1" class="star-label"><i class="fas fa-star"></i></label>
                                             </div>
                                             <div class="rating-text">
                                                 <span id="ratingText">Select your rating</span>
                                             </div>
                                         </div>
                                         
-                                        <div class="form-group">
+                                        <div class="review-form-group">
                                             <label for="review">Your Review *</label>
                                             <textarea name="review" id="review" rows="5" placeholder="Share your experience with this school..." required></textarea>
                                         </div>
                                         
-                                        <div class="form-actions">
-                                            <button type="button" class="btn-cancel" id="cancelReview">Cancel</button>
-                                            <button type="submit" class="btn-submit">Submit Review</button>
+                                        <div class="modal-form-actions">
+                                            <button type="button" class="btn-cancel-review" id="cancelReview">Cancel</button>
+                                            <button type="submit" class="btn-submit-review">Submit Review</button>
                                         </div>
                                     </form>
                                 @else
@@ -387,8 +377,8 @@
                                         <h4>Login Required</h4>
                                         <p>Please login to submit your review and help other parents make informed decisions.</p>
                                         <div class="auth-buttons">
-                                            <a href="{{ route('login') }}" class="btn-login">Login</a>
-                                            <a href="{{ route('register') }}" class="btn-register">Register</a>
+                                            <a href="{{ route('login') }}" class="btn-login-modal">Login</a>
+                                            <a href="{{ route('register') }}" class="btn-register-modal">Register</a>
                                         </div>
                                     </div>
                                 @endauth
@@ -823,155 +813,124 @@
 
 
     // Review Modal Functionality
-    document.addEventListener('DOMContentLoaded', function() {
-        const modal = document.getElementById('reviewModal');
-        const writeReviewBtn = document.getElementById('writeReviewBtn');
-        const closeBtn = document.querySelector('.close');
-        const cancelBtn = document.getElementById('cancelReview');
-        const starInputs = document.querySelectorAll('.star-rating input');
-        const ratingText = document.getElementById('ratingText');
-        
-        // Rating descriptions
-        const ratingDescriptions = {
-            1: 'Poor - Very dissatisfied',
-            2: 'Fair - Could be better',
-            3: 'Good - Met expectations',
-            4: 'Very Good - Exceeded expectations',
-            5: 'Excellent - Far beyond expectations'
-        };
-        
-        // Open modal
-        writeReviewBtn.addEventListener('click', function() {
-            modal.style.display = 'block';
-            document.body.style.overflow = 'hidden';
-        });
-        
-        // Close modal
-        function closeModal() {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }
-        
-        closeBtn.addEventListener('click', closeModal);
-        cancelBtn.addEventListener('click', closeModal);
-        
-        // Close when clicking outside
-        window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                closeModal();
-            }
-        });
-        
-        // Star rating interaction
-        starInputs.forEach(input => {
-            const label = input.nextElementSibling;
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('reviewModal');
+            const writeReviewBtn = document.getElementById('writeReviewBtn');
+            const closeBtn = document.querySelector('.close-modal');
+            const cancelBtn = document.getElementById('cancelReview');
+            const starInputs = document.querySelectorAll('.star-rating input');
+            const ratingText = document.getElementById('ratingText');
             
-            input.addEventListener('change', function() {
-                const rating = this.value;
-                ratingText.textContent = ratingDescriptions[rating] || 'Select your rating';
-                
-                // Update all stars based on selection
-                starInputs.forEach(star => {
-                    const starLabel = star.nextElementSibling;
-                    if (star.value <= rating) {
-                        starLabel.style.color = '#ffc107';
-                    } else {
-                        starLabel.style.color = '#ddd';
-                    }
-                });
-            });
+            // Rating descriptions
+            const ratingDescriptions = {
+                1: 'Poor - Very dissatisfied',
+                2: 'Fair - Could be better',
+                3: 'Good - Met expectations',
+                4: 'Very Good - Exceeded expectations',
+                5: 'Excellent - Far beyond expectations'
+            };
             
-            // Add hover effects
-            label.addEventListener('mouseenter', function() {
-                const currentRating = this.previousElementSibling.value;
-                ratingText.textContent = ratingDescriptions[currentRating] || 'Select your rating';
-            });
-        });
-
-        // Reset stars when mouse leaves the rating area
-        document.querySelector('.star-rating').addEventListener('mouseleave', function() {
-            const checkedInput = document.querySelector('.star-rating input:checked');
-            if (checkedInput) {
-                const rating = checkedInput.value;
-                starInputs.forEach(star => {
-                    const starLabel = star.nextElementSibling;
-                    if (star.value <= rating) {
-                        starLabel.style.color = '#ffc107';
-                    } else {
-                        starLabel.style.color = '#ddd';
-                    }
-                });
-            } else {
-                // No rating selected, reset all to default
-                document.querySelectorAll('.star-label').forEach(label => {
-                    label.style.color = '#ddd';
+            // Open modal
+            if (writeReviewBtn) {
+                writeReviewBtn.addEventListener('click', function() {
+                    modal.style.display = 'block';
+                    document.body.style.overflow = 'hidden';
                 });
             }
-        });
-        
-        // Form submission handling
-        const reviewForm = document.getElementById('reviewForm');
-        // Update your form submission handler
-        if (reviewForm) {
-            reviewForm.addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent default first for debugging
-                
-                const rating = document.querySelector('input[name="rating"]:checked');
-                const reviewText = document.getElementById('review').value.trim();
-                
-                // Validation
-                if (!rating) {
-                    alert('Please select a rating');
-                    return false;
+            
+            // Close modal function
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Close button
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
+            
+            // Cancel button
+            if (cancelBtn) {
+                cancelBtn.addEventListener('click', closeModal);
+            }
+            
+            // Close when clicking outside
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    closeModal();
                 }
-                
-                if (!reviewText) {
-                    alert('Please write your review');
-                    return false;
-                }
-                
-                // Add loading state
-                const submitBtn = this.querySelector('.btn-submit');
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-                submitBtn.disabled = true;
-                
-                // Debug: Log form data
-                const formData = new FormData(this);
-                console.log('Form data:', Object.fromEntries(formData));
-                
-                // Submit via fetch to see the actual response
-                fetch(this.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
+            });
+            
+            // Star rating interaction
+            if (starInputs.length > 0) {
+                starInputs.forEach(input => {
+                    input.addEventListener('change', function() {
+                        const rating = this.value;
+                        if (ratingText) {
+                            ratingText.textContent = ratingDescriptions[rating] || 'Select your rating';
+                        }
+                    });
+                });
+            }
+            
+            // Form submission handling
+            const reviewForm = document.getElementById('reviewForm');
+            if (reviewForm) {
+                reviewForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const rating = document.querySelector('input[name="rating"]:checked');
+                    const reviewText = document.getElementById('review').value.trim();
+                    
+                    // Validation
+                    if (!rating) {
+                        alert('Please select a rating');
+                        return false;
                     }
-                })
-                .then(response => {
-                    console.log('Response status:', response.status);
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Response data:', data);
-                    if (data.success) {
-                        alert('Review submitted successfully!');
-                        closeModal();
-                        location.reload(); // Reload to show new review
-                    } else {
-                        alert('Error: ' + (data.message || 'Failed to submit review'));
-                        submitBtn.innerHTML = 'Submit Review';
+                    
+                    if (!reviewText) {
+                        alert('Please write your review');
+                        return false;
+                    }
+                    
+                    // Add loading state
+                    const submitBtn = this.querySelector('.btn-submit-review');
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('loading');
+                    
+                    // Submit via fetch
+                    fetch(this.action, {
+                        method: 'POST',
+                        body: new FormData(this),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Review submitted successfully!');
+                            closeModal();
+                            location.reload();
+                        } else {
+                            alert('Error: ' + (data.message || 'Failed to submit review'));
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('loading');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while submitting your review');
+                        submitBtn.innerHTML = originalText;
                         submitBtn.disabled = false;
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while submitting your review');
-                    submitBtn.innerHTML = 'Submit Review';
-                    submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
+                    });
                 });
-            });
-        }
-    });
+            }
+        });
 </script>
 @endpush
