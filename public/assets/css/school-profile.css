@@ -1,6 +1,7 @@
-/* === SCHOOL PROFILE - SAFE STYLES (NO GLOBAL CONFLICTS) === */
+/* === SCHOOL PROFILE - ONLY UNIQUE STYLES === */
+/* Removed all styles that conflict with global/navigation CSS */
 
-/* Only define what's unique to this page */
+/* School Header Section - Unique to profile */
 .school-header {
     position: relative;
     padding: 5rem 0;
@@ -84,7 +85,6 @@
     margin: 0 0 0.8rem;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     color: white;
-    font-family: 'Montserrat', sans-serif;
 }
 
 .school-tagline {
@@ -94,7 +94,6 @@
     opacity: 0.95;
     line-height: 1.4;
     max-width: 700px;
-    font-family: 'Poppins', sans-serif;
 }
 
 .school-name-sub {
@@ -103,10 +102,24 @@
     opacity: 0.85;
     letter-spacing: 0.5px;
     margin: 0;
-    font-family: 'Poppins', sans-serif;
 }
 
-/* === SCHOOL NAVIGATION (under hero section on school profile) === */
+/* School Motto */
+.school-motto {
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 10px;
+    font-size: 1.1rem;
+    border-left: 3px solid rgba(255, 255, 255, 0.5);
+    padding-left: 15px;
+}
+
+.school-motto i {
+    opacity: 0.7;
+    margin: 0 5px;
+}
+
+/* School Navigation (under hero) - Unique to profile */
 .school-navigation {
     background: #ffffff;
     border-bottom: 1px solid #e2e8f0;
@@ -136,7 +149,6 @@
     white-space: nowrap;
     border-bottom: 3px solid transparent;
     transition: all 0.25s ease;
-    font-family: 'Poppins', sans-serif;
 }
 
 .nav-link:hover,
@@ -145,7 +157,7 @@
     border-bottom-color: #2563eb;
 }
 
-/* === SCROLL BUTTONS FOR MOBILE NAV === */
+/* Scroll buttons for mobile nav */
 .nav-links-wrapper {
     position: relative;
     display: flex;
@@ -154,19 +166,8 @@
 }
 
 .nav-links {
-    display: flex;
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
     flex: 1;
     scroll-behavior: smooth;
-}
-
-.nav-links::-webkit-scrollbar {
-    display: none;
 }
 
 .nav-scroll-btn {
@@ -209,108 +210,7 @@
     }
 }
 
-/* Optional: Add slight padding so buttons don’t overlap text */
-@media (max-width: 768px) {
-    .nav-links {
-        padding: 0 10px;
-    }
-}
-
-/* Global Navigation section style  */
-
-.navbar {
-    background: white;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.navbar-brand {
-    font-size: 1.8rem;
-    font-weight: 800;
-    letter-spacing: 1px;
-    background: #0f4077;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-.navbar-nav .nav-link {
-    color: #1a1a1a;
-    font-weight: 600;
-    margin: 0 0.8rem;
-    transition: color 0.3s ease;
-}
-
-.navbar-nav .nav-link:hover {
-    color: #4361ee;
-}
-
-.auth-buttons {
-    display: flex;
-    gap: 1rem;
-}
-
-.btn-login {
-    padding: 0.6rem 1.5rem;
-    border: 2px solid #4361ee;
-    color: #4361ee;
-    background: transparent;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.btn-login:hover {
-    background: #4361ee;
-    color: white;
-}
-
-.btn-register {
-    padding: 0.6rem 1.5rem;
-    background: #0f4077;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    text-decoration: none;
-}
-
-.btn-register:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
-    color: white;
-}
-
-/* Mobile menu toggle */
-.navbar-toggler {
-    border: none;
-}
-
-.navbar-toggler:focus {
-    box-shadow: none;
-}
-
-@media (max-width: 991px) {
-    .auth-buttons {
-        flex-direction: column;
-        width: 100%;
-        margin-top: 1rem;
-    }
-
-    .btn-login,
-    .btn-register {
-        width: 100%;
-        text-align: center;
-        display: block;
-    }
-}
-
-/* === MAIN CONTENT LAYOUT === */
+/* Main Content Layout */
 .school-main-content {
     padding: 2.5rem 0;
 }
@@ -340,7 +240,6 @@
     color: #0f172a;
     position: relative;
     padding-bottom: 0.5rem;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
 }
 
@@ -355,20 +254,11 @@
     border-radius: 2px;
 }
 
-.section-content p {
-    color: #64748b;
-    margin-bottom: 1.2rem;
-    font-size: 1rem;
-    line-height: 1.6;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* === QUICK FACTS === */
+/* Quick Facts */
 .quick-facts h3 {
     margin: 1.5rem 0 1rem;
     font-size: 1.3rem;
     color: #0f172a;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
 }
 
@@ -406,7 +296,7 @@
     border-radius: 50%;
 }
 
-/* === GALLERY === */
+/* Gallery */
 .gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -438,10 +328,9 @@
     font-size: 0.9rem;
     font-weight: 600;
     color: #0f172a;
-    font-family: 'Poppins', sans-serif;
 }
 
-/* === CURRICULUM === */
+/* Curriculum */
 .curriculum-list {
     display: flex;
     flex-direction: column;
@@ -464,17 +353,10 @@
 .curriculum-item h4 {
     margin-bottom: 0.6rem;
     color: #0f172a;
-    font-family: 'Montserrat', sans-serif;
     font-weight: 700;
 }
 
-.curriculum-item p {
-    margin: 0;
-    color: #64748b;
-    font-family: 'Poppins', sans-serif;
-}
-
-/* === SIDEBAR SECTIONS (CONTACT, FEE, ETC.) === */
+/* Sidebar Sections */
 .sidebar-section {
     margin-bottom: 2rem;
     padding: 1.5rem;
@@ -490,7 +372,6 @@
     color: #0f172a;
     position: relative;
     padding-bottom: 0.5rem;
-    font-family: 'Montserrat', sans-serif;
 }
 
 .sidebar-title::after {
@@ -504,13 +385,7 @@
     border-radius: 2px;
 }
 
-.contact-item,
-.fee-item,
-.action-btn {
-    font-family: 'Poppins', sans-serif;
-}
-
-/* === CONTACT INFO === */
+/* Contact Info */
 .contact-info {
     display: flex;
     flex-direction: column;
@@ -529,16 +404,7 @@
     margin-top: 0.2rem;
 }
 
-.contact-item a {
-    color: #64748b;
-    transition: color 0.2s ease;
-}
-
-.contact-item a:hover {
-    color: #2563eb;
-}
-
-/* === FEE STRUCTURE === */
+/* Fee Structure */
 .fee-info {
     display: flex;
     flex-direction: column;
@@ -563,7 +429,7 @@
     color: #16a34a;
 }
 
-/* === ACTION BUTTONS === */
+/* Action Buttons */
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -616,7 +482,7 @@
     transform: translateY(-2px);
 }
 
-/* === SOCIAL LINKS === */
+/* Social Links */
 .social-links {
     display: flex;
     gap: 0.8rem;
@@ -642,7 +508,319 @@
     transform: translateY(-3px);
 }
 
-/* === RESPONSIVE DESIGN === */
+/* Profile Info */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.profile-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.profile-item i {
+    font-size: 1.25rem;
+    color: #4e73df;
+    width: 30px;
+}
+
+.profile-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 0.25rem;
+}
+
+.profile-value {
+    display: block;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* School Statistics */
+.school-statistics {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4e73df;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #4e73df;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* Mission & Vision */
+.mission-vision-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.mission-vision-item {
+    text-align: center;
+    padding: 2rem;
+    background: #f8f9fa;
+    border-radius: 10px;
+    transition: transform 0.3s ease;
+}
+
+.mission-vision-item:hover {
+    transform: translateY(-5px);
+}
+
+.mv-icon {
+    font-size: 2.5rem;
+    color: #4e73df;
+    margin-bottom: 1rem;
+}
+
+
+
+/* === CONTACT FORM STYLES === */
+.contact-form-section {
+    margin-top: 1.5rem;
+}
+
+.contact-form {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+}
+
+.contact-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.contact-form .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.contact-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 0.95rem;
+}
+
+.contact-form input,
+.contact-form select,
+.contact-form textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background-color: #ffffff;
+    color: #1e293b;
+}
+
+.contact-form input:focus,
+.contact-form select:focus,
+.contact-form textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.contact-form input:hover,
+.contact-form select:hover,
+.contact-form textarea:hover {
+    border-color: #94a3b8;
+}
+
+.contact-form input::placeholder,
+.contact-form textarea::placeholder {
+    color: #94a3b8;
+    opacity: 0.7;
+}
+
+.contact-form select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem;
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.contact-form .form-actions {
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.contact-form .btn-submit {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: white;
+    border: none;
+    padding: 0.875rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 200px;
+}
+
+.contact-form .btn-submit:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.contact-form .btn-submit:active {
+    transform: translateY(0);
+}
+
+.contact-form .btn-submit i {
+    font-size: 1rem;
+}
+
+/* Form Validation Styles */
+.contact-form input:invalid:not(:focus):not(:placeholder-shown),
+.contact-form select:invalid:not(:focus),
+.contact-form textarea:invalid:not(:focus):not(:placeholder-shown) {
+    border-color: #696969;
+}
+
+.contact-form input:valid:not(:focus):not(:placeholder-shown),
+.contact-form select:valid:not(:focus),
+.contact-form textarea:valid:not(:focus):not(:placeholder-shown) {
+    border-color: #10b981;
+}
+
+/* Success Message */
+.form-success {
+    background: #d4edda;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.form-error {
+    background: #f8d7da;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+/* Responsive Contact Form */
+@media (max-width: 768px) {
+    .contact-form {
+        padding: 1.5rem;
+    }
+    
+    .contact-form .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+    
+    .contact-form .btn-submit {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-form {
+        padding: 1.25rem;
+    }
+    
+    .contact-form label {
+        font-size: 0.9rem;
+    }
+    
+    .contact-form input,
+    .contact-form select,
+    .contact-form textarea {
+        padding: 0.625rem 0.875rem;
+        font-size: 0.95rem;
+    }
+}
+
+/* Optional: Loading state for submit button */
+.contact-form .btn-submit.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+}
+
+.contact-form .btn-submit.loading::after {
+    content: '';
+    position: absolute;
+    width: 1.2rem;
+    height: 1.2rem;
+    top: 50%;
+    left: 50%;
+    margin-left: -0.6rem;
+    margin-top: -0.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: button-spin 0.8s linear infinite;
+}
+
+@keyframes button-spin {
+    to { transform: rotate(360deg); }
+}
+
+
+
+
+/* Responsive */
 @media (max-width: 991px) {
     .content-grid {
         grid-template-columns: 1fr;
@@ -679,218 +857,10 @@
     }
 
     .facts-grid,
-    .gallery-grid,
-    .facilities-grid {
+    .gallery-grid {
         grid-template-columns: 1fr;
     }
 
-    .review-header,
-    .event-item {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .event-date {
-        align-self: flex-start;
-        min-width: auto;
-        padding: 0.6rem 0.8rem;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    .gallery-item,
-    .facility-item,
-    .review-item,
-    .event-item,
-    .branch-item,
-    .action-btn {
-        transition: none;
-        transform: none;
-    }
-}
-
-
-
-
-/* School Motto */
-.school-motto {
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.9);
-    margin-top: 10px;
-    font-size: 1.1rem;
-    border-left: 3px solid rgba(255, 255, 255, 0.5);
-    padding-left: 15px;
-}
-
-.school-motto i {
-    opacity: 0.7;
-    margin: 0 5px;
-}
-
-/* School Statistics */
-.school-statistics {
-    margin-top: 2rem;
-    padding: 1.5rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-    border-left: 4px solid #4e73df;
-}
-
-.school-statistics h3 {
-    margin-bottom: 1rem;
-    color: #2e59d9;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 1rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.stat-number {
-    font-size: 2rem;
-    font-weight: bold;
-    color: #4e73df;
-    margin-bottom: 0.5rem;
-}
-
-.stat-label {
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-/* Mission & Vision Section */
-.mission-vision-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 1rem;
-}
-
-.mission-vision-item {
-    text-align: center;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
-}
-
-.mission-vision-item:hover {
-    transform: translateY(-5px);
-}
-
-.mv-icon {
-    font-size: 2.5rem;
-    color: #4e73df;
-    margin-bottom: 1rem;
-}
-
-.mission-vision-item h3 {
-    color: #2e59d9;
-    margin-bottom: 1rem;
-}
-
-.mission-vision-item p {
-    line-height: 1.6;
-    color: #6c757d;
-}
-
-/* Profile Info in Sidebar */
-.profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.profile-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.75rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-}
-
-.profile-item i {
-    font-size: 1.25rem;
-    color: #4e73df;
-    width: 30px;
-}
-
-.profile-label {
-    display: block;
-    font-size: 0.875rem;
-    color: #6c757d;
-    margin-bottom: 0.25rem;
-}
-
-.profile-value {
-    display: block;
-    font-weight: 600;
-    color: #495057;
-}
-
-/* Enhanced Quick Facts */
-.facts-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.fact-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border-left: 4px solid #4e73df;
-}
-
-.fact-item i {
-    font-size: 1.25rem;
-    color: #4e73df;
-    width: 25px;
-}
-
-/* Social Media Links */
-.social-links {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: center;
-}
-
-.social-link {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #f8f9fa;
-    color: #6c757d;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.social-link:hover {
-    background: #4e73df;
-    color: white;
-    transform: translateY(-2px);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
     .mission-vision-grid {
         grid-template-columns: 1fr;
     }
@@ -898,13 +868,16 @@
     .stats-grid {
         grid-template-columns: 1fr;
     }
+}
 
-    .facts-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .school-motto {
-        font-size: 1rem;
-        margin-top: 8px;
+@media (prefers-reduced-motion: reduce) {
+    .gallery-item,
+    .fact-item,
+    .curriculum-item,
+    .mission-vision-item,
+    .action-btn,
+    .social-link {
+        transition: none;
+        transform: none;
     }
 }
