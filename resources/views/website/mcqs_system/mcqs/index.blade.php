@@ -55,51 +55,50 @@
     </div>
 </section>
 
-<!-- ==================== MAIN NAVIGATION SECTIONS ==================== -->
+<!-- ==================== TOP PERFORMERS SECTION ==================== -->
 <section class="py-5">
     <div class="container">
-        <div class="row g-4 mb-5">
-            <!-- Test Type Wise -->
-            <div class="col-md-4">
-                <div class="nav-card">
-                    <div class="nav-card-icon">
-                        <i class="fas fa-clipboard-list"></i>
-                    </div>
-                    <h3>Test Type Wise</h3>
-                    <p>Browse MCQs by test types like NTS, GAT, PPSC, FPSC, MDCAT, ECAT</p>
-                    <a href="#test-types-section" class="btn btn-primary">
-                        Browse by Test Type <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
-                </div>
-            </div>
+        <div class="section-title-wrapper text-center mb-5">
+            <h2 class="section-title">Top Performers</h2>
+            <p class="section-subtitle">Our top MCQs test takers based on correct answers</p>
+        </div>
 
-            <!-- Subject Wise -->
-            <div class="col-md-4">
-                <div class="nav-card">
-                    <div class="nav-card-icon">
-                        <i class="fas fa-book"></i>
+        <div class="row g-4">
+            @forelse($topUsers as $performer)
+            <div class="col-md-3 col-sm-6">
+                <div class="performer-card text-center">
+                    <div class="performer-avatar mb-3">
+                        <img src="{{ $performer['user']->avatar ?? asset('website/images/default-avatar.png') }}"
+                             alt="{{ $performer['user']->name }}"
+                             class="rounded-circle"
+                             style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
-                    <h3>Subject Wise</h3>
-                    <p>Select a subject and practice MCQs topic by topic</p>
-                    <a href="#subjects-section" class="btn btn-success">
-                        Browse by Subject <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
+                    <h5 class="performer-name mb-2">{{ $performer['user']->name }}</h5>
+                    <div class="performer-stars mb-2">
+                        @for($i = 1; $i <= 5; $i++)
+                            @if($i <= floor($performer['stars']))
+                                <i class="fas fa-star text-warning"></i>
+                            @elseif($i == ceil($performer['stars']) && ($performer['stars'] % 1) >= 0.5)
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                            @else
+                                <i class="far fa-star text-muted"></i>
+                            @endif
+                        @endfor
+                    </div>
+                    <div class="performer-stats">
+                        <small class="text-muted">
+                            {{ $performer['correct_answers'] }} correct / {{ $performer['total_attempts'] }} attempts
+                        </small>
+                        <br>
+                        <small class="text-success fw-bold">{{ $performer['score_percentage'] }}% score</small>
+                    </div>
                 </div>
             </div>
-
-            <!-- Mock Tests -->
-            <div class="col-md-4">
-                <div class="nav-card">
-                    <div class="nav-card-icon">
-                        <i class="fas fa-tasks"></i>
-                    </div>
-                    <h3>Mock Tests</h3>
-                    <p>Take full-length mock tests with time limits and detailed results</p>
-                    <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-warning">
-                        View Mock Tests <i class="fas fa-arrow-right ms-2"></i>
-                    </a>
-                </div>
+            @empty
+            <div class="col-12 text-center">
+                <p class="text-muted">No users have attempted MCQs yet.</p>
             </div>
+            @endforelse
         </div>
     </div>
 </section>

@@ -47,7 +47,36 @@ class WebsiteMcqController extends Controller
             ->limit(10)
             ->get();
 
-        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs'));
+        // Get total MCQs count for score calculation
+        $totalMcqs = Mcq::where('status', 'published')->count();
+
+        // Get top 12 users by correct answers
+        $topUsers = \DB::table('user_mcq_answers')
+            ->select('user_id', \DB::raw('COUNT(*) as total_attempts'), \DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers'))
+            ->whereNotNull('user_id')
+            ->groupBy('user_id')
+            ->orderBy('correct_answers', 'desc')
+            ->limit(12)
+            ->get()
+            ->map(function ($userData) use ($totalMcqs) {
+                $user = \App\Models\User::find($userData->user_id);
+                if (!$user) return null;
+
+                $score = $totalMcqs > 0 ? ($userData->correct_answers / $totalMcqs) * 100 : 0;
+                $stars = min(5, max(0, $score / 20)); // 5 stars max, score/20
+
+                return [
+                    'user' => $user,
+                    'total_attempts' => $userData->total_attempts,
+                    'correct_answers' => $userData->correct_answers,
+                    'score_percentage' => round($score, 1),
+                    'stars' => $stars,
+                ];
+            })
+            ->filter()
+            ->values();
+
+        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs', 'topUsers'));
     }
 
     // Test Type page (e.g., Entry Test, Job Test)
