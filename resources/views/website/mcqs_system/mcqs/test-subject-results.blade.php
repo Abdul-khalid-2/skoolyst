@@ -445,7 +445,7 @@
                                 {{ $isUserAnswer && !$result['is_correct'] ? 'user-answer incorrect' : '' }}
                                 {{ $isUserAnswer && $result['is_correct'] ? 'user-answer' : '' }}">
                                 
-                                <span class="option-letter">{{ chr(65 + $key) }}</span>
+                                <span class="option-letter">{{ chr(64 + $key) }}</span>
                                 <span class="option-text">{{ $option }}</span>
                                 
                                 @if($isCorrectAnswer)
