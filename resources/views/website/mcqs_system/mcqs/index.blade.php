@@ -68,12 +68,12 @@
             <div class="col-md-3 col-sm-6">
                 <div class="performer-card text-center">
                     <div class="performer-avatar mb-3">
-                        <img src="{{ $performer['user']->avatar ?? asset('website/images/default-avatar.png') }}"
+                        <img src="{{ asset('website\school\default\student_icon.png') }}"
                              alt="{{ $performer['user']->name }}"
                              class="rounded-circle"
                              style="width: 80px; height: 80px; object-fit: cover;">
                     </div>
-                    <h5 class="performer-name mb-2">{{ $performer['user']->name }}</h5>
+                    <small class="performer-name mb-2">{{ $performer['user']->name }}</small>
                     <div class="performer-stars mb-2">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= floor($performer['stars']))
@@ -86,11 +86,11 @@
                         @endfor
                     </div>
                     <div class="performer-stats">
-                        <small class="text-muted">
+                        <!-- <small class="text-muted">
                             {{ $performer['correct_answers'] }} correct / {{ $performer['total_attempts'] }} attempts
-                        </small>
-                        <br>
-                        <small class="text-success fw-bold">{{ $performer['score_percentage'] }}% score</small>
+                        </small> -->
+                        <!-- <br> -->
+                        <!-- <small class="text-success fw-bold">{{ $performer['score_percentage'] }}% score</small> -->
                     </div>
                 </div>
             </div>
