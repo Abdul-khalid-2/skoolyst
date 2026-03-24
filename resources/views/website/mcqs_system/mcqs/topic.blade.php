@@ -80,6 +80,7 @@
                     @csrf
                     <input type="hidden" name="topic_id" value="{{ $topic->id }}">
                     <input type="hidden" name="subject_id" value="{{ $subject->id }}">
+                    <input type="hidden" name="time_taken" id="timeTaken" value="0">
                     
                     @if($mcqs->count() > 0)
                         @foreach($mcqs as $index => $mcq)
@@ -527,12 +528,18 @@
 
     function submitTest() {
         const form = document.getElementById('testForm');
-        
+        const timeTakenInput = document.getElementById('timeTaken');
+
         if (answeredQuestions.size === 0) {
             alert('Please answer at least one question before submitting.');
             return;
         }
-        
+
+        if (timeTakenInput) {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            timeTakenInput.value = elapsed;
+        }
+
         if (confirm(`You have answered ${answeredQuestions.size} out of {{ $mcqs->total() }} questions. Are you sure you want to submit?`)) {
             form.submit();
         }

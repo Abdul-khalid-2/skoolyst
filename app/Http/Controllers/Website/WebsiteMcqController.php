@@ -587,12 +587,33 @@ class WebsiteMcqController extends Controller
         }
     }
 
-    // For backward compatibility
+    // For topic-only submissions (no test type required)
     public function submitTopicTest(Request $request)
     {
-        return $this->submitTest($request);
+        // return $this->submitTest($request);
+        $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'topic_id' => 'required|exists:topics,id',
+            'answers' => 'required|array',
+            'time_taken' => 'nullable|integer'
+        ]);
+
+        try {
+            $dto = TestSubmissionDTO::fromRequest($request->all());
+            $results = $this->testSubmissionService->storeSubmission($dto);
+
+            session()->flash('test_results', $results);
+
+            $topic = Topic::find($dto->getTopicId());
+
+            return redirect()->route('website.mcqs.test-results', ['topic' => $topic->slug]);
+
+        } catch (\Exception $e) {
+            // 
+            return back()->with('error', 'Failed to submit topic test. Please try again.');
+        }
     }
-    
+
     public function topicTestResults(Request $request, Topic $topic)
     {
         $testResults = session('test_results');
