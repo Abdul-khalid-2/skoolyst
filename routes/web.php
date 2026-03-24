@@ -495,7 +495,7 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
 
     Route::post('/mcqs/submit-topic-test', [WebsiteMcqController::class, 'submitTopicTest'])->name('submit-topic-test');
     Route::post('/submit-test', [WebsiteMcqController::class, 'submitTest'])->name('submit-test');
-    // Test Type + Subject routes
+    // Test Type + Subject routes  
     Route::get('/test/{test_type:slug}/subject/{subject:slug}', [WebsiteMcqController::class, 'subjectByTestType'])->name('subject-by-test-type');
 
     // Practice routes
