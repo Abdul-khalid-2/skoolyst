@@ -50,10 +50,22 @@ class WebsiteMcqController extends Controller
         // Get total MCQs count for score calculation
         $totalMcqs = Mcq::where('status', 'published')->count();
 
-        // Get top 12 users by correct answers
-        $topUsers = \DB::table('user_mcq_answers')
-            ->select('user_id', \DB::raw('COUNT(*) as total_attempts'), \DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers'))
-            ->whereNotNull('user_id')
+        // Using ROW_NUMBER() for MySQL 8.0+
+        $topUsers = \DB::table(\DB::raw('(
+            SELECT 
+                user_id,
+                mcq_id,
+                is_correct,
+                ROW_NUMBER() OVER (PARTITION BY user_id, mcq_id ORDER BY created_at DESC) as rn
+            FROM user_mcq_answers
+            WHERE user_id IS NOT NULL
+        ) as ranked_answers'))
+            ->where('rn', 1) // Only get the latest attempt per user per mcq
+            ->select(
+                'user_id',
+                \DB::raw('COUNT(DISTINCT mcq_id) as total_unique_mcqs_attempted'),
+                \DB::raw('SUM(CASE WHEN is_correct = 1 THEN 1 ELSE 0 END) as correct_answers')
+            )
             ->groupBy('user_id')
             ->orderBy('correct_answers', 'desc')
             ->limit(12)
@@ -63,11 +75,11 @@ class WebsiteMcqController extends Controller
                 if (!$user) return null;
 
                 $score = $totalMcqs > 0 ? ($userData->correct_answers / $totalMcqs) * 100 : 0;
-                $stars = min(5, max(0, $score / 20)); // 5 stars max, score/20
+                $stars = min(5, max(0, $score / 20));
 
                 return [
                     'user' => $user,
-                    'total_attempts' => $userData->total_attempts,
+                    'total_unique_mcqs_attempted' => $userData->total_unique_mcqs_attempted,
                     'correct_answers' => $userData->correct_answers,
                     'score_percentage' => round($score, 1),
                     'stars' => $stars,

@@ -60,7 +60,7 @@
     <div class="container">
         <div class="section-title-wrapper text-center mb-5">
             <h2 class="section-title">Top Performers</h2>
-            <p class="section-subtitle">Our top MCQs test takers based on correct answers</p>
+            <p class="section-subtitle">Meet our top MCQs test takers! <a href="{{ route('login') }}" class="text-decoration-none">Login</a> to see your ranking and compete with the best.</p>
         </div>
 
         <div class="row g-4">
@@ -86,11 +86,7 @@
                         @endfor
                     </div>
                     <div class="performer-stats">
-                        <!-- <small class="text-muted">
-                            {{ $performer['correct_answers'] }} correct / {{ $performer['total_attempts'] }} attempts
-                        </small> -->
-                        <!-- <br> -->
-                        <!-- <small class="text-success fw-bold">{{ $performer['score_percentage'] }}% score</small> -->
+                       
                     </div>
                 </div>
             </div>
