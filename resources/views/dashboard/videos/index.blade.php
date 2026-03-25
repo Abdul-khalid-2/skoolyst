@@ -188,7 +188,7 @@
                                     <div class="d-flex justify-content-between align-items-center">
                                         <div class="d-flex align-items-center">
                                             @if($video->user->profile_picture)
-                                            <img src="{{ asset('storage/' . $video->user->profile_picture) }}" 
+                                            <img src="{{ asset('website/' . $video->user->profile_picture) }}" 
                                                  class="rounded-circle me-2" width="30" height="30" 
                                                  alt="{{ $video->user->name }}">
                                             @else
