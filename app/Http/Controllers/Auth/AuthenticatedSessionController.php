@@ -31,11 +31,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // Notify admin on successful login
-        if ($request->user()) {
-            Mail::to('skoolyst@gmail.com')->send(
-                new AdminUserActivityMail($request->user(), 'login')
-            );
-        }
+        // if ($request->user()) {
+        //     Mail::to('skoolyst@gmail.com')->send(
+        //         new AdminUserActivityMail($request->user(), 'login')
+        //     );
+        // }
 
         return redirect()->intended(route('website.home', absolute: false));
     }
