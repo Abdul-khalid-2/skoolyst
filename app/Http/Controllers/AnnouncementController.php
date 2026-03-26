@@ -8,7 +8,6 @@ use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Mews\Purifier\Facades\Purifier;
 
 class AnnouncementController extends Controller
 {
@@ -50,7 +49,7 @@ class AnnouncementController extends Controller
 
         $data = $request->except('feature_image');
         $data['school_id'] = $school->id;
-        $data['content'] = Purifier::clean($request->content);
+        $data['content'] = $this->sanitizeAnnouncementContent($request->content);
 
         // ✅ Handle feature image upload (stored under website disk)
         if ($request->hasFile('feature_image')) {
@@ -105,7 +104,7 @@ class AnnouncementController extends Controller
         $folderName = \Str::slug($school->name) ?? 'school-' . $school->id;
 
         $data = $request->except('feature_image');
-        $data['content'] = Purifier::clean($request->content);
+        $data['content'] = $this->sanitizeAnnouncementContent($request->content);
 
         if ($request->hasFile('feature_image')) {
             // Delete old image
@@ -122,6 +121,27 @@ class AnnouncementController extends Controller
 
         return redirect()->route('announcements.index')
             ->with('success', 'Announcement updated successfully.');
+    }
+
+    /**
+     * Sanitize CKEditor content without requiring Mews/Purifier.
+     */
+    private function sanitizeAnnouncementContent($content)
+    {
+        // Allow common markup used by CKEditor while stripping dangerous tags
+        $allowedTags = '<p><br><strong><b><em><i><u><ul><ol><li><a><img><h1><h2><h3><h4><h5><h6><blockquote><pre><code>';
+
+        $clean = strip_tags($content, $allowedTags);
+
+        // Remove XSS vectors in attributes and javascript: URLs.
+        $clean = preg_replace('/(<[^>]+)(on\w+\s*=\s*("[^"]*"|\'[^\']*\'|[^\s>]+))/i', '$1', $clean);
+        $clean = preg_replace('/(href|src)\s*=\s*("|\')?\s*javascript:[^"\'>\s]*/i', '$1=""', $clean);
+
+        // Remove any remaining <script> and <style> blocks.
+        $clean = preg_replace('/<script[^>]*>.*?<\\/script>/is', '', $clean);
+        $clean = preg_replace('/<style[^>]*>.*?<\\/style>/is', '', $clean);
+
+        return $clean;
     }
 
     public function destroy($uuid)
