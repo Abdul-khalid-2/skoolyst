@@ -27,6 +27,7 @@
     </div>
 </section>
 
+
 <!-- ==================== ANNOUNCEMENT CONTENT SECTION ==================== -->
 <section class="announcement-content-section">
     <div class="container">
