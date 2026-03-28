@@ -4,112 +4,236 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <style>
-    /* ==================== SHOP HERO SECTION ==================== */
-    .shop-hero {
-        background: linear-gradient(135deg, #4361ee 0%, #38b000 100%);
-        color: white;
-        padding: 80px 0 40px;
-        position: relative;
-        overflow: hidden;
+    /* ==================== SHOP HERO SECTION (compact, unified with right-side banner) ==================== */
+    .shop-hero-section {
+    position: relative;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    overflow: hidden;
+    padding: var(--space-8) var(--space-4);
     }
 
-    .shop-hero::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.3);
+    .shop-hero-section::before,
+    .shop-hero-section::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.08' stroke-width='2'%3E%3Cpath d='M3 6h18l-2 13H5L3 6z'/%3E%3Cpath d='M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3Ccircle cx='8' cy='18' r='2'/%3E%3Ccircle cx='16' cy='18' r='2'/%3E%3C/svg%3E") no-repeat center;
+    background-size: contain;
+    animation: shop-hero-float 6s ease-in-out infinite;
+    opacity: 0.9;
     }
 
-    .shop-hero-content {
-        position: relative;
-        z-index: 2;
+    .shop-hero-section::before {
+    top: 10%;
+    left: 5%;
     }
 
-    .shop-header {
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-        margin-bottom: 2rem;
+    .shop-hero-section::after {
+    bottom: 15%;
+    right: 8%;
+    animation-delay: 2s;
     }
 
-    .shop-logo-large {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        border: 4px solid white;
-        background: white;
-        overflow: hidden;
-        flex-shrink: 0;
+    @keyframes shop-hero-float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-12px);
+    }
     }
 
-    .shop-logo-large img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+    .shop-hero-wrapper {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    position: relative;
+    z-index: 1;
+    flex-wrap: wrap;
     }
 
-    .shop-info {
-        flex: 1;
+    .shop-hero-info {
+    flex: 1;
+    text-align: left;
+    color: var(--color-white);
+    min-width: 280px;
     }
 
-    .shop-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 0.5rem;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    .shop-hero-logo {
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid white;
+    background: white;
+    overflow: hidden;
+    margin-bottom: var(--space-4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
-    .shop-type-badge {
-        display: inline-block;
-        background: rgba(255, 255, 255, 0.2);
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        backdrop-filter: blur(10px);
+    .shop-hero-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     }
 
-    .shop-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        margin-bottom: 1rem;
+    .shop-hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: var(--font-weight-extrabold);
+    margin-bottom: var(--space-2);
+    color: var(--color-white);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .meta-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        font-size: 0.95rem;
+    .shop-hero-type {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 20px;
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+    backdrop-filter: blur(10px);
     }
 
-    .meta-item i {
-        color: #38b000;
+    .shop-hero-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-4);
     }
 
-    .shop-rating-large {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
+    .shop-hero-rating .stars {
+    color: #ffc107;
     }
 
-    .rating-stars {
-        color: #ffc107;
+    .shop-hero-rating .value {
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-base);
     }
 
-    .rating-value {
-        font-weight: 600;
-        font-size: 1.1rem;
+    .shop-hero-rating .count {
+    opacity: 0.9;
+    font-size: var(--font-size-sm);
     }
 
-    .rating-count {
-        opacity: 0.9;
-        font-size: 0.9rem;
+    .shop-hero-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-sm);
+    opacity: 0.95;
     }
+
+    .shop-hero-banner {
+    flex-shrink: 0;
+    width: 320px;
+    height: 180px;
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    }
+
+    .shop-hero-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.shop-hero-banner .banner-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-white);
+  font-size: var(--font-size-sm);
+}
+
+.banner-placeholder i {
+  font-size: var(--font-size-3xl);
+  opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+  .shop-hero-section {
+    min-height: 220px;
+  }
+  .shop-hero-logo {
+    width: 100px;
+    height: 100px;
+  }
+  .shop-hero-banner {
+    width: 380px;
+    height: 210px;
+    border-radius: 10px;
+  }
+  .shop-hero-location {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-hero-wrapper {
+    flex-direction: column;
+    text-align: center;
+  }
+  .shop-hero-info {
+    text-align: center;
+  }
+  .shop-hero-rating {
+    justify-content: center;
+  }
+  .shop-hero-location {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .shop-hero-section {
+    min-height: 180px;
+    padding: var(--space-6) var(--space-4);
+  }
+  .shop-hero-title {
+    font-size: var(--font-size-2xl);
+  }
+  .shop-hero-logo {
+    width: 70px;
+    height: 70px;
+  }
+  .shop-hero-banner {
+    width: 280px;
+    height: 160px;
+  }
+  .shop-hero-type {
+    font-size: var(--font-size-xs);
+  }
+  .shop-hero-rating .value {
+    font-size: var(--font-size-sm);
+  }
+  .shop-hero-rating .count {
+    font-size: var(--font-size-xs);
+  }
+  .shop-hero-location {
+    font-size: var(--font-size-xs);
+  }
+  .banner-placeholder i {
+    font-size: var(--font-size-2xl);
+  }
+}
 
     /* ==================== SHOP NAVIGATION ==================== */
     .shop-sub-nav {
@@ -868,69 +992,52 @@
 
 @section('content')
 
-<!-- ==================== SHOP HERO SECTION ==================== -->
-<section class="shop-hero">
-    <div class="container">
-        <div class="shop-hero-content">
-            <div class="shop-hero-grid">
-                <!-- Left Side: Shop Info -->
-                <div class="shop-info-left">
-                    <div class="shop-header">
-                        <div class="shop-logo-large">
-                            @if($shop->logo_url)
-                                <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
-                            @else
-                                <img src="https://via.placeholder.com/120" alt="{{ $shop->name }}">
-                            @endif
-                        </div>
-                        <div class="shop-info">
-                            <h1 class="shop-title">{{ $shop->name }}</h1>
-                            <span class="shop-type-badge">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
-                            
-                            <div class="shop-rating-large">
-                                <div class="rating-stars">
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= floor($shop->rating))
-                                            <i class="fas fa-star"></i>
-                                        @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
-                                            <i class="fas fa-star-half-alt"></i>
-                                        @else
-                                            <i class="far fa-star"></i>
-                                        @endif
-                                    @endfor
-                                </div>
-                                <span class="rating-value">{{ number_format($shop->rating, 1) }}</span>
-                                <span class="rating-count">({{ $shop->total_reviews }} reviews)</span>
-                            </div>
-
-                            <div class="shop-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ $shop->city }}, {{ $shop->state }}, {{ $shop->country }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!-- ==================== SHOP HERO SECTION (compact, unified) ==================== -->
+<!-- ==================== SHOP HERO SECTION (compact, unified with right-side banner) ==================== -->
+<section class="shop-hero-section" id="shop-hero">
+    <div class="shop-hero-wrapper">
+        <div class="shop-hero-info">
+            <!-- <div class="shop-hero-logo">
+                @if($shop->logo_url)
+                    <img src="{{ asset('website/' . $shop->logo_url) }}" alt="{{ $shop->name }}">
+                @else
+                    <img src="https://via.placeholder.com/120" alt="{{ $shop->name }}">
+                @endif
+            </div> -->
+            <h1 class="shop-hero-title">{{ $shop->name }}</h1>
+            <span class="shop-hero-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+            
+            <div class="shop-hero-rating">
+                <div class="stars">
+                    @for($i = 1; $i <= 5; $i++)
+                        @if($i <= floor($shop->rating))
+                            <i class="fas fa-star"></i>
+                        @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
+                            <i class="fas fa-star-half-alt"></i>
+                        @else
+                            <i class="far fa-star"></i>
+                        @endif
+                    @endfor
                 </div>
-
-                <!-- Right Side: Banner Image -->
-                <div class="shop-banner-right">
-                    @if($shop->banner_url)
-                        <div class="shop-banner-image">
-                            <img src="{{ asset('website/' . $shop->banner_url) }}" 
-                                 alt="{{ $shop->name }} Banner"
-                                 class="banner-img">
-                        </div>
-                    @else
-                        <div class="shop-banner-image default-banner">
-                            <div class="banner-placeholder">
-                                <i class="fas fa-store-alt"></i>
-                                <span>No Banner Available</span>
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                <span class="value">{{ number_format($shop->rating, 1) }}</span>
+                <span class="count">({{ $shop->total_reviews }} reviews)</span>
             </div>
+
+            <div class="shop-hero-location">
+                <i class="fas fa-map-marker-alt"></i>
+                <span>{{ $shop->city }}, {{ $shop->state }}, {{ $shop->country }}</span>
+            </div>
+        </div>
+
+        <div class="shop-hero-banner">
+            @if($shop->banner_url)
+                <img src="{{ asset('website/' . $shop->banner_url) }}" alt="{{ $shop->name }} Banner">
+            @else
+                <div class="banner-placeholder">
+                    <i class="fas fa-store-alt"></i>
+                    <span>No Banner</span>
+                </div>
+            @endif
         </div>
     </div>
 </section>
