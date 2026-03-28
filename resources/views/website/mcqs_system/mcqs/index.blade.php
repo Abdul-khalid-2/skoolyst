@@ -9,11 +9,11 @@
 
 @section('content')
 
-<!-- ==================== MCQS HEADER SECTION ==================== -->
-<section class="mcqs-header">
-    <div class="container">
+<!-- ==================== MCQS HERO SECTION (compact, unified) ==================== -->
+<section class="mcqs-hero-section" id="mcqs-hero">
+    <div class="mcqs-hero-content">
         <h1 class="mcqs-hero-title">Practice MCQs for Competitive Exams</h1>
-        <p class="mcqs-hero-subtitle">
+        <p class="mcqs-hero-subheading">
             Master your subjects with practice questions for NTS, PPSC, FPSC, MDCAT, ECAT and more.
         </p>
     </div>

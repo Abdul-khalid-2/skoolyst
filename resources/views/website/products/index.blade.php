@@ -4,39 +4,100 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <style>
-    /* ==================== PRODUCTS HERO SECTION ==================== */
-    .products-hero {
-        background: linear-gradient(135deg, #4361ee 0%, #38b000 100%);
-        color: white;
-        padding: 80px 0 40px;
+   /* ==================== PRODUCTS HERO SECTION ==================== */
+    .products-hero-section {
         position: relative;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--color-primary);
         overflow: hidden;
+        padding: var(--space-8) var(--space-4);
     }
 
-    .products-hero::before {
+    .products-hero-section::before,
+    .products-hero-section::after {
         content: '';
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
-        animation: float 20s linear infinite;
+        width: 80px;
+        height: 80px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.08' stroke-width='2'%3E%3Cpath d='M20 7h-4.18A3 3 0 0 0 16 5.18V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z'/%3E%3Cpath d='M16 7V4'/%3E%3Cpath d='M8 7h8'/%3E%3C/svg%3E") no-repeat center;
+        background-size: contain;
+        animation: products-hero-float 6s ease-in-out infinite;
+        opacity: 0.9;
     }
 
-    .hero-title {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 1rem;
+    .products-hero-section::before {
+        top: 10%;
+        left: 5%;
+    }
+
+    .products-hero-section::after {
+        bottom: 15%;
+        right: 8%;
+        animation-delay: 2s;
+    }
+
+    @keyframes products-hero-float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-12px);
+        }
+    }
+
+    .products-hero-content {
+        text-align: center;
+        color: var(--color-white);
+        z-index: 1;
+        padding: var(--space-4);
+        width: 100%;
+        max-width: 800px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .products-hero-title {
+        font-size: var(--font-size-4xl);
+        font-weight: var(--font-weight-extrabold);
+        margin-bottom: var(--space-7);
+        color: var(--color-white);
         text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
     }
 
-    .hero-subtitle {
-        font-size: 1.1rem;
+    .products-hero-subheading {
+        font-size: var(--font-size-base);
+        margin: 0;
         opacity: 0.95;
-        margin-bottom: 2rem;
+        max-width: 600px;
+        line-height: var(--line-height-relaxed);
+        color: var(--color-white);
     }
 
+    @media (min-width: 768px) {
+        .products-hero-section {
+            min-height: 220px;
+        }
+        .products-hero-subheading {
+            font-size: var(--font-size-lg);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .products-hero-section {
+            min-height: 180px;
+            padding: var(--space-6) var(--space-4);
+        }
+        .products-hero-title {
+            font-size: var(--font-size-2xl);
+        }
+        .products-hero-subheading {
+            font-size: var(--font-size-sm);
+        }
+    }
     /* ==================== SEARCH AND FILTER SECTION ==================== */
     .search-filter-section {
         background: white;
@@ -828,11 +889,11 @@
 
 @section('content')
 
-<!-- ==================== HERO SECTION ==================== -->
-<section class="products-hero">
-    <div class="container">
-        <h1 class="hero-title">Educational Products Marketplace</h1>
-        <p class="hero-subtitle">
+<!-- ==================== PRODUCTS HERO SECTION (compact, unified) ==================== -->
+<section class="products-hero-section" id="products-hero">
+    <div class="products-hero-content">
+        <h1 class="products-hero-title">Educational Products Marketplace</h1>
+        <p class="products-hero-subheading">
             Discover textbooks, stationery, uniforms, and all essential educational supplies from trusted shops
         </p>
     </div>

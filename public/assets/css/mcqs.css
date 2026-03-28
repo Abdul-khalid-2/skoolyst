@@ -2,78 +2,100 @@
  * MCQs pages – Professional Design System
  * Matching video page aesthetics with MCQs theme
  */
-
-/* ==================== MCQS HEADER SECTION ==================== */
-.mcqs-header {
-      background: var(--color-primary);
-  color: var(--color-white);
-  padding: var(--space-12) 0;
-  text-align: center;
+/* ==================== MCQS HERO SECTION (compact, unified) ==================== */
+.mcqs-hero-section {
   position: relative;
-  overflow: hidden;
-  min-height: 280px;
+  min-height: 200px;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  overflow: hidden;
+  padding: var(--space-8) var(--space-4);
 }
 
-/* MCQ Icons Background Pattern */
-.mcqs-header::before {
+.mcqs-hero-section::before,
+.mcqs-hero-section::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='1.5'%3E%3Cpath d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9h2m-2 4h4'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-position: 0 0, 20px 30px, 40px 60px;
-  background-size: 80px 80px, 70px 70px, 60px 60px;
-  opacity: 0.3;
-  animation: mcqs-float 40s linear infinite;
+  width: 80px;
+  height: 80px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.08' stroke-width='2'%3E%3Cpath d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9h2m-2 4h4'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  animation: mcqs-hero-float 6s ease-in-out infinite;
+  opacity: 0.9;
 }
 
-.mcqs-header::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-  pointer-events: none;
+.mcqs-hero-section::before {
+  top: 10%;
+  left: 5%;
 }
 
-@keyframes mcqs-float {
-  0% { transform: translateY(0) translateX(0); }
-  100% { transform: translateY(-50px) translateX(-30px); }
+.mcqs-hero-section::after {
+  bottom: 15%;
+  right: 8%;
+  animation-delay: 2s;
 }
 
-.mcqs-header .container {
-  position: relative;
-  z-index: 2;
+@keyframes mcqs-hero-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.mcqs-hero-content {
+  text-align: center;
+  color: var(--color-white);
+  z-index: 1;
+  padding: var(--space-4);
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .mcqs-hero-title {
   font-size: var(--font-size-4xl);
   font-weight: var(--font-weight-extrabold);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-7);
   color: var(--color-white);
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
-.mcqs-hero-subtitle {
-  font-size: var(--font-size-lg);
+.mcqs-hero-subheading {
+  font-size: var(--font-size-base);
+  margin: 0;
   opacity: 0.95;
-  max-width: 650px;
-  margin: 0 auto;
+  max-width: 600px;
   line-height: var(--line-height-relaxed);
   color: var(--color-white);
-  font-weight: var(--font-weight-normal);
 }
 
+@media (min-width: 768px) {
+  .mcqs-hero-section {
+    min-height: 220px;
+  }
+  .mcqs-hero-subheading {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 576px) {
+  .mcqs-hero-section {
+    min-height: 180px;
+    padding: var(--space-6) var(--space-4);
+  }
+  .mcqs-hero-title {
+    font-size: var(--font-size-2xl);
+  }
+  .mcqs-hero-subheading {
+    font-size: var(--font-size-sm);
+  }
+}
 /* ==================== STATS CARDS SECTION ==================== */
 .stats-section {
   margin-top: calc(var(--space-8) * -1);
@@ -851,58 +873,4 @@
   .mcq-question {
     font-size: var(--font-size-sm);
   }
-}/ *   = = = = = = = = = = = = = = = = = = = =   T O P   P E R F O R M E R S   S E C T I O N   = = = = = = = = = = = = = = = = = = = =   * / 
- . p e r f o r m e r - c a r d   { 
-         b a c k g r o u n d :   v a r ( - - c o l o r - w h i t e ) ; 
-         b o r d e r :   1 p x   s o l i d   v a r ( - - c o l o r - b o r d e r ) ; 
-         b o r d e r - r a d i u s :   v a r ( - - r a d i u s - l g ) ; 
-         p a d d i n g :   v a r ( - - s p a c e - 4 ) ; 
-         t r a n s i t i o n :   a l l   0 . 3 s   e a s e ; 
-         b o x - s h a d o w :   0   2 p x   4 p x   r g b a ( 0 , 0 , 0 , 0 . 1 ) ; 
- } 
- 
- . p e r f o r m e r - c a r d : h o v e r   { 
-         t r a n s f o r m :   t r a n s l a t e Y ( - 5 p x ) ; 
-         b o x - s h a d o w :   0   8 p x   2 5 p x   r g b a ( 0 , 0 , 0 , 0 . 1 5 ) ; 
- } 
- 
- . p e r f o r m e r - a v a t a r   i m g   { 
-         b o r d e r :   3 p x   s o l i d   v a r ( - - c o l o r - p r i m a r y ) ; 
- } 
- 
- . p e r f o r m e r - n a m e   { 
-         f o n t - s i z e :   1 . 1 r e m ; 
-         f o n t - w e i g h t :   6 0 0 ; 
-         c o l o r :   v a r ( - - c o l o r - d a r k ) ; 
-         m a r g i n - b o t t o m :   v a r ( - - s p a c e - 2 ) ; 
- } 
- 
- . p e r f o r m e r - s t a r s   { 
-         f o n t - s i z e :   1 . 2 r e m ; 
-         m a r g i n - b o t t o m :   v a r ( - - s p a c e - 2 ) ; 
- } 
- 
- . p e r f o r m e r - s t a r s   . f a - s t a r , 
- . p e r f o r m e r - s t a r s   . f a - s t a r - h a l f - a l t   { 
-         c o l o r :   # f f c 1 0 7   ! i m p o r t a n t ; 
- } 
- 
- . p e r f o r m e r - s t a r s   . f a - s t a r - h a l f - a l t   { 
-         p o s i t i o n :   r e l a t i v e ; 
- } 
- 
- . p e r f o r m e r - s t a r s   . f a - s t a r - h a l f - a l t : : b e f o r e   { 
-         c o n t e n t :   " \ f 0 8 9 " ;   / *   h a l f   s t a r   * / 
-         p o s i t i o n :   a b s o l u t e ; 
-         l e f t :   0 ; 
-         w i d t h :   5 0 % ; 
-         o v e r f l o w :   h i d d e n ; 
-         c o l o r :   # f f c 1 0 7 ; 
- } 
- 
- . p e r f o r m e r - s t a t s   s m a l l   { 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         d i s p l a y :   b l o c k ; 
-         l i n e - h e i g h t :   1 . 4 ; 
- }  
- 
+}
