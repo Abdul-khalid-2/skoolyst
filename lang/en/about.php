@@ -2,7 +2,7 @@
 
 return [
     // Hero Section
-    'hero_title' => 'Transforming Education Discovery',
+    'about_us' => 'About US',
     'hero_subtitle' => 'SKOOLYST is revolutionizing how schools connect with students and parents, creating a comprehensive educational ecosystem that empowers informed decisions and bright futures.',
 
     // About Section
