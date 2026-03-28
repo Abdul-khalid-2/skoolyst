@@ -225,7 +225,10 @@ Route::group([
     Route::get('/school/profile/{uuid}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show');
 
     Route::get('/about', [AboutController::class, 'index'])->name('about');
-
+    // Route::get('/insights', [AboutController::class, 'about'])->name('about');
+    Route::get('/insights/digital-transformation', [AboutController::class, 'digitalTransformation'])->name('insights.digital_transformation');
+    Route::get('/insights/school-community', [AboutController::class, 'schoolCommunity'])->name('insights.school_community');
+    Route::get('/insights/school-marketing', [AboutController::class, 'schoolMarketing'])->name('insights.school_marketing');
 
     Route::get('/how_it_works', [HomeController::class, 'howItWorks'])->name('website.how_it_works');
 

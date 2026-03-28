@@ -721,7 +721,7 @@
                         <p class="blog-excerpt">
                             {{ __('about.digital_transformation_text') }}
                         </p>
-                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ route('insights.digital_transformation') }}" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -734,7 +734,7 @@
                         <p class="blog-excerpt">
                             {{ __('about.school_communities_text') }}
                         </p>
-                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ route('insights.school_community') }}" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
@@ -747,7 +747,7 @@
                         <p class="blog-excerpt">
                             {{ __('about.marketing_school_text') }}
                         </p>
-                        <a href="#" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
+                        <a href="{{ route('insights.school_marketing') }}" class="blog-link {{ $rtlText }}">{{ __('about.read_more') }} <i class="fas fa-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
