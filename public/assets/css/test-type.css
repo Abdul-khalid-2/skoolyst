@@ -1,97 +1,116 @@
 /**
  * Test Type Page Styles – Matching MCQs Index Pattern
  */
-
-/* ==================== TEST TYPE HERO SECTION ==================== */
-.test-type-hero {
-    background: var(--color-primary);
-    color: var(--color-white);
-    padding: var(--space-12) 0;
-    position: relative;
-    overflow: hidden;
-    min-height: 280px;
-    display: flex;
-    align-items: center;
+/* ==================== TEST TYPE HERO SECTION (compact, unified) ==================== */
+.test-type-hero-section {
+  position: relative;
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary);
+  overflow: hidden;
+  padding: var(--space-8) var(--space-4);
 }
 
-/* MCQ Icons Background Pattern - Same as MCQs index */
-.test-type-hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: 
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='1.5'%3E%3Cpath d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9h2m-2 4h4'/%3E%3C/svg%3E");
-    background-repeat: repeat;
-    background-position: 0 0, 20px 30px, 40px 60px;
-    background-size: 80px 80px, 70px 70px, 60px 60px;
-    opacity: 0.3;
-    animation: testTypeFloat 40s linear infinite;
+.test-type-hero-section::before,
+.test-type-hero-section::after {
+  content: '';
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.08' stroke-width='2'%3E%3Cpath d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9h2m-2 4h4'/%3E%3C/svg%3E") no-repeat center;
+  background-size: contain;
+  animation: test-type-hero-float 6s ease-in-out infinite;
+  opacity: 0.9;
 }
 
-.test-type-hero::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
-    pointer-events: none;
+.test-type-hero-section::before {
+  top: 10%;
+  left: 5%;
 }
 
-@keyframes testTypeFloat {
-    0% { transform: translateY(0) translateX(0); }
-    100% { transform: translateY(-50px) translateX(-30px); }
+.test-type-hero-section::after {
+  bottom: 15%;
+  right: 8%;
+  animation-delay: 2s;
 }
 
-.test-type-hero .container {
-    position: relative;
-    z-index: 2;
+@keyframes test-type-hero-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 
-.test-type-hero h1 {
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-extrabold);
-    margin-bottom: var(--space-4);
-    color: var(--color-white);
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-    letter-spacing: -0.02em;
-    line-height: 1.2;
+.test-type-hero-content {
+  text-align: center;
+  color: var(--color-white);
+  z-index: 1;
+  padding: var(--space-4);
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.test-type-hero p {
+.test-type-hero-title {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  margin-bottom: var(--space-7);
+  color: var(--color-white);
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.test-type-hero-subheading {
+  font-size: var(--font-size-base);
+  margin: 0;
+  opacity: 0.95;
+  max-width: 600px;
+  line-height: var(--line-height-relaxed);
+  color: var(--color-white);
+}
+
+.test-type-hero-icon {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  width: 80px;
+  margin-bottom: var(--space-4);
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+@media (min-width: 768px) {
+  .test-type-hero-section {
+    min-height: 220px;
+  }
+  .test-type-hero-subheading {
     font-size: var(--font-size-lg);
-    opacity: 0.95;
-    max-width: 650px;
-    margin: 0 auto var(--space-4);
-    line-height: 1.6;
-    color: var(--color-white);
-    font-weight: var(--font-weight-normal);
-}
-
-.test-type-icon-large {
+  }
+  .test-type-hero-icon {
     width: 100px;
-    height: 100px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: var(--font-size-3xl);
-    color: var(--color-white);
-    margin: 0 auto;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    transition: all var(--transition-smooth);
+  }
 }
 
-.test-type-icon-large:hover {
-    transform: scale(1.05) rotate(5deg);
-    border-color: rgba(255, 255, 255, 0.3);
+@media (max-width: 576px) {
+  .test-type-hero-section {
+    min-height: 180px;
+    padding: var(--space-6) var(--space-4);
+  }
+  .test-type-hero-title {
+    font-size: var(--font-size-2xl);
+  }
+  .test-type-hero-subheading {
+    font-size: var(--font-size-sm);
+  }
+  .test-type-hero-icon {
+    width: 60px;
+    margin-bottom: var(--space-7);
+  }
 }
 
 /* ==================== STATS SECTION (Overlapping Hero) ==================== */

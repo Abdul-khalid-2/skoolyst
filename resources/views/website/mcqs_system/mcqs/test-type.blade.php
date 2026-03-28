@@ -8,19 +8,13 @@
 @section('content')
 
 <!-- ==================== TEST TYPE HERO SECTION ==================== -->
-<section class="test-type-hero" >
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1>{{ $testType->name }}</h1>
-                <p>{{ $testType->description }}</p>
-            </div>
-            <div class="col-md-4 text-center">
-                <div class="test-type-icon-large">
-                    <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
-                </div>
-            </div>
+<section class="test-type-hero-section" id="test-type-hero">
+    <div class="test-type-hero-content">
+        <div class="test-type-hero-icon">
+            <i class="{{ $testType->icon ?? 'fas fa-graduation-cap' }}"></i>
         </div>
+        <h1 class="test-type-hero-title">{{ $testType->name }}</h1>
+        <p class="test-type-hero-subheading">{{ $testType->description }}</p>
     </div>
 </section>
 
