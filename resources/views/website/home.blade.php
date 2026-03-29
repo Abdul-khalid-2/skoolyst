@@ -359,39 +359,47 @@
 
     <!-- Schema.org JSON-LD -->
     <script type="application/ld+json">
-    {!! json_encode([
-        '@context' => 'https://schema.org',
-        '@type' => 'WebPage',
-        'name' => 'Find Best Schools in Pakistan',
-        'description' => 'Search and compare top schools in Pakistan by location, curriculum, and reviews.',
-        'publisher' => [
-            '@type' => 'Organization',
-            'name' => 'SKOOLYST',
-            'url' => url('/'),
-            'logo' => [
-                '@type' => 'ImageObject',
-                'url' => asset('assets/assets/hero.png')
+    @php
+        $jsonLd = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => 'Find Best Schools in Pakistan',
+            'description' => 'Search and compare top schools in Pakistan by location, curriculum, and reviews.',
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'SKOOLYST',
+                'url' => url('/'),
+                'logo' => [
+                    '@type' => 'ImageObject',
+                    'url' => asset('assets/assets/hero.png')
+                ],
             ],
-        ],
-        'mainEntity' => [
-            '@type' => 'ItemList',
-            'itemListElement' => $schools->map(function($school, $index) {
-                return [
+            'mainEntity' => [
+                '@type' => 'ItemList',
+                'itemListElement' => []
+            ],
+        ];
+        
+        // Add schools to the itemListElement if they exist
+        if(isset($schools) && count($schools) > 0) {
+            foreach ($schools as $index => $school) {
+                $jsonLd['mainEntity']['itemListElement'][] = [
                     '@type' => 'ListItem',
                     'position' => $index + 1,
-                    'url' => route('browseSchools.show', $school->uuid),
-                    'name' => $school->name,
-                    'image' => $school->banner_image ? asset('website/' . $school->banner_image) : asset('assets/images/default-school.jpg'),
-                    'address' => $school->city,
+                    'url' => route('browseSchools.show', $school['id'] ?? $school->id),
+                    'name' => $school['name'] ?? $school->name,
+                    'image' => isset($school['banner_image']) ? asset('website/'.$school['banner_image']) : (isset($school->banner_image) ? asset('website/'.$school->banner_image) : asset('assets/images/default-school.jpg')),
+                    'address' => $school['location'] ?? ($school->city ?? 'Location not specified'),
                     'aggregateRating' => [
                         '@type' => 'AggregateRating',
-                        'ratingValue' => number_format($school->reviews->avg('rating') ?? 0, 1),
-                        'reviewCount' => $school->reviews->count(),
+                        'ratingValue' => number_format($school['rating'] ?? ($school->reviews->avg('rating') ?? 0), 1),
+                        'reviewCount' => $school['review_count'] ?? ($school->reviews->count() ?? 0),
                     ],
                 ];
-            }),
-        ],
-    ], JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
+            }
+        }
+    @endphp
+    {!! json_encode($jsonLd, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
     </script>
 @endpush
 
@@ -532,83 +540,94 @@
         <div class="row" id="schoolsContainer">
             <!-- Schools will be dynamically loaded here -->
             @foreach($schools as $school)
-            <div class="col-lg-4 col-md-6 school-card-col">
-                <article class="school-card" itemscope itemtype="https://schema.org/School">
-                    <div class="school-image">
-                        @if($school->banner_image)
-                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
-                        @else
-                        <i class="fas fa-school" aria-hidden="true"></i>
-                        @endif
-                        <!-- New Announcement Badge -->
-                        @if($school->hasNewAnnouncements())
-                            <div class="new-announcement-badge">
-                                <span class="badge-pulse"></span>
-                                <a href="{{ route('browseSchools.show', $school->uuid) }}" class="announcement-link">
-                                    <i class="fas fa-bullhorn"></i>
-                                    New Updates
-                                </a>
-                            </div>
-                        @endif
-                    </div>
-                    <div class="school-content">
-                        <div class="school-header">
-                            <div>
-                                <h3 class="school-name" itemprop="name">{{ $school->name }}</h3>
-                                <div class="school-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span itemprop="addressLocality">{{ $school->city ?? 'Location not specified' }}</span>
-                                </div>
-                            </div>
-                            <span class="school-type-badge">{{ $school->school_type }}</span>
-                        </div>
-                        <div class="school-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
-                            @php
-                                $averageRating = $school->reviews->avg('rating') ?? 0;
-                                $fullStars = floor($averageRating);
-                                $hasHalfStar = $averageRating - $fullStars >= 0.5;
-                                $emptyStars = 5 - ceil($averageRating);
-                            @endphp
-
-                            @for($i = 0; $i < $fullStars; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-
-                            @if($hasHalfStar)
-                                <i class="fas fa-star-half-alt"></i>
+                <div class="col-lg-4 col-md-6 school-card-col">
+                    <article class="school-card" itemscope itemtype="https://schema.org/School">
+                        <div class="school-image">
+                            @if(isset($school['banner_image']) && $school['banner_image'])
+                                <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
+                            @elseif(isset($school->banner_image) && $school->banner_image)
+                                <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
+                            @else
+                                <i class="fas fa-school" aria-hidden="true"></i>
                             @endif
+                            <!-- New Announcement Badge - Commented out as it may not be available in array -->
+                            @if(isset($school->hasNewAnnouncements) && $school->hasNewAnnouncements())
+                                <div class="new-announcement-badge">
+                                    <span class="badge-pulse"></span>
+                                    <a href="{{ route('browseSchools.show', $school->uuid ?? $school['id']) }}" class="announcement-link">
+                                        <i class="fas fa-bullhorn"></i>
+                                        New Updates
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="school-content">
+                            <div class="school-header">
+                                <div>
+                                    <h3 class="school-name" itemprop="name">{{ $school['name'] ?? $school->name }}</h3>
+                                    <div class="school-location">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span itemprop="addressLocality">{{ $school['location'] ?? ($school->city ?? 'Location not specified') }}</span>
+                                    </div>
+                                </div>
+                                <span class="school-type-badge">{{ $school['type'] ?? $school->school_type }}</span>
+                            </div>
+                            <div class="school-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
+                                @php
+                                    $averageRating = $school['rating'] ?? ($school->reviews->avg('rating') ?? 0);
+                                    $fullStars = floor($averageRating);
+                                    $hasHalfStar = $averageRating - $fullStars >= 0.5;
+                                    $emptyStars = 5 - ceil($averageRating);
+                                @endphp
 
-                            @for($i = 0; $i < $emptyStars; $i++)
-                                <i class="far fa-star"></i>
-                            @endfor
+                                @for($i = 0; $i < $fullStars; $i++)
+                                    <i class="fas fa-star"></i>
+                                @endfor
+
+                                @if($hasHalfStar)
+                                    <i class="fas fa-star-half-alt"></i>
+                                @endif
+
+                                @for($i = 0; $i < $emptyStars; $i++)
+                                    <i class="far fa-star"></i>
+                                @endfor
 
                                 <span>{{ number_format($averageRating, 1) }}</span>
-                                <small>({{ $school->reviews->count() }} reviews)</small>
+                                <small>({{ $school['review_count'] ?? ($school->reviews->count() ?? 0) }} reviews)</small>
                                 <meta itemprop="ratingValue" content="{{ number_format($averageRating, 1) }}">
-                                <meta itemprop="reviewCount" content="{{ $school->reviews->count() }}">
+                                <meta itemprop="reviewCount" content="{{ $school['review_count'] ?? ($school->reviews->count() ?? 0) }}">
+                            </div>
+                            <p class="school-description" itemprop="description">
+                                {{ Str::limit($school['description'] ?? ($school->description ?? 'No description available'), 160) }}
+                            </p>
+                            <div class="school-features">
+                                @if(isset($school['curriculum']) && $school['curriculum'])
+                                    <span class="feature-tag"><i class="fas fa-book"></i> {{ $school['curriculum'] }}</span>
+                                @elseif(isset($school->curriculums) && $school->curriculums->count() > 0)
+                                    <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
+                                @endif
+                                
+                                @if(isset($school['features']) && is_array($school['features']))
+                                    @foreach(array_slice($school['features'], 0, 3) as $feature)
+                                        <span class="feature-tag">{{ $feature }}</span>
+                                    @endforeach
+                                @elseif(isset($school->features))
+                                    @foreach($school->features->take(3) as $feature)
+                                        <span class="feature-tag">{{ $feature->name }}</span>
+                                    @endforeach
+                                @endif
+                            </div>
+                            <a href="{{ route('browseSchools.show', $school['uuid']) }}" class="view-profile-btn" itemprop="url">
+                                <i class="fas fa-eye"></i> View Full Profile
+                            </a>
+                            <p class="visitor-count">
+                                @if(isset($school['visitor_count']) && $school['visitor_count'] > 0)
+                                    <i class="fas fa-eye"></i> {{ $school['visitor_count'] }}
+                                @endif
+                            </p>
                         </div>
-                        <p class="school-description" itemprop="description">
-                            {{ Str::limit($school->description, 160) ?: 'No description available for this school yet. View the full profile to learn more about its curriculum, campus, and facilities.' }}
-                        </p>
-                        <div class="school-features">
-                            @if($school->curriculums->count() > 0)
-                                <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
-                            @endif
-                            @foreach($school->features->take(3) as $feature)
-                                <span class="feature-tag">{{ $feature->name }}</span>
-                            @endforeach
-                        </div>
-                        <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn" itemprop="url">
-                            <i class="fas fa-eye"></i> View Full Profile
-                        </a>
-                        <p class="visitor-count">
-                            @if($school->profile->visitor_count > 0)
-                                <i class="fas fa-eye"></i> {{ $school->profile->visitor_count }}
-                            @endif
-                        </p>
-                    </div>
-                </article>
-            </div>
+                    </article>
+                </div>
             @endforeach
         </div>
 
@@ -711,13 +730,13 @@
                             @if($testimonial->avatar)
                                 <img src="{{ asset($testimonial->avatar) }}" alt="{{ $testimonial->author_name }}" class="author-avatar">
                             @else
-                                <div class="author-avatar">{{ $testimonial->initials }}</div>
+                                <div class="author-avatar">{{ $testimonial->initials ?? substr($testimonial->author_name, 0, 1) }}</div>
                             @endif
                             <div class="author-info">
                                 <div class="author-name">{{ $testimonial->author_name }}</div>
-                                <div class="author-role">{{ $testimonial->author_role }}, {{ $testimonial->author_location }}</div>
+                                <div class="author-role">{{ $testimonial->author_role ?? '' }}, {{ $testimonial->author_location ?? '' }}</div>
                                 <div class="author-experience">
-                                    <small class="text-muted">{{ $testimonial->experience_rating }} • {{ $testimonial->formattedDate }}</small>
+                                    <small class="text-muted">{{ $testimonial->experience_rating ?? '' }} {{ isset($testimonial->created_at) ? '• ' . $testimonial->created_at->format('M Y') : '' }}</small>
                                 </div>
                             </div>
                         </div>
@@ -1042,7 +1061,7 @@
         const submitText = form.querySelector('.submit-text');
         const spinner = form.querySelector('.spinner-border');
         const formMessage = document.getElementById('formMessage');
-        
+            
         if (form) {
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
@@ -1075,7 +1094,6 @@
                         formMessage.textContent = data.message;
                         
                         // Reset form
-                        form.reset();
                         form.reset();
                         
                         // Reset star rating

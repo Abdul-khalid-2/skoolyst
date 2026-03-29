@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\Cache;
 class SchoolController extends Controller
 {
     public function index()
@@ -601,7 +601,8 @@ class SchoolController extends Controller
                 ]);
                 $user->assignRole('school-admin');
             }
-
+            Cache::forget('homepage_data');
+            Cache::forget('cities_list');
             DB::commit();
 
             return redirect()->route('schools.show', $school->id)
