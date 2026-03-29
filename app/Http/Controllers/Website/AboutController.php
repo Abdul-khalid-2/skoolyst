@@ -3,32 +3,44 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Services\AboutService;
 
 class AboutController extends Controller
 {
+    protected $aboutService;
+
+    public function __construct(AboutService $aboutService)
+    {
+        $this->aboutService = $aboutService;
+    }
+
     public function index()
     {
-        return view('website.about');
+        $response = $this->aboutService->getAboutPage();
+        return view('website.about', $response['data']);
     }
 
     public function insights()
     {
-        return view('website.insights.index');
+        $response = $this->aboutService->getInsightsPage();
+        return view('website.insights.index', $response['data']);
     }
 
     public function digitalTransformation()
     {
-        return view('website.insights.digital-transformation');
+        $response = $this->aboutService->getDigitalTransformationPage();
+        return view('website.insights.digital-transformation', $response['data']);
     }
 
     public function schoolCommunity()
     {
-        return view('website.insights.school-community');
+        $response = $this->aboutService->getSchoolCommunityPage();
+        return view('website.insights.school-community', $response['data']);
     }
 
     public function schoolMarketing()
     {
-        return view('website.insights.school-marketing');
+        $response = $this->aboutService->getSchoolMarketingPage();
+        return view('website.insights.school-marketing', $response['data']);
     }
 }
