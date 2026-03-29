@@ -534,7 +534,7 @@
 <!-- ==================== SCHOOL DIRECTORY SECTION ==================== -->
 <section class="directory-section" id="directory">
     <div class="container">
-        <h2 class="section-title">Schools in Pakistan</h2>
+        <h2 class="section-title"> SCHOOLS </h2>
         <p class="section-subtitle">Explore educational institutions around the globe that match your needs</p>
 
         <div class="row" id="schoolsContainer">
@@ -706,7 +706,7 @@
 <!-- ==================== TESTIMONIALS SECTION ==================== -->
 <section class="testimonials-section" id="testimonials">
     <div class="container">
-        <h2 class="section-title">What Parents Say</h2>
+        <h2 class="section-title"> WHAT PARENTS SAY </h2>
         <p class="section-subtitle">Real experiences from families who found their perfect school</p>
 
         @if($testimonials->count() > 2)
