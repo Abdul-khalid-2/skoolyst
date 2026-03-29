@@ -13,8 +13,8 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
+                    <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
                             <thead>
                                 <tr>
                                     <th>Title</th>
@@ -34,11 +34,11 @@
                                         <div class="d-flex align-items-center">
                                             @if($post->featured_image)
                                                 <img src="{{ asset('website/' . $post->featured_image) }}" alt="{{ $post->title }}" 
-                                                    class="rounded me-3" style="width: 60px; height: 40px; object-fit: cover;">
+                                                    class="rounded me-3" style="width: 40px; height: 30px; object-fit: cover;">
                                             @endif
                                             <div>
-                                                <h6 class="mb-0">{{ Str::limit($post->title, 50) }}</h6>
-                                                <small class="text-muted">{{ $post->slug }}</small>
+                                                <h6 class="mb-0">{{ Str::limit($post->title, 30) }}</h6>
+                                                <small class="text-muted">{{ Str::limit($post->slug, 30) }}</small>
                                             </div>
                                         </div>
                                     </td>

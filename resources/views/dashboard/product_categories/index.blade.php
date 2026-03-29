@@ -21,8 +21,8 @@
 
             <div class="card">
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
+                    <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
+                        <table class="table table-hover align-middle mb-0 text-nowrap">
                             <thead>
                                 <tr>
                                     <th>Name</th>
@@ -51,7 +51,7 @@
                                         </td>
                                         <td>
                                             @if($category->description)
-                                                {{ Str::limit($category->description, 50) }}
+                                                {{ Str::limit($category->description, 30) }}
                                             @else
                                                 <span class="text-muted">-</span>
                                             @endif
