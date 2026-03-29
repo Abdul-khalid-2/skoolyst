@@ -524,7 +524,7 @@
 
             <div class="filter-group">
                 <button class="clear-filters-btn" onclick="clearFilters()">
-                    <i class="fas fa-redo"></i> Clear Filters
+                    <i class="fas fa-redo"></i>
                 </button>
             </div>
         </div>
@@ -535,7 +535,7 @@
 <section class="directory-section" id="directory">
     <div class="container">
         <h2 class="section-title"> SCHOOLS </h2>
-        <p class="section-subtitle">Explore educational institutions around the globe that match your needs</p>
+        <p class="section-subtitle">Explore Educational Institutions Around The Globe That Match Your Needs</p>
 
         <div class="row" id="schoolsContainer">
             <!-- Schools will be dynamically loaded here -->
@@ -707,7 +707,7 @@
 <section class="testimonials-section" id="testimonials">
     <div class="container">
         <h2 class="section-title"> WHAT PARENTS SAY </h2>
-        <p class="section-subtitle">Real experiences from families who found their perfect school</p>
+        <p class="section-subtitle">Real Experiences From Families Who Found Their Perfect School</p>
 
         @if($testimonials->count() > 2)
             <div class="row mt-5">
@@ -807,7 +807,7 @@
 <section class="cta-section" id="about">
     <div class="container">
         <h2 class="cta-headline">Ready to Find Your School?</h2>
-        <p class="cta-subheadline">Join thousands of parents who have found their perfect educational match</p>
+        <p class="cta-subheadline">Join Thousands Of Parents Who Have Found Their Perfect Educational Match</p>
         <a href="{{ route('browseSchools.index') }}" class="cta-button">Start Exploring</a>
     </div>
 </section>
