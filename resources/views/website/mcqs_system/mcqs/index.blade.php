@@ -63,17 +63,17 @@
             <p class="section-subtitle">Meet our top MCQs test takers! <a href="{{ route('login') }}" class="text-decoration-none">Login</a> to see your ranking and compete with the best.</p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
             @forelse($topUsers as $performer)
-            <div class="col-md-3 col-sm-6">
+            <div class="col-6 col-md-2">
                 <div class="performer-card text-center">
                     <div class="performer-avatar mb-3">
-                        <img src="{{ asset('website\school\default\student_icon.png') }}"
+                        <img src="{{ asset('website/school/default/student_icon.png') }}"
                              alt="{{ $performer['user']->name }}"
                              class="rounded-circle"
-                             style="width: 80px; height: 80px; object-fit: cover;">
+                             style="width: 35px; height: 35px; object-fit: cover;">
                     </div>
-                    <small class="performer-name mb-2">{{ $performer['user']->name }}</small>
+                    <small class="performer-name mb-2 d-block">{{ $performer['user']->name }}</small>
                     <div class="performer-stars mb-2">
                         @for($i = 1; $i <= 5; $i++)
                             @if($i <= floor($performer['stars']))
