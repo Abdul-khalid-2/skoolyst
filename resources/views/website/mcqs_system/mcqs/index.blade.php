@@ -14,7 +14,7 @@
     <div class="mcqs-hero-content">
         <h1 class="mcqs-hero-title">Practice MCQs for Competitive Exams</h1>
         <p class="mcqs-hero-subheading">
-            Master your subjects with practice questions for NTS, PPSC, FPSC, MDCAT, ECAT and more.
+            Master Your Subjects With Practice Questions For NTS, PPSC, FPSC, MDCAT, ECAT And More.
         </p>
     </div>
 </section>
@@ -60,7 +60,7 @@
     <div class="container">
         <div class="section-title-wrapper text-center mb-5">
             <h2 class="section-title">Top Performers</h2>
-            <p class="section-subtitle">Meet our top MCQs test takers! <a href="{{ route('login') }}" class="text-decoration-none">Login</a> to see your ranking and compete with the best.</p>
+            <p class="section-subtitle">Meet Our Top MCQs Test Takers! <a href="{{ route('login') }}" class="text-decoration-none">Login</a> To See Your Ranking And Compete With The Best.</p>
         </div>
 
         <div class="row g-4 justify-content-center">
@@ -104,7 +104,7 @@
     <div class="container">
         <div class="section-title-wrapper">
             <h2 class="section-title">Choose Your Test Type</h2>
-            <p class="section-subtitle">Select from various test categories to start your preparation</p>
+            <p class="section-subtitle">Select From Various Test Categories To Start Your Preparation</p>
         </div>
 
         <div class="row g-4">
@@ -132,7 +132,7 @@
     <div class="container">
         <div class="section-title-wrapper">
             <h2 class="section-title">Popular Subjects</h2>
-            <p class="section-subtitle">Start practicing with our most popular subjects</p>
+            <p class="section-subtitle">Start Practicing With Our Most Popular Subjects</p>
         </div>
 
         <div class="row g-4">
@@ -197,7 +197,7 @@
     <div class="container">
         <div class="section-title-wrapper">
             <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">Three simple steps to improve your preparation</p>
+            <p class="section-subtitle">Three Simple Steps To Improve Your Preparation</p>
         </div>
 
         <div class="row g-4">
@@ -206,7 +206,7 @@
                     <div class="step-icon">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    <h4>1. Choose Test Type or Subject</h4>
+                    <h4>Choose Test Type or Subject</h4>
                     <p>Select from various test types like NTS, PPSC, FPSC or browse by subject.</p>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                     <div class="step-icon">
                         <i class="fas fa-folder-open"></i>
                     </div>
-                    <h4>2. Select Topic</h4>
+                    <h4>Select Topic</h4>
                     <p>Choose specific topics within your subject for focused practice.</p>
                 </div>
             </div>
@@ -226,7 +226,7 @@
                     <div class="step-icon">
                         <i class="fas fa-question-circle"></i>
                     </div>
-                    <h4>3. Practice Questions</h4>
+                    <h4>Practice Questions</h4>
                     <p>Practice with detailed explanations and track your progress.</p>
                 </div>
             </div>
@@ -240,7 +240,7 @@
         <div class="d-flex justify-content-between align-items-center mb-5">
             <div>
                 <h2 class="section-title mb-0">Recent Practice Questions</h2>
-                <p class="text-muted">Latest MCQs added to our database</p>
+                <p class="text-muted">Latest MCQs Added To Our Database</p>
             </div>
             <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-primary">
                 <i class="fas fa-clipboard-list me-2"></i>View All Mock Tests
@@ -302,8 +302,8 @@
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h2>Ready to test your knowledge?</h2>
-                <p class="mb-md-0">Take our comprehensive mock tests and track your progress over time.</p>
+                <h2>Ready To Test Your Knowledge?</h2>
+                <p class="mb-md-0">Take Our Comprehensive Mock Tests and Track Your Progress Over Time.</p>
             </div>
             <div class="col-md-4 text-md-end">
                 <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-light btn-lg">
