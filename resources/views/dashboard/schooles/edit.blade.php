@@ -1127,7 +1127,7 @@
                     </div>
                     <div class="col-md-5 mb-2">
                         <label class="form-label">Fees</label>
-                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="10" placeholder="e.g., 1000" value="${escapeHtmlEdit(amount)}" required>
+                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="15" placeholder="e.g., 1000" value="${escapeHtmlEdit(amount)}" required>
                     </div>
                     <div class="col-md-2 mb-2">
                         <button type="button" class="btn btn-danger w-100 remove-fee-row-edit" style="display: none;">Remove</button>
