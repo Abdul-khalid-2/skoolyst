@@ -377,9 +377,22 @@
                             <!-- Class-wise Fee Structure Fields -->
                             <div id="class_wise_fee_structure" class="fee-structure-section" style="{{ old('fee_structure_type') == 'class_wise' ? '' : 'display: none;' }}">
                                 <div class="form-group">
-                                    <label for="class_wise_fees" class="form-label">Class-wise Fees *</label>
-                                    <textarea id="class_wise_fees" class="form-control" name="class_wise_fees" rows="5" placeholder="Enter fees in this format: Class Range or Name: Amount Example: KG to 1: 1000 2 to 5: 1200 6 to 8: 1500 9 to 10: 1800">{{ old('class_wise_fees') }}</textarea>
-                                    <small class="text-muted">Enter each class range and fee on a new line. Format: "Class Range: Amount"</small>
+                                    <label class="form-label">Class-wise Fees *</label>
+                                    <div id="fees-container">
+                                        <div class="fees-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: end;">
+                                            <div style="flex: 1;">
+                                                <label class="form-label">Class Range</label>
+                                                <input type="text" class="form-control class-range" name="class_wise_fees[0][range]" maxlength="25" placeholder="e.g., KG to 1" required>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <label class="form-label">Fees</label>
+                                                <input type="text" class="form-control fees-amount" name="class_wise_fees[0][amount]" maxlength="8" placeholder="e.g., 1000" required>
+                                            </div>
+                                            <button type="button" class="btn btn-danger remove-fee-row" style="display: none;">Remove</button>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="add-fee-row" class="btn btn-primary">Add Fee Entry</button>
+                                    <small class="text-muted">Maximum 5 fee entries allowed</small>
                                     @if ($errors->has('class_wise_fees'))
                                     <div class="input-error">
                                         {{ $errors->first('class_wise_fees') }}
@@ -448,7 +461,7 @@
                 classWiseFeeSection.style.display = 'none';
                 
                 // Clear class-wise fields when switching to fixed
-                document.getElementById('class_wise_fees').value = '';
+                clearClassWiseFees();
                 
                 // Sync admission fees if needed
                 if (classWiseAdmissionFeesInput.value) {
@@ -470,6 +483,102 @@
                 }
             }
         }
+
+        function clearClassWiseFees() {
+            const container = document.getElementById('fees-container');
+            const rows = container.querySelectorAll('.fees-row');
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].remove();
+            }
+            // Clear the first row
+            const firstRow = rows[0];
+            if (firstRow) {
+                firstRow.querySelector('.class-range').value = '';
+                firstRow.querySelector('.fees-amount').value = '';
+            }
+        }
+
+        // Dynamic fees functionality
+        let feeRowCount = 1;
+
+        // Populate existing data
+        const existingFees = @json(old('class_wise_fees', []));
+        if (existingFees && existingFees.length > 0) {
+            populateFees(existingFees);
+        }
+
+        function populateFees(fees) {
+            const container = document.getElementById('fees-container');
+            container.innerHTML = ''; // Clear existing
+            feeRowCount = 0;
+
+            fees.forEach((fee, index) => {
+                const row = document.createElement('div');
+                row.className = 'fees-row';
+                row.style = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: end;';
+                row.innerHTML = `
+                    <div style="flex: 1;">
+                        <input type="text" class="form-control class-range" name="class_wise_fees[${index}][range]" maxlength="25" placeholder="e.g., KG to 1" value="${fee.range || ''}" required>
+                    </div>
+                    <div style="flex: 1;">
+                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="8" placeholder="e.g., 1000" value="${fee.amount || ''}" required>
+                    </div>
+                    <button type="button" class="btn btn-danger remove-fee-row" ${fees.length <= 1 ? 'style="display: none;"' : ''}>Remove</button>
+                `;
+                container.appendChild(row);
+                feeRowCount++;
+            });
+        }
+
+        document.getElementById('add-fee-row').addEventListener('click', function() {
+            if (feeRowCount >= 5) {
+                alert('Maximum 5 fee entries allowed');
+                return;
+            }
+
+            const container = document.getElementById('fees-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'fees-row';
+            newRow.style = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: end;';
+            newRow.innerHTML = `
+                <div style="flex: 1;">
+                    <input type="text" class="form-control class-range" name="class_wise_fees[${feeRowCount}][range]" maxlength="25" placeholder="e.g., KG to 1" required>
+                </div>
+                <div style="flex: 1;">
+                    <input type="text" class="form-control fees-amount" name="class_wise_fees[${feeRowCount}][amount]" maxlength="8" placeholder="e.g., 1000" required>
+                </div>
+                <button type="button" class="btn btn-danger remove-fee-row">Remove</button>
+            `;
+            container.appendChild(newRow);
+            feeRowCount++;
+
+            // Show remove button on first row if more than one
+            if (feeRowCount > 1) {
+                document.querySelector('.remove-fee-row').style.display = 'block';
+            }
+        });
+
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('remove-fee-row')) {
+                e.target.closest('.fees-row').remove();
+                feeRowCount--;
+
+                // Hide remove button if only one row left
+                if (feeRowCount <= 1) {
+                    const removeButtons = document.querySelectorAll('.remove-fee-row');
+                    removeButtons.forEach(btn => btn.style.display = 'none');
+                }
+
+                // Renumber the names
+                const rows = document.querySelectorAll('.fees-row');
+                rows.forEach((row, index) => {
+                    const rangeInput = row.querySelector('.class-range');
+                    const amountInput = row.querySelector('.fees-amount');
+                    rangeInput.name = `class_wise_fees[${index}][range]`;
+                    amountInput.name = `class_wise_fees[${index}][amount]`;
+                });
+            }
+        });
 
         // Add event listeners
         if (feeFixedRadio && feeClassWiseRadio) {

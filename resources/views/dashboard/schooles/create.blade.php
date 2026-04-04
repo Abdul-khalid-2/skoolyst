@@ -324,20 +324,20 @@
                                 <h6 class="mb-3 text-muted">Class-wise Fee Structure</h6>
 
                                 <div class="mb-3">
-                                    <label for="class_wise_fees" class="form-label">Class-wise Fees <span class="text-danger">*</span></label>
-                                    <textarea id="class_wise_fees" class="form-control @error('class_wise_fees') is-invalid @enderror"
-                                        name="class_wise_fees" rows="5"
-                                        placeholder="Enter fees in this format:
-                            Class Range or Name: Amount
-                            Example:
-                            KG to 1: 1000
-                            2 to 5: 1200
-                            6 to 8: 1500
-                            9 to 10: 1800">{{ old('class_wise_fees') }}</textarea>
-                                    <small class="text-muted">Enter each class range and fee on a new line. Format: "Class Range: Amount"</small>
+                                    <label class="form-label">Class-wise Fees <span class="text-danger">*</span></label>
+                                    <div id="class_wise_fees_container_create"></div>
+                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_class_wise_fee_row_create">
+                                        <i class="fas fa-plus me-1"></i> Add Fee Entry
+                                    </button>
+                                    <small class="text-muted d-block mt-2">Maximum 5 fee entries allowed. Class Range max 25 characters. Fees max 8 characters.</small>
                                     @error('class_wise_fees')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
                                     @enderror
+                                    @foreach ($errors->get('class_wise_fees.*') as $messages)
+                                        @foreach ($messages as $message)
+                                            <div class="text-danger small mt-1">{{ $message }}</div>
+                                        @endforeach
+                                    @endforeach
                                 </div>
 
                                 <div class="mb-3">
@@ -754,19 +754,133 @@
             const discountedFeesInputCreate = document.getElementById('discounted_fees');
             const admissionFeesFixedInputCreate = document.getElementById('admission_fees_fixed');
             const classWiseAdmissionFeesInputCreate = document.getElementById('class_wise_admission_fees');
-            const classWiseFeesTextareaCreate = document.getElementById('class_wise_fees');
+            const classWiseFeesContainerCreate = document.getElementById('class_wise_fees_container_create');
+            const addClassWiseFeeRowCreate = document.getElementById('add_class_wise_fee_row_create');
+            const existingClassWiseFeesCreate = normalizeClassWiseFees(@json(old('class_wise_fees', [])));
+
+            function escapeHtmlCreate(value) {
+                return String(value || '').replace(/[&<>"']/g, function (match) {
+                    return {
+                        '&': '&amp;',
+                        '<': '&lt;',
+                        '>': '&gt;',
+                        '"': '&quot;',
+                        "'": '&#39;'
+                    }[match];
+                });
+            }
+
+            function normalizeClassWiseFees(value) {
+                if (!value) {
+                    return [];
+                }
+
+                if (Array.isArray(value)) {
+                    return value.map((item) => {
+                        if (item && typeof item === 'object' && ('range' in item || 'amount' in item)) {
+                            return {
+                                range: item.range || '',
+                                amount: item.amount || ''
+                            };
+                        }
+                        return {
+                            range: '',
+                            amount: ''
+                        };
+                    });
+                }
+
+                if (typeof value === 'object') {
+                    return Object.entries(value).map(([range, amount]) => ({
+                        range,
+                        amount: amount ?? ''
+                    }));
+                }
+
+                return [];
+            }
+
+            function createClassWiseFeeRow(index, range = '', amount = '') {
+                const row = document.createElement('div');
+                row.className = 'row fee-row mb-2 align-items-end';
+                row.innerHTML = `
+                    <div class="col-md-5 mb-2">
+                        <label class="form-label">Class Range</label>
+                        <input type="text" class="form-control class-range" name="class_wise_fees[${index}][range]" maxlength="25" placeholder="e.g., KG to 1" value="${escapeHtmlCreate(range)}" required>
+                    </div>
+                    <div class="col-md-5 mb-2">
+                        <label class="form-label">Fees</label>
+                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="8" placeholder="e.g., 1000" value="${escapeHtmlCreate(amount)}" required>
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <button type="button" class="btn btn-danger w-100 remove-fee-row-create" style="display: none;">Remove</button>
+                    </div>
+                `;
+                return row;
+            }
+
+            function updateClassWiseFeeRowNamesCreate() {
+                const rows = classWiseFeesContainerCreate.querySelectorAll('.fee-row');
+                rows.forEach((row, index) => {
+                    const rangeInput = row.querySelector('.class-range');
+                    const amountInput = row.querySelector('.fees-amount');
+                    rangeInput.name = `class_wise_fees[${index}][range]`;
+                    amountInput.name = `class_wise_fees[${index}][amount]`;
+                });
+            }
+
+            function updateClassWiseFeeRemoveButtonsCreate() {
+                const rows = classWiseFeesContainerCreate.querySelectorAll('.fee-row');
+                const showRemove = rows.length > 1;
+                rows.forEach((row) => {
+                    const button = row.querySelector('.remove-fee-row-create');
+                    if (button) {
+                        button.style.display = showRemove ? 'block' : 'none';
+                    }
+                });
+            }
+
+            function setClassWiseInputsDisabledCreate(disabled) {
+                classWiseFeesContainerCreate.querySelectorAll('input').forEach((input) => {
+                    input.disabled = disabled;
+                });
+            }
+
+            function addFeeRowCreate(range = '', amount = '') {
+                const rows = classWiseFeesContainerCreate.querySelectorAll('.fee-row');
+                if (rows.length >= 5) {
+                    alert('Maximum 5 fee entries allowed');
+                    return;
+                }
+                const row = createClassWiseFeeRow(rows.length, range, amount);
+                classWiseFeesContainerCreate.appendChild(row);
+                updateClassWiseFeeRemoveButtonsCreate();
+            }
+
+            function removeFeeRowCreate(button) {
+                const row = button.closest('.fee-row');
+                if (!row) return;
+                row.remove();
+                updateClassWiseFeeRowNamesCreate();
+                updateClassWiseFeeRemoveButtonsCreate();
+            }
+
+            function populateClassWiseFeeRowsCreate(fees) {
+                classWiseFeesContainerCreate.innerHTML = '';
+                const normalized = normalizeClassWiseFees(fees);
+                if (!normalized.length) {
+                    addFeeRowCreate();
+                    return;
+                }
+                normalized.forEach((fee) => addFeeRowCreate(fee.range, fee.amount));
+            }
 
             function toggleFeeSectionsCreate() {
                 if (feeFixedRadioCreate.checked) {
                     fixedFeeSectionCreate.style.display = 'block';
                     classWiseFeeSectionCreate.style.display = 'none';
-                    
-                    // Clear class-wise fields when switching to fixed
-                    if (classWiseFeesTextareaCreate) {
-                        classWiseFeesTextareaCreate.value = '';
-                    }
-                    
-                    // Sync admission fees
+                    setClassWiseInputsDisabledCreate(true);
+
                     if (classWiseAdmissionFeesInputCreate.value) {
                         admissionFeesFixedInputCreate.value = classWiseAdmissionFeesInputCreate.value;
                         classWiseAdmissionFeesInputCreate.value = '';
@@ -774,12 +888,8 @@
                 } else {
                     fixedFeeSectionCreate.style.display = 'none';
                     classWiseFeeSectionCreate.style.display = 'block';
-                    
-                    // Clear fixed fields when switching to class-wise
-                    if (regularFeesInputCreate) regularFeesInputCreate.value = '';
-                    if (discountedFeesInputCreate) discountedFeesInputCreate.value = '';
-                    
-                    // Sync admission fees
+                    setClassWiseInputsDisabledCreate(false);
+
                     if (admissionFeesFixedInputCreate.value) {
                         classWiseAdmissionFeesInputCreate.value = admissionFeesFixedInputCreate.value;
                         admissionFeesFixedInputCreate.value = '';
@@ -787,16 +897,28 @@
                 }
             }
 
-            // Add event listeners for create form
+            if (classWiseFeesContainerCreate) {
+                populateClassWiseFeeRowsCreate(existingClassWiseFeesCreate);
+            }
+
             if (feeFixedRadioCreate && feeClassWiseRadioCreate) {
                 feeFixedRadioCreate.addEventListener('change', toggleFeeSectionsCreate);
                 feeClassWiseRadioCreate.addEventListener('change', toggleFeeSectionsCreate);
-                
-                // Initialize on page load
                 toggleFeeSectionsCreate();
             }
 
-            // Sync admission fees between both sections for create form
+            if (addClassWiseFeeRowCreate) {
+                addClassWiseFeeRowCreate.addEventListener('click', function() {
+                    addFeeRowCreate();
+                });
+            }
+
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('remove-fee-row-create')) {
+                    removeFeeRowCreate(event.target);
+                }
+            });
+
             if (admissionFeesFixedInputCreate && classWiseAdmissionFeesInputCreate) {
                 admissionFeesFixedInputCreate.addEventListener('input', function() {
                     if (feeFixedRadioCreate.checked) {
@@ -807,34 +929,6 @@
                 classWiseAdmissionFeesInputCreate.addEventListener('input', function() {
                     if (feeClassWiseRadioCreate.checked) {
                         admissionFeesFixedInputCreate.value = this.value;
-                    }
-                });
-            }
-
-            // Validate class-wise fees format on blur
-            if (classWiseFeesTextareaCreate) {
-                classWiseFeesTextareaCreate.addEventListener('blur', function() {
-                    const value = this.value.trim();
-                    if (!value) return;
-                    
-                    const lines = value.split('\n');
-                    let hasError = false;
-                    
-                    lines.forEach((line, index) => {
-                        if (line.trim()) {
-                            const parts = line.split(':');
-                            if (parts.length < 2 || !parts[1].trim()) {
-                                hasError = true;
-                                // Highlight the problematic line
-                                if (!this.classList.contains('is-invalid')) {
-                                    this.classList.add('is-invalid');
-                                }
-                            }
-                        }
-                    });
-                    
-                    if (!hasError && this.classList.contains('is-invalid')) {
-                        this.classList.remove('is-invalid');
                     }
                 });
             }

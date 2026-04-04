@@ -92,7 +92,9 @@ class SchoolController extends Controller
             'regular_fees'    => 'nullable|numeric|min:0',
             'discounted_fees' => 'nullable|numeric|min:0',
             'admission_fees'  => 'nullable|numeric|min:0',
-            'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|nullable|string',
+            'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
+            'class_wise_fees.*.range' => 'required|string|max:25',
+            'class_wise_fees.*.amount' => 'required|string|max:8',
             'status'          => 'required|in:active,inactive',
             'visibility'      => 'required|in:public,private',
             'publish_date'    => 'nullable|date',
@@ -138,9 +140,16 @@ class SchoolController extends Controller
                 $regularFees = $validated['regular_fees'] ?? null;
                 $discountedFees = $validated['discounted_fees'] ?? null;
             } else {
-                $classWiseFees = $validated['class_wise_fees'];
+                $transformedFees = [];
+                if ($validated['fee_structure_type'] === 'class_wise' && isset($validated['class_wise_fees'])) {
+                    foreach ($validated['class_wise_fees'] as $feeEntry) {
+                        $transformedFees[$feeEntry['range']] = $feeEntry['amount'];
+                    }
+                }
+                $classWiseFees = json_encode($transformedFees);            
             }
 
+            dd($classWiseFees);
             // Create school
             $school = School::create([
                 'name'              => $validated['name'],
@@ -397,7 +406,9 @@ class SchoolController extends Controller
                 'regular_fees'      => 'nullable|numeric|min:0',
                 'discounted_fees'   => 'nullable|numeric|min:0',
                 'admission_fees'    => 'nullable|numeric|min:0',
-                'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|nullable|string',
+                'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
+                'class_wise_fees.*.range' => 'required|string|max:25',
+                'class_wise_fees.*.amount' => 'required|string|max:8',
                 'status'            => 'required|in:active,inactive',
                 'visibility'        => 'required|in:public,private',
                 'publish_date'      => 'nullable|date',
@@ -433,7 +444,13 @@ class SchoolController extends Controller
                 $regularFees = $validated['regular_fees'] ?? null;
                 $discountedFees = $validated['discounted_fees'] ?? null;
             } else {
-                $classWiseFees = $validated['class_wise_fees'];
+                $transformedFees = [];
+                if ($validated['fee_structure_type'] === 'class_wise' && isset($validated['class_wise_fees'])) {
+                    foreach ($validated['class_wise_fees'] as $feeEntry) {
+                        $transformedFees[$feeEntry['range']] = $feeEntry['amount'];
+                    }
+                }
+                $classWiseFees = json_encode($transformedFees);      
             }
 
             // ✅ Update school info
@@ -656,7 +673,9 @@ class SchoolController extends Controller
             'regular_fees' => 'nullable',
             'discounted_fees' => 'nullable',
             'admission_fees' => 'nullable',
-            'class_wise_fees' => 'required_if:fee_structure_type,class_wise|nullable|string|max:500',
+            'class_wise_fees' => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
+            'class_wise_fees.*.range' => 'required|string|max:25',
+            'class_wise_fees.*.amount' => 'required|string|max:8',
             'school_terms' => 'required|accepted',
         ]);
 
@@ -673,7 +692,13 @@ class SchoolController extends Controller
                 $regularFees = $validated['regular_fees'] ?? null;
                 $discountedFees = $validated['discounted_fees'] ?? null;
             } else {
-                $classWiseFees = $validated['class_wise_fees'];
+                $transformedFees = [];
+                if ($validated['fee_structure_type'] === 'class_wise' && isset($validated['class_wise_fees'])) {
+                    foreach ($validated['class_wise_fees'] as $feeEntry) {
+                        $transformedFees[$feeEntry['range']] = $feeEntry['amount'];
+                    }
+                }
+                $classWiseFees = json_encode($transformedFees);      
             }
 
             // Create the school
