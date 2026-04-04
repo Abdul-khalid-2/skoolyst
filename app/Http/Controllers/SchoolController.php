@@ -94,7 +94,7 @@ class SchoolController extends Controller
             'admission_fees'  => 'nullable|numeric|min:0',
             'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
             'class_wise_fees.*.range' => 'required|string|max:25',
-            'class_wise_fees.*.amount' => 'required|string|max:8',
+            'class_wise_fees.*.amount' => 'required|string|max:10',
             'status'          => 'required|in:active,inactive',
             'visibility'      => 'required|in:public,private',
             'publish_date'    => 'nullable|date',
@@ -408,7 +408,7 @@ class SchoolController extends Controller
                 'admission_fees'    => 'nullable|numeric|min:0',
                 'class_wise_fees'   => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
                 'class_wise_fees.*.range' => 'required|string|max:25',
-                'class_wise_fees.*.amount' => 'required|string|max:8',
+                'class_wise_fees.*.amount' => 'required|string|max:10',
                 'status'            => 'required|in:active,inactive',
                 'visibility'        => 'required|in:public,private',
                 'publish_date'      => 'nullable|date',
@@ -675,7 +675,7 @@ class SchoolController extends Controller
             'admission_fees' => 'nullable',
             'class_wise_fees' => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
             'class_wise_fees.*.range' => 'required|string|max:25',
-            'class_wise_fees.*.amount' => 'required|string|max:8',
+            'class_wise_fees.*.amount' => 'required|string|max:10',
             'school_terms' => 'required|accepted',
         ]);
 

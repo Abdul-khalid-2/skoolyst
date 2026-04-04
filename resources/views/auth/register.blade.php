@@ -386,7 +386,7 @@
                                             </div>
                                             <div style="flex: 1;">
                                                 <label class="form-label">Fees</label>
-                                                <input type="text" class="form-control fees-amount" name="class_wise_fees[0][amount]" maxlength="8" placeholder="e.g., 1000" required>
+                                                <input type="text" class="form-control fees-amount" name="class_wise_fees[0][amount]" maxlength="10" placeholder="e.g., 1000" required>
                                             </div>
                                             <button type="button" class="btn btn-danger remove-fee-row" style="display: none;">Remove</button>
                                         </div>
@@ -521,7 +521,7 @@
                         <input type="text" class="form-control class-range" name="class_wise_fees[${index}][range]" maxlength="25" placeholder="e.g., KG to 1" value="${fee.range || ''}" required>
                     </div>
                     <div style="flex: 1;">
-                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="8" placeholder="e.g., 1000" value="${fee.amount || ''}" required>
+                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="10" placeholder="e.g., 1000" value="${fee.amount || ''}" required>
                     </div>
                     <button type="button" class="btn btn-danger remove-fee-row" ${fees.length <= 1 ? 'style="display: none;"' : ''}>Remove</button>
                 `;
@@ -545,7 +545,7 @@
                     <input type="text" class="form-control class-range" name="class_wise_fees[${feeRowCount}][range]" maxlength="25" placeholder="e.g., KG to 1" required>
                 </div>
                 <div style="flex: 1;">
-                    <input type="text" class="form-control fees-amount" name="class_wise_fees[${feeRowCount}][amount]" maxlength="8" placeholder="e.g., 1000" required>
+                    <input type="text" class="form-control fees-amount" name="class_wise_fees[${feeRowCount}][amount]" maxlength="10" placeholder="e.g., 1000" required>
                 </div>
                 <button type="button" class="btn btn-danger remove-fee-row">Remove</button>
             `;
