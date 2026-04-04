@@ -694,7 +694,7 @@
                                             @foreach($classFees as $range => $amount)
                                                 <tr>
                                                     <td>{{ $range }}</td>
-                                                    <td>Rs {{ number_format($amount) }}</td>
+                                                    <td>Rs {{ $amount }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

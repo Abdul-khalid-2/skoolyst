@@ -741,7 +741,7 @@
                                     @foreach($classFees as $range => $amount)
                                         <div class="fee-item">
                                             <span class="fee-label">{{ $range }}</span>
-                                            <span class="fee-amount">Rs {{ number_format($amount) }}</span>
+                                            <span class="fee-amount">Rs {{ $amount }}</span>
                                         </div>
                                     @endforeach
 
