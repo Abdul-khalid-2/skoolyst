@@ -97,23 +97,31 @@
                                 <h3>Quick Facts</h3>
                                 <div class="facts-grid">
                                     <!-- Basic Facts -->
-                                    <div class="fact-item">
-                                        <i class="fas fa-calendar"></i>
-                                        <span>Established: {{ $school->profile->established_year ?? 'N/A' }}</span>
-                                    </div>
+                                    @if($school->profile->established_year)
+                                        <div class="fact-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>Established: {{ $school->profile->established_year ?? 'N/A' }}</span>
+                                        </div>
+                                    @endif
+                                    @if($school->profile->student_strength)
                                     <div class="fact-item">
                                         <i class="fas fa-users"></i>
                                         <span>Student Strength: {{ $school->profile->student_strength ?? 'N/A' }}</span>
                                     </div>
+                                    @endif
+                                    @if($school->profile->faculty_count)
                                     <div class="fact-item">
                                         <i class="fas fa-chalkboard-teacher"></i>
                                         <span>Faculty: {{ $school->profile->faculty_count ?? 'N/A' }} teachers</span>
                                     </div>
+                                    @endif
+                                    @if($school->profile->campus_size)
                                     <div class="fact-item">
                                         <i class="fas fa-building"></i>
                                         <span>Campus Size: {{ $school->profile->campus_size ?? 'N/A' }}</span>
                                     </div>
-                                    
+                                    @endif
+
                                     <!-- Additional Quick Facts from JSON -->
                                     @if($school->profile && $school->profile->quick_facts)
                                         @php
@@ -651,7 +659,7 @@
                     </section>
 
                     <!-- School Profile Info -->
-                    <section class="sidebar-section">
+                    <!-- <section class="sidebar-section">
                         <h3 class="sidebar-title">School Profile</h3>
                         <div class="profile-info">
                             <div class="profile-item">
@@ -683,32 +691,73 @@
                                 </div>
                             </div>
                         </div>
-                    </section>
+                    </section> -->
 
                     <!-- Fee Structure -->
                     <section class="sidebar-section">
                         <h3 class="sidebar-title">Fee Structure</h3>
                         <div class="fee-info">
-                            @if($school->regular_fees)
-                                <div class="fee-item">
-                                    <span class="fee-label">Regular Fees:</span>
-                                    <span class="fee-amount">Rs{{ number_format($school->regular_fees) }}/month</span>
-                                </div>
-                            @endif
-                            @if($school->discounted_fees)
-                                <div class="fee-item">
-                                    <span class="fee-label">Discounted Fees:</span>
-                                    <span class="fee-amount">Rs{{ number_format($school->discounted_fees) }}/month</span>
-                                </div>
-                            @endif
-                            @if($school->admission_fees)
-                                <div class="fee-item">
-                                    <span class="fee-label">Admission Fees:</span>
-                                    <span class="fee-amount">Rs{{ number_format($school->admission_fees) }}</span>
-                                </div>
-                            @endif
-                            @if(!$school->regular_fees && !$school->discounted_fees && !$school->admission_fees)
-                                <p class="no-content">Fee information not available.</p>
+
+                            {{-- ✅ FIXED STRUCTURE --}}
+                            @if($school->fee_structure_type === 'fixed')
+
+                                @if($school->regular_fees)
+                                    <div class="fee-item">
+                                        <span class="fee-label">Regular Fees:</span>
+                                        <span class="fee-amount">Rs {{ number_format($school->regular_fees) }}</span>
+                                    </div>
+                                @endif
+
+                                @if($school->discounted_fees)
+                                    <div class="fee-item">
+                                        <span class="fee-label">Discounted Fees:</span>
+                                        <span class="fee-amount">Rs {{ number_format($school->discounted_fees) }}</span>
+                                    </div>
+                                @endif
+
+                                @if($school->admission_fees)
+                                    <div class="fee-item">
+                                        <span class="fee-label">Admission Fees:</span>
+                                        <span class="fee-amount">Rs {{ number_format($school->admission_fees) }}</span>
+                                    </div>
+                                @endif
+
+                                @if(!$school->regular_fees && !$school->discounted_fees && !$school->admission_fees)
+                                    <p class="no-content">Fee information not available.</p>
+                                @endif
+
+
+                            {{-- ✅ CLASS-WISE STRUCTURE --}}
+                            @elseif($school->fee_structure_type === 'class_wise')
+
+                                @php
+                                    $classFees = is_array($school->class_wise_fees)
+                                        ? $school->class_wise_fees
+                                        : json_decode($school->class_wise_fees, true);
+                                @endphp
+
+                                @if(!empty($classFees) && is_array($classFees))
+
+                                    @foreach($classFees as $range => $amount)
+                                        <div class="fee-item">
+                                            <span class="fee-label">{{ $range }}</span>
+                                            <span class="fee-amount">Rs {{ number_format($amount) }}</span>
+                                        </div>
+                                    @endforeach
+
+                                @else
+                                    <p class="no-content">Class-wise fee information not available.</p>
+                                @endif
+
+                                {{-- Admission Fees --}}
+                                @if($school->admission_fees)
+                                    <div class="fee-item">
+                                        <span class="fee-label">Admission Fees:</span>
+                                        <span class="fee-amount">Rs {{ number_format($school->admission_fees) }}</span>
+                                    </div>
+                                @endif
+                            @else
+                                <p class="no-content">Fee structure not defined.</p>
                             @endif
                         </div>
                     </section>

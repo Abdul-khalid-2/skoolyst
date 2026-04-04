@@ -643,26 +643,78 @@
                             <h5 class="card-title mb-0">Fee Structure</h5>
                         </div>
                         <div class="card-body">
-                            @if($school->regular_fees)
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Regular Fees:</span>
-                                <strong>Rs{{ number_format($school->regular_fees) }}/month</strong>
-                            </div>
-                            @endif
-                            @if($school->discounted_fees)
-                            <div class="d-flex justify-content-between mb-2">
-                                <span>Discounted Fees:</span>
-                                <strong>Rs{{ number_format($school->discounted_fees) }}/month</strong>
-                            </div>
-                            @endif
-                            @if($school->admission_fees)
-                            <div class="d-flex justify-content-between">
-                                <span>Admission Fees:</span>
-                                <strong>Rs{{ number_format($school->admission_fees) }}</strong>
-                            </div>
-                            @endif
-                            @if(!$school->regular_fees && !$school->discounted_fees && !$school->admission_fees)
-                            <p class="text-muted text-center mb-0">Fee information not available.</p>
+
+                            {{-- ✅ FIXED STRUCTURE --}}
+                            @if($school->fee_structure_type === 'fixed')
+
+                                @if($school->regular_fees)
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Regular Fees:</span>
+                                        <strong>Rs {{ number_format($school->regular_fees) }}/month</strong>
+                                    </div>
+                                @endif
+
+                                @if($school->discounted_fees)
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Discounted Fees:</span>
+                                        <strong>Rs {{ number_format($school->discounted_fees) }}/month</strong>
+                                    </div>
+                                @endif
+
+                                @if($school->admission_fees)
+                                    <div class="d-flex justify-content-between">
+                                        <span>Admission Fees:</span>
+                                        <strong>Rs {{ number_format($school->admission_fees) }}</strong>
+                                    </div>
+                                @endif
+
+                                @if(!$school->regular_fees && !$school->discounted_fees && !$school->admission_fees)
+                                    <p class="text-muted text-center mb-0">Fee information not available.</p>
+                                @endif
+
+                            {{-- ✅ CLASS-WISE STRUCTURE --}}
+                            @elseif($school->fee_structure_type === 'class_wise')
+
+                                @php
+                                    $classFees = is_array($school->class_wise_fees)
+                                        ? $school->class_wise_fees
+                                        : json_decode($school->class_wise_fees, true);
+                                @endphp
+
+                                @if(!empty($classFees) && is_array($classFees))
+
+                                    <table class="table table-bordered mb-3">
+                                        <thead>
+                                            <tr>
+                                                <th>Classes</th>
+                                                <th>Fees</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($classFees as $range => $amount)
+                                                <tr>
+                                                    <td>{{ $range }}</td>
+                                                    <td>Rs {{ number_format($amount) }}</td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+
+                                @else
+                                    <p class="text-muted text-center mb-2">Class-wise fee information not available.</p>
+                                @endif
+
+                                {{-- Admission Fees (Optional) --}}
+                                @if($school->admission_fees)
+                                    <div class="d-flex justify-content-between mt-2">
+                                        <span>Admission Fees:</span>
+                                        <strong>Rs {{ number_format($school->admission_fees) }}</strong>
+                                    </div>
+                                @endif
+
+                            {{-- ❌ UNKNOWN TYPE --}}
+                            @else
+                                <p class="text-muted text-center mb-0">Fee structure not defined.</p>
                             @endif
                         </div>
                     </div>
