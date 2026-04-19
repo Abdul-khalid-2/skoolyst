@@ -152,6 +152,26 @@ class FeatureCurriculumSeeder extends Seeder
                 'code' => 'nios',
                 'description' => 'National Institute of Open Schooling'
             ],
+            [
+                'name' => 'Matriculation',
+                'code' => 'matric',
+                'description' => 'Secondary School Certificate (SSC) under local education boards'
+            ],
+            [
+                'name' => 'O-Level',
+                'code' => 'o_level',
+                'description' => 'Ordinary Level qualification by Cambridge International'
+            ],
+            [
+                'name' => 'A-Level',
+                'code' => 'a_level',
+                'description' => 'Advanced Level qualification by Cambridge International'
+            ],
+            [
+                'name' => 'American Curriculum',
+                'code' => 'american',
+                'description' => 'US-based high school diploma curriculum'
+            ],
         ];
 
         foreach ($curriculums as $curriculum) {

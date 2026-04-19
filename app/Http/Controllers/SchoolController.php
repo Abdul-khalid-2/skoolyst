@@ -149,7 +149,7 @@ class SchoolController extends Controller
                 $classWiseFees = json_encode($transformedFees);            
             }
 
-            dd($classWiseFees);
+            
             // Create school
             $school = School::create([
                 'name'              => $validated['name'],
