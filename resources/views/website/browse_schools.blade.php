@@ -5,6 +5,22 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/browse_schools.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<style>
+.visitor-count {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.visitor-count i {
+    margin-right: 5px;
+    color: #0f4077;
+    font-size: 0.85rem;
+}
+</style>
 @endpush
 
 @section('content')
@@ -51,7 +67,7 @@
                 <select class="filter-select" id="typeFilter">
                     <option value="">All Types</option>
                     @foreach($schoolTypes as $type)
-                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type }}</option>
+                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type === 'Separate' ? 'Girls And Boys Separate Campuses' : $type }}</option>
                     @endforeach
                 </select>
             </div>
@@ -82,35 +98,40 @@
             <div class="col-lg-4 col-md-6 school-card-col">
                 <div class="school-card">
                     <div class="school-image">
-                        @if($school->banner_image)
-                        <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }}">
+                        {{-- ACCESS AS ARRAY, NOT OBJECT --}}
+                        @if(isset($school['banner_image']) && $school['banner_image'])
+                        <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }}">
                         @else
                         <i class="fas fa-school"></i>
                         @endif
-                        @if($school->hasNewAnnouncements())
+                        
+                        {{-- Comment out or adjust hasNewAnnouncements as it's not in the array --}}
+                        {{-- 
+                        @if(isset($school['hasNewAnnouncements']) && $school['hasNewAnnouncements'])
                             <div class="new-announcement-badge">
                                 <span class="badge-pulse"></span>
-                                <a href="{{ route('browseSchools.show', $school->uuid) }}#announcements" class="announcement-link">
+                                <a href="{{ route('browseSchools.show', $school['uuid']) }}#announcements" class="announcement-link">
                                     <i class="fas fa-bullhorn"></i>
                                     New Updates
                                 </a>
                             </div>
                         @endif
+                        --}}
                     </div>
                     <div class="school-content">
                         <div class="school-header">
                             <div>
-                                <h3 class="school-name">{{ $school->name }}</h3>
+                                <h3 class="school-name">{{ $school['name'] }}</h3>
                                 <div class="school-location">
                                     <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ $school->city ?? 'Location not specified' }}</span>
+                                    <span>{{ $school['location'] ?? 'Location not specified' }}</span>
                                 </div>
                             </div>
-                            <span class="school-type-badge">{{ $school->school_type }}</span>
+                            <span class="school-type-badge">{{ $school['type'] }}</span>
                         </div>
                         <div class="school-rating">
                             @php
-                            $averageRating = $school->reviews->avg('rating') ?? 0;
+                            $averageRating = $school['rating'] ?? 0;
                             $fullStars = floor($averageRating);
                             $hasHalfStar = $averageRating - $fullStars >= 0.5;
                             $emptyStars = 5 - ceil($averageRating);
@@ -118,33 +139,41 @@
 
                             @for($i = 0; $i < $fullStars; $i++)
                                 <i class="fas fa-star"></i>
-                                @endfor
+                            @endfor
 
-                                @if($hasHalfStar)
+                            @if($hasHalfStar)
                                 <i class="fas fa-star-half-alt"></i>
-                                @endif
+                            @endif
 
-                                @for($i = 0; $i < $emptyStars; $i++)
-                                    <i class="far fa-star"></i>
-                                    @endfor
+                            @for($i = 0; $i < $emptyStars; $i++)
+                                <i class="far fa-star"></i>
+                            @endfor
 
-                                    <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
-                                    <small style="color: #888; margin-left: 0.5rem;">({{ $school->reviews->count() }} reviews)</small>
+                            <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
+                            <small style="color: #888; margin-left: 0.5rem;">({{ $school['review_count'] ?? 0 }} reviews)</small>
                         </div>
                         <p class="school-description">
-                            {{ Str::limit($school->description, 120) ?: 'No description available.' }}
+                            {{ Str::limit($school['description'] ?? 'No description available.', 120) }}
                         </p>
                         <div class="school-features">
-                            @if($school->curriculums->count() > 0)
-                            <span class="feature-tag"><i class="fas fa-book"></i> {{ $school->curriculums->first()->name }}</span>
+                            @if(isset($school['curriculum']) && $school['curriculum'])
+                                <span class="feature-tag"><i class="fas fa-book"></i> {{ $school['curriculum'] }}</span>
                             @endif
-                            @foreach($school->features->take(3) as $feature)
-                            <span class="feature-tag">{{ $feature->name }}</span>
-                            @endforeach
+                            
+                            @if(isset($school['features']) && is_array($school['features']))
+                                @foreach(array_slice($school['features'], 0, 3) as $feature)
+                                    <span class="feature-tag">{{ $feature }}</span>
+                                @endforeach
+                            @endif
                         </div>
-                        <a href="{{ route('browseSchools.show', $school->uuid) }}" class="view-profile-btn">
+                        <a href="{{ route('browseSchools.show', $school['uuid']) }}" class="view-profile-btn">
                             <i class="fas fa-eye"></i> View Full Profile
                         </a>
+                        <p class="visitor-count">
+                            @if(isset($school['visitor_count']) && $school['visitor_count'] > 0)
+                                <i class="fas fa-eye"></i> {{ $school['visitor_count'] }}
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>

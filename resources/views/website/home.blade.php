@@ -631,6 +631,10 @@
             @endforeach
         </div>
 
+        <div class="text-center mt-4">
+            <a href="{{ route('browseSchools.index') }}" class="btn btn-primary">View All Schools <i class="fas fa-arrow-right"></i></a>
+        </div>
+
         <div id="noResults" class="no-results" style="display: none;">
             <i class="fas fa-search fa-3x site-muted mb-3 d-block"></i>
             <p>No schools found matching your criteria. Try adjusting your filters.</p>
