@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Website;
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use App\Models\BlogCategory;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class WebsiteBlogPostController extends Controller
 {
@@ -91,7 +91,7 @@ class WebsiteBlogPostController extends Controller
             ->where('published_at', '<=', now())
             ->where('id', '!=', $post->id)
             ->where(function ($query) use ($post) {
-                $query->where('blog_category_id', $post->category_id)
+                $query->where('blog_category_id', $post->blog_category_id)
                     ->orWhere(function ($q) use ($post) {
                         if ($post->tags) {
                             foreach ($post->tags as $tag) {
@@ -127,6 +127,33 @@ class WebsiteBlogPostController extends Controller
             ->take(15);
 
         return view('website.blog.show', compact('post', 'relatedPosts', 'popularPosts', 'categories', 'tags'));
+    }
+
+    /**
+     * Accumulate active-tab time (client sends whole seconds; stored as sum of minutes in DB).
+     */
+    public function trackReadingTime(Request $request, BlogPost $post): JsonResponse
+    {
+        if ($post->status !== 'published' || ! $post->published_at || $post->published_at->isFuture()) {
+            abort(404);
+        }
+
+        $data = $request->validate([
+            'seconds' => 'required|integer|min:1|max:120',
+        ]);
+
+        $add = $data['seconds'] / 60.0;
+        $post->increment('total_tracked_read_minutes', $add);
+
+        $f = $post->fresh();
+        $min = round((float) $f->total_tracked_read_minutes, 4);
+        $f->total_tracked_read_minutes = $min;
+        $f->saveQuietly();
+
+        return response()->json([
+            'ok' => true,
+            'total_tracked_read_minutes' => $min,
+        ]);
     }
 
     /**

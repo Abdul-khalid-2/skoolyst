@@ -393,6 +393,9 @@ Route::group([
     Route::get('blog/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('website.blog.category');
     Route::get('blog/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('website.blog.tag');
     Route::post('blog/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('website.blog.comment.store');
+    Route::post('blog/{post}/reading-time', [WebsiteBlogPostController::class, 'trackReadingTime'])
+        ->middleware('throttle:60,1')
+        ->name('website.blog.reading-time');
 
     Route::get('shop/', [WebsiteShopController::class, 'index'])->name('website.shop.index');
     Route::get('shop/{uuid}', [WebsiteShopController::class, 'show'])->name('website.shop.show');

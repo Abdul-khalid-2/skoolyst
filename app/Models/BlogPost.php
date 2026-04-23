@@ -50,7 +50,8 @@ class BlogPost extends Model
         'custom_html' => 'array',
         'canvas_elements' => 'array',
         'is_featured' => 'boolean',
-        'published_at' => 'datetime'
+        'published_at' => 'datetime',
+        'total_tracked_read_minutes' => 'decimal:5',
     ];
 
     public function user(): BelongsTo
@@ -87,5 +88,25 @@ class BlogPost extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    /**
+     * Aggregate time as "X.XX min" (two decimals) from total_tracked_read_minutes.
+     * Long values use h + min so a full hour+ does not look like 6000+ min.
+     */
+    public function getFormattedTrackedReadTimeAttribute(): string
+    {
+        $m = (float) ($this->total_tracked_read_minutes ?? 0);
+        if ($m < 0.0001) {
+            return '';
+        }
+        if ($m >= 60) {
+            $h = (int) floor($m / 60);
+            $r = fmod($m, 60.0);
+
+            return $h.'h '.number_format(round($r, 2), 2, '.', '').' min';
+        }
+
+        return number_format(round($m, 2), 2, '.', '').' min';
     }
 }

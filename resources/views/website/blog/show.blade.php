@@ -9,6 +9,9 @@
 
 @section('content')
 
+<div id="blog-reading-config" data-endpoint="{{ route('website.blog.reading-time', $post) }}"
+    data-csrf="{{ csrf_token() }}" hidden></div>
+
 <!-- ==================== BLOG POST HEADER ==================== -->
 <section class="blog-post-header">
     <div class="container">
@@ -55,6 +58,9 @@
                             <small class="text-muted">
                                 {{ $post->published_at->format('F j, Y') }} ·
                                 {{ $post->view_count }} views
+                                @if((float) ($post->total_tracked_read_minutes ?? 0) > 0.0001)
+                                · <span title="Total time all visitors have spent reading this article"><i class="fas fa-hourglass-half me-1" aria-hidden="true"></i>{{ $post->formatted_tracked_read_time }}</span>
+                                @endif
                             </small>
                         </div>
                     </div>
@@ -389,6 +395,7 @@
         document.getElementById('parent_id').value = '';
     }
 </script>
+<script src="{{ asset('assets/js/blog-reading-tracker.js') }}?v={{ filemtime(public_path('assets/js/blog-reading-tracker.js')) }}"></script>
 
 <style>
     /* Additional styles for star rating */

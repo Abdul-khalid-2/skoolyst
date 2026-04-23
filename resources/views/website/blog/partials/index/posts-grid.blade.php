@@ -52,7 +52,7 @@
                 </div>
                 <div class="d-flex justify-content-between align-items-center mt-2">
                     <small class="text-muted" itemprop="datePublished">{{ $post->published_at->format('M j, Y') }}</small>
-                    <small class="text-muted"><i class="far fa-eye me-1"></i>{{ $post->view_count }}</small>
+                    <small class="text-muted"><i class="far fa-eye me-1"></i>{{ $post->view_count }}@include('website.blog.partials.post-card-tracked-read', ['post' => $post])</small>
                 </div>
             </div>
         </article>

@@ -199,7 +199,7 @@
                                         {{ $post->published_at->format('M j, Y') }}
                                     </small>
                                     <small class="text-muted">
-                                        <i class="far fa-eye me-1"></i>{{ $post->view_count }}
+                                        <i class="far fa-eye me-1"></i>{{ $post->view_count }}@include('website.blog.partials.post-card-tracked-read', ['post' => $post])
                                     </small>
                                 </div>
                             </div>
@@ -288,7 +288,7 @@
                                 </h6>
                                 <small class="text-muted">
                                     {{ $popularPost->published_at->format('M j') }} ·
-                                    <i class="far fa-eye me-1"></i>{{ $popularPost->view_count }}
+                                    <i class="far fa-eye me-1"></i>{{ $popularPost->view_count }}@include('website.blog.partials.post-card-tracked-read', ['post' => $popularPost])
                                 </small>
                             </div>
                         </div>
