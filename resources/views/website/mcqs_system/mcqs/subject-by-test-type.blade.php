@@ -421,51 +421,12 @@
 <section class="py-5">
     <div class="container">
         
-        <!-- Difficulty Filters -->
-        <div class="filter-card">
-            <div class="filter-header">
-                <h5><i class="fas fa-filter me-2"></i>Filter by Difficulty</h5>
-            </div>
-            <div class="filter-body">
-                <div class="difficulty-filters">
-                    <a href="{{ request()->fullUrlWithQuery(['difficulty' => null]) }}" 
-                        class="difficulty-filter {{ !request('difficulty') ? 'active' : '' }}">
-                        All ({{ $difficultyStats->sum('count') }})
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'easy']) }}" 
-                        class="difficulty-filter {{ request('difficulty') === 'easy' ? 'active' : '' }}">
-                        Easy ({{ $difficultyStats['easy']->count ?? 0 }})
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'medium']) }}" 
-                        class="difficulty-filter {{ request('difficulty') === 'medium' ? 'active' : '' }}">
-                        Medium ({{ $difficultyStats['medium']->count ?? 0 }})
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['difficulty' => 'hard']) }}" 
-                        class="difficulty-filter {{ request('difficulty') === 'hard' ? 'active' : '' }}">
-                        Hard ({{ $difficultyStats['hard']->count ?? 0 }})
-                    </a>
-                </div>
-            </div>
+        <div class="d-flex flex-column gap-3 mb-1 mcq-subject-filters">
+            @include('website.mcqs_system.mcqs.partials.subject-by-test-type.filters-difficulty', ['difficultyStats' => $difficultyStats])
+            @if($topics->count() > 0)
+                @include('website.mcqs_system.mcqs.partials.subject-by-test-type.filters-topics', ['topics' => $topics])
+            @endif
         </div>
-
-        <!-- Topic Filters -->
-        @if($topics->count() > 0)
-        <div class="filter-card">
-            <div class="filter-header">
-                <h5><i class="fas fa-folder me-2"></i>Topics</h5>
-            </div>
-            <div class="filter-body">
-                <div class="topic-filters">
-                    @foreach($topics as $topic)
-                    <a href="{{ request()->fullUrlWithQuery(['topic' => $topic->id]) }}" 
-                        class="topic-filter {{ request('topic') == $topic->id ? 'active' : '' }}">
-                        {{ $topic->title }} ({{ $topic->mcqs_count }})
-                    </a>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-        @endif
         <!-- Breadcrumb -->
         <div class="breadcrumb-wrapper">
             <nav aria-label="breadcrumb">
@@ -614,7 +575,25 @@
         // Add scroll spy for palette
         setupScrollSpy();
         setupPagination();
+        setupMcqFilterSubjectTopicSearch();
     });
+
+    function setupMcqFilterSubjectTopicSearch() {
+        var input = document.getElementById('mcqTopicSearch');
+        var list = document.getElementById('mcqTopicFilterList');
+        if (!input || !list) {
+            return;
+        }
+        input.addEventListener('input', function() {
+            var q = (input.value || '').toLowerCase().trim();
+            list.querySelectorAll('a').forEach(function(a) {
+                var title = a.getAttribute('data-topic-title') || '';
+                var text = (a.textContent || '').toLowerCase();
+                var show = !q || text.indexOf(q) !== -1 || title.indexOf(q) !== -1;
+                a.classList.toggle('d-none', !show);
+            });
+        });
+    }
 
     // Timer function
     function startTimer() {

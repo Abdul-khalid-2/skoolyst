@@ -200,6 +200,119 @@
     opacity: 0.9;
 }
 
+/* Stacked full-width filter column (no equal-height row with topics) */
+.mcq-subject-filters {
+    width: 100%;
+    align-items: stretch;
+}
+
+.mcq-subject-filters .filter-card {
+    width: 100%;
+    max-width: 100%;
+}
+
+.mcq-subject-filters .filter-card--difficulty-static {
+    flex: 0 0 auto;
+}
+
+.mcq-subject-filters .filter-card--collapsible {
+    flex: 0 1 auto;
+    min-width: 0;
+}
+
+/* Non-collapsible difficulty: compact bar + chips always visible */
+.filter-header--static {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+}
+
+.filter-header--static h5 {
+    margin: 0;
+}
+
+/* Collapsible filter headers (Bootstrap collapse + toggle) */
+button.filter-header--toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-2);
+    color: var(--color-white);
+    background: var(--color-primary);
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+    padding: var(--space-4) var(--space-5);
+    text-align: left;
+    font: inherit;
+    transition: background var(--transition-fast), filter var(--transition-fast);
+}
+
+button.filter-header--toggle:hover,
+button.filter-header--toggle:focus-visible {
+    filter: brightness(1.06);
+    color: var(--color-white);
+}
+
+button.filter-header--toggle:focus {
+    box-shadow: none;
+    outline: 2px solid rgba(255, 255, 255, 0.45);
+    outline-offset: -2px;
+}
+
+.filter-header--toggle h5,
+.filter-header--toggle h5 i {
+    color: var(--color-white) !important;
+    opacity: 1;
+}
+
+.filter-header-pill {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-semibold);
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    max-width: min(42%, 200px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+}
+
+.filter-chevron {
+    transition: transform 0.3s ease;
+    opacity: 0.9;
+}
+
+.filter-header--toggle[aria-expanded="false"] .filter-chevron {
+    transform: rotate(-90deg);
+}
+
+/* Difficulty chips align to start in subject filter stack */
+.mcq-subject-filters .difficulty-filters {
+    justify-content: flex-start;
+}
+
+/* Topic list: vertical scroll for long taxonomies */
+.topic-filters--scroll {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    max-height: min(50vh, 360px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 2px;
+}
+
+.topic-filters--scroll .topic-filter {
+    justify-content: flex-start;
+    width: 100% !important;
+    max-width: 100%;
+}
+
 .filter-body {
     padding: var(--space-5);
 }
