@@ -5,60 +5,128 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/blog.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
-<style>
-    .btn-outline-primary
-       {
-    --bs-btn-color: #022252;
-    --bs-btn-border-color: var(--color-primary);
-    --bs-btn-hover-color: #fff;
-    --bs-btn-hover-bg: var(--color-primary);
-    --bs-btn-hover-border-color: var(--color-primary);
-    --bs-btn-focus-shadow-rgb: 13, 110, 253;
-    --bs-btn-active-color: #fff;
-    --bs-btn-active-bg: var(--color-primary);
-    --bs-btn-active-border-color: var(--color-primary);
-    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
-    --bs-btn-disabled-color: var(--color-primary);
-    --bs-btn-disabled-bg: transparent;
-    --bs-btn-disabled-border-color: var(--color-primary);
-    --bs-gradient: none;
-}
+<link rel="stylesheet" href="{{ asset('assets/css/blog-inline.css') }}?v={{ filemtime(public_path('assets/css/blog-inline.css')) }}">
+@endpush
 
+@push('meta')
+@php
+    $currentPage = $posts->currentPage();
+    $searchTerm = trim((string) request('search', ''));
+    $sort = request('sort', 'latest');
+    $queryForCanonical = array_filter([
+        'search' => $searchTerm ?: null,
+        'sort' => $sort !== 'latest' ? $sort : null,
+    ]);
+    $canonicalUrl = route('website.blog.index') . (count($queryForCanonical) ? '?' . http_build_query($queryForCanonical) : '');
+    if ($currentPage > 1) {
+        $canonicalUrl .= (str_contains($canonicalUrl, '?') ? '&' : '?') . 'page=' . $currentPage;
+    }
 
-</style>
+    $baseTitle = 'Education Blog Pakistan | School Insights, Parenting Tips & Trends | Skoolyst';
+    if ($searchTerm !== '') {
+        $baseTitle = 'Search Results for "' . $searchTerm . '" | Skoolyst Blog';
+    } elseif ($sort === 'popular') {
+        $baseTitle = 'Most Popular Education Articles | Skoolyst Blog';
+    } elseif ($sort === 'featured') {
+        $baseTitle = 'Featured Education Articles | Skoolyst Blog';
+    }
+    $metaTitle = $currentPage > 1 ? ($baseTitle . ' - Page ' . $currentPage) : $baseTitle;
+
+    $metaDescription = $searchTerm !== ''
+        ? 'Browse educational blog posts matching "' . $searchTerm . '". Explore expert school advice, parent guides, and learning insights on Skoolyst.'
+        : 'Read Skoolyst education blog posts about schools in Pakistan, admissions, curriculum choices, parenting guidance, and modern learning trends.';
+    if ($currentPage > 1) {
+        $metaDescription .= ' Viewing page ' . $currentPage . '.';
+    }
+
+    $itemList = [];
+    foreach ($posts as $index => $post) {
+        $position = (($posts->currentPage() - 1) * $posts->perPage()) + $index + 1;
+        $itemList[] = [
+            '@type' => 'ListItem',
+            'position' => $position,
+            'url' => route('website.blog.show', $post->slug),
+            'name' => $post->title,
+        ];
+    }
+
+    $collectionSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $metaTitle,
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'numberOfItems' => $posts->total(),
+            'itemListElement' => $itemList,
+        ],
+    ];
+
+    $blogSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Blog',
+        'name' => 'Skoolyst Blog',
+        'description' => 'Educational insights, school guidance, and parent resources from Skoolyst.',
+        'url' => route('website.blog.index'),
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'SKOOLYST Pakistan',
+            'url' => url('/'),
+        ],
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => route('website.home'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Blog',
+                'item' => route('website.blog.index'),
+            ],
+        ],
+    ];
+@endphp
+<title>{{ $metaTitle }}</title>
+<meta name="description" content="{{ $metaDescription }}">
+<meta name="keywords" content="education blog Pakistan, school admissions, parent tips, curriculum guides, school comparison, Skoolyst blog">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<link rel="canonical" href="{{ $canonicalUrl }}">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ $metaTitle }}">
+<meta property="og:description" content="{{ $metaDescription }}">
+<meta property="og:url" content="{{ $canonicalUrl }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $metaTitle }}">
+<meta name="twitter:description" content="{{ $metaDescription }}">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+@if ($posts->previousPageUrl())
+<link rel="prev" href="{{ $posts->previousPageUrl() }}">
+@endif
+@if ($posts->nextPageUrl())
+<link rel="next" href="{{ $posts->nextPageUrl() }}">
+@endif
+
+<script type="application/ld+json">{!! json_encode($blogSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($collectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endpush
 
 @section('content')
 
-<!-- ==================== BLOG HERO SECTION ==================== -->
-<section class="blog-header" id="blog-hero">
-    <div class="container">
-        <div class="blog-hero-content">
-            <h1 class="blog-hero-title">Educational Insights & Articles</h1>
-            <p class="blog-hero-subtitle">
-                Discover the latest trends, insights, and stories from the world of education. 
-                Expert advice, school success stories, and educational innovations.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- ==================== BLOG SEARCH BAR (below header) ==================== -->
-<section class="blog-search-section">
-    <div class="container">
-        <div class="blog-search-container">
-            <form action="{{ route('website.blog.index') }}" method="GET" class="blog-search-form">
-                <div class="blog-search-box">
-                    <input type="text" name="search" class="blog-search-input" 
-                        placeholder="Search articles by title or content..." value="{{ request('search') }}">
-                    <button class="blog-search-btn" type="submit">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
+@include('website.blog.partials.index.hero-search')
 
 <!-- ==================== BLOG CONTENT SECTION ==================== -->
 <section class="py-5">
@@ -66,220 +134,17 @@
         <div class="row">
             <!-- Main Content -->
             <div class="col-lg-8">
-                <!-- Filters -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="d-flex align-items-center">
-                            <span class="me-3 text-muted">Sort by:</span>
-                            <div class="btn-group">
-                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'latest']) }}"
-                                    class="btn btn-outline-primary {{ request('sort', 'latest') === 'latest' ? 'active' : '' }}">
-                                    Latest
-                                </a>
-                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'popular']) }}"
-                                    class="btn btn-outline-primary {{ request('sort') === 'popular' ? 'active' : '' }}">
-                                    Popular
-                                </a>
-                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'featured']) }}"
-                                    class="btn btn-outline-primary {{ request('sort') === 'featured' ? 'active' : '' }}">
-                                    Featured
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 text-md-end">
-                        <span class="text-muted">Showing {{ $posts->total() }} articles</span>
-                    </div>
-                </div>
-
-                <!-- Blog Posts Grid -->
-                @if($posts->count() > 0)
-                <div class="row">
-                    @foreach($posts as $post)
-                    <div class="col-md-6 mb-4">
-                        <article class="blog-card card h-100 shadow-sm">
-                            @if($post->featured_image)
-                            <img src="{{ asset('website/' . $post->featured_image) }}"
-                                class="card-img-top" alt="{{ $post->title }}">
-                            @else
-                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center"
-                                style="height: 250px;">
-                                <i class="fas fa-newspaper fa-3x text-muted"></i>
-                            </div>
-                            @endif
-
-                            <div class="card-body">
-                                @if($post->category)
-                                <a href="{{ route('website.blog.category', $post->category->slug) }}"
-                                    class="badge category-badge text-decoration-none mb-2">
-                                    {{ $post->category->name }}
-                                </a>
-                                @endif
-
-                                <h5 class="card-title">
-                                    <a href="{{ route('website.blog.show', $post->slug) }}"
-                                        class="text-dark text-decoration-none">
-                                        {{ Str::limit($post->title, 60) }}
-                                    </a>
-                                </h5>
-
-                                <p class="card-text text-muted">
-                                    {{ Str::limit(strip_tags($post->excerpt ?: $post->content), 120) }}
-                                </p>
-                            </div>
-
-                            <div class="card-footer bg-transparent border-top-0">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        @if($post->author && $post->author->profile_image)
-                                        <img src="{{ asset('website/' . $post->author->profile_image) }}"
-                                            alt="{{ $post->author->name }}"
-                                            class="rounded-circle me-2"
-                                            style="width: 32px; height: 32px; object-fit: cover;">
-                                        @else
-                                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2"
-                                            style="width: 32px; height: 32px;">
-                                            <i class="fas fa-user"></i>
-                                        </div>
-                                        @endif
-                                        <small class="text-muted">
-                                            {{ $post->author->name ?? 'Admin' }}
-                                        </small>
-                                    </div>
-                                    <small class="text-muted">
-                                        <i class="far fa-clock me-1"></i>
-                                        {{ $post->created_at->diffForHumans() }}
-                                    </small>
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center mt-2">
-                                    <small class="text-muted">
-                                        {{ $post->published_at->format('M j, Y') }}
-                                    </small>
-                                    <small class="text-muted">
-                                        <i class="far fa-eye me-1"></i>{{ $post->view_count }}
-                                    </small>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                    @endforeach
-                </div>
-
-                <!-- Pagination -->
-                @if($posts->hasPages())
-                <div class="mt-5">
-                    <nav>
-                        {{ $posts->links('pagination::bootstrap-5') }}
-                    </nav>
-                </div>
-                @endif
-
-                @else
-                <!-- No Posts Found -->
-                <div class="text-center py-5">
-                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
-                    <h4 class="text-muted">No articles found</h4>
-                    <p class="text-muted">Try adjusting your search or filters</p>
-                    <a href="{{ route('website.blog.index') }}" class="btn btn-primary">
-                        <i class="fas fa-newspaper me-2"></i>View All Articles
-                    </a>
-                </div>
-                @endif
+                @include('website.blog.partials.index.toolbar', ['posts' => $posts])
+                @include('website.blog.partials.index.posts-grid', ['posts' => $posts])
             </div>
 
             <!-- Sidebar -->
             <div class="col-lg-4">
-                <!-- Categories Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Categories</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="list-group list-group-flush">
-                            @foreach($categories as $category)
-                            <a href="{{ route('website.blog.category', $category->slug) }}"
-                                class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                                <div><i class="fas fa-folder me-2"></i>{{ $category->name }}</div>
-                                <span class="badge bg-primary rounded-pill">{{ $category->posts_count }}</span>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Popular Posts Widget -->
-                <div class="sidebar-widget card shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-fire me-2"></i>Popular Articles</h5>
-                    </div>
-                    <div class="card-body">
-                        @foreach($popularPosts as $popularPost)
-                        <div class="d-flex mb-3 pb-3 border-bottom">
-                            @if($popularPost->featured_image)
-                            <img src="{{ asset('website/' . $popularPost->featured_image) }}"
-                                alt="{{ $popularPost->title }}"
-                                class="flex-shrink-0 me-3 rounded"
-                                style="width: 60px; height: 60px; object-fit: cover;">
-                            @else
-                            <div class="flex-shrink-0 me-3 bg-light rounded d-flex align-items-center justify-content-center"
-                                style="width: 60px; height: 60px;">
-                                <i class="fas fa-newspaper text-muted"></i>
-                            </div>
-                            @endif
-                            <div class="flex-grow-1">
-                                <h6 class="mb-1">
-                                    <a href="{{ route('website.blog.show', $popularPost->slug) }}"
-                                        class="text-dark text-decoration-none">
-                                        {{ Str::limit($popularPost->title, 50) }}
-                                    </a>
-                                </h6>
-                                <small class="text-muted">
-                                    {{ $popularPost->published_at->format('M j') }} ·
-                                    <i class="far fa-eye me-1"></i>{{ $popularPost->view_count }}
-                                </small>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <!-- Tags Widget -->
-                @if($tags->count() > 0)
-                <div class="sidebar-widget card shadow-sm mb-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-tags me-2"></i>Popular Tags</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex flex-wrap gap-2">
-                            @foreach($tags as $tag)
-                                @if(!empty(trim($tag)))
-                                <a href="{{ route('website.blog.tag', $tag) }}" 
-                                class="badge bg-light text-dark text-decoration-none">
-                                    #{{ $tag }}
-                                </a>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-                @endif
-
-                <!-- Newsletter Widget -->
-                <div class="sidebar-widget card shadow-sm bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-envelope fa-2x mb-3"></i>
-                        <h5>Stay Updated</h5>
-                        <p class="small opacity-75">Get the latest educational insights delivered to your inbox</p>
-                        <form class="mt-3">
-                            <div class="input-group">
-                                <input type="email" class="form-control" placeholder="Your email">
-                                <button class="btn btn-light" type="submit">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                @include('website.blog.partials.sidebar', [
+                    'categories' => $categories,
+                    'popularPosts' => $popularPosts,
+                    'tags' => $tags
+                ])
             </div>
         </div>
     </div>
