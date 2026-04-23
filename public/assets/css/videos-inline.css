@@ -1,0 +1,9 @@
+.video-author-thumb {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
+
+.video-thumb-placeholder {
+    min-height: 200px;
+}

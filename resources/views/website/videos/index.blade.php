@@ -5,433 +5,161 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/videos.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/videos-inline.css') }}?v={{ filemtime(public_path('assets/css/videos-inline.css')) }}">
+@endpush
+
+@push('meta')
+@php
+    $currentPage = $videos->currentPage();
+    $searchTerm = trim((string) request('search', ''));
+    $filter = request('filter', 'all');
+
+    $queryForCanonical = array_filter([
+        'search' => $searchTerm !== '' ? $searchTerm : null,
+        'category' => (request('category') && request('category') != 'all') ? request('category') : null,
+        'school' => (request('school') && request('school') != 'all') ? request('school') : null,
+        'shop' => (request('shop') && request('shop') != 'all') ? request('shop') : null,
+        'filter' => ($filter && $filter != 'all') ? $filter : null,
+    ]);
+    $canonicalUrl = route('website.videos.index') . (count($queryForCanonical) ? '?' . http_build_query($queryForCanonical) : '');
+    if ($currentPage > 1) {
+        $canonicalUrl .= (str_contains($canonicalUrl, '?') ? '&' : '?') . 'page=' . $currentPage;
+    }
+
+    $selectedCategory = (request('category') && request('category') != 'all')
+        ? $categories->firstWhere('id', (int) request('category'))
+        : null;
+
+    $baseTitle = 'Educational Videos Pakistan | School & Learning Videos | SKOOLYST EduVideos';
+    if ($searchTerm !== '') {
+        $baseTitle = 'Search: "'.Str::limit($searchTerm, 50).'" | EduVideos | Skoolyst';
+    } elseif ($selectedCategory) {
+        $baseTitle = $selectedCategory->name.' | Educational Videos | Skoolyst';
+    } elseif ($filter === 'featured') {
+        $baseTitle = 'Featured Educational Videos | Skoolyst EduVideos';
+    } elseif ($filter === 'popular') {
+        $baseTitle = 'Most Popular Educational Videos | Skoolyst';
+    } elseif ($filter === 'recent') {
+        $baseTitle = 'Recent Educational Videos | Skoolyst';
+    }
+    $metaTitle = $currentPage > 1 ? ($baseTitle.' - Page '.$currentPage) : $baseTitle;
+
+    $metaDescription = 'Watch educational videos on Skoolyst: school stories, learning tips, and content from schools and education partners in Pakistan.';
+    if ($searchTerm !== '') {
+        $metaDescription = 'Video search results for "'.$searchTerm.'" on Skoolyst. Discover school and learning videos matched to your query.';
+    } elseif ($selectedCategory) {
+        $metaDescription = 'Browse '.$selectedCategory->name.' videos on Skoolyst. Educational content for students and parents in Pakistan.';
+    } elseif ($filter === 'featured') {
+        $metaDescription = 'Hand-picked featured educational videos on Skoolyst — school highlights, expert tips, and inspiring learning content.';
+    } elseif ($filter === 'popular') {
+        $metaDescription = 'Most-watched educational videos on Skoolyst, ranked by views. Discover what parents and students are watching.';
+    } elseif ($filter === 'recent') {
+        $metaDescription = 'Recently published educational videos on Skoolyst. Stay up to date with the latest school and learning content.';
+    }
+    if ($currentPage > 1) {
+        $metaDescription .= ' Page '.$currentPage.' of the video library.';
+    }
+
+    $itemList = [];
+    foreach ($videos as $index => $video) {
+        $position = (($videos->currentPage() - 1) * $videos->perPage()) + $index + 1;
+        $itemList[] = [
+            '@type' => 'ListItem',
+            'position' => $position,
+            'url' => route('website.videos.show', $video->slug),
+            'name' => $video->title,
+        ];
+    }
+
+    $collectionSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $metaTitle,
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'isPartOf' => [
+            '@type' => 'WebSite',
+            'name' => 'SKOOLYST Pakistan',
+            'url' => url('/'),
+        ],
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'numberOfItems' => $videos->total(),
+            'itemListElement' => $itemList,
+        ],
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => route('website.home'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'EduVideos',
+                'item' => route('website.videos.index'),
+            ],
+        ],
+    ];
+@endphp
+<title>{{ $metaTitle }}</title>
+<meta name="description" content="{{ $metaDescription }}">
+<meta name="keywords" content="educational videos Pakistan, school videos, learning videos, parent tips video, Skoolyst EduVideos, O Level, curriculum">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<link rel="canonical" href="{{ $canonicalUrl }}">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ $metaTitle }}">
+<meta property="og:description" content="{{ $metaDescription }}">
+<meta property="og:url" content="{{ $canonicalUrl }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+<meta property="og:site_name" content="Skoolyst">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $metaTitle }}">
+<meta name="twitter:description" content="{{ $metaDescription }}">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+@if ($videos->previousPageUrl())
+<link rel="prev" href="{{ $videos->previousPageUrl() }}">
+@endif
+@if ($videos->nextPageUrl())
+<link rel="next" href="{{ $videos->nextPageUrl() }}">
+@endif
+
+<script type="application/ld+json">{!! json_encode($collectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endpush
 
 @section('content')
 
-<!-- ==================== VIDEOS HERO SECTION (compact) ==================== -->
-<section class="videos-hero-section" id="videos-hero">
-    <div class="videos-hero-content">
-        <h1 class="videos-hero-title">SKOOLYST EduVideos</h1>
-        <p class="videos-hero-subheading">
-            Explore our collection of educational videos from schools and shops. 
-            Learn, discover, and get inspired with quality content.
-        </p>
-    </div>
-</section>
-
-<!-- ==================== VIDEOS SEARCH BAR (below header) ==================== -->
-<section class="videos-search-section">
-    <div class="container">
-        <div class="videos-search-container">
-            <form action="{{ route('website.videos.index') }}" method="GET" class="videos-search-form">
-                <div class="videos-search-box">
-                    <input type="text" name="search" class="videos-search-input" 
-                        placeholder="Search videos by title or description..." value="{{ request('search') }}">
-                    <button class="videos-search-btn" type="submit">
-                        <i class="fas fa-search"></i> Search
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</section>
-
-<!-- ==================== VIDEO STATS SECTION ==================== -->
-{{-- <div class="container">
-    <div class="row video-stats">
-        <div class="col-md-3 col-6">
-            <div class="stat-item">
-                <div class="stat-number">{{ $totalVideos }}</div>
-                <div class="stat-label">Total Videos</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="stat-item">
-                <div class="stat-number">{{ number_format($totalViews) }}</div>
-                <div class="stat-label">Total Views</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="stat-item">
-                <div class="stat-number">{{ $featuredVideos->count() }}</div>
-                <div class="stat-label">Featured</div>
-            </div>
-        </div>
-        <div class="col-md-3 col-6">
-            <div class="stat-item">
-                <div class="stat-number">{{ $categories->count() }}</div>
-                <div class="stat-label">Categories</div>
-            </div>
-        </div>
-    </div>
-</div> --}}
+@include('website.videos.partials.index.hero-search')
 
 <!-- ==================== VIDEOS CONTENT SECTION ==================== -->
 <section class="py-5">
     <div class="container">
         <div class="row">
-            <!-- Main Content -->
             <div class="col-lg-8">
-                <!-- Filters -->
-                <div class="filters-container">
-                    <form action="{{ route('website.videos.index') }}" method="GET" id="video-filters-form">
-                        <div class="row">
-                            <div class="col-md-4 filter-group">
-                                <label for="category">Category</label>
-                                <select name="category" id="category" class="form-control filter-select">
-                                    <option value="all">All Categories</option>
-                                    @foreach($categories as $category)
-                                    <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                                        {{ $category->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4 filter-group">
-                                <label for="school">School</label>
-                                <select name="school" id="school" class="form-control filter-select">
-                                    <option value="all">All Schools</option>
-                                    @foreach($schools as $school)
-                                    <option value="{{ $school->id }}" {{ request('school') == $school->id ? 'selected' : '' }}>
-                                        {{ $school->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-md-4 filter-group">
-                                <label for="shop">Shop</label>
-                                <select name="shop" id="shop" class="form-control filter-select">
-                                    <option value="all">All Shops</option>
-                                    @foreach($shops as $shop)
-                                    <option value="{{ $shop->id }}" {{ request('shop') == $shop->id ? 'selected' : '' }}>
-                                        {{ $shop->name }}
-                                    </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Quick Filters -->
-                        <div class="mt-4">
-                            <label class="d-block mb-2">Quick Filters:</label>
-                            <div class="quick-filters">
-                                <button type="button" class="quick-filter-btn {{ !request('filter') || request('filter') == 'all' ? 'active' : '' }}"
-                                        data-filter="all">
-                                    All Videos
-                                </button>
-                                <button type="button" class="quick-filter-btn {{ request('filter') == 'featured' ? 'active' : '' }}"
-                                        data-filter="featured">
-                                    <i class="fas fa-star me-1"></i> Featured
-                                </button>
-                                <button type="button" class="quick-filter-btn {{ request('filter') == 'popular' ? 'active' : '' }}"
-                                        data-filter="popular">
-                                    <i class="fas fa-fire me-1"></i> Popular
-                                </button>
-                                <button type="button" class="quick-filter-btn {{ request('filter') == 'recent' ? 'active' : '' }}"
-                                        data-filter="recent">
-                                    <i class="fas fa-clock me-1"></i> Recent
-                                </button>
-                            </div>
-                            <input type="hidden" name="filter" id="filter" value="{{ request('filter', 'all') }}">
-                        </div>
-
-                        <!-- Clear Filters -->
-                        @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
-                        <div class="mt-3 text-end">
-                            <a href="{{ route('website.videos.index') }}" class="btn btn-sm btn-outline-secondary">
-                                <i class="fas fa-times me-1"></i> Clear Filters
-                            </a>
-                        </div>
-                        @endif
-                    </form>
-                </div>
-
-                <!-- Videos Grid -->
-                @if($videos->count() > 0)
-                <div class="row">
-                    @foreach($videos as $video)
-                    <div class="col-md-6 col-lg-6 col-xl-6 mb-4">
-                        <article class="video-card card h-100 shadow-sm">
-                            <!-- Video Thumbnail -->
-                            <div class="position-relative card-img-top">
-                                @if($video->video_id)
-                                <img src="https://img.youtube.com/vi/{{ $video->video_id }}/hqdefault.jpg" 
-                                     class="w-100 h-100 object-fit-cover" 
-                                     alt="{{ $video->title }}">
-                                @else
-                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-video fa-3x text-muted"></i>
-                                </div>
-                                @endif
-                                
-                                <!-- Play Overlay -->
-                                <div class="video-play-overlay">
-                                     <a href="{{ route('website.videos.show', $video->slug) }}"
-                                        class="text-dark text-decoration-none">
-                                        <div class="play-icon">
-                                            <i class="fas fa-play"></i>
-                                        </div>
-                                    </a>
-                                    
-                                </div>
-                                
-                                <!-- Featured Badge -->
-                                @if($video->is_featured)
-                                <span class="position-absolute top-0 start-0 m-2 badge bg-warning">
-                                    <i class="fas fa-star me-1"></i> Featured
-                                </span>
-                                @endif
-                            </div>
-
-                            <!-- Card Body -->
-                            <div class="card-body">
-                                @if($video->category)
-                                <a href="{{ route('website.videos.category', $video->category->slug) }}"
-                                    class="badge video-category-badge text-decoration-none mb-2">
-                                    {{ $video->category->name }}
-                                </a>
-                                @endif
-
-                                <h6 class="card-title">
-                                    <a href="{{ route('website.videos.show', $video->slug) }}"
-                                        class="text-dark text-decoration-none">
-                                        {{ Str::limit($video->title, 50) }}
-                                    </a>
-                                </h6>
-
-                                <p class="card-text text-muted small">
-                                    {{ Str::limit($video->description, 100) }}
-                                </p>
-
-                                <!-- Video Meta -->
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        @if($video->user->profile_picture)
-                                        <img src="{{ asset('website/' . $video->user->profile_picture) }}" 
-                                             class="rounded-circle me-2" 
-                                             style="width: 30px; height: 30px; object-fit: cover;"
-                                             alt="{{ $video->user->name }}">
-                                        @else
-                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-2"
-                                             style="width: 30px; height: 30px;">
-                                            <i class="fas fa-user text-white"></i>
-                                        </div>
-                                        @endif
-                                        <small class="text-muted">{{ Str::limit($video->user->name, 15) }}</small>
-                                    </div>
-                                    
-                                    <small class="text-muted">
-                                        <i class="far fa-clock me-1"></i>
-                                        {{ $video->created_at->diffForHumans() }}
-                                    </small>
-                                </div>
-
-                                <!-- Video Stats -->
-                                <div class="row mt-3 text-center">
-                                    <div class="col-4">
-                                        <small class="text-muted d-block">
-                                            <i class="fas fa-eye"></i>
-                                            {{ number_format($video->views) }}
-                                        </small>
-                                        <small class="text-muted">views</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <small class="text-muted d-block">
-                                            <i class="fas fa-heart"></i>
-                                            {{ number_format($video->likes_count) }}
-                                        </small>
-                                        <small class="text-muted">likes</small>
-                                    </div>
-                                    <div class="col-4">
-                                        <small class="text-muted d-block">
-                                            <i class="fas fa-comment"></i>
-                                            {{ number_format($video->comments_count) }}
-                                        </small>
-                                        <small class="text-muted">comments</small>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </div>
-                    @endforeach
-                </div>
-
-                <!-- Pagination -->
-                @if($videos->hasPages())
-                <div class="mt-5">
-                    <nav>
-                        {{ $videos->links('pagination::bootstrap-5') }}
-                    </nav>
-                </div>
-                @endif
-
-                @else
-                <!-- No Videos Found -->
-                <div class="empty-state">
-                    <i class="fas fa-video-slash empty-state-icon"></i>
-                    <h4 class="text-muted">No videos found</h4>
-                    <p class="text-muted">
-                        @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
-                        No videos match your search criteria. Try different filters.
-                        @else
-                        No videos have been uploaded yet. Check back soon!
-                        @endif
-                    </p>
-                    @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
-                    <a href="{{ route('website.videos.index') }}" class="btn btn-primary">
-                        <i class="fas fa-video me-2"></i>View All Videos
-                    </a>
-                    @endif
-                </div>
-                @endif
+                @include('website.videos.partials.index.filters', [
+                    'categories' => $categories,
+                    'schools' => $schools,
+                    'shops' => $shops,
+                ])
+                @include('website.videos.partials.index.video-grid', ['videos' => $videos])
             </div>
-
-            <!-- Sidebar -->
             <div class="col-lg-4">
-                <!-- Categories Widget -->
-                <div class="sidebar-widget">
-                    <div class="card-header">
-                        <h5 class="videos-sidebar-title">
-                            <i class="fas fa-folder me-2"></i>Video Categories
-                        </h5>
-                    </div>
-                    <div class="videos-sidebar-content">
-                        <div class="videos-category-list">
-                            @foreach($categories as $category)
-                            <a href="{{ route('website.videos.category', $category->slug) }}" 
-                            class="videos-category-item">
-                                <span>{{ $category->name }}</span>
-                                <span class="videos-category-count">{{ $category->videos->count() ?? 0 }}</span>
-                            </a>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Featured Videos Widget -->
-                @if($featuredVideos->count() > 0)
-                <div class="sidebar-widget">
-                    <div class="card-header">
-                        <h5 class="videos-sidebar-title">
-                            <i class="fas fa-star me-2"></i>Featured Videos
-                        </h5>
-                    </div>
-                    <div class="videos-sidebar-content">
-                        @foreach($featuredVideos as $featuredVideo)
-                        <div class="featured-video-item">
-                            <div class="videos-featured-thumb">
-                                @if($featuredVideo->video_id)
-                                <img src="https://img.youtube.com/vi/{{ $featuredVideo->video_id }}/default.jpg" 
-                                    alt="{{ $featuredVideo->title }}">
-                                @else
-                                <div class="videos-featured-placeholder">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                @endif
-                            </div>
-                            <div class="videos-featured-content">
-                                <h6 class="videos-featured-title">
-                                    <a href="{{ route('website.videos.show', $featuredVideo->slug) }}">
-                                        {{ Str::limit($featuredVideo->title, 40) }}
-                                    </a>
-                                </h6>
-                                <div class="videos-featured-meta">
-                                    <i class="fas fa-eye me-1"></i>{{ number_format($featuredVideo->views) }}
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
-                <!-- Popular Videos Widget -->
-                @if($popularVideos->count() > 0)
-                <div class="sidebar-widget">
-                    <div class="card-header">
-                        <h5 class="videos-sidebar-title">
-                            <i class="fas fa-fire me-2"></i>Popular Videos
-                        </h5>
-                    </div>
-                    <div class="videos-sidebar-content">
-                        @foreach($popularVideos as $popularVideo)
-                        <div class="featured-video-item">
-                            <div class="videos-featured-thumb">
-                                @if($popularVideo->video_id)
-                                <img src="https://img.youtube.com/vi/{{ $popularVideo->video_id }}/default.jpg" 
-                                    alt="{{ $popularVideo->title }}">
-                                @else
-                                <div class="videos-featured-placeholder">
-                                    <i class="fas fa-video"></i>
-                                </div>
-                                @endif
-                            </div>
-                            <div class="videos-featured-content">
-                                <h6 class="videos-featured-title">
-                                    <a href="{{ route('website.videos.show', $popularVideo->slug) }}">
-                                        {{ Str::limit($popularVideo->title, 40) }}
-                                    </a>
-                                </h6>
-                                <div class="videos-featured-meta">
-                                    <i class="fas fa-eye me-1"></i>{{ number_format($popularVideo->views) }}
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
-
-                <!-- Schools Widget -->
-                <div class="sidebar-widget">
-                    <div class="card-header">
-                        <h5 class="videos-sidebar-title">
-                            <i class="fas fa-school me-2"></i>Schools
-                        </h5>
-                    </div>
-                    <div class="videos-sidebar-content">
-                        <div class="videos-school-list">
-                            @foreach($schools->take(5) as $school)
-                            <a href="{{ route('browseSchools.show', $school->uuid) }}" 
-                            class="videos-school-item">
-                                @if($school->logo)
-                                <img src="{{ asset('website/' . $school->logo) }}" 
-                                    class="videos-school-logo"
-                                    alt="{{ $school->name }}">
-                                @else
-                                <div class="videos-school-placeholder">
-                                    <i class="fas fa-school"></i>
-                                </div>
-                                @endif
-                                <span class="videos-school-name">{{ Str::limit($school->name, 25) }}</span>
-                            </a>
-                            @endforeach
-                            @if($schools->count() > 5)
-                            <a href="{{ route('browseSchools.index') }}" class="videos-view-all-link">
-                                View All Schools <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
-                            @endif
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Newsletter Widget -->
-                {{-- <div class="sidebar-widget card shadow-sm bg-primary text-white">
-                    <div class="card-body text-center">
-                        <i class="fas fa-video fa-2x mb-3"></i>
-                        <h5>Stay Updated</h5>
-                        <p class="small opacity-75">Get notified about new educational videos</p>
-                        <form class="mt-3">
-                            <div class="input-group">
-                                <input type="email" class="form-control" placeholder="Your email">
-                                <button class="btn btn-light" type="submit">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div> --}}
+                @include('website.videos.partials.index.sidebar', [
+                    'categories' => $categories,
+                    'featuredVideos' => $featuredVideos,
+                    'popularVideos' => $popularVideos,
+                    'schools' => $schools,
+                ])
             </div>
         </div>
     </div>
@@ -440,61 +168,5 @@
 @endsection
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Filter form submission
-        const filterForm = document.getElementById('video-filters-form');
-        const filterInputs = filterForm.querySelectorAll('select');
-        
-        filterInputs.forEach(input => {
-            input.addEventListener('change', function() {
-                filterForm.submit();
-            });
-        });
-
-        // Quick filter buttons
-        const quickFilterBtns = document.querySelectorAll('.quick-filter-btn');
-        const filterHiddenInput = document.getElementById('filter');
-        
-        quickFilterBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const filterValue = this.getAttribute('data-filter');
-                
-                // Update active state
-                quickFilterBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                
-                // Update hidden input
-                filterHiddenInput.value = filterValue;
-                
-                // Submit form
-                filterForm.submit();
-            });
-        });
-
-        // Video card hover effect
-        const videoCards = document.querySelectorAll('.video-card');
-        videoCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-
-        // Play icon hover
-        const playIcons = document.querySelectorAll('.play-icon');
-        playIcons.forEach(icon => {
-            icon.addEventListener('mouseenter', function() {
-                this.style.transform = 'scale(1.1)';
-            });
-            
-            icon.addEventListener('mouseleave', function() {
-                this.style.transform = 'scale(1)';
-            });
-        });
-    });
-</script>
+<script src="{{ asset('assets/js/videos-index.js') }}?v={{ filemtime(public_path('assets/js/videos-index.js')) }}"></script>
 @endpush
