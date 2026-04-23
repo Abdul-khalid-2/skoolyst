@@ -29,6 +29,13 @@ class WebsiteMcqController extends Controller
     // Main MCQs index page
     public function index(Request $request)
     {
+        $stats = [
+            'totalMcqs' => Mcq::where('status', 'published')->count(),
+            'subjectsCount' => Subject::where('status', 'active')->count(),
+            'testTypesCount' => TestType::where('status', 'active')->count(),
+            'topicsCount' => Topic::where('status', 'active')->count(),
+        ];
+
         $testTypes = TestType::withCount(['subjects', 'mcqs'])
             ->where('status', 'active')
             ->orderBy('sort_order')
@@ -48,10 +55,10 @@ class WebsiteMcqController extends Controller
             ->get();
 
         // Get total MCQs count for score calculation
-        $totalMcqs = Mcq::where('status', 'published')->count();
+        $totalMcqs = $stats['totalMcqs'];
 
         // Using ROW_NUMBER() for MySQL 8.0+
-        $topUsers = \DB::table(\DB::raw('(
+        $topUsersRaw = \DB::table(\DB::raw('(
             SELECT 
                 user_id,
                 mcq_id,
@@ -69,10 +76,18 @@ class WebsiteMcqController extends Controller
             ->groupBy('user_id')
             ->orderBy('correct_answers', 'desc')
             ->limit(12)
+            ->get();
+
+        $usersById = \App\Models\User::whereIn('id', $topUsersRaw->pluck('user_id'))
             ->get()
-            ->map(function ($userData) use ($totalMcqs) {
-                $user = \App\Models\User::find($userData->user_id);
-                if (!$user) return null;
+            ->keyBy('id');
+
+        $topUsers = $topUsersRaw
+            ->map(function ($userData) use ($totalMcqs, $usersById) {
+                $user = $usersById->get($userData->user_id);
+                if (!$user) {
+                    return null;
+                }
 
                 $score = $totalMcqs > 0 ? ($userData->correct_answers / $totalMcqs) * 100 : 0;
                 $stars = min(5, max(0, $score / 20));
@@ -88,7 +103,7 @@ class WebsiteMcqController extends Controller
             ->filter()
             ->values();
 
-        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs', 'topUsers'));
+        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs', 'topUsers', 'stats'));
     }
 
     // Test Type page (e.g., Entry Test, Job Test)
