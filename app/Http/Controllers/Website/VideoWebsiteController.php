@@ -134,20 +134,20 @@ class VideoWebsiteController extends Controller
         ));
     }
 
-    public function category($slug)
+    public function category(Request $request, string $slug)
     {
-        abort(404);
         $category = VideoCategory::where('slug', $slug)
             ->where('status', 'active')
             ->firstOrFail();
 
-        $videos = Video::with(['user', 'school', 'shop'])
-            ->where('category_id', $category->id)
-            ->published()
-            ->approved()
-            ->paginate(12);
+        $query = array_merge($request->query->all(), [
+            'category' => (string) $category->id,
+        ]);
+        $newRequest = $request->duplicate($query);
 
-        return view('dashboard.videos.categories.index', compact('category', 'videos'));
+        app()->instance('request', $newRequest);
+
+        return $this->index($newRequest);
     }
 
     public function storeComment(Request $request, Video $video)
