@@ -1,0 +1,29 @@
+.visitor-count {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.visitor-count i {
+    margin-right: 5px;
+    color: #0f4077;
+    font-size: 0.85rem;
+}
+
+.rating-value {
+    color: #666;
+    margin-left: 0.5rem;
+}
+
+.review-count {
+    color: #888;
+    margin-left: 0.5rem;
+}
+
+.browse-all-link {
+    color: #4361ee;
+    text-decoration: none;
+}

@@ -5,316 +5,124 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/browse_schools.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
-<style>
-.visitor-count {
-    position: absolute;
-    bottom: 10px;
-    left: 20px;
-    margin: 0;
-    font-size: 0.85rem;
-    color: #6c757d;
-}
+<link rel="stylesheet" href="{{ asset('assets/css/browse_schools-inline.css') }}?v={{ filemtime(public_path('assets/css/browse_schools-inline.css')) }}">
+@endpush
 
-.visitor-count i {
-    margin-right: 5px;
-    color: #0f4077;
-    font-size: 0.85rem;
-}
-</style>
+@push('meta')
+@php
+    $activeFilters = array_filter([
+        request('search'),
+        request('location'),
+        request('type'),
+        request('curriculum'),
+    ]);
+
+    $isFiltered = count($activeFilters) > 0;
+    $currentPage = $schools->currentPage();
+    $totalSchools = $schools->total();
+    $canonicalUrl = request()->fullUrlWithoutQuery(['page']);
+    if ($currentPage > 1) {
+        $canonicalUrl .= (str_contains($canonicalUrl, '?') ? '&' : '?') . 'page=' . $currentPage;
+    }
+
+    $metaTitle = $isFiltered
+        ? 'Filtered School Search Results | Skoolyst Pakistan'
+        : 'Browse All Schools in Pakistan | Compare Top Schools | Skoolyst';
+    if ($currentPage > 1) {
+        $metaTitle .= ' - Page ' . $currentPage;
+    }
+
+    $metaDescription = $isFiltered
+        ? 'Explore filtered school results on Skoolyst. Compare schools by city, curriculum, and type to find the right match for your child.'
+        : 'Browse and compare schools in Pakistan by city, curriculum, and school type. Read reviews, explore profiles, and find the best school with Skoolyst.';
+    if ($currentPage > 1) {
+        $metaDescription .= ' Showing page ' . $currentPage . ' of school listings.';
+    }
+
+    $itemList = [];
+    foreach ($schools as $index => $school) {
+        $position = (($schools->currentPage() - 1) * $schools->perPage()) + $index + 1;
+        $itemList[] = [
+            '@type' => 'ListItem',
+            'position' => $position,
+            'url' => route('browseSchools.show', $school['uuid']),
+            'name' => $school['name'],
+        ];
+    }
+
+    $collectionSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'CollectionPage',
+        'name' => $metaTitle,
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'isPartOf' => [
+            '@type' => 'WebSite',
+            'name' => 'SKOOLYST Pakistan',
+            'url' => url('/'),
+        ],
+        'mainEntity' => [
+            '@type' => 'ItemList',
+            'numberOfItems' => $totalSchools,
+            'itemListElement' => $itemList,
+        ],
+    ];
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => route('website.home'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'All Schools',
+                'item' => route('browseSchools.index'),
+            ],
+        ],
+    ];
+@endphp
+<title>{{ $metaTitle }}</title>
+<meta name="description" content="{{ $metaDescription }}">
+<meta name="keywords" content="schools in Pakistan, compare schools, school directory, best schools, school admissions, Skoolyst schools">
+<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<link rel="canonical" href="{{ $canonicalUrl }}">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ $metaTitle }}">
+<meta property="og:description" content="{{ $metaDescription }}">
+<meta property="og:url" content="{{ $canonicalUrl }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $metaTitle }}">
+<meta name="twitter:description" content="{{ $metaDescription }}">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+@if ($schools->previousPageUrl())
+<link rel="prev" href="{{ $schools->previousPageUrl() }}">
+@endif
+@if ($schools->nextPageUrl())
+<link rel="next" href="{{ $schools->nextPageUrl() }}">
+@endif
+
+<script type="application/ld+json">{!! json_encode($collectionSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
 @endpush
 
 @section('content')
-
-<!-- ==================== PAGE HEADER ==================== -->
-<section class="page-header">
-    <div class="container">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="page-title">Browse All Schools</h1>
-                <p class="page-subtitle">Discover and compare educational institutions that match your needs</p>
-            </div>
-            <div class="col-lg-4 text-lg-end">
-                <div class="results-count">
-                    Showing {{ $schools->firstItem() ?? 0 }}-{{ $schools->lastItem() ?? 0 }} of {{ $schools->total() }} schools
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ==================== FILTER SECTION ==================== -->
-<section class="filter-section">
-    <div class="container">
-        <div class="filter-container">
-            <div class="filter-group">
-                <label class="filter-label">Search</label>
-                <input type="text" class="filter-search" id="searchInput"
-                    placeholder="Search by name, location, or curriculum..." value="{{ request('search', '') }}">
-            </div>
-
-            <div class="filter-group">
-                <label class="filter-label">Location</label>
-                <select class="filter-select" id="locationFilter">
-                    <option value="">All Locations</option>
-                    @foreach($cities as $city)
-                    <option value="{{ $city }}" {{ request('location') == $city ? 'selected' : '' }}>{{ $city }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label class="filter-label">School Type</label>
-                <select class="filter-select" id="typeFilter">
-                    <option value="">All Types</option>
-                    @foreach($schoolTypes as $type)
-                    <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>{{ $type === 'Separate' ? 'Girls And Boys Separate Campuses' : $type }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <label class="filter-label">Curriculum</label>
-                <select class="filter-select" id="curriculumFilter">
-                    <option value="">All Curriculums</option>
-                    @foreach($curriculums as $curriculum)
-                    <option value="{{ $curriculum->code }}" {{ request('curriculum') == $curriculum->code ? 'selected' : '' }}>{{ $curriculum->name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <div class="filter-group">
-                <button class="clear-filters-btn" onclick="clearFilters()">
-                    <i class="fas fa-redo"></i> Clear All
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- ==================== SCHOOLS GRID SECTION ==================== -->
-<section class="schools-grid-section">
-    <div class="container">
-        <div class="row" id="schoolsContainer">
-            @foreach($schools as $school)
-            <div class="col-lg-4 col-md-6 school-card-col">
-                <div class="school-card">
-                    <div class="school-image">
-                        {{-- ACCESS AS ARRAY, NOT OBJECT --}}
-                        @if(isset($school['banner_image']) && $school['banner_image'])
-                        <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }}">
-                        @else
-                        <i class="fas fa-school"></i>
-                        @endif
-                        
-                        {{-- Comment out or adjust hasNewAnnouncements as it's not in the array --}}
-                        {{-- 
-                        @if(isset($school['hasNewAnnouncements']) && $school['hasNewAnnouncements'])
-                            <div class="new-announcement-badge">
-                                <span class="badge-pulse"></span>
-                                <a href="{{ route('browseSchools.show', $school['uuid']) }}#announcements" class="announcement-link">
-                                    <i class="fas fa-bullhorn"></i>
-                                    New Updates
-                                </a>
-                            </div>
-                        @endif
-                        --}}
-                    </div>
-                    <div class="school-content">
-                        <div class="school-header">
-                            <div>
-                                <h3 class="school-name">{{ $school['name'] }}</h3>
-                                <div class="school-location">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    <span>{{ $school['location'] ?? 'Location not specified' }}</span>
-                                </div>
-                            </div>
-                            <span class="school-type-badge">{{ $school['type'] }}</span>
-                        </div>
-                        <div class="school-rating">
-                            @php
-                            $averageRating = $school['rating'] ?? 0;
-                            $fullStars = floor($averageRating);
-                            $hasHalfStar = $averageRating - $fullStars >= 0.5;
-                            $emptyStars = 5 - ceil($averageRating);
-                            @endphp
-
-                            @for($i = 0; $i < $fullStars; $i++)
-                                <i class="fas fa-star"></i>
-                            @endfor
-
-                            @if($hasHalfStar)
-                                <i class="fas fa-star-half-alt"></i>
-                            @endif
-
-                            @for($i = 0; $i < $emptyStars; $i++)
-                                <i class="far fa-star"></i>
-                            @endfor
-
-                            <span style="color: #666; margin-left: 0.5rem;">{{ number_format($averageRating, 1) }}</span>
-                            <small style="color: #888; margin-left: 0.5rem;">({{ $school['review_count'] ?? 0 }} reviews)</small>
-                        </div>
-                        <p class="school-description">
-                            {{ Str::limit($school['description'] ?? 'No description available.', 120) }}
-                        </p>
-                        <div class="school-features">
-                            @if(isset($school['curriculum']) && $school['curriculum'])
-                                <span class="feature-tag"><i class="fas fa-book"></i> {{ $school['curriculum'] }}</span>
-                            @endif
-                            
-                            @if(isset($school['features']) && is_array($school['features']))
-                                @foreach(array_slice($school['features'], 0, 3) as $feature)
-                                    <span class="feature-tag">{{ $feature }}</span>
-                                @endforeach
-                            @endif
-                        </div>
-                        <a href="{{ route('browseSchools.show', $school['uuid']) }}" class="view-profile-btn">
-                            <i class="fas fa-eye"></i> View Full Profile
-                        </a>
-                        <p class="visitor-count">
-                            @if(isset($school['visitor_count']) && $school['visitor_count'] > 0)
-                                <i class="fas fa-eye"></i> {{ $school['visitor_count'] }}
-                            @endif
-                        </p>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        <!-- No Results -->
-        @if($schools->count() == 0)
-        <div class="no-results">
-            <i class="fas fa-search"></i>
-            <h4>No schools found</h4>
-            <p>Try adjusting your search criteria or <a href="{{ route('browseSchools.index') }}" style="color: #4361ee; text-decoration: none;">browse all schools</a>.</p>
-        </div>
-        @endif
-
-        <!-- Pagination -->
-        @if($schools->hasPages())
-        <div class="row mt-5">
-            <div class="col-12">
-                <nav aria-label="School pagination">
-                    <ul class="pagination justify-content-center">
-                        {{-- Previous Page Link --}}
-                        @if ($schools->onFirstPage())
-                        <li class="page-item disabled">
-                            <span class="page-link">Previous</span>
-                        </li>
-                        @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $schools->previousPageUrl() }}" rel="prev">Previous</a>
-                        </li>
-                        @endif
-
-                        {{-- Pagination Elements --}}
-                        @foreach ($schools->getUrlRange(1, $schools->lastPage()) as $page => $url)
-                        @if ($page == $schools->currentPage())
-                        <li class="page-item active">
-                            <span class="page-link">{{ $page }}</span>
-                        </li>
-                        @else
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $url }}">{{ $page }}</a>
-                        </li>
-                        @endif
-                        @endforeach
-
-                        {{-- Next Page Link --}}
-                        @if ($schools->hasMorePages())
-                        <li class="page-item">
-                            <a class="page-link" href="{{ $schools->nextPageUrl() }}" rel="next">Next</a>
-                        </li>
-                        @else
-                        <li class="page-item disabled">
-                            <span class="page-link">Next</span>
-                        </li>
-                        @endif
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        @endif
-    </div>
-</section>
+@include('website.browse-schools.partials.page-header', ['schools' => $schools])
+@include('website.browse-schools.partials.filters', ['cities' => $cities, 'schoolTypes' => $schoolTypes, 'curriculums' => $curriculums])
+@include('website.browse-schools.partials.school-grid', ['schools' => $schools])
+@include('website.browse-schools.partials.pagination', ['schools' => $schools])
 
 @push('scripts')
-<script>
-// ==================== FILTER FUNCTIONS ==================== //
-let filterTimeout;
-
-function applyFilters() {
-    const search = document.getElementById('searchInput').value;
-    const location = document.getElementById('locationFilter').value;
-    const type = document.getElementById('typeFilter').value;
-    const curriculum = document.getElementById('curriculumFilter').value;
-
-    // Build query parameters
-    const params = new URLSearchParams();
-    
-    if (search) params.append('search', search);
-    if (location) params.append('location', location);
-    if (type) params.append('type', type);
-    if (curriculum) params.append('curriculum', curriculum);
-
-    // Redirect to filtered page
-    window.location.href = '{{ route("browseSchools.index") }}?' + params.toString();
-}
-
-function clearFilters() {
-    window.location.href = '{{ route("browseSchools.index") }}';
-}
-
-// ==================== EVENT LISTENERS ==================== //
-document.addEventListener('DOMContentLoaded', function() {
-    // Search input with debounce
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            clearTimeout(filterTimeout);
-            filterTimeout = setTimeout(applyFilters, 800);
-        });
-    }
-
-    // Filter select changes
-    const locationFilter = document.getElementById('locationFilter');
-    const typeFilter = document.getElementById('typeFilter');
-    const curriculumFilter = document.getElementById('curriculumFilter');
-
-    if (locationFilter) {
-        locationFilter.addEventListener('change', applyFilters);
-    }
-    if (typeFilter) {
-        typeFilter.addEventListener('change', applyFilters);
-    }
-    if (curriculumFilter) {
-        curriculumFilter.addEventListener('change', applyFilters);
-    }
-
-    // Add animation to cards on scroll
-    observeElements();
-});
-
-// ==================== SCROLL ANIMATIONS ==================== //
-function observeElements() {
-    const observerOptions = {
-        threshold: 0.1,
-        rootMargin: '0px'
-    };
-
-    const observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, observerOptions);
-
-    // Observe school cards
-    document.querySelectorAll('.school-card').forEach(function(card) {
-        observer.observe(card);
-    });
-}
-</script>
+<script src="{{ asset('assets/js/browse-schools-filters.js') }}?v={{ filemtime(public_path('assets/js/browse-schools-filters.js')) }}"></script>
 @endpush
 
 @endsection
