@@ -200,7 +200,8 @@ class TestSubmissionService
             'accuracy' => $processedData['accuracy'],
             'attempt_uuid' => $attempt?->uuid,
             'test_type_id' => $dto->test_type_id,
-            'time_taken' => $dto->time_taken
+            'time_taken' => $dto->time_taken,
+            'completed_at' => now()->toDateTimeString(),
         ];
     }
 }

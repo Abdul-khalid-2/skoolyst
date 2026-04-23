@@ -135,7 +135,7 @@
                                            id="option-{{ $mcq->id }}-{{ $key }}"
                                            class="d-none">
                                     @endif
-                                    <span class="option-letter">{{ chr(64 + $key) }}</span>
+                                    <span class="option-letter">{{ chr(65 + $loop->index) }}</span>
                                     <span class="option-text">{{ $option }}</span>
                                 </div>
                                 @endforeach

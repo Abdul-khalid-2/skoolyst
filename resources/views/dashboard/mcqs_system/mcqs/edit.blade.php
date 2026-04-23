@@ -159,7 +159,7 @@
                                         @foreach($options as $index => $option)
                                         <div class="option-item mb-2">
                                             <div class="input-group">
-                                                <span class="input-group-text">{{ chr(64 + $index) }}</span>
+                                                <span class="input-group-text">{{ chr(65 + (int) $index) }}</span>
                                                 <input type="text" class="form-control" name="options[{{ $index }}]" 
                                                        value="{{ old('options.' . $index, $option) }}" required>
                                                 <button type="button" class="btn btn-outline-danger remove-option" 

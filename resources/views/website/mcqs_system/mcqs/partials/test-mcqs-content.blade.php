@@ -61,7 +61,7 @@
                                class="d-none"
                                data-question-id="{{ $mcq->id }}">
                         @endif
-                        <span class="option-letter">{{ chr(64 + $key) }}</span>
+                        <span class="option-letter">{{ chr(65 + $loop->index) }}</span>
                         <span class="option-text">{{ $option }}</span>
                     </div>
                     @endforeach

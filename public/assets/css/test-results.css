@@ -633,3 +633,78 @@
         text-align: center;
     }
 }
+
+/* ==================== SUBJECT + TEST-TYPE RESULTS (e.g. /mcq/test/.../subject/.../results) ==================== */
+/* Hero: uses shared .mcqs-hero-section (see mcqs.css) for parity with MCQs home / other pages. */
+/* Analytics: default flow only — not sticky, so it won’t sit under a sticky nav, fight scroll-to-top, or over the main column. */
+
+.subject-results-analytics {
+    position: static;
+    top: auto;
+    z-index: 1;
+}
+
+.subject-test-results .row > [class*='col-'] {
+    min-width: 0;
+}
+
+.subject-results-analytics__card {
+    border-radius: 10px;
+}
+
+/* Slightly shorter hero than main MCQs index; title scaled down, less vertical padding */
+.subject-test-results .mcqs-hero-section.subject-results-hero--mcqs {
+    min-height: 180px;
+    padding: var(--space-6) var(--space-4);
+}
+
+@media (min-width: 768px) {
+    .subject-test-results .mcqs-hero-section.subject-results-hero--mcqs {
+        min-height: 200px;
+    }
+}
+
+.subject-test-results .subject-results-hero__eyebrow {
+    font-size: var(--font-size-xs, 0.75rem);
+    font-weight: var(--font-weight-semibold, 600);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: var(--space-2, 0.5rem);
+}
+
+.subject-test-results .mcqs-hero-title.subject-results-hero__title {
+    font-size: var(--font-size-2xl) !important;
+    line-height: 1.2;
+    margin-bottom: var(--space-2) !important;
+}
+
+@media (min-width: 768px) {
+    .subject-test-results .mcqs-hero-title.subject-results-hero__title {
+        font-size: var(--font-size-3xl) !important;
+    }
+}
+
+.subject-test-results .mcqs-hero-subheading.subject-results-hero__sub {
+    font-size: var(--font-size-sm) !important;
+    max-width: 36rem;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: var(--line-height-relaxed, 1.5);
+}
+
+.subject-test-results .review-header {
+    background: var(--color-neutral-bg-light, #f8f9fa);
+    color: var(--color-neutral-text, #333);
+    border-bottom: 1px solid var(--color-neutral-border-light, #e9ecef);
+}
+
+.subject-test-results .review-header h5,
+.subject-test-results .review-header i {
+    color: inherit;
+    text-shadow: none;
+}
+
+.letter-spacing-1 {
+    letter-spacing: 0.04em;
+}
