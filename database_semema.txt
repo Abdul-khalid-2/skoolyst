@@ -1,0 +1,558 @@
+================================================================================
+  SKOOLYST APPLICATION — DATABASE SCHEMA (from Laravel migrations)
+  Generated: 2026-04-24
+  Note: Spelling in filename is intentional per request; content is the schema.
+  RDBMS assumed: MySQL / MariaDB (Laravel default types). Re-run migrations
+  to verify; this file reflects migration order through 2026_04_25_100000.
+================================================================================
+
+-----------------------------------------------------------------------------
+CONVENTIONS
+-----------------------------------------------------------------------------
+- id: BIGINT UNSIGNED AUTO_INCREMENT (unless noted)
+- foreignId: BIGINT UNSIGNED, FK to referenced table
+- enum/string/text/integer/decimal: as named in migration
+- ->nullable() / ->default() / onDelete: as in migration
+- JSON stored as JSON type (MySQL 5.7+)
+- Spatie permissions table names from config/permission.php (default names)
+
+================================================================================
+TABLE: announcement_comments
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  announcement_id       BIGINT UNSIGNED FK -> announcements.id ON DELETE CASCADE
+  user_id               BIGINT UNSIGNED NULL FK -> users.id ON DELETE CASCADE
+  name                  VARCHAR(255) NOT NULL
+  email                 VARCHAR(255) NOT NULL
+  comment               TEXT NOT NULL
+  status                ENUM('pending','approved','rejected') DEFAULT 'pending'
+  created_at, updated_at TIMESTAMP NULL
+  INDEX: announcement_id, user_id, status
+
+================================================================================
+TABLE: announcements
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  uuid                  CHAR(36) UNIQUE
+  school_id             BIGINT UNSIGNED FK -> schools.id ON DELETE CASCADE
+  branch_id             BIGINT UNSIGNED NULL FK -> branches.id ON DELETE CASCADE
+  title                 VARCHAR(255) NOT NULL
+  content               TEXT NOT NULL
+  slug                  VARCHAR(255) UNIQUE NOT NULL
+  feature_image         VARCHAR(255) NULL
+  view_count            INT DEFAULT 0
+  status                ENUM('draft','published','archived') DEFAULT 'draft'
+  publish_at            DATETIME NULL
+  expire_at             DATETIME NULL
+  meta_title            VARCHAR(255) NULL
+  meta_description      TEXT NULL
+  created_at, updated_at TIMESTAMP NULL
+  INDEX: school_id, branch_id, status, publish_at, slug
+
+================================================================================
+TABLE: blog_categories
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  uuid                  CHAR(36) UNIQUE
+  name                  VARCHAR(255) NOT NULL
+  slug                  VARCHAR(255) UNIQUE NOT NULL
+  icon                  VARCHAR(255) NULL
+  description           TEXT NULL
+  is_active             TINYINT(1) DEFAULT 1
+  created_at, updated_at TIMESTAMP NULL
+  INDEX: slug, is_active
+
+================================================================================
+TABLE: blog_posts
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  uuid                  CHAR(36) UNIQUE
+  heading               JSON NULL
+  user_id               BIGINT UNSIGNED FK -> users.id ON DELETE CASCADE
+  school_id             BIGINT UNSIGNED NULL FK -> schools.id ON DELETE CASCADE
+  blog_category_id      BIGINT UNSIGNED NULL FK -> blog_categories.id ON DELETE SET NULL
+  title                 VARCHAR(255) NOT NULL
+  slug                  VARCHAR(255) UNIQUE NOT NULL
+  structure             JSON NULL
+  excerpt               TEXT NULL
+  content               LONGTEXT NOT NULL
+  featured_image        VARCHAR(255) NULL
+  tags                  JSON NULL
+  view_count            INT DEFAULT 0
+  total_tracked_read_minutes DECIMAL(16,5) DEFAULT 0
+  read_time             INT DEFAULT 5
+  status                ENUM('draft','published','archived') DEFAULT 'draft'
+  is_featured           TINYINT(1) DEFAULT 0
+  published_at          TIMESTAMP NULL
+  meta_title            TEXT NULL
+  meta_description      TEXT NULL
+  banner, image, rich_text, text_left_image_right, custom_html, canvas_elements  JSON NULL
+  created_at, updated_at TIMESTAMP NULL
+  INDEX: slug, status, is_featured, published_at, (status, published_at)
+  (Migration may drop total_tracked_read_seconds if it existed; current = minutes column above.)
+
+================================================================================
+TABLE: book_categories
+================================================================================
+  id, uuid, parent_id (NULL FK self)
+  name, slug UNIQUE, description, icon, cover_image
+  book_type             ENUM('academic','competitive','story','religious','general_knowledge','magazine','newspaper') DEFAULT 'academic'
+  education_level, board VARCHAR NULL
+  sort_order            INT DEFAULT 0
+  status                ENUM('active','inactive') DEFAULT 'active'
+  timestamps; INDEX (book_type, education_level), parent_id, slug, sort_order
+
+================================================================================
+TABLE: book_reviews
+================================================================================
+  id, uuid, book_id FK, user_id NULL FK, rating, review, pros JSON, cons JSON
+  review_type           ENUM('academic','competitive','general') DEFAULT 'general'
+  reviewer_role, is_verified_purchase, is_helpful, helpful_count, unhelpful_count
+  status                ENUM('pending','approved','rejected') DEFAULT 'pending'
+  timestamps; indexes on book_id+rating, user_id+is_verified_purchase, status, etc.
+
+================================================================================
+TABLE: books
+================================================================================
+  id, uuid, product_id FK, book_category_id NULL FK
+  author, publisher, isbn UNIQUE NULL, edition, publication_year YEAR
+  language              ENUM('english','urdu','sindhi','pashto','other') DEFAULT 'english'
+  pages, cover_type, education_board, class_level, subject, table_of_contents, sample_pages, preview_link
+  book_condition        ENUM('new','like_new','good','fair','poor') DEFAULT 'new'
+  condition_description, is_digital, digital_file, file_format, file_size_mb
+  timestamps; indexes
+
+================================================================================
+TABLE: branch_images
+================================================================================
+  id, uuid, branch_id FK branches
+  image_path, image_name, image_unique_name UNIQUE, title, caption
+  type                  ENUM('gallery','banner','infrastructure','events','classroom') DEFAULT 'gallery'
+  sort_order, is_featured, is_main_banner, status ENUM('active','inactive') DEFAULT 'active'
+  timestamps; indexes
+
+================================================================================
+TABLE: branches
+================================================================================
+  id, school_id FK, name, address, city, contact_number, branch_head_name
+  latitude DECIMAL(10,8) NULL, longitude DECIMAL(11,8) NULL
+  is_main_branch        TINYINT(1) DEFAULT 0
+  status                ENUM('active','inactive') DEFAULT 'active'
+  description           TEXT NULL
+  school_type           ENUM('Co-Ed','Boys','Girls') NULL
+  fee_structure, curriculums, classes  TEXT NULL
+  images_gallery, features  JSON NULL
+  timestamps; INDEX school_id, city, is_main_branch
+
+================================================================================
+TABLE: cache
+================================================================================
+  key                   VARCHAR PK
+  value                 MEDIUMTEXT
+  expiration            INT
+
+================================================================================
+TABLE: cache_locks
+================================================================================
+  key VARCHAR PK, owner VARCHAR, expiration INT
+
+================================================================================
+TABLE: comments  (blog post comments, not announcement_comments)
+================================================================================
+  id, user_id NULL FK, blog_post_id FK, parent_id NULL FK self
+  name, email NULL, comment TEXT, status ENUM('pending','approved','rejected') DEFAULT 'approved'
+  timestamps; INDEX blog_post_id, parent_id, status, (blog_post_id, status)
+
+================================================================================
+TABLE: contact_inquiries
+================================================================================
+  id, uuid, school_id FK, branch_id NULL FK, user_id NULL FK
+  name, email, phone, subject ENUM('admission','tour','general','feedback','other') DEFAULT 'general'
+  custom_subject, message TEXT, status ENUM('new','in_progress','resolved','closed') DEFAULT 'new'
+  admin_notes, assigned_to NULL FK users, responded_at, ip_address, user_agent
+  timestamps; multiple indexes
+
+================================================================================
+TABLE: coupon_applicables
+================================================================================
+  id, coupon_id FK, applicable_id UNSIGNED BIGINT, applicable_type VARCHAR
+  (morphs), unique (coupon_id, applicable_id, applicable_type)
+  timestamps
+
+================================================================================
+TABLE: coupon_usage   (name per migration, not "coupon_usages")
+================================================================================
+  id, coupon_id FK, user_id FK, order_id FK, discount_amount DECIMAL(10,2)
+  timestamps; INDEX (coupon_id, user_id), order_id
+
+================================================================================
+TABLE: coupons
+================================================================================
+  id, uuid, code UNIQUE, name, description
+  discount_type         ENUM('percentage','fixed_amount','free_shipping') DEFAULT 'percentage'
+  discount_value DECIMAL(10,2), minimum_order_amount, maximum_discount_amount
+  usage_limit, usage_count, usage_per_customer, valid_from, valid_until
+  scope                 ENUM('global','shop_specific','school_specific','product_specific') DEFAULT 'global'
+  is_active, is_featured, timestamps; indexes
+
+================================================================================
+TABLE: curriculums
+================================================================================
+  id, name UNIQUE, code UNIQUE, description, timestamps
+
+================================================================================
+TABLE: events
+================================================================================
+  id, school_id FK, branch_id NULL FK
+  event_name, event_description, event_date DATE, event_location
+  status                ENUM('active','inactive') DEFAULT 'active'
+  timestamps
+
+================================================================================
+TABLE: failed_jobs
+================================================================================
+  id, uuid UNIQUE, connection TEXT, queue TEXT, payload LONGTEXT, exception LONGTEXT, failed_at TIMESTAMP
+
+================================================================================
+TABLE: features
+================================================================================
+  id, name UNIQUE, category DEFAULT 'general', icon, description, timestamps, INDEX category
+
+================================================================================
+TABLE: job_batches
+================================================================================
+  id VARCHAR PK, name, total_jobs, pending_jobs, failed_jobs, failed_job_ids LONGTEXT, options MEDIUMTEXT, cancelled_at, created_at, finished_at INT
+
+================================================================================
+TABLE: jobs
+================================================================================
+  id, queue VARCHAR INDEX, payload LONGTEXT, attempts TINYINT UNSIGNED, reserved_at, available_at, created_at UINT
+
+================================================================================
+TABLE: mcq_test_type
+================================================================================
+  id, mcq_id FK, test_type_id FK, sort_order DEFAULT 0, UNIQUE (mcq_id, test_type_id)
+  timestamps
+  (After this migration, mcqs.test_type_id column is DROPPED; type links via this pivot only.)
+
+================================================================================
+TABLE: mcqs
+================================================================================
+  id, uuid, topic_id FK, subject_id FK
+  (NO test_type_id after 2026_01_23 migration)
+  question LONGTEXT, question_type VARCHAR DEFAULT 'single', options JSON, correct_answers JSON
+  explanation, hint, difficulty_level ENUM('easy','medium','hard') DEFAULT 'medium'
+  time_limit_seconds, marks, negative_marks, tags JSON, reference_book, reference_page
+  is_premium, is_verified, status ENUM('draft','published','archived') DEFAULT 'draft'
+  created_by, approved_by NULL FK users, approved_at, timestamps, indexes
+
+================================================================================
+TABLE: mock_test_questions
+================================================================================
+  id, mock_test_id FK, mcq_id FK, question_number, marks, negative_marks, time_limit_seconds
+  UNIQUE (mock_test_id, mcq_id), timestamps
+
+================================================================================
+TABLE: mock_tests
+================================================================================
+  id, uuid, title, slug UNIQUE, test_type_id FK, description, instructions
+  total_questions, total_marks, total_time_minutes, passing_marks DEFAULT 33
+  test_mode ENUM('practice','timed','exam') DEFAULT 'practice'
+  shuffle_questions, show_result_immediately, allow_retake, max_attempts NULL
+  is_free, price, status ENUM('draft','published','archived') DEFAULT 'draft'
+  subject_breakdown JSON, created_by FK users, timestamps, indexes
+
+================================================================================
+TABLE: model_has_permissions  (Spatie; model_id morph)
+================================================================================
+  permission_id   BIGINT UNSIGNED FK -> permissions, model_type VARCHAR, model_id BIGINT UNSIGNED
+  PRIMARY KEY (permission_id, model_id, model_type)
+
+================================================================================
+TABLE: model_has_roles
+================================================================================
+  role_id, model_type, model_id — PK (role_id, model_id, model_type), FK to roles
+
+================================================================================
+TABLE: order_items
+================================================================================
+  id, uuid, order_id FK, product_id FK, shop_id FK, product_name, product_description, product_sku, product_image, product_attributes JSON
+  unit_price, sale_price, discount_amount, tax_amount, quantity, total_price
+  category_id NULL FK product_categories, category_name, school_id, association_id NULL
+  status ENUM('pending','confirmed','shipped','delivered','cancelled','refunded') DEFAULT 'pending'
+  cancellation_reason, cancelled_at, timestamps, indexes
+
+================================================================================
+TABLE: orders
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  uuid                  CHAR(36) UNIQUE
+  user_id               BIGINT UNSIGNED NULL FK -> users.id ON DELETE SET NULL
+  shop_id               BIGINT UNSIGNED FK -> shops.id ON DELETE CASCADE
+  school_id             BIGINT UNSIGNED NULL FK -> schools.id ON DELETE SET NULL
+  order_number          VARCHAR(255) UNIQUE NOT NULL
+  status                ENUM('pending','confirmed','processing','shipped','delivered','cancelled','refunded','failed') DEFAULT 'pending'
+  subtotal              DECIMAL(12,2) DEFAULT 0
+  shipping_cost         DECIMAL(8,2) DEFAULT 0
+  tax_amount            DECIMAL(8,2) DEFAULT 0
+  discount_amount       DECIMAL(8,2) DEFAULT 0
+  total_amount          DECIMAL(12,2) DEFAULT 0
+  payment_method        ENUM('credit_card','debit_card','cash_on_delivery','digital_wallet','bank_transfer') DEFAULT 'cash_on_delivery'
+  payment_status        ENUM('pending','paid','failed','refunded','partially_refunded') DEFAULT 'pending'
+  transaction_id        VARCHAR(255) NULL UNIQUE, paid_at TIMESTAMP NULL
+  shipping_first_name, shipping_last_name, shipping_email, shipping_phone NOT NULL
+  shipping_address TEXT, shipping_city, shipping_state, shipping_zip_code, shipping_country DEFAULT 'Pakistan', delivery_instructions TEXT
+  billing_same_as_shipping TINYINT(1) DEFAULT 1
+  billing_first_name, billing_last_name, billing_email, billing_phone, billing_address, billing_city, billing_state, billing_zip_code, billing_country  NULL
+  name, email, phone, address  NULL (guest fields; 2025_12_05)
+  customer_notes, admin_notes TEXT, metadata JSON
+  confirmed_at, processing_at, shipped_at, delivered_at, cancelled_at, estimated_delivery_date TIMESTAMP NULL
+  created_at, updated_at TIMESTAMP
+  (indexes: order_number, user_id, shop_id, school_id, status, payment_status, payment_method, created_at, (status,created_at), (shop_id,status))
+
+================================================================================
+TABLE: pages
+================================================================================
+  id, uuid, school_id FK, event_id NULL FK, name, slug, structure JSON NOT NULL
+  description, feature_image, start_date, end_date, status ENUM('active','pending','inactive') DEFAULT 'pending'
+  title                 JSON (page element — not duplicate of name; builder field)
+  banner, image, rich_text, text_left_image_right, custom_html, canvas_elements JSON
+  timestamps; INDEX event_id, slug, name
+
+================================================================================
+TABLE: password_reset_tokens
+================================================================================
+  email VARCHAR PK, token, created_at
+
+================================================================================
+TABLE: permissions  (Spatie)
+================================================================================
+  id BIGINT UNSIGNED, name VARCHAR, guard_name VARCHAR, timestamps, UNIQUE (name, guard_name)
+
+================================================================================
+TABLE: personal_access_tokens
+================================================================================
+  id, tokenable_type, tokenable_id (morphs), name TEXT, token VARCHAR(64) UNIQUE
+  abilities TEXT NULL, last_used_at, expires_at, timestamps
+
+================================================================================
+TABLE: product_attributes
+================================================================================
+  id                    BIGINT UNSIGNED PK, AI
+  uuid                  CHAR(36) UNIQUE
+  product_id            BIGINT UNSIGNED FK -> products.id ON DELETE CASCADE
+  attribute_type        ENUM('book','copy','bag','uniform') DEFAULT 'book'
+  book_author, book_publisher, book_isbn(20), book_edition(50), book_publication_year YEAR NULL
+  education_board       ENUM('federal','punjab','sindh','kpk','balochistan','ajk','cambridge','ib','other') NULL
+  school_name, class_level(50), subject(100)
+  medium                ENUM('english','urdu','bilingual','other') NULL
+  copy_pages INT, copy_quality ENUM('premium','standard','economy') NULL
+  copy_size             ENUM('a4','a5','quarter','half','other') NULL
+  copy_type             ENUM('single_line','double_line','four_line','plain','graph') NULL
+  bag_type              ENUM('school_bag','backpack','satchel','lunch_bag','other') NULL
+  bag_compartments INT, bag_water_resistant TINYINT(1) DEFAULT 0, bag_wheels TINYINT(1) DEFAULT 0
+  weight_grams DECIMAL(8,2) NULL, dimensions VARCHAR(100) NULL
+  created_at, updated_at
+  (indexes: attribute_type, (education_board, class_level), (book_author, book_publisher), class_level, subject)
+
+================================================================================
+TABLE: product_categories
+================================================================================
+  id, uuid, name, slug UNIQUE, parent_id NULL self FK, description, image_url, icon
+  sort_order, is_active, timestamps, indexes
+
+================================================================================
+TABLE: products
+================================================================================
+  id, uuid, shop_id FK, category_id FK product_categories, school_id NULL, association_id NULL FK
+  name, slug, sku VARCHAR UNIQUE NULL, description, short_description
+  product_type          ENUM('book','copy','stationery','bag','uniform','other') DEFAULT 'other'
+  brand, material, color, size VARCHAR NULL
+  base_price DECIMAL(10,2), sale_price, cost_price, profit_margin NULL
+  stock_quantity DEFAULT 0, low_stock_threshold DEFAULT 5, manage_stock TINYINT(1) DEFAULT 1, is_in_stock TINYINT(1) DEFAULT 1
+  is_featured, is_active, is_approved
+  meta_title, meta_description, meta_keywords, main_image_url, image_gallery JSON
+  UNIQUE (shop_id, slug); indexes: product_type, (is_active,is_approved), base_price, (is_in_stock,stock_quantity), school_id, association_id, sku
+
+================================================================================
+TABLE: reviews  (school reviews)
+================================================================================
+  id, school_id FK, branch_id NULL FK, review TEXT, rating INT DEFAULT 0
+  reviewer_name NULL, user_id NULL FK, timestamps
+  status ENUM('pending','approved','rejected') DEFAULT 'pending', admin_notes, created_by_admin, reviewer_email
+  (fields from 2025_12_02 migration)
+
+================================================================================
+TABLE: role_has_permissions
+================================================================================
+  permission_id FK, role_id FK, PRIMARY KEY (permission_id, role_id)
+
+================================================================================
+TABLE: roles
+================================================================================
+  id BIGINT UNSIGNED, name, guard_name, timestamps, UNIQUE (name, guard_name)
+
+================================================================================
+TABLE: school_curriculum
+================================================================================
+  id, school_id FK, curriculum_id FK curriculums, UNIQUE (school_id, curriculum_id), timestamps
+
+================================================================================
+TABLE: school_feature
+================================================================================
+  id, school_id FK, feature_id FK, description, priority DEFAULT 0, UNIQUE (school_id, feature_id), timestamps
+
+================================================================================
+TABLE: school_image_galleries
+================================================================================
+  id, uuid, school_id FK, image_path, image_name, image_unique_name UNIQUE, status, timestamps, INDEX (school_id, status)
+
+================================================================================
+TABLE: school_images
+================================================================================
+  id, school_id FK, image_path, title, timestamps, INDEX school_id
+
+================================================================================
+TABLE: school_profiles
+================================================================================
+  id, school_id UNIQUE FK, quick_facts JSON, logo, social_media JSON, visitor_count, total_time_spent, last_visited_at
+  established_year, student_strength, faculty_count, campus_size, school_motto, mission, vision, timestamps, indexes
+
+================================================================================
+TABLE: school_translations
+================================================================================
+  id, school_id FK CASCADE, locale VARCHAR(10)
+  name, description, facilities, banner_title, banner_tagline, school_motto, mission, vision
+  UNIQUE (school_id, locale), timestamps
+
+================================================================================
+TABLE: schools
+================================================================================
+  id, uuid UNIQUE, name, email UNIQUE NULL, address, city, contact_number, website
+  description, facilities TEXT, school_type ENUM('Co-Ed','Boys','Girls') DEFAULT 'Co-Ed'
+  regular_fees, discounted_fees, admission_fees DECIMAL(10,2) NULL
+  fee_structure_type     ENUM('fixed','class_wise') DEFAULT 'fixed'
+  class_wise_fees        TEXT NULL
+  status, visibility, publish_date, timestamps
+  banner_image, banner_title, banner_tagline, logo, indexes on name, city, school_type, status
+
+================================================================================
+TABLE: sessions
+================================================================================
+  id VARCHAR PK, user_id NULL INDEX, ip_address(45), user_agent TEXT, payload LONGTEXT, last_activity INT INDEX
+
+================================================================================
+TABLE: shop_school_associations
+================================================================================
+  id, uuid, shop_id FK, school_id FK, created_by NULL FK, association_type, discount_percentage, is_active
+  status, approved_at, approved_by, can_*, notes, UNIQUE (shop_id, school_id), timestamps, indexes
+
+================================================================================
+TABLE: shops
+================================================================================
+  id, uuid, user_id FK, name, slug UNIQUE, contact fields, location decimals, shop_type, description, logo, banner, is_verified, is_active, rating, total_reviews, priority DEFAULT 0 (nullable in migration, indexed), timestamps
+
+================================================================================
+TABLE: study_materials
+================================================================================
+  id, uuid, user_id FK, subject_id, test_type_id NULL, title, description, material_type ENUM
+  file_path, file_type, file_size, download_count, page_count, is_free, price, status, tags JSON, view_count, timestamps, indexes
+
+================================================================================
+TABLE: subject_test_type
+================================================================================
+  id, subject_id FK, test_type_id FK, sort_order, UNIQUE (subject_id, test_type_id), timestamps
+  (subjects may still have test_type_id column from original subjects migration; pivot adds M:N.)
+
+================================================================================
+TABLE: subjects
+================================================================================
+  id, uuid, name, slug UNIQUE, test_type_id NULL FK (original column; pivot subject_test_type also used)
+  description, icon, color_code DEFAULT '#3B82F6', sort_order, status, timestamps, indexes
+  (mcq_test_type migration only changes mcqs, not subjects.)
+
+================================================================================
+TABLE: testimonials
+================================================================================
+  id, uuid, user_id NULL FK, message, rating, author_name, author_email, author_location, author_role DEFAULT 'Parent'
+  avatar, status, featured, show_on_homepage, platform_features_liked JSON, experience_rating, approved_at, timestamps, indexes
+
+================================================================================
+TABLE: test_types
+================================================================================
+  id, uuid, name, slug UNIQUE, icon, description, sort_order, status, timestamps, indexes
+
+================================================================================
+TABLE: topics
+================================================================================
+  id, uuid, subject_id FK, title, slug, description, content LONGTEXT, sort_order, estimated_time_minutes
+  difficulty_level ENUM('beginner','intermediate','advanced') DEFAULT 'beginner'
+  status, UNIQUE (subject_id, slug), timestamps, indexes
+
+================================================================================
+TABLE: user_mcq_answers
+================================================================================
+  id, user_id FK, mcq_id FK, test_attempt_id NULL FK, topic_id NULL FK
+  selected_answers JSON, is_correct, time_taken_seconds, answered_at, UNIQUE (user_id, mcq_id, test_attempt_id), timestamps
+
+================================================================================
+TABLE: user_progress
+================================================================================
+  id, user_id FK, topic_id, subject_id NULL, progress_type ENUM, progress_percentage, total_items, completed_items
+  last_accessed_at, completed_at, progress_data JSON, UNIQUE (user_id, topic_id, progress_type), timestamps
+
+================================================================================
+TABLE: user_test_attempts
+================================================================================
+  id, uuid, user_id FK, mock_test_id NULL FK (nullable after 2026_02_16)
+  topic_id, subject_id, test_type_id NULL FKs (added 2026_03_12)
+  started_at, completed_at, submitted_at
+  total_questions, attempted_questions, correct_answers, wrong_answers, skipped_questions
+  total_marks_obtained, total_possible_marks, negative_marks_obtained INT DEFAULT 0, percentage, accuracy DECIMAL(5,2) NULL, result_status
+  time_taken_seconds, remaining_time_seconds, ip_address(45) NULL, user_agent NULL
+  test_source           ENUM('topic_test','subject_test','mock_test','practice') DEFAULT 'topic_test'
+  answers_data JSON, question_analysis JSON, status ENUM('in_progress','completed','expired','abandoned') DEFAULT 'in_progress'
+  timestamps; indexes
+
+================================================================================
+TABLE: users
+================================================================================
+  id, uuid UNIQUE, name, email UNIQUE, email_verified_at, password, school_id NULL FK schools CASCADE, remember_token
+  phone, address, bio, profile_picture (from profile migration)
+  timestamps
+
+================================================================================
+TABLE: video_categories
+================================================================================
+  id, name, slug UNIQUE, parent_id VARCHAR NULL, description, status, sort_order, timestamps
+  (parent_id is string in migration, not FK)
+
+================================================================================
+TABLE: video_comment_likes
+================================================================================
+  id, comment_id FK video_comments, user_id FK, UNIQUE (comment_id, user_id), timestamps
+
+================================================================================
+TABLE: video_comments
+================================================================================
+  id, video_id FK, user_id NULL, parent_id NULL FK self, message, name, email, is_approved, likes_count, timestamps, indexes
+
+================================================================================
+TABLE: video_reactions
+================================================================================
+  id, video_id FK, user_id FK, reaction ENUM, UNIQUE (video_id, user_id), timestamps, indexes
+
+================================================================================
+TABLE: videos
+================================================================================
+  id, uuid, category_id NULL FK, user_id FK, school_id, shop_id NULL, title, slug UNIQUE, description, embed_video_link, thumbnail, video_id, sort_order, views, likes_count, comments_count, is_featured, is_approved, status, meta_*, published_at, timestamps, indexes
+
+================================================================================
+END OF CONSOLIDATED SCHEMA
+================================================================================
+
+REFERENCES
+- All definitions derive from: database/migrations/*.php (70 files, chronological order)
+- config/permission.php: table_names for Spatie
+- If the live database was altered outside migrations, this document may differ; compare with
+  `SHOW CREATE TABLE` / `INFORMATION_SCHEMA.COLUMNS` on your server.
