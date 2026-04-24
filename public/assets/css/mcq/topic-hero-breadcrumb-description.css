@@ -1,0 +1,248 @@
+﻿/**
+ * Topic MCQ practice – hero, breadcrumb, topic overview cards
+ */
+
+/* ==================== TOPIC HERO SECTION ==================== */
+.topic-hero {
+    background: var(--color-primary);
+    color: var(--color-white);
+    padding: var(--space-12) 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 280px;
+    display: flex;
+    align-items: center;
+    border-radius: 0;
+    margin-bottom: var(--space-8);
+}
+
+/* MCQ Icons Background Pattern */
+.topic-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-opacity='0.1' stroke-width='1.5'%3E%3Cpath d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9h2m-2 4h4'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-position: 0 0, 20px 30px, 40px 60px;
+    background-size: 80px 80px, 70px 70px, 60px 60px;
+    opacity: 0.3;
+    animation: topicFloat 40s linear infinite;
+}
+
+.topic-hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+@keyframes topicFloat {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-50px) translateX(-30px); }
+}
+
+.topic-hero .container {
+    position: relative;
+    z-index: 2;
+}
+
+.topic-hero h1 {
+    font-size: var(--font-size-3xl);
+    font-weight: var(--font-weight-extrabold);
+    margin-bottom: var(--space-4);
+    color: var(--color-white);
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    letter-spacing: -0.02em;
+}
+
+.topic-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-2);
+}
+
+.topic-meta-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-white);
+    font-size: var(--font-size-base);
+    opacity: 0.95;
+}
+
+.topic-meta-item i {
+    font-size: var(--font-size-base);
+}
+
+.topic-difficulty-badge {
+    padding: var(--space-1) var(--space-7);
+    border-radius: 20px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--color-white);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.topic-stats-badge {
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--color-white);
+    padding: var(--space-1) var(--space-7);
+    border-radius: 20px;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.topic-stats-badge i {
+    font-size: var(--font-size-xs);
+}
+
+.topic-header-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.topic-header-actions .btn-light {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--color-white);
+    padding: var(--space-7) var(--space-6);
+    border-radius: 8px;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-base);
+    transition: all var(--transition-fast);
+    backdrop-filter: blur(10px);
+}
+
+.topic-header-actions .btn-light:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ==================== BREADCRUMB ==================== */
+.breadcrumb-wrapper {
+    margin-bottom: var(--space-5);
+}
+
+.breadcrumb {
+    background: transparent;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumb-item {
+    font-size: var(--font-size-sm);
+}
+
+.breadcrumb-item a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    font-weight: var(--font-weight-medium);
+}
+
+.breadcrumb-item a:hover {
+    color: var(--color-secondary);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: var(--color-neutral-muted);
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: var(--color-neutral-muted);
+    content: "â€º";
+    font-size: var(--font-size-lg);
+    line-height: 1;
+}
+
+/* ==================== DESCRIPTION CARDS ==================== */
+.description-card {
+    background: var(--color-white);
+    border-radius: 10px;
+    padding: var(--space-5);
+    margin-bottom: var(--space-5);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-neutral-border-light);
+}
+
+.description-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-7);
+}
+
+.description-header h5 {
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-neutral-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.description-header h5 i {
+    color: var(--color-primary);
+}
+
+.description-toggle {
+    background: transparent;
+    border: none;
+    color: var(--color-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 0;
+    cursor: pointer;
+}
+
+.description-toggle:hover {
+    color: var(--color-secondary);
+}
+
+.description-preview {
+    color: var(--color-neutral-muted);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    margin-bottom: 0;
+}
+
+.description-full {
+    background: var(--color-white);
+    border-radius: 10px;
+    padding: var(--space-5);
+    margin-bottom: var(--space-5);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-neutral-border-light);
+    display: none;
+}
+
+.description-full.show {
+    display: block;
+}
+
+.description-full p {
+    color: var(--color-neutral-muted);
+    font-size: var(--font-size-base);
+    line-height: 1.8;
+    margin-bottom: 0;
+}

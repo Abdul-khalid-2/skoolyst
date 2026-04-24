@@ -1,0 +1,226 @@
+.question-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.question-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.question-header {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.question-number {
+    background: var(--color-primary);
+    color: var(--color-white);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.question-text {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    flex-grow: 1;
+}
+
+.question-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.difficulty-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.difficulty-badge.easy { background: #d4edda; color: #155724; }
+.difficulty-badge.medium { background: #fff3cd; color: #856404; }
+.difficulty-badge.hard { background: #f8d7da; color: #721c24; }
+
+.marks-badge {
+    background: #e2e3e5;
+    color: #383d41;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hint-btn {
+    background: none;
+    border: 1px solid #ffc107;
+    color: #856404;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.hint-btn:hover { background: #ffc107; color: #000; }
+
+.hint-section {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: none;
+}
+
+.hint-section.show { display: block; }
+.hint-section i { color: #856404; margin-right: 10px; }
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.option-item:hover { border-color: #667eea; background: #f8f9ff; }
+.option-item.selected {
+    background: var(--color-primary);
+    border-color: #667eea;
+    color: white;
+}
+.option-item.selected .option-letter { background: white; color: #667eea; }
+
+.option-letter {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+}
+.option-text { font-size: 15px; }
+
+.test-navigation {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+}
+.progress-indicator {
+    height: 8px;
+    background: #e9ecef;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.progress-bar-fill { height: 100%; background: #28a745; transition: width 0.3s ease; }
+.navigation-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    color: #6c757d;
+    font-size: 14px;
+}
+.pagination-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.clear-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.clear-btn:hover { background: #c82333; }
+
+.question-palette {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 20px;
+}
+.palette-title { font-size: 18px; margin-bottom: 15px; color: #333; }
+.palette-info { font-size: 14px; color: #6c757d; margin-bottom: 15px; }
+.palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 20px; }
+.palette-item {
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px; background: #f8f9fa; border: 1px solid #dee2e6;
+    border-radius: 5px; text-decoration: none; color: #495057;
+    font-size: 14px; transition: all 0.3s ease;
+}
+.palette-item:hover { background: #667eea; color: white; border-color: #667eea; }
+.palette-item.answered {
+    background: var(--color-primary);
+    color: white;
+    border-color: var(--color-secondary);
+}
+.palette-item.current {
+    background: var(--color-secondary);
+    color: #ffffff;
+    border-color: var(--color-primary-light);
+    font-weight: bold;
+}
+.instructions { background: #ffffff; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+.instructions h6 { margin-bottom: 10px; color: #333; }
+.instructions ul { list-style: none; padding: 0; margin: 0; }
+.instructions li {
+    margin-bottom: 8px; font-size: 13px; color: #6c757d; display: flex; align-items: center;
+}
+.instructions li i { color: #667eea; font-size: 8px; margin-right: 8px; }
+.difficulty-stats { border-top: 1px solid #dee2e6; padding-top: 20px; }
+.difficulty-stats h6 { margin-bottom: 15px; color: #333; }
+.difficulty-stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.label.easy i { color: #28a745; }
+.label.medium i { color: #ffc107; }
+.label.hard i { color: #dc3545; }
+.count { font-weight: bold; color: #333; }
+.empty-state { text-align: center; padding: 60px 20px; background: #f8f9fa; border-radius: 10px; }
+.empty-state i { font-size: 48px; color: #dee2e6; margin-bottom: 20px; }
+.empty-state h5 { color: #333; margin-bottom: 10px; }
+.empty-state p { color: #6c757d; }
+.back-button-wrapper { margin-bottom: 20px; }
+.back-btn {
+    display: inline-flex; align-items: center; padding: 8px 16px; background: #f8f9fa;
+    color: #667eea; text-decoration: none; border-radius: 5px; transition: all 0.3s ease;
+}
+.back-btn:hover { background: #667eea; color: white; }

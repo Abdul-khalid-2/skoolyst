@@ -1,0 +1,161 @@
+/**
+ * Topic MCQ practice – sidebar Question Palette
+ * Matches design used on subject-by-test-type (e.g. NTS / General Knowledge) practice page.
+ * Requires wrapper: .topic-mcq-page on the section containing this palette.
+ */
+
+.topic-mcq-page .question-palette {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 20px;
+}
+
+.topic-mcq-page .palette-title {
+    font-size: 18px;
+    font-weight: var(--font-weight-semibold, 600);
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topic-mcq-page .palette-title i {
+    color: var(--color-primary);
+}
+
+.topic-mcq-page .palette-info {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 15px;
+}
+
+.topic-mcq-page .palette-info i {
+    color: var(--color-primary);
+    margin-right: 6px;
+}
+
+.topic-mcq-page .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.topic-mcq-page .palette-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    min-width: 0;
+    aspect-ratio: 1;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    text-decoration: none;
+    color: #495057;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium, 500);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.topic-mcq-page .palette-item:hover {
+    background: #667eea;
+    border-color: #667eea;
+    color: #fff;
+}
+
+.topic-mcq-page .palette-item.answered {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-secondary);
+}
+
+.topic-mcq-page .palette-item.current {
+    background: var(--color-secondary);
+    color: #fff;
+    border-color: var(--color-primary-light, #a5b4fc);
+    font-weight: 700;
+}
+
+.topic-mcq-page .instructions {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: none;
+}
+
+.topic-mcq-page .instructions h6 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-semibold, 600);
+}
+
+.topic-mcq-page .instructions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.topic-mcq-page .instructions li {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+}
+
+.topic-mcq-page .instructions li i {
+    color: #667eea;
+    font-size: 8px;
+    margin-right: 8px;
+}
+
+.topic-mcq-page .difficulty-stats {
+    border-top: 1px solid #dee2e6;
+    padding-top: 20px;
+    margin-top: 0;
+}
+
+.topic-mcq-page .difficulty-stats h6 {
+    margin-bottom: 15px;
+    color: #333;
+    font-size: var(--font-size-sm, 0.875rem);
+    font-weight: var(--font-weight-semibold, 600);
+}
+
+.topic-mcq-page .difficulty-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.topic-mcq-page .difficulty-stat-row .label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topic-mcq-page .difficulty-stat-row .label.easy i {
+    color: #28a745;
+}
+
+.topic-mcq-page .difficulty-stat-row .label.medium i {
+    color: #ffc107;
+}
+
+.topic-mcq-page .difficulty-stat-row .label.hard i {
+    color: #dc3545;
+}
+
+.topic-mcq-page .difficulty-stat-row .count {
+    font-weight: 700;
+    color: #333;
+}

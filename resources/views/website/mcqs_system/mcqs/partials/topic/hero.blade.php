@@ -1,4 +1,4 @@
-{{-- Topic practice page hero (same pattern as topic-practice.css .topic-hero) --}}
+{{-- Topic MCQ practice hero (see assets/css/mcq/topic-hero-breadcrumb-description.css) --}}
 <section class="topic-hero">
     <div class="container">
         <div class="row align-items-center">

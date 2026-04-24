@@ -1,0 +1,88 @@
+﻿/**
+ * Topic MCQ practice – responsive breakpoints
+ */
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 992px) {
+    .topic-hero h1 {
+        font-size: var(--font-size-2xl);
+    }
+    
+    .topic-header-actions .btn-light {
+        padding: var(--space-2) var(--space-4);
+        font-size: var(--font-size-sm);
+    }
+    
+    .topic-mcq-page .question-palette {
+        margin-top: var(--space-5);
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .topic-hero {
+        padding: var(--space-8) 0;
+    }
+    
+    .topic-hero h1 {
+        font-size: var(--font-size-xl);
+        text-align: center;
+    }
+    
+    .topic-meta {
+        justify-content: center;
+    }
+    
+    .topic-header-actions {
+        justify-content: center;
+        margin-top: var(--space-4);
+    }
+    
+    .question-header {
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+    
+    .question-number {
+        margin-bottom: var(--space-1);
+    }
+    
+    .pagination-buttons {
+        flex-direction: column;
+    }
+    
+    .pagination-buttons .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    .topic-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-2);
+    }
+    
+    .question-card {
+        padding: var(--space-4);
+    }
+    
+    .option-item {
+        padding: var(--space-2) var(--space-7);
+    }
+    
+    .option-letter {
+        width: 24px;
+        height: 24px;
+        font-size: var(--font-size-xs);
+    }
+    
+    .topic-mcq-page .palette-grid {
+        gap: 6px;
+    }
+
+    .topic-mcq-page .palette-item {
+        font-size: var(--font-size-xs);
+        padding: 4px;
+    }
+}
+
