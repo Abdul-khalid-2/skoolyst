@@ -29,8 +29,10 @@
     
      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2529569703326249"
      crossorigin="anonymous"></script>
-    <!-- Canonical URL -->
+    @unless($pageSetsOwnCanonical ?? false)
+    <!-- Default canonical; pages with a full @push("meta") block that includes their own should pass pageSetsOwnCanonical -->
     <link rel="canonical" href="{{ url()->current() }}">
+    @endunless
 
     <script type="application/ld+json">
         {!! json_encode([

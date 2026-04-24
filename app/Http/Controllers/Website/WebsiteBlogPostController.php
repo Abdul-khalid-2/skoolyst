@@ -68,7 +68,10 @@ class WebsiteBlogPostController extends Controller
             ->unique()
             ->take(15);
 
-        return view('website.blog.index', compact('posts', 'categories', 'popularPosts', 'tags'));
+        return view('website.blog.index', array_merge(
+            compact('posts', 'categories', 'popularPosts', 'tags'),
+            ['pageSetsOwnCanonical' => true]
+        ));
     }
 
     /**

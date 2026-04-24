@@ -10,6 +10,7 @@
 
 @push('meta')
 @php
+    $noindex = $noindex ?? false;
     $currentPage = $videos->currentPage();
     $searchTerm = trim((string) request('search', ''));
     $filter = request('filter', 'all');
@@ -111,7 +112,7 @@
 <title>{{ $metaTitle }}</title>
 <meta name="description" content="{{ $metaDescription }}">
 <meta name="keywords" content="educational videos Pakistan, school videos, learning videos, parent tips video, Skoolyst EduVideos, O Level, curriculum">
-<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<meta name="robots" content="{{ $noindex ? 'noindex, nofollow' : 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1' }}">
 <link rel="canonical" href="{{ $canonicalUrl }}">
 
 <meta property="og:type" content="website">
@@ -151,7 +152,11 @@
                     'schools' => $schools,
                     'shops' => $shops,
                 ])
-                @include('website.videos.partials.index.video-grid', ['videos' => $videos])
+                @include('website.videos.partials.index.video-grid', [
+                    'videos' => $videos,
+                    'categories' => $categories,
+                    'noindex' => $noindex,
+                ])
             </div>
             <div class="col-lg-4">
                 @include('website.videos.partials.index.sidebar', [

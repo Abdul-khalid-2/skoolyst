@@ -11,8 +11,6 @@
     <title>Find & Compare the Best Schools in Pakistan | SKOOLYST</title>
     <meta name="description" content="Discover, explore, and compare schools in Pakistan with SKOOLYST. Search by country, city, curriculum, and type to find the perfect school for your child anywhere in the world.">
     <meta name="keywords" content="best schools in Pakistan, international schools, global school search, O Level schools, Montessori schools, A Level schools, IB schools, school admissions, compare schools">
-    <link rel="canonical" href="{{ url()->current() }}">
-
     <!-- Open Graph for social sharing -->
     <meta property="og:title" content="Find & Compare the Best Schools in Pakistan | SKOOLYST">
     <meta property="og:description" content="Discover and compare schools around the world by location, curriculum, and type with SKOOLYST.">

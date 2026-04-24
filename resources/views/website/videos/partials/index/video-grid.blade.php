@@ -1,3 +1,7 @@
+@php
+    $noindex = $noindex ?? false;
+    $categories = $categories ?? collect();
+@endphp
 @if($videos->count() > 0)
 <div class="row">
     @foreach($videos as $video)
@@ -108,17 +112,24 @@
 @endif
 
 @else
+@php
+    $selectedForEmpty = (request('category') && request('category') != 'all')
+        ? $categories->firstWhere('id', (int) request('category'))
+        : null;
+@endphp
 <div class="empty-state">
-    <i class="fas fa-video-slash empty-state-icon"></i>
+    <i class="fas fa-video-slash empty-state-icon" aria-hidden="true"></i>
     <h4 class="text-muted">No videos found</h4>
     <p class="text-muted">
-        @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
-        No videos match your search criteria. Try different filters.
+        @if($noindex && $selectedForEmpty)
+            No published videos in &ldquo;{{ $selectedForEmpty->name }}&rdquo; yet. More content is coming soon. Browse all videos or try another category.
+        @elseif(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
+            No videos match your search criteria. Try different filters.
         @else
-        No videos have been uploaded yet. Check back soon!
+            No videos have been uploaded yet. Check back soon!
         @endif
     </p>
-    @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
+    @if(($noindex && $selectedForEmpty) || request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
     <a href="{{ route('website.videos.index') }}" class="btn btn-primary">
         <i class="fas fa-video me-2"></i>View All Videos
     </a>

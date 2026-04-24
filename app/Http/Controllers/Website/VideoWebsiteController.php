@@ -15,6 +15,8 @@ class VideoWebsiteController extends Controller
 {
     public function index(Request $request)
     {
+        $noindex = (bool) $request->attributes->get('video_category_noindex', false);
+
         $query = Video::with(['category', 'user', 'school.translations', 'shop'])
             ->published()
             ->approved();
@@ -79,15 +81,19 @@ class VideoWebsiteController extends Controller
         $totalVideos = Video::published()->approved()->count();
         $totalViews = Video::published()->approved()->sum('views');
 
-        return view('website.videos.index', compact(
-            'videos',
-            'categories',
-            'schools',
-            'shops',
-            'popularVideos',
-            'featuredVideos',
-            'totalVideos',
-            'totalViews'
+        return view('website.videos.index', array_merge(
+            compact(
+                'videos',
+                'categories',
+                'schools',
+                'shops',
+                'popularVideos',
+                'featuredVideos',
+                'totalVideos',
+                'totalViews',
+                'noindex',
+            ),
+            ['pageSetsOwnCanonical' => true]
         ));
     }
 
@@ -140,10 +146,16 @@ class VideoWebsiteController extends Controller
             ->where('status', 'active')
             ->firstOrFail();
 
+        $hasPublishedVideos = Video::published()
+            ->approved()
+            ->where('category_id', $category->id)
+            ->exists();
+
         $query = array_merge($request->query->all(), [
             'category' => (string) $category->id,
         ]);
         $newRequest = $request->duplicate($query);
+        $newRequest->attributes->set('video_category_noindex', ! $hasPublishedVideos);
 
         app()->instance('request', $newRequest);
 

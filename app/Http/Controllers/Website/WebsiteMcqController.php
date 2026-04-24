@@ -103,7 +103,10 @@ class WebsiteMcqController extends Controller
             ->filter()
             ->values();
 
-        return view('website.mcqs_system.mcqs.index', compact('testTypes', 'subjects', 'recentMcqs', 'topUsers', 'stats'));
+        return view('website.mcqs_system.mcqs.index', array_merge(
+            compact('testTypes', 'subjects', 'recentMcqs', 'topUsers', 'stats'),
+            ['pageSetsOwnCanonical' => true]
+        ));
     }
 
     // Test Type page (e.g., Entry Test, Job Test)

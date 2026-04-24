@@ -34,7 +34,8 @@ class BrowseSchoolController extends Controller
                 'search' => $filters['search'],
                 'location' => $filters['location'],
                 'type' => $filters['type'],
-                'curriculum' => $filters['curriculum']
+                'curriculum' => $filters['curriculum'],
+                'pageSetsOwnCanonical' => true,
             ]
         ));
     }

@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /*/mcq/practice/*/check
 Disallow: /admin/
 Disallow: /dashboard/
 Disallow: /storage/
