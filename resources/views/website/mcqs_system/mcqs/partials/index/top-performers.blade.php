@@ -1,9 +1,13 @@
+@php
+    $loginUrl = \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('login', [], false));
+    $loginLink = '<a href="'.e($loginUrl).'" class="text-decoration-none">'.e(__('mcqs.top_performers.login')).'</a>';
+@endphp
 <!-- ==================== TOP PERFORMERS SECTION ==================== -->
 <section class="py-5">
     <div class="container">
         <div class="section-title-wrapper text-center mb-5">
-            <h2 class="section-title">Top Performers</h2>
-            <p class="section-subtitle">Meet Our Top MCQs Test Takers! <a href="{{ route('login') }}" class="text-decoration-none">Login</a> To See Your Ranking And Compete With The Best.</p>
+            <h2 class="section-title">{{ __('mcqs.top_performers.title') }}</h2>
+            <p class="section-subtitle">{!! __('mcqs.top_performers.subtitle', ['login' => $loginLink]) !!}</p>
         </div>
 
         <div class="row g-4 justify-content-center">
@@ -34,7 +38,7 @@
             </div>
             @empty
             <div class="col-12 text-center">
-                <p class="text-muted">No users have attempted MCQs yet.</p>
+                <p class="text-muted">{{ __('mcqs.top_performers.empty') }}</p>
             </div>
             @endforelse
         </div>

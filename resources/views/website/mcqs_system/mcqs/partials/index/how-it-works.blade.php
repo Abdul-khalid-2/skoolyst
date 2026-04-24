@@ -2,8 +2,8 @@
 <section class="py-5 bg-light">
     <div class="container">
         <div class="section-title-wrapper">
-            <h2 class="section-title">How It Works</h2>
-            <p class="section-subtitle">Three Simple Steps To Improve Your Preparation</p>
+            <h2 class="section-title">{{ __('mcqs.how_it_works.title') }}</h2>
+            <p class="section-subtitle">{{ __('mcqs.how_it_works.subtitle') }}</p>
         </div>
 
         <div class="row g-4">
@@ -12,8 +12,8 @@
                     <div class="step-icon">
                         <i class="fas fa-book-open"></i>
                     </div>
-                    <h4>Choose Test Type or Subject</h4>
-                    <p>Select from various test types like NTS, PPSC, FPSC or browse by subject.</p>
+                    <h4>{{ __('mcqs.how_it_works.step1_title') }}</h4>
+                    <p>{{ __('mcqs.how_it_works.step1_body') }}</p>
                 </div>
             </div>
 
@@ -22,8 +22,8 @@
                     <div class="step-icon">
                         <i class="fas fa-folder-open"></i>
                     </div>
-                    <h4>Select Topic</h4>
-                    <p>Choose specific topics within your subject for focused practice.</p>
+                    <h4>{{ __('mcqs.how_it_works.step2_title') }}</h4>
+                    <p>{{ __('mcqs.how_it_works.step2_body') }}</p>
                 </div>
             </div>
 
@@ -32,8 +32,8 @@
                     <div class="step-icon">
                         <i class="fas fa-question-circle"></i>
                     </div>
-                    <h4>Practice Questions</h4>
-                    <p>Practice with detailed explanations and track your progress.</p>
+                    <h4>{{ __('mcqs.how_it_works.step3_title') }}</h4>
+                    <p>{{ __('mcqs.how_it_works.step3_body') }}</p>
                 </div>
             </div>
         </div>

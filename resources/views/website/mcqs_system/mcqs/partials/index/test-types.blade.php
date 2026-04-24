@@ -2,8 +2,8 @@
 <section id="test-types-section" class="py-5 bg-light">
     <div class="container">
         <div class="section-title-wrapper">
-            <h2 class="section-title">Choose Your Test Type</h2>
-            <p class="section-subtitle">Select From Various Test Categories To Start Your Preparation</p>
+            <h2 class="section-title">{{ __('mcqs.test_types.title') }}</h2>
+            <p class="section-subtitle">{{ __('mcqs.test_types.subtitle') }}</p>
         </div>
 
         <div class="row g-4">
@@ -16,8 +16,8 @@
                     <h3>{{ $testType->name }}</h3>
                     <p>{{ Str::limit($testType->description ?? '', 80) }}</p>
                     <div class="test-type-stats">
-                        <span><i class="fas fa-book me-1"></i>{{ $testType->subjects_count }} Subjects</span>
-                        <span><i class="fas fa-question-circle me-1"></i>{{ $testType->mcqs_count }} MCQs</span>
+                        <span><i class="fas fa-book me-1"></i>{{ __('mcqs.test_types.subjects_n', ['count' => $testType->subjects_count]) }}</span>
+                        <span><i class="fas fa-question-circle me-1"></i>{{ __('mcqs.test_types.mcqs_n', ['count' => $testType->mcqs_count]) }}</span>
                     </div>
                 </a>
             </div>

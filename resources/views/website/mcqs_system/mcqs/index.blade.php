@@ -10,8 +10,8 @@
 @push('meta')
 @php
     $canonicalUrl = route('website.mcqs.index');
-    $metaTitle = 'MCQs Practice for NTS, PPSC, FPSC, MDCAT & ECAT | Skoolyst';
-    $metaDescription = 'Practice thousands of MCQs for NTS, PPSC, FPSC, MDCAT, ECAT and more. Explore test types, subjects, topics, recent questions, and mock tests on Skoolyst.';
+    $metaTitle = __('mcqs.meta.title');
+    $metaDescription = __('mcqs.meta.description');
 
     $itemList = $testTypes->take(12)->values()->map(function ($testType, $index) {
         return [
@@ -42,13 +42,13 @@
             [
                 '@type' => 'ListItem',
                 'position' => 1,
-                'name' => 'Home',
+                'name' => __('messages.home'),
                 'item' => route('website.home'),
             ],
             [
                 '@type' => 'ListItem',
                 'position' => 2,
-                'name' => 'MCQs',
+                'name' => __('messages.mcqs'),
                 'item' => route('website.mcqs.index'),
             ],
         ],
@@ -60,26 +60,26 @@
         'mainEntity' => [
             [
                 '@type' => 'Question',
-                'name' => 'Which exams are covered in MCQs practice?',
+                'name' => __('mcqs.schema.faq_q1'),
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => 'Skoolyst MCQs covers NTS, PPSC, FPSC, MDCAT, ECAT and other competitive exam categories.',
+                    'text' => __('mcqs.schema.faq_a1'),
                 ],
             ],
             [
                 '@type' => 'Question',
-                'name' => 'Can I practice MCQs by subject and topic?',
+                'name' => __('mcqs.schema.faq_q2'),
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => 'Yes, you can choose a test type, then subject, and practice focused topics with recent MCQs and mock tests.',
+                    'text' => __('mcqs.schema.faq_a2'),
                 ],
             ],
             [
                 '@type' => 'Question',
-                'name' => 'Does Skoolyst provide mock tests?',
+                'name' => __('mcqs.schema.faq_q3'),
                 'acceptedAnswer' => [
                     '@type' => 'Answer',
-                    'text' => 'Yes, Skoolyst provides mock tests to help you prepare, track progress, and improve exam performance.',
+                    'text' => __('mcqs.schema.faq_a3'),
                 ],
             ],
         ],
@@ -87,7 +87,7 @@
 @endphp
 <title>{{ $metaTitle }}</title>
 <meta name="description" content="{{ $metaDescription }}">
-<meta name="keywords" content="MCQs Pakistan, NTS MCQs, PPSC MCQs, FPSC MCQs, MDCAT MCQs, ECAT MCQs, mock tests, competitive exam preparation">
+<meta name="keywords" content="{{ __('mcqs.meta.keywords') }}">
 <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
 <link rel="canonical" href="{{ $canonicalUrl }}">
 

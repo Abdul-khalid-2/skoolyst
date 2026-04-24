@@ -1,9 +1,9 @@
 <!-- ==================== MCQS HERO SECTION (compact, unified) ==================== -->
 <section class="mcqs-hero-section" id="mcqs-hero">
     <div class="mcqs-hero-content">
-        <h1 class="mcqs-hero-title">Practice MCQs for Competitive Exams</h1>
+        <h1 class="mcqs-hero-title">{{ __('mcqs.hero.title') }}</h1>
         <p class="mcqs-hero-subheading">
-            Master Your Subjects With Practice Questions For NTS, PPSC, FPSC, MDCAT, ECAT And More.
+            {{ __('mcqs.hero.subheading') }}
         </p>
     </div>
 </section>
@@ -17,25 +17,25 @@
                     <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ $stats['totalMcqs'] }}</div>
-                            <div class="stats-label">Total MCQs</div>
+                            <div class="stats-label">{{ __('mcqs.stats.total_mcqs') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ $stats['subjectsCount'] }}</div>
-                            <div class="stats-label">Subjects</div>
+                            <div class="stats-label">{{ __('mcqs.stats.subjects') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ $stats['testTypesCount'] }}</div>
-                            <div class="stats-label">Test Types</div>
+                            <div class="stats-label">{{ __('mcqs.stats.test_types') }}</div>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="stats-card">
                             <div class="stats-number">{{ $stats['topicsCount'] }}</div>
-                            <div class="stats-label">Topics</div>
+                            <div class="stats-label">{{ __('mcqs.stats.topics') }}</div>
                         </div>
                     </div>
                 </div>

@@ -25,25 +25,25 @@
             <div class="col-md-3 col-6">
                 <div class="test-type-stat-card">
                     <div class="test-type-stat-number">{{ $subjects->sum('mcqs_count') }}</div>
-                    <div class="test-type-stat-label">Available Questions</div>
+                    <div class="test-type-stat-label">{{ __('mcqs.test_type.stat_available_questions') }}</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
                 <div class="test-type-stat-card">
                     <div class="test-type-stat-number">{{ $subjects->sum('topics_count') }}</div>
-                    <div class="test-type-stat-label">Total Topics</div>
+                    <div class="test-type-stat-label">{{ __('mcqs.test_type.stat_total_topics') }}</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
                 <div class="test-type-stat-card">
                     <div class="test-type-stat-number">{{ $subjects->count() }}</div>
-                    <div class="test-type-stat-label">Subjects</div>
+                    <div class="test-type-stat-label">{{ __('mcqs.test_type.stat_subjects') }}</div>
                 </div>
             </div>
             <div class="col-md-3 col-6">
                 <div class="test-type-stat-card">
                     <div class="test-type-stat-number">{{ $totalMcqs }}</div>
-                    <div class="test-type-stat-label">Total MCQs</div>
+                    <div class="test-type-stat-label">{{ __('mcqs.test_type.stat_total_mcqs') }}</div>
                 </div>
             </div>
         </div>
@@ -56,7 +56,7 @@
         <div class="breadcrumb-wrapper">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('website.mcqs.index') }}">MCQs</a></li>
+                    <li class="breadcrumb-item"><a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('website.mcqs.index', [], false)) }}">{{ __('messages.mcqs') }}</a></li>
                     <li class="breadcrumb-item active" aria-current="page">{{ $testType->name }}</li>
                 </ol>
             </nav>
@@ -66,8 +66,8 @@
             <!-- Subjects List -->
             <div class="col-lg-8">
                 <div class="section-title-wrapper">
-                    <h2 class="section-title">Subjects for {{ $testType->name }}</h2>
-                    <p class="section-subtitle">Practice subject-wise questions</p>
+                    <h2 class="section-title">{{ __('mcqs.test_type.subjects_heading', ['name' => $testType->name]) }}</h2>
+                    <p class="section-subtitle">{{ __('mcqs.test_type.subjects_subtitle') }}</p>
                 </div>
 
                 @if($subjects->count() > 0)
@@ -79,7 +79,7 @@
                                 <div class="subject-icon" style="background: {{ $subject->color_code ?? '#4361ee' }};">
                                     <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
                                 </div>
-                                <span class="subject-badge">{{ $subject->mcqs_count }} MCQs</span>
+                                <span class="subject-badge">{{ __('mcqs.test_type.mcqs_badge', ['count' => $subject->mcqs_count]) }}</span>
                             </div>
                             
                             <h5>{{ $subject->name }}</h5>
@@ -90,7 +90,7 @@
                             <!-- Topics List -->
                             @if(isset($subject->topics) && $subject->topics->count() > 0)
                             <div class="topics-section">
-                                <span class="topics-label">Topics:</span>
+                                <span class="topics-label">{{ __('mcqs.test_type.topics_label') }}</span>
                                 <div class="topics-list">
                                     @foreach($subject->topics->take(4) as $topic)
                                     <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}?topic={{ $topic->id }}" 
@@ -99,7 +99,7 @@
                                     </a>
                                     @endforeach
                                     @if($subject->topics->count() > 4)
-                                    <span class="topic-badge-more">+{{ $subject->topics->count() - 4 }} more</span>
+                                    <span class="topic-badge-more">{{ __('mcqs.test_type.more_topics', ['count' => $subject->topics->count() - 4]) }}</span>
                                     @endif
                                 </div>
                             </div>
@@ -108,7 +108,7 @@
                             <div class="subject-footer">
                                 <a href="{{ route('website.mcqs.subject-by-test-type', [$testType->slug, $subject->slug]) }}"
                                    class="btn btn-sm btn-primary">
-                                    View All MCQs <i class="fas fa-arrow-right ms-1"></i>
+                                    {{ __('mcqs.test_type.view_all_mcqs') }} <i class="fas fa-arrow-right ms-1"></i>
                                 </a>
                             </div>
                         </div>
@@ -118,7 +118,7 @@
                 @else
                 <div class="empty-state-modern">
                     <i class="fas fa-book-open"></i>
-                    <p>No subjects available for {{ $testType->name }}</p>
+                    <p>{{ __('mcqs.test_type.empty_subjects', ['name' => $testType->name]) }}</p>
                 </div>
                 @endif
             </div>
@@ -141,7 +141,7 @@
                 @if($featuredMcqs->count() > 0)
                 <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5><i class="fas fa-star me-2"></i>Featured Questions</h5>
+                        <h5><i class="fas fa-star me-2"></i>{{ __('mcqs.test_type.featured_questions') }}</h5>
                     </div>
                     <div class="card-body">
                         @foreach($featuredMcqs as $mcq)
@@ -157,10 +157,10 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center mt-2">
                                 <div class="featured-mcq-meta">
-                                    <span><i class="fas fa-bookmark"></i> {{ $mcq->marks }} Mark(s)</span>
+                                    <span><i class="fas fa-bookmark"></i> {{ $mcq->marks }} {{ $mcq->marks > 1 ? __('mcqs.test_type.marks') : __('mcqs.test_type.mark') }}</span>
                                 </div>
                                 <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}" class="featured-mcq-link">
-                                    Practice <i class="fas fa-arrow-right"></i>
+                                    {{ __('mcqs.test_type.practice') }} <i class="fas fa-arrow-right"></i>
                                 </a>
                             </div>
                         </div>
@@ -173,7 +173,7 @@
                 @if($subjects->count() > 0)
                 <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5><i class="fas fa-chart-line me-2"></i>Popular Subjects</h5>
+                        <h5><i class="fas fa-chart-line me-2"></i>{{ __('mcqs.test_type.popular_subjects_sidebar') }}</h5>
                     </div>
                     <div class="card-body">
                         @foreach($subjects->sortByDesc('mcqs_count')->take(5) as $subject)
@@ -187,7 +187,7 @@
                                     <div class="subject-name">{{ $subject->name }}</div>
                                     <div class="subject-question-count">
                                         <i class="fas fa-question-circle"></i>
-                                        {{ $subject->mcqs_count }} questions
+                                        {{ __('mcqs.test_type.questions_n', ['count' => $subject->mcqs_count]) }}
                                     </div>
                                 </div>
                             </div>
@@ -213,7 +213,7 @@
                 @if($relatedTestTypes->count() > 0)
                 <div class="sidebar-widget">
                     <div class="card-header">
-                        <h5><i class="fas fa-exchange-alt me-2"></i>Other Test Types</h5>
+                        <h5><i class="fas fa-exchange-alt me-2"></i>{{ __('mcqs.test_type.other_test_types') }}</h5>
                     </div>
                     <div class="card-body">
                         @foreach($relatedTestTypes as $otherTestType)
@@ -227,7 +227,7 @@
                                     <div class="test-type-name">{{ $otherTestType->name }}</div>
                                     <div class="test-type-count">
                                         <i class="fas fa-question-circle"></i>
-                                        {{ $otherTestType->mcqs_count }} questions
+                                        {{ __('mcqs.test_type.questions_n', ['count' => $otherTestType->mcqs_count]) }}
                                     </div>
                                 </div>
                             </div>

@@ -1,13 +1,13 @@
 <!-- ==================== RECENT MCQS SECTION ==================== -->
 <section class="py-5">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-3">
             <div>
-                <h2 class="section-title mb-0">Recent Practice Questions</h2>
-                <p class="text-muted">Latest MCQs Added To Our Database</p>
+                <h2 class="section-title mb-0">{{ __('mcqs.recent.title') }}</h2>
+                <p class="text-muted">{{ __('mcqs.recent.subtitle') }}</p>
             </div>
-            <a href="{{ route('website.mcqs.mock-tests') }}" class="btn btn-primary">
-                <i class="fas fa-clipboard-list me-2"></i>View All Mock Tests
+            <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('website.mcqs.mock-tests', [], false)) }}" class="btn btn-primary">
+                <i class="fas fa-clipboard-list me-2"></i>{{ __('mcqs.recent.view_all_mock_tests') }}
             </a>
         </div>
 
@@ -20,7 +20,7 @@
                             {{ ucfirst($mcq->difficulty_level) }}
                         </span>
                         <span class="badge bg-light text-dark">
-                            {{ $mcq->marks }} Mark{{ $mcq->marks > 1 ? 's' : '' }}
+                            {{ $mcq->marks }} {{ $mcq->marks > 1 ? __('mcqs.recent.marks') : __('mcqs.recent.mark') }}
                         </span>
                     </div>
 
@@ -45,7 +45,7 @@
 
                     <div class="text-end">
                         <a href="{{ route('website.mcqs.practice', $mcq->uuid) }}" class="btn btn-sm btn-outline-primary">
-                            Practice <i class="fas fa-arrow-right ms-1"></i>
+                            {{ __('mcqs.recent.practice') }} <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </div>
                 </div>
@@ -55,7 +55,7 @@
 
         <div class="text-center mt-5">
             <a href="#" class="btn btn-primary btn-lg">
-                <i class="fas fa-search me-2"></i>Browse All Questions
+                <i class="fas fa-search me-2"></i>{{ __('mcqs.recent.browse_all') }}
             </a>
         </div>
     </div>

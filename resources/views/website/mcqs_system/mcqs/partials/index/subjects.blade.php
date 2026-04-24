@@ -2,8 +2,8 @@
 <section id="subjects-section" class="py-5">
     <div class="container">
         <div class="section-title-wrapper">
-            <h2 class="section-title">Popular Subjects</h2>
-            <p class="section-subtitle">Start Practicing With Our Most Popular Subjects</p>
+            <h2 class="section-title">{{ __('mcqs.subjects.title') }}</h2>
+            <p class="section-subtitle">{{ __('mcqs.subjects.subtitle') }}</p>
         </div>
 
         <div class="row g-4">
@@ -15,8 +15,8 @@
                             <i class="{{ $subject->icon ?? 'fas fa-book' }}"></i>
                         </div>
                         <div class="subject-meta">
-                            <span class="badge">{{ $subject->mcqs_count }} Qs</span>
-                            <span class="badge">{{ $subject->topics_count }} Topics</span>
+                            <span class="badge">{{ $subject->mcqs_count }} {{ __('mcqs.subjects.badge_qs') }}</span>
+                            <span class="badge">{{ $subject->topics_count }} {{ __('mcqs.subjects.badge_topics') }}</span>
                         </div>
                     </div>
 
@@ -32,7 +32,7 @@
 
                     <div class="mt-4">
                         <a href="{{ route('website.mcqs.subject', $subject->slug) }}" class="btn btn-sm btn-outline-primary">
-                            View Topics <i class="fas fa-arrow-right ms-1"></i>
+                            {{ __('mcqs.subjects.view_topics') }} <i class="fas fa-arrow-right ms-1"></i>
                         </a>
                     </div>
                 </div>
@@ -42,7 +42,7 @@
 
         <div class="text-center mt-5">
             <a href="#" class="btn btn-primary btn-lg">
-                <i class="fas fa-search me-2"></i>Browse All Subjects
+                <i class="fas fa-search me-2"></i>{{ __('mcqs.subjects.browse_all') }}
             </a>
         </div>
     </div>
