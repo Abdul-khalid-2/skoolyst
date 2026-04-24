@@ -79,6 +79,45 @@ class BlogPost extends Model
         return 'slug';
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if ($field !== null) {
+            return static::where($field, $value)->first();
+        }
+        if (is_numeric($value) && (string) (int) $value === (string) $value) {
+            $byId = static::query()->whereKey((int) $value)->first();
+            if ($byId) {
+                return $byId;
+            }
+        }
+
+        if ($bySlug = static::where('slug', $value)->first()) {
+            return $bySlug;
+        }
+
+        // Old bug: route('admin.blog-posts.show', [category_slug, post_slug]) put the
+        // post slug in the query string (e.g. ?long-post-slug or ?0=long-post-slug).
+        $req = request();
+        if ($req !== null) {
+            $candidates = [];
+            foreach ($req->query() as $k => $v) {
+                if (is_string($k) && str_contains($k, '-')) {
+                    $candidates[] = $k;
+                }
+                if (is_string($v) && str_contains($v, '-')) {
+                    $candidates[] = $v;
+                }
+            }
+            foreach (array_unique($candidates) as $slug) {
+                if ($post = static::where('slug', $slug)->first()) {
+                    return $post;
+                }
+            }
+        }
+
+        return static::where('slug', $value)->firstOrFail();
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', 'published')

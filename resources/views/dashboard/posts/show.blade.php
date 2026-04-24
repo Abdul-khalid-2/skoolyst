@@ -69,8 +69,8 @@
                         <p class="mb-0 text-muted">Blog post details and statistics</p>
                     </div>
                     <div class="btn-group">
-                        <a href="{{ route('admin.blog-posts.show', [$blogPost->category?->slug, $blogPost->slug]) }}" 
-                           class="btn btn-outline-primary" target="_blank">
+                        <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('website.blog.show', $blogPost->slug, false)) }}" 
+                           class="btn btn-outline-primary" target="_blank" rel="noopener">
                             <i class="fas fa-eye me-2"></i> View Live
                         </a>
                         <a href="{{ route('admin.blog-posts.edit', $blogPost) }}" class="btn btn-primary">
@@ -387,8 +387,8 @@
                                     <a href="{{ route('admin.blog-posts.edit', $blogPost) }}" class="btn btn-primary">
                                         <i class="fas fa-edit me-2"></i> Edit Post
                                     </a>
-                                    <a href="{{ route('admin.blog-posts.show', [$blogPost->category?->slug, $blogPost->slug]) }}" 
-                                       class="btn btn-outline-primary" target="_blank">
+                                    <a href="{{ \Mcamara\LaravelLocalization\Facades\LaravelLocalization::localizeUrl(route('website.blog.show', $blogPost->slug, false)) }}" 
+                                       class="btn btn-outline-primary" target="_blank" rel="noopener">
                                         <i class="fas fa-external-link-alt me-2"></i> View Live
                                     </a>
                                     <a href="{{ route('admin.blog-posts.index') }}" class="btn btn-outline-secondary">

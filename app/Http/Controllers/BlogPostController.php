@@ -134,7 +134,7 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Blog post created successfully!',
-                'redirect_url' => route('admin.blog-posts.show', $blogPost->id)
+                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug])
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -292,7 +292,7 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Blog post updated successfully!',
-                'redirect_url' => route('admin.blog-posts.show', $blogPost->id)
+                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug])
             ]);
         } catch (\Exception $e) {
             return response()->json([
