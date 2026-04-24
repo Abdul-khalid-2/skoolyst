@@ -15,7 +15,7 @@ class VideoWebsiteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Video::with(['category', 'user', 'school', 'shop'])
+        $query = Video::with(['category', 'user', 'school.translations', 'shop'])
             ->published()
             ->approved();
 
@@ -58,7 +58,7 @@ class VideoWebsiteController extends Controller
         // Get data
         $videos = $query->paginate(12);
         $categories = VideoCategory::where('status', 'active')->get();
-        $schools = School::where('status', 'active')->get();
+        $schools = School::where('status', 'active')->with('translations')->get();
         $shops = Shop::where('is_active', true)->get();
 
         // Popular videos for sidebar
@@ -93,7 +93,7 @@ class VideoWebsiteController extends Controller
 
     public function show($slug)
     {
-        $video = Video::with(['category', 'user', 'school', 'shop', 'comments.user', 'comments.replies.user'])
+        $video = Video::with(['category', 'user', 'school.translations', 'shop', 'comments.user', 'comments.replies.user'])
             ->where('slug', $slug)
             ->published()
             ->approved()

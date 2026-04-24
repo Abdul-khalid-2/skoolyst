@@ -15,7 +15,9 @@ class HomeService
     public function getHomePage(): array
     {
         // Cache homepage data for 5 minutes to improve performance
-        return Cache::remember('homepage_data', 300, function () {
+        $cacheKey = 'homepage_data_'.app()->getLocale();
+
+        return Cache::remember($cacheKey, 300, function () {
             return [
                 'schools' => $this->getFeaturedSchools(),
                 'curriculums' => $this->getCurriculums(),
@@ -31,7 +33,7 @@ class HomeService
      */
     public function getFeaturedSchools(int $limit = 12)
     {
-        return School::with(['curriculums', 'features', 'reviews', 'profile']) // Added 'profile' to eager load
+        return School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
             ->where('status', 'active')
             ->where('visibility', 'public')
             ->orderBy('created_at', 'desc')
@@ -47,7 +49,7 @@ class HomeService
      */
     public function searchSchools(array $filters): array
     {
-        $query = School::with(['curriculums', 'features', 'reviews', 'profile']) // Added 'profile' to eager load
+        $query = School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
             ->where('status', 'active')
             ->where('visibility', 'public');
 
@@ -60,6 +62,13 @@ class HomeService
                     ->orWhere('description', 'like', "%{$searchTerm}%")
                     ->orWhereHas('curriculums', function ($q) use ($searchTerm) {
                         $q->where('name', 'like', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('translations', function ($q) use ($searchTerm) {
+                        $q->where('locale', 'ur')
+                            ->where(function ($tq) use ($searchTerm) {
+                                $tq->where('name', 'like', "%{$searchTerm}%")
+                                    ->orWhere('description', 'like', "%{$searchTerm}%");
+                            });
                     });
             });
         }
@@ -161,12 +170,12 @@ class HomeService
         return [
             'id' => $school->id,
             'uuid' => $school->uuid ?? $school->id, // Add uuid if available
-            'name' => $school->name,
+            'name' => $school->localized('name'),
             'type' => $school->school_type,
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),
-            'description' => $school->description ?: 'No description available.',
+            'description' => $school->localized('description') ?: 'No description available.',
             'features' => $featureNames,
             'banner_image' => $school->banner_image ? asset('website/' . $school->banner_image) : null,
             'review_count' => $school->reviews->count(),

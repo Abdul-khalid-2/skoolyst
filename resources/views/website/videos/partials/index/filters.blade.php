@@ -21,7 +21,7 @@
                     <option value="all">All Schools</option>
                     @foreach($schools as $school)
                     <option value="{{ $school->id }}" {{ request('school') == $school->id ? 'selected' : '' }}>
-                        {{ $school->name }}
+                        {{ $school->localized('name') }}
                     </option>
                     @endforeach
                 </select>

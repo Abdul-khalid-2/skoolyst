@@ -303,6 +303,8 @@
                                 @enderror
                             </div>
 
+                            @include('dashboard.schooles.partials.urdu-translation-fields', ['school' => $school])
+
                             <div class="mb-3">
                                 <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
                                 <select class="form-control @error('school_type') is-invalid @enderror" id="school_type" name="school_type" required>

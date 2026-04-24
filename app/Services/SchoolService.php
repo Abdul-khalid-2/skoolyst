@@ -15,7 +15,7 @@ class SchoolService
      */
     protected function getBaseQuery()
     {
-        return School::with(['curriculums', 'features', 'reviews', 'profile'])
+        return School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
             ->where('status', 'active')
             ->where('visibility', 'public');
     }
@@ -34,6 +34,13 @@ class SchoolService
                     ->orWhere('description', 'like', "%{$searchTerm}%")
                     ->orWhereHas('curriculums', function ($q) use ($searchTerm) {
                         $q->where('name', 'like', "%{$searchTerm}%");
+                    })
+                    ->orWhereHas('translations', function ($q) use ($searchTerm) {
+                        $q->where('locale', 'ur')
+                            ->where(function ($tq) use ($searchTerm) {
+                                $tq->where('name', 'like', "%{$searchTerm}%")
+                                    ->orWhere('description', 'like', "%{$searchTerm}%");
+                            });
                     });
             });
         }
@@ -83,7 +90,7 @@ class SchoolService
     {
         $query = $this->getBaseQuery();
         $query = $this->applyFilters($query, $filters);
-        
+
         return $query->orderBy('created_at', 'desc')->get()
             ->map(function ($school) {
                 return $this->formatSchoolData($school);
@@ -97,6 +104,7 @@ class SchoolService
     {
         $school = School::with([
             'profile',
+            'translations',
             'curriculums',
             'features',
             'reviews',
@@ -188,12 +196,12 @@ class SchoolService
         return [
             'id' => $school->id,
             'uuid' => $school->uuid ?? $school->id,
-            'name' => $school->name,
+            'name' => $school->localized('name'),
             'type' => $school->school_type,
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),
-            'description' => $school->description ?: 'No description available.',
+            'description' => $school->localized('description') ?: 'No description available.',
             'features' => $featureNames,
             'banner_image' => $school->banner_image ? asset('website/' . $school->banner_image) : null,
             'review_count' => $school->reviews->count(),

@@ -172,6 +172,8 @@
                                 <textarea class="form-control" id="facilities" name="facilities" rows="4" placeholder="Enter available facilities">{{ old('facilities') }}</textarea>
                             </div>
 
+                            @include('dashboard.schooles.partials.urdu-translation-fields', ['school' => null])
+
                             <div class="mb-3">
                                 <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
                                 <select class="form-control" id="school_type" name="school_type" required>

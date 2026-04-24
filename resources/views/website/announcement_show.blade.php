@@ -16,7 +16,7 @@
             <nav class="announcement-breadcrumb">
                 <a href="{{ route('website.home') }}" class="breadcrumb-link">Home</a>
                 <span class="text-white mx-2">/</span>
-                <a href="{{ route('browseSchools.show', $announcement->school->uuid) }}" class="breadcrumb-link">{{ $announcement->school->name }}</a>
+                <a href="{{ route('browseSchools.show', $announcement->school->uuid) }}" class="breadcrumb-link">{{ $announcement->school->localized('name') }}</a>
                 <span class="text-white mx-2">/</span>
                 <span class="text-white-50">Announcement</span>
             </nav>
@@ -175,14 +175,14 @@
                     <div class="school-header-sidebar">
                         @if($announcement->school->logo)
                             <img src="{{ asset('storage/' . $announcement->school->logo) }}" 
-                                 alt="{{ $announcement->school->name }}" class="school-logo-sidebar">
+                                 alt="{{ $announcement->school->localized('name') }}" class="school-logo-sidebar">
                         @else
                             <div class="school-logo-sidebar bg-light">
                                 <i class="fas fa-school fa-2x text-muted"></i>
                             </div>
                         @endif
                         <div class="school-details-sidebar">
-                            <h3>{{ $announcement->school->name }}</h3>
+                            <h3>{{ $announcement->school->localized('name') }}</h3>
                             <div class="school-location-sidebar">
                                 <i class="fas fa-map-marker-alt"></i>
                                 {{ $announcement->school->city ?? 'Location not specified' }}

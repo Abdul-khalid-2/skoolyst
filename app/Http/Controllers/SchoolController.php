@@ -8,6 +8,7 @@ use App\Models\School;
 use App\Models\SchoolImage;
 use App\Models\SchoolProfile;
 use App\Models\User;
+use App\Services\SchoolTranslationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -125,6 +126,17 @@ class SchoolController extends Controller
             'school_images.*'   => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'image_titles'      => 'nullable|array',
             'image_titles.*'    => 'nullable|string|max:255',
+
+            'translations' => 'nullable|array',
+            'translations.ur' => 'nullable|array',
+            'translations.ur.name' => 'nullable|string|max:255',
+            'translations.ur.description' => 'nullable|string',
+            'translations.ur.facilities' => 'nullable|string',
+            'translations.ur.banner_title' => 'nullable|string|max:255',
+            'translations.ur.banner_tagline' => 'nullable|string|max:255',
+            'translations.ur.school_motto' => 'nullable|string|max:255',
+            'translations.ur.mission' => 'nullable|string',
+            'translations.ur.vision' => 'nullable|string',
         ]);
 
         try {
@@ -267,7 +279,11 @@ class SchoolController extends Controller
             // Assign role
             $user->assignRole('school-admin');
 
+            $school->refresh();
+            SchoolTranslationService::syncFromRequest($school, $request->input('translations', []));
+
             DB::commit();
+            self::clearSchoolListingCaches();
 
             $redirect = $request->has('save_and_add')
                 ? redirect()->route('schools.create')->with('success', 'School created successfully! Create another school.')
@@ -309,6 +325,7 @@ class SchoolController extends Controller
         try {
             $school = School::with([
                 'profile',
+                'translations',
                 'curriculums',
                 'features',
                 'reviews',
@@ -430,6 +447,17 @@ class SchoolController extends Controller
                 'curriculum_ids.*'   => 'exists:curriculums,id',
                 'quick_fact_keys'   => 'nullable|array',
                 'quick_fact_values' => 'nullable|array',
+
+                'translations' => 'nullable|array',
+                'translations.ur' => 'nullable|array',
+                'translations.ur.name' => 'nullable|string|max:255',
+                'translations.ur.description' => 'nullable|string',
+                'translations.ur.facilities' => 'nullable|string',
+                'translations.ur.banner_title' => 'nullable|string|max:255',
+                'translations.ur.banner_tagline' => 'nullable|string|max:255',
+                'translations.ur.school_motto' => 'nullable|string|max:255',
+                'translations.ur.mission' => 'nullable|string',
+                'translations.ur.vision' => 'nullable|string',
             ]);
 
             DB::beginTransaction();
@@ -618,9 +646,11 @@ class SchoolController extends Controller
                 ]);
                 $user->assignRole('school-admin');
             }
-            Cache::forget('homepage_data');
-            Cache::forget('cities_list');
+            $school->refresh();
+            SchoolTranslationService::syncFromRequest($school, $request->input('translations', []));
+
             DB::commit();
+            self::clearSchoolListingCaches();
 
             return redirect()->route('schools.show', $school->id)
                 ->with('success', 'School updated successfully!');
@@ -742,5 +772,13 @@ class SchoolController extends Controller
             DB::rollBack();
             return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
         }
+    }
+
+    protected static function clearSchoolListingCaches(): void
+    {
+        foreach (['en', 'ur'] as $loc) {
+            Cache::forget('homepage_data_'.$loc);
+        }
+        Cache::forget('cities_list');
     }
 }

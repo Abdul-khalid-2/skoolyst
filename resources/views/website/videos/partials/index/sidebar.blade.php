@@ -104,13 +104,13 @@
                 @if($school->logo)
                 <img src="{{ asset('website/' . $school->logo) }}"
                     class="videos-school-logo"
-                    alt="{{ $school->name }}">
+                    alt="{{ $school->localized('name') }}">
                 @else
                 <div class="videos-school-placeholder">
                     <i class="fas fa-school"></i>
                 </div>
                 @endif
-                <span class="videos-school-name">{{ Str::limit($school->name, 25) }}</span>
+                <span class="videos-school-name">{{ Str::limit($school->localized('name'), 25) }}</span>
             </a>
             @endforeach
             @if($schools->count() > 5)

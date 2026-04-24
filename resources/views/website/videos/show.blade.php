@@ -162,7 +162,7 @@
                             <div class="detail-value">
                                 <a href="{{ route('browseSchools.index', $video->school->uuid) }}" 
                                    class="text-decoration-none">
-                                    {{ $video->school->name }}
+                                    {{ $video->school->localized('name') }}
                                 </a>
                             </div>
                         </div>

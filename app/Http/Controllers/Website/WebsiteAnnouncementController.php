@@ -12,7 +12,7 @@ class WebsiteAnnouncementController extends Controller
     public function show($uuid)
     {
         $announcement = Announcement::with([
-            'school',
+            'school.translations',
             'branch',
             'comments' => function ($query) {
                 $query->where('status', 'approved')

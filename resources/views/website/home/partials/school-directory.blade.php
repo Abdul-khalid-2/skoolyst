@@ -13,7 +13,7 @@
                             @if(isset($school['banner_image']) && $school['banner_image'])
                                 <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
                             @elseif(isset($school->banner_image) && $school->banner_image)
-                                <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ $school->name }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ is_array($school) ? $school['name'] : $school->localized('name') }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
                             @else
                                 <i class="fas fa-school" aria-hidden="true"></i>
                             @endif
@@ -30,7 +30,7 @@
                         <div class="school-content">
                             <div class="school-header">
                                 <div>
-                                    <h3 class="school-name" itemprop="name">{{ $school['name'] ?? $school->name }}</h3>
+                                    <h3 class="school-name" itemprop="name">{{ is_array($school) ? ($school['name'] ?? '') : $school->localized('name') }}</h3>
                                     <div class="school-location">
                                         <i class="fas fa-map-marker-alt"></i>
                                         <span itemprop="addressLocality">{{ $school['location'] ?? ($school->city ?? 'Location not specified') }}</span>

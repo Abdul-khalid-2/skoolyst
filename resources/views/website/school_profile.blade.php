@@ -13,6 +13,13 @@
 
 @endpush
 
+@php
+    $locName = $school->localized('name');
+    $locBannerTitle = $school->localized('banner_title');
+    $locTagline = $school->localized('banner_tagline');
+    $hasHero = ($locBannerTitle !== '' && $locBannerTitle !== null) || ($locTagline !== '' && $locTagline !== null) || $school->banner_image;
+@endphp
+
 @section('content')
     <!-- School Header Section -->
     <section class="school-header {{ $school->banner_image ? 'has-banner-image' : '' }}"
@@ -22,12 +29,12 @@
     >
         <div class="school-header-overlay"></div>
 
-        @if($school->banner_title)
+        @if($hasHero)
             <div class="container">
                 <div class="school-hero-content">
                     <div class="school-logo-wrapper me-3">
                         @if($school->profile->logo)
-                            <img src="{{ asset('website/'. $school->profile->logo) }}" alt="{{ $school->name }} Logo" class="school-logo-img rounded" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid white;">
+                            <img src="{{ asset('website/'. $school->profile->logo) }}" alt="{{ $locName }} Logo" class="school-logo-img rounded" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid white;">
                         @else
                             <div class="school-logo-placeholder rounded d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(255,255,255,0.2);">
                                 <i class="fas fa-school text-white"></i>
@@ -36,11 +43,11 @@
                     </div>
 
                     <div class="school-text-content">
-                        <h1 class="school-title">{{ $school->banner_title ?? $school->name }}</h1>
-                        @if($school->banner_tagline)
-                            <p class="school-tagline">{{ $school->banner_tagline ?? "" }}</p>
+                        <h1 class="school-title">{{ $locBannerTitle !== '' ? $locBannerTitle : $locName }}</h1>
+                        @if($locTagline !== '')
+                            <p class="school-tagline">{{ $locTagline }}</p>
                         @endif
-                        <p class="school-name-sub">{{ $school->name }}</p>
+                        <p class="school-name-sub">{{ $locName }}</p>
                     </div>
                 </div>
             </div>
@@ -89,7 +96,7 @@
                         <h2 class="section-title">About Our School</h2>
                         <div class="section-content">
                             <p class="school-description">
-                                {{ $school->description ?? 'No description available for this school.' }}
+                                {{ $school->localized('description') !== '' ? $school->localized('description') : 'No description available for this school.' }}
                             </p>
                             
                             <!-- Quick Facts -->
@@ -234,8 +241,8 @@
                                 <p class="no-content">Facilities information not available.</p>
                             @endif
                         </div>
-                        @if($school->description)
-                            <p>{{ $school->description??"" }}</p>
+                        @if($school->localized('description') !== '')
+                            <p>{{ $school->localized('description') }}</p>
                         @endif
                     </section>
 
@@ -244,38 +251,38 @@
                         <h2 class="section-title">Mission & Vision</h2>
                         <div class="section-content">
                             <div class="mission-vision-grid">
-                                @if($school->profile && $school->profile->mission)
+                                @if($school->localized('mission') !== '')
                                 <div class="mission-vision-item">
                                     <div class="mv-icon">
                                         <i class="fas fa-bullseye"></i>
                                     </div>
                                     <h3>Our Mission</h3>
-                                    <p>{{ $school->profile->mission }}</p>
+                                    <p>{!! nl2br(e($school->localized('mission'))) !!}</p>
                                 </div>
                                 @endif
                                 
-                                @if($school->profile && $school->profile->vision)
+                                @if($school->localized('vision') !== '')
                                 <div class="mission-vision-item">
                                     <div class="mv-icon">
                                         <i class="fas fa-eye"></i>
                                     </div>
                                     <h3>Our Vision</h3>
-                                    <p>{{ $school->profile->vision }}</p>
+                                    <p>{!! nl2br(e($school->localized('vision'))) !!}</p>
                                 </div>
                                 @endif
                                 
-                                @if($school->profile && $school->profile->school_motto)
+                                @if($school->localized('school_motto') !== '')
                                 <div class="mission-vision-item">
                                     <div class="mv-icon">
                                         <i class="fas fa-quote-left"></i>
                                     </div>
                                     <h3>Our Motto</h3>
-                                    <p>"{{ $school->profile->school_motto }}"</p>
+                                    <p>"{{ $school->localized('school_motto') }}"</p>
                                 </div>
                                 @endif
                             </div>
                             
-                            @if(!$school->profile || (!$school->profile->mission && !$school->profile->vision && !$school->profile->school_motto))
+                            @if($school->localized('mission') === '' && $school->localized('vision') === '' && $school->localized('school_motto') === '')
                                 <p class="no-content">Mission and vision information not available.</p>
                             @endif
                         </div>

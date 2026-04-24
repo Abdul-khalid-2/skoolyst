@@ -154,6 +154,66 @@ class School extends Model
         return $this->hasOne(SchoolProfile::class);
     }
 
+    public function translations(): HasMany
+    {
+        return $this->hasMany(SchoolTranslation::class);
+    }
+
+    public function translationForLocale(string $locale): ?SchoolTranslation
+    {
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('locale', $locale);
+        }
+
+        return $this->translations()->where('locale', $locale)->first();
+    }
+
+    /**
+     * User-facing string for the current app locale, falling back to English (schools + school_profiles).
+     */
+    public function localized(string $field): string
+    {
+        if (in_array($field, ['mission', 'vision', 'school_motto'], true) && ! $this->relationLoaded('profile')) {
+            $this->load('profile');
+        }
+
+        $locale = app()->getLocale();
+        $fallback = config('app.fallback_locale', 'en');
+        $default = $this->getDefaultLocaleString($field);
+
+        if ($locale === $fallback || $locale === 'en') {
+            return $default;
+        }
+
+        $tr = $this->translationForLocale($locale);
+        if (! $tr) {
+            return $default;
+        }
+
+        $value = $tr->getAttribute($field);
+        if ($value === null || $value === '') {
+            return $default;
+        }
+
+        return (string) $value;
+    }
+
+    protected function getDefaultLocaleString(string $field): string
+    {
+        $raw = null;
+        if (in_array($field, ['name', 'description', 'facilities', 'banner_title', 'banner_tagline'], true)) {
+            $raw = $this->attributes[$field] ?? null;
+        } elseif (in_array($field, ['mission', 'vision', 'school_motto'], true)) {
+            $raw = $this->profile?->getAttribute($field);
+        }
+
+        if ($raw === null) {
+            return '';
+        }
+
+        return (string) $raw;
+    }
+
     public function announcements()
     {
         return $this->hasMany(Announcement::class);
