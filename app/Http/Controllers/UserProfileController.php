@@ -17,7 +17,11 @@ class UserProfileController extends Controller
     public function show()
     {
         $user = auth()->user()->load('school');
-        return view('dashboard.profile.show', compact('user'));
+        $view = $user->hasDashboardAccess()
+            ? 'dashboard.profile.show'
+            : 'website.profile.show';
+
+        return view($view, compact('user'));
     }
 
     /**
@@ -26,8 +30,11 @@ class UserProfileController extends Controller
     public function edit()
     {
         $user = auth()->user()->load('school');
+        $view = $user->hasDashboardAccess()
+            ? 'dashboard.profile.edit'
+            : 'website.profile.edit';
 
-        return view('dashboard.profile.edit', compact('user'));
+        return view($view, compact('user'));
     }
 
     /**

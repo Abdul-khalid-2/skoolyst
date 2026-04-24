@@ -73,6 +73,14 @@ class User extends Authenticatable
         return $this->hasRole('super-admin');
     }
 
+    /**
+     * Users who use the back-office /dashboard (super-admin, school-admin, shop-owner).
+     */
+    public function hasDashboardAccess(): bool
+    {
+        return $this->hasAnyRole(['super-admin', 'school-admin', 'shop-owner']);
+    }
+
     // NEW: Test Preparation Relationships
     public function userMcqAnswers()
     {

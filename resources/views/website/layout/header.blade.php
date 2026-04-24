@@ -83,18 +83,47 @@
                     </span>
                 </a>
 
-                <!-- Auth Buttons -->
-                <div class="auth-buttons d-flex gap-2">
+                <!-- Auth: guest buttons / logged-in user menu -->
+                <div class="auth-buttons d-flex align-items-center gap-2">
                     @if (Route::has('login'))
                     @auth
-                    @if (auth()->user()->hasRole('super-admin') || auth()->user()->hasRole('school-admin') || auth()->user()->hasRole('shop-owner'))
-                    <a href="{{ LaravelLocalization::localizeUrl('/dashboard') }}" class="btn-global-style">Dashboard</a>
-                    @else
-                    <form method="POST" action="{{ LaravelLocalization::localizeUrl(route('logout', [], false)) }}">
-                        @csrf
-                        <button type="submit" class="btn-global-style">Logout</button>
-                    </form>
-                    @endif
+                    @php
+                        $currentUser = auth()->user();
+                        $navAvatarUrl = $currentUser->profile_picture_url
+                            ?? 'https://ui-avatars.com/api/?name=' . urlencode($currentUser->name) . '&size=64&background=15a362&color=fff';
+                    @endphp
+                    <div class="dropdown">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-0 border-0"
+                            type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
+                            id="userNavDropdown" aria-label="Account menu">
+                            <img src="{{ $navAvatarUrl }}" alt="" width="36" height="36" class="rounded-circle" style="object-fit: cover;">
+                            <span class="d-none d-sm-inline text-dark fw-medium">{{ \Illuminate\Support\Str::limit($currentUser->name, 22) }}</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userNavDropdown">
+                            @if($currentUser->hasDashboardAccess())
+                            <li>
+                                <a class="dropdown-item" href="{{ LaravelLocalization::localizeUrl('/dashboard') }}">
+                                    <i class="fas fa-tachometer-alt me-2 text-muted"></i>Dashboard
+                                </a>
+                            </li>
+                            @else
+                            <li>
+                                <a class="dropdown-item" href="{{ LaravelLocalization::localizeUrl(route('user_profile.show', [], false)) }}">
+                                    <i class="fas fa-user me-2 text-muted"></i>My profile
+                                </a>
+                            </li>
+                            @endif
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="POST" action="{{ LaravelLocalization::localizeUrl(route('logout', [], false)) }}" class="px-0 py-0">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                     @else
                     <a href="{{ LaravelLocalization::localizeUrl(route('login', [], false)) }}" class="btn-login">Login</a>
                     @if (Route::has('register'))
