@@ -15,6 +15,10 @@
     align-items: center;
 }
 
+.school-header.has-banner-image {
+    background-image: var(--school-banner-image);
+}
+
 .school-header-overlay {
     position: absolute;
     top: 0;
@@ -1261,4 +1265,34 @@
         width: 100%;
         text-align: center;
     }
+}
+
+/* -------------------------------------------------------------------------
+   School profile partials: hero / nav (moved from inline Blade)
+   Placed at end so it overrides .school-logo-* defaults.
+   ------------------------------------------------------------------------- */
+.school-logo-img.school-logo-img--hero {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border: 3px solid #fff;
+    padding: 0;
+    background: transparent;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.school-logo-placeholder.school-logo-placeholder--hero {
+    width: 80px;
+    height: 80px;
+    min-height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+.school-nav-announcement-icon {
+    color: #03ec3a;
+}
+
+#contactInquiryForm.modal {
+    display: none;
 }
