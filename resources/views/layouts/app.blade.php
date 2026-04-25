@@ -21,12 +21,6 @@
     <!-- Custom Styles -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/app.css') }}">
 
-    <!-- Select2 (for selects with class `js-select2` — non-critical, async) -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet"></noscript>
-    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet"></noscript>
-
     @stack('css')
 </head>
 
@@ -62,12 +56,10 @@
         </div>
     </footer>
 
-    <!-- Bootstrap JS (deferred; order preserved) -->
+    <!-- Bootstrap + dashboard app (deferred) — page-specific jQuery/Select2 via @stack('vendor-js') only where needed -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" defer></script>
     <script src="{{ asset('assets/dashboard/js/app.js') }}" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js" defer></script>
-    <script src="{{ asset('assets/dashboard/js/select2-init.js') }}" defer></script>
+    @stack('vendor-js')
 
     <script>
         // public/js/notifications.js

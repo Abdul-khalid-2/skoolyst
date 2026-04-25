@@ -27,3 +27,16 @@
         </div>
     </div>
 </x-app-layout>
+
+@push('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        ['profile-updated-saved', 'password-updated-saved'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+                setTimeout(function () { el.remove(); }, 2000);
+            }
+        });
+    });
+</script>
+@endpush

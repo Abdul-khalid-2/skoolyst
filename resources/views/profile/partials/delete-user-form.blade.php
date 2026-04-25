@@ -10,11 +10,11 @@
     </header>
 
     <x-danger-button
-        x-data=""
-        x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+        type="button"
+        onclick="document.getElementById('dialog-confirm-user-deletion')?.showModal()"
     >{{ __('Delete Account') }}</x-danger-button>
 
-    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
+    <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()">
         <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
             @csrf
             @method('delete')
@@ -42,7 +42,10 @@
             </div>
 
             <div class="mt-6 flex justify-end">
-                <x-secondary-button x-on:click="$dispatch('close')">
+                <x-secondary-button
+                    type="button"
+                    onclick="document.getElementById('dialog-confirm-user-deletion')?.close()"
+                >
                     {{ __('Cancel') }}
                 </x-secondary-button>
 
@@ -53,3 +56,18 @@
         </form>
     </x-modal>
 </section>
+
+@push('js')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var d = document.getElementById('dialog-confirm-user-deletion');
+        if (d) {
+            d.addEventListener('click', function (e) {
+                if (e.target === d) {
+                    d.close();
+                }
+            });
+        }
+    });
+</script>
+@endpush
