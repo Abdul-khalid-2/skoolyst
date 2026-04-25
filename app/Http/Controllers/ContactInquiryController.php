@@ -3,9 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\SchoolContactInquiryMail;
 use App\Models\ContactInquiry;
 use App\Models\School;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactInquiryController extends Controller
 {
@@ -43,6 +46,8 @@ class ContactInquiryController extends Controller
 
             $inquiry = ContactInquiry::create($sanitizedData);
 
+            $this->sendInquiryEmails($inquiry);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Your inquiry has been submitted successfully. We will get back to you soon.',
@@ -53,6 +58,48 @@ class ContactInquiryController extends Controller
                 'success' => false,
                 'message' => 'Sorry, there was an error submitting your inquiry. Please try again.',
             ], 500);
+        }
+    }
+
+    /**
+     * Notify the school about a new inquiry and send a confirmation to the visitor.
+     * Mail failures are logged but do not break inquiry submission.
+     */
+    private function sendInquiryEmails(ContactInquiry $inquiry): void
+    {
+        $inquiry->loadMissing(['school', 'branch']);
+
+        $schoolEmail = $inquiry->school->email ?? null;
+
+        if ($schoolEmail && filter_var($schoolEmail, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($schoolEmail)
+                    ->send(new SchoolContactInquiryMail($inquiry, 'school'));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to email school contact inquiry to school', [
+                    'inquiry_id' => $inquiry->id,
+                    'school_email' => $schoolEmail,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        } else {
+            Log::info('School inquiry saved but school has no valid email', [
+                'inquiry_id' => $inquiry->id,
+                'school_id' => $inquiry->school_id,
+            ]);
+        }
+
+        if ($inquiry->email && filter_var($inquiry->email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                Mail::to($inquiry->email)
+                    ->send(new SchoolContactInquiryMail($inquiry, 'user'));
+            } catch (\Throwable $e) {
+                Log::warning('Failed to email inquiry confirmation to user', [
+                    'inquiry_id' => $inquiry->id,
+                    'user_email' => $inquiry->email,
+                    'error' => $e->getMessage(),
+                ]);
+            }
         }
     }
 
