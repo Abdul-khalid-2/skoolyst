@@ -215,7 +215,12 @@ Route::group([
     });
 
     Route::get('/', [HomeController::class, 'home'])->name('website.home');
-    Route::get('/search', [HomeController::class, 'search'])->name('search.schools');
+    Route::get('/search/suggest', [HomeController::class, 'searchSuggest'])
+        ->middleware('throttle:90,1')
+        ->name('search.schools.suggest');
+    Route::get('/search', [HomeController::class, 'search'])
+        ->middleware('throttle:120,1')
+        ->name('search.schools');
 
     // ===== ADD THIS CONTACT ROUTE =====
     Route::get('/contact', [ContactInquiryController::class, 'create'])->name('website.contact');
