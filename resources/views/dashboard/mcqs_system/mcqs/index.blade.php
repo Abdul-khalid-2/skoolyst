@@ -108,7 +108,35 @@
                 
                 <div class="collapse d-md-block" style="visibility: visible;" id="filterCollapse">
                     <div class="card-body">
-                        <form action="{{ route('mcqs.index') }}" method="GET" class="row g-3">
+                        <form action="{{ route('mcqs.index') }}" method="GET" class="row g-3" id="mcqIndexFiltersForm">
+                            <div class="col-12 col-lg-8">
+                                <label class="form-label small fw-bold" for="mcqListSearchInput">Search in list</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
+                                    <input
+                                        type="text"
+                                        name="search"
+                                        id="mcqListSearchInput"
+                                        class="form-control"
+                                        value="{{ request('search') }}"
+                                        placeholder="Filter table: question, explanation, tags…"
+                                        autocomplete="off"
+                                    >
+                                    @if (request()->filled('search'))
+                                        <a
+                                            class="btn btn-outline-secondary d-flex align-items-center"
+                                            href="{{ route('mcqs.index', request()->except('search')) }}"
+                                            title="Clear text filter"
+                                        >
+                                            <i class="fas fa-times" aria-hidden="true"></i>
+                                        </a>
+                                    @else
+                                        <span class="btn btn-outline-secondary disabled d-flex align-items-center" tabindex="-1" aria-disabled="true" title="No text filter to clear">
+                                            <i class="fas fa-times" aria-hidden="true"></i>
+                                        </span>
+                                    @endif
+                                </div>
+                            </div>
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Subject</label>
                                 <select name="subject_id" class="form-select form-select-sm js-select2">
@@ -912,17 +940,6 @@
             initMobileTable();
             window.addEventListener('resize', initMobileTable);
             
-            // Filter form reset
-            document.querySelectorAll('button[type="button"]').forEach(button => {
-                if (button.textContent.includes('fa-times') && button.closest('.input-group')) {
-                    button.addEventListener('click', function() {
-                        const form = this.closest('form');
-                        form.reset();
-                        form.submit();
-                    });
-                }
-            });
-
             initMcqLiveSearch();
             initBulkMcqImport();
         });

@@ -65,7 +65,7 @@ class McqController extends Controller
             });
         }
         
-        $mcqs = $query->latest()->paginate(20);
+        $mcqs = $query->latest()->paginate(20)->withQueryString();
         $subjects = Subject::active()->get();
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
