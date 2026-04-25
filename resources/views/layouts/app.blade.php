@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>E-Commerce Admin Dashboard</title>
+    <title>Skoolyst Dashboard</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <!-- Bootstrap CSS -->
@@ -19,6 +19,11 @@
 
     <!-- Custom Styles -->
     <link rel="stylesheet" href="{{ asset('assets/dashboard/css/app.css') }}">
+
+    <!-- Select2 (for selects with class `js-select2`) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+
     @stack('css')
 </head>
 
@@ -56,9 +61,10 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
     <script src="{{ asset('assets/dashboard/js/app.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="{{ asset('assets/dashboard/js/select2-init.js') }}"></script>
 
     <script>
         // public/js/notifications.js

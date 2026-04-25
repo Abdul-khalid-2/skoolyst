@@ -71,7 +71,7 @@
                         <form action="{{ route('mcqs.index') }}" method="GET" class="row g-3">
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Subject</label>
-                                <select name="subject_id" class="form-select form-select-sm">
+                                <select name="subject_id" class="form-select form-select-sm js-select2">
                                     <option value="">All Subjects</option>
                                     @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
@@ -83,7 +83,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Topic</label>
-                                <select name="topic_id" class="form-select form-select-sm">
+                                <select name="topic_id" class="form-select form-select-sm js-select2">
                                     <option value="">All Topics</option>
                                     @foreach($topics as $topic)
                                     <option value="{{ $topic->id }}" {{ request('topic_id') == $topic->id ? 'selected' : '' }}>
@@ -95,7 +95,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Test Type</label>
-                                <select name="test_type_id" class="form-select form-select-sm">
+                                <select name="test_type_id" class="form-select form-select-sm js-select2">
                                     <option value="">All Types</option>
                                     @foreach($testTypes as $type)
                                     <option value="{{ $type->id }}" {{ request('test_type_id') == $type->id ? 'selected' : '' }}>
@@ -107,7 +107,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Difficulty</label>
-                                <select name="difficulty_level" class="form-select form-select-sm">
+                                <select name="difficulty_level" class="form-select form-select-sm js-select2">
                                     <option value="">All Levels</option>
                                     <option value="easy" {{ request('difficulty_level') == 'easy' ? 'selected' : '' }}>Easy</option>
                                     <option value="medium" {{ request('difficulty_level') == 'medium' ? 'selected' : '' }}>Medium</option>
@@ -117,7 +117,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Type</label>
-                                <select name="question_type" class="form-select form-select-sm">
+                                <select name="question_type" class="form-select form-select-sm js-select2">
                                     <option value="">All Types</option>
                                     <option value="single" {{ request('question_type') == 'single' ? 'selected' : '' }}>Single</option>
                                     <option value="multiple" {{ request('question_type') == 'multiple' ? 'selected' : '' }}>Multiple</option>
@@ -126,7 +126,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Status</label>
-                                <select name="status" class="form-select form-select-sm">
+                                <select name="status" class="form-select form-select-sm js-select2">
                                     <option value="">All Status</option>
                                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                                     <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
@@ -136,7 +136,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Premium</label>
-                                <select name="is_premium" class="form-select form-select-sm">
+                                <select name="is_premium" class="form-select form-select-sm js-select2">
                                     <option value="">All</option>
                                     <option value="1" {{ request('is_premium') == '1' ? 'selected' : '' }}>Premium</option>
                                     <option value="0" {{ request('is_premium') == '0' ? 'selected' : '' }}>Free</option>
@@ -145,7 +145,7 @@
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Verified</label>
-                                <select name="is_verified" class="form-select form-select-sm">
+                                <select name="is_verified" class="form-select form-select-sm js-select2">
                                     <option value="">All</option>
                                     <option value="1" {{ request('is_verified') == '1' ? 'selected' : '' }}>Verified</option>
                                     <option value="0" {{ request('is_verified') == '0' ? 'selected' : '' }}>Unverified</option>
