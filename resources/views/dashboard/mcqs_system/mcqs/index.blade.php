@@ -55,6 +55,46 @@
                 </div>
             @endif
 
+            <!-- Live search (always visible, outside filter collapse) -->
+            <div class="card mb-4 mx-3 mx-md-0 border-0 shadow-sm" id="mcq-live-search-card">
+                <div class="card-body py-3">
+                    <label for="mcqLiveSearchInput" class="form-label small fw-bold mb-2 text-uppercase text-muted d-flex align-items-center">
+                        <i class="fas fa-search me-2"></i> Find MCQ
+                    </label>
+                    <div class="position-relative mcq-live-search-wrap" id="mcqLiveSearchWrap">
+                        <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted" aria-hidden="true" style="z-index: 2;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input
+                            type="search"
+                            name="mcq_live_q"
+                            id="mcqLiveSearchInput"
+                            class="form-control form-control-lg ps-5 pe-5 border rounded-3 shadow-sm"
+                            placeholder="Search questions, subject, topic…"
+                            autocomplete="off"
+                            aria-autocomplete="list"
+                            aria-controls="mcqLiveSearchResults"
+                            aria-expanded="false"
+                        />
+                        <button
+                            type="button"
+                            class="btn btn-link position-absolute top-50 end-0 translate-middle-y text-decoration-none text-muted p-0 pe-2 d-none"
+                            id="mcqLiveSearchClear"
+                            title="Clear"
+                            aria-label="Clear"
+                            style="z-index: 2; width: 2.5rem;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <div
+                            class="dropdown-menu show border-0 shadow p-0 mt-1 w-100 rounded-3 overflow-hidden d-none mcq-live-search-dropdown"
+                            id="mcqLiveSearchResults"
+                            role="listbox"
+                            style="max-height: 22rem; z-index: 1050;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Filters - Collapsible on Mobile -->
             <div class="card mb-4 mx-3 mx-md-0">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3 d-md-none" 
@@ -152,30 +192,14 @@
                                 </select>
                             </div>
                             
-                            <!-- Search Row -->
-                            <div class="col-12 col-lg-8">
-                                <label class="form-label small fw-bold">Search</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-search"></i>
-                                    </span>
-                                    <input type="text" name="search" class="form-control" 
-                                           placeholder="Search questions..." 
-                                           value="{{ request('search') }}">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="this.closest('form').reset()">
-                                        <i class="fas fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <div class="col-12 col-lg-4 d-flex align-items-end">
-                                <div class="d-flex w-100 gap-2">
+                            <div class="col-12 d-flex align-items-end">
+                                <div class="d-flex w-100 flex-wrap gap-2">
                                     <button type="submit" class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
                                         <i class="fas fa-filter me-2"></i> 
                                         <span class="d-none d-md-inline">Apply Filters</span>
                                         <span class="d-inline d-md-none">Filter</span>
                                     </button>
-                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="width: 45px;">
+                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="min-width: 45px;">
                                         <i class="fas fa-redo"></i>
                                     </a>
                                 </div>
@@ -899,8 +923,181 @@
                 }
             });
 
+            initMcqLiveSearch();
             initBulkMcqImport();
         });
+
+        function initMcqLiveSearch() {
+            const searchUrl = @json(route('mcqs.search'));
+            const showUrlTmpl = @json(route('mcqs.show', ['mcq' => 999999999]));
+            const input = document.getElementById('mcqLiveSearchInput');
+            const clearBtn = document.getElementById('mcqLiveSearchClear');
+            const resultsEl = document.getElementById('mcqLiveSearchResults');
+            const wrap = document.getElementById('mcqLiveSearchWrap');
+            if (!input || !resultsEl || !wrap) {
+                return;
+            }
+
+            let debounceT = null;
+            let aborter = new AbortController();
+            let items = [];
+            let active = -1;
+
+            function showUrlFor(id) {
+                return String(showUrlTmpl).split('999999999').join(String(id));
+            }
+
+            function closeDropdown() {
+                resultsEl.classList.add('d-none');
+                resultsEl.innerHTML = '';
+                input.setAttribute('aria-expanded', 'false');
+                items = [];
+                active = -1;
+            }
+
+            function setActive(i) {
+                items.forEach((el, j) => {
+                    el.classList.toggle('active', j === i);
+                    el.setAttribute('aria-selected', j === i ? 'true' : 'false');
+                });
+                active = i;
+            }
+
+            function escapeMcqText(s) {
+                const d = document.createElement('div');
+                d.textContent = s == null ? '' : String(s);
+                return d.innerHTML;
+            }
+
+            function buildRowHtml(row, i) {
+                const u = showUrlFor(row.id);
+                const snippet = row.highlight ? row.highlight : escapeMcqText(row.excerpt);
+                const sub = row.subject
+                    ? '<span class="badge bg-secondary bg-opacity-10 text-dark border">' +
+                      escapeMcqText(row.subject) +
+                      '</span>'
+                    : '';
+                const cat = row.category
+                    ? '<span class="badge bg-info bg-opacity-10 text-dark border">' +
+                      escapeMcqText(row.category) +
+                      '</span>'
+                    : '';
+                return (
+                    '<a href="' +
+                    u +
+                    '" class="list-group-item list-group-item-action border-0 border-bottom py-2 px-3 d-flex flex-column align-items-start text-decoration-none text-dark mcq-live-search-item" ' +
+                    'role="option" data-index="' +
+                    i +
+                    '" data-url="' +
+                    u +
+                    '">' +
+                    '<div class="d-flex w-100 justify-content-between align-items-center gap-2 mb-1">' +
+                    '<span class="small flex-grow-1 mcq-live-search-snippet">' +
+                    snippet +
+                    '</span></div>' +
+                    '<div class="d-flex flex-wrap gap-1 w-100">' +
+                    sub +
+                    cat +
+                    '</div></a>'
+                );
+            }
+
+            function runSearch(q) {
+                aborter.abort();
+                aborter = new AbortController();
+                if (!q || q.length < 2) {
+                    closeDropdown();
+                    return;
+                }
+                resultsEl.classList.remove('d-none');
+                input.setAttribute('aria-expanded', 'true');
+                resultsEl.innerHTML = `
+                    <div class="px-3 py-4 text-center text-muted small">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <div class="mt-2">Searching…</div>
+                    </div>`;
+                fetch(searchUrl + '?q=' + encodeURIComponent(q), {
+                    signal: aborter.signal,
+                    headers: { 'Accept': 'application/json' },
+                })
+                    .then((r) => r.json())
+                    .then((data) => {
+                        const list = (data && data.results) ? data.results : [];
+                        if (list.length === 0) {
+                            resultsEl.innerHTML =
+                                '<div class="px-3 py-4 text-center text-muted small border-0">No results found. Try different keywords.</div>';
+                            items = [];
+                            return;
+                        }
+                        resultsEl.innerHTML = list.map((row, i) => buildRowHtml(row, i)).join('');
+                        items = Array.from(resultsEl.querySelectorAll('.mcq-live-search-item'));
+                        items.forEach((a, j) => {
+                            a.addEventListener('mouseenter', () => setActive(j));
+                            a.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                window.location.href = a.getAttribute('data-url');
+                            });
+                        });
+                        setActive(0);
+                    })
+                    .catch((e) => {
+                        if (e.name === 'AbortError') {
+                            return;
+                        }
+                        resultsEl.innerHTML =
+                            '<div class="px-3 py-2 text-danger small">Search failed. Try again.</div>';
+                    });
+            }
+
+            function scheduleSearch() {
+                clearTimeout(debounceT);
+                const v = String(input.value || '').trim();
+                clearBtn.classList.toggle('d-none', v.length === 0);
+                if (v.length < 2) {
+                    closeDropdown();
+                    return;
+                }
+                debounceT = setTimeout(() => runSearch(v), 300);
+            }
+
+            input.addEventListener('input', scheduleSearch);
+            input.addEventListener('focus', () => {
+                if (String(input.value || '').trim().length >= 2) {
+                    scheduleSearch();
+                }
+            });
+            clearBtn.addEventListener('click', () => {
+                input.value = '';
+                clearBtn.classList.add('d-none');
+                closeDropdown();
+            });
+            document.addEventListener('click', (e) => {
+                if (!wrap.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (resultsEl.classList.contains('d-none') || items.length === 0) {
+                    if (e.key === 'Enter' && String(input.value || '').trim().length >= 2) {
+                        scheduleSearch();
+                    }
+                    return;
+                }
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setActive(Math.min(items.length - 1, active + 1));
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setActive(Math.max(0, active - 1));
+                } else if (e.key === 'Enter' && active >= 0 && items[active]) {
+                    e.preventDefault();
+                    window.location.href = items[active].getAttribute('data-url');
+                } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    closeDropdown();
+                }
+            });
+        }
 
         function initBulkMcqImport() {
             const modalEl = document.getElementById('bulkImportMcqModal');
@@ -1456,6 +1653,26 @@
             .card-hover h4 {
                 font-size: 1.25rem;
             }
+        }
+
+        /* MCQ live search */
+        #mcqLiveSearchInput:focus {
+            border-color: var(--bs-primary);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        .mcq-live-search-dropdown {
+            animation: mcqSearchFade 0.18s ease-out;
+        }
+        @keyframes mcqSearchFade {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .mcq-live-search-item.active {
+            background-color: rgba(13, 110, 253, 0.08) !important;
+        }
+        .mcq-live-search-snippet .mcq-search-mark {
+            padding: 0 0.1em;
+            border-radius: 0.2rem;
         }
     </style>
 </x-app-layout>

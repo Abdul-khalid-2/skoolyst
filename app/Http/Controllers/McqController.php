@@ -73,6 +73,257 @@ class McqController extends Controller
         return view('dashboard.mcqs_system.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
     }
 
+    /**
+     * Live JSON search for the MCQs index (debounced, max 6 results).
+     * GET /dashboard/mcqs/search?q=
+     */
+    public function searchLive(Request $request)
+    {
+        $q = trim((string) $request->get('q', ''));
+        if (mb_strlen($q) < 2) {
+            return response()->json(['results' => []]);
+        }
+        if (mb_strlen($q) > 100) {
+            $q = mb_substr($q, 0, 100);
+        }
+
+        $tokens = preg_split('/\s+/u', $q, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if ($tokens === []) {
+            return response()->json(['results' => []]);
+        }
+
+        $like = static function (string $t): string {
+            return '%'.str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $t).'%';
+        };
+
+        $strict = Mcq::query()
+            ->with(['subject', 'topic'])
+            ->where(function ($outer) use ($tokens, $like) {
+                foreach ($tokens as $token) {
+                    if ($token === '') {
+                        continue;
+                    }
+                    $l = $like($token);
+                    $outer->where(function ($w) use ($l) {
+                        $w->where('question', 'like', $l)
+                            ->orWhereHas('subject', fn ($s) => $s->where('name', 'like', $l))
+                            ->orWhereHas('topic', fn ($t) => $t->where('title', 'like', $l));
+                    });
+                }
+            });
+
+        $candidates = $strict->orderBy('updated_at', 'desc')->limit(300)->get();
+
+        if ($candidates->count() < 40) {
+            $broad = Mcq::query()
+                ->with(['subject', 'topic'])
+                ->where(function ($w) use ($tokens, $like) {
+                    foreach ($tokens as $token) {
+                        if (mb_strlen($token) < 1) {
+                            continue;
+                        }
+                        $l = $like($token);
+                        $w->orWhere('question', 'like', $l)
+                            ->orWhereHas('subject', fn ($s) => $s->where('name', 'like', $l))
+                            ->orWhereHas('topic', fn ($t) => $t->where('title', 'like', $l));
+                    }
+                })
+                ->whereNotIn('id', $candidates->pluck('id')->all() ?: [0])
+                ->orderBy('updated_at', 'desc')
+                ->limit(200)
+                ->get();
+            $candidates = $candidates->merge($broad)->unique('id');
+        }
+
+        $qLower = mb_strtolower($q);
+        $scored = $candidates
+            ->map(function (Mcq $mcq) use ($q, $qLower, $tokens) {
+                $plain = $this->mcqSearchPlainText($mcq->question);
+                if ($plain === '') {
+                    return null;
+                }
+                if (! $this->mcqSearchMatchesAllTokens($plain, $mcq, $tokens, $qLower)) {
+                    return null;
+                }
+
+                $score = $this->mcqSearchScore($mcq, $plain, $q, $qLower, $tokens);
+
+                return [
+                    'mcq' => $mcq,
+                    'score' => $score,
+                ];
+            })
+            ->filter()
+            ->sortByDesc('score')
+            ->take(6)
+            ->values();
+
+        $results = $scored->map(function (array $row) use ($q) {
+            $m = $row['mcq'];
+            $plain = $this->mcqSearchPlainText($m->question);
+            $excerpt = Str::limit($plain, 120, '…');
+
+            return [
+                'id' => $m->id,
+                'title' => $excerpt,
+                'subject' => $m->subject?->name,
+                'category' => $m->topic?->title,
+                'excerpt' => $excerpt,
+                'highlight' => $this->mcqSearchHighlightExcerpt($plain, $q, 120),
+            ];
+        });
+
+        return response()->json(['results' => $results->values()->all()]);
+    }
+
+    private function mcqSearchPlainText(?string $html): string
+    {
+        if ($html === null || $html === '') {
+            return '';
+        }
+
+        return trim(preg_replace('/\s+/u', ' ', html_entity_decode(strip_tags($html), ENT_QUOTES, 'UTF-8')));
+    }
+
+    /**
+     * After SQL filtering, require all query tokens to match (fuzzy) in question, subject, or topic.
+     */
+    private function mcqSearchMatchesAllTokens(string $plain, Mcq $mcq, array $tokens, string $qLower): bool
+    {
+        $p = mb_strtolower($plain);
+        $subject = mb_strtolower((string) ($mcq->subject?->name ?? ''));
+        $topic = mb_strtolower((string) ($mcq->topic?->title ?? ''));
+        $bundle = $p.' '.$subject.' '.$topic;
+
+        foreach ($tokens as $token) {
+            if (mb_strlen($token) < 1) {
+                continue;
+            }
+            $t = mb_strtolower($token);
+            if (str_contains($bundle, $t)) {
+                continue;
+            }
+            if (str_contains($p, $t) || str_contains($subject, $t) || str_contains($topic, $t)) {
+                continue;
+            }
+            if ($this->mcqFuzzyTokenMatch($p, $t)) {
+                continue;
+            }
+            if (levenshtein(mb_substr($qLower, 0, 255), mb_substr($p, 0, 255)) <= 3) {
+                continue;
+            }
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private function mcqFuzzyTokenMatch(string $pLower, string $tLower): bool
+    {
+        if (mb_strlen($tLower) < 2) {
+            return false;
+        }
+        $words = preg_split('/\s+/u', $pLower, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        foreach ($words as $w) {
+            if (mb_strlen($w) < 1 || mb_strlen($tLower) < 1) {
+                continue;
+            }
+            if (mb_stripos($pLower, $tLower) !== false) {
+                return true;
+            }
+            if (mb_strlen($w) < 30 && mb_strlen($tLower) < 30) {
+                $d = levenshtein($tLower, $w);
+                if ($d >= 0 && $d <= 2) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private function mcqSearchScore(Mcq $mcq, string $plain, string $q, string $qLower, array $tokens): int
+    {
+        $p = mb_strtolower($plain);
+        $s = 0;
+        if ($p === $qLower) {
+            $s += 1_000_000;
+        } elseif (str_starts_with($p, $qLower)) {
+            $s += 500_000;
+        } elseif (str_contains($p, $qLower)) {
+            $s += 100_000;
+        }
+        $words = preg_split('/\s+/u', $p, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        foreach ($tokens as $t) {
+            if ($t === '') {
+                continue;
+            }
+            $tLower = mb_strtolower($t);
+            if (str_contains($p, $tLower)) {
+                $s += 20_000;
+            }
+            foreach ($words as $w) {
+                if ($w === '') {
+                    continue;
+                }
+                if (str_starts_with($w, $tLower)) {
+                    $s += 8_000;
+                }
+                if (mb_strlen($tLower) < 32 && mb_strlen($w) < 32) {
+                    $d = levenshtein($tLower, $w);
+                    if ($d === 0) {
+                        $s += 5_000;
+                    } elseif ($d === 1) {
+                        $s += 2_000;
+                    } elseif ($d === 2) {
+                        $s += 500;
+                    }
+                }
+            }
+        }
+        if ($mcq->subject?->name) {
+            if (str_contains(mb_strtolower($mcq->subject->name), $qLower)) {
+                $s += 2_000;
+            }
+        }
+        if ($mcq->topic?->title) {
+            if (str_contains(mb_strtolower($mcq->topic->title), $qLower)) {
+                $s += 2_000;
+            }
+        }
+
+        return $s;
+    }
+
+    private function mcqSearchHighlightExcerpt(string $plain, string $query, int $maxLen = 120): string
+    {
+        $plain = trim($plain);
+        if ($plain === '') {
+            return '';
+        }
+        if (mb_strlen($plain) > $maxLen) {
+            $plain = mb_substr($plain, 0, $maxLen).'…';
+        }
+        $tokens = preg_split('/\s+/u', trim($query), -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        if ($tokens === []) {
+            return e($plain);
+        }
+        $escaped = e($plain);
+        foreach ($tokens as $t) {
+            if (mb_strlen($t) < 1) {
+                continue;
+            }
+            $escaped = preg_replace(
+                '/('.preg_quote($t, '/').')/iu',
+                '<mark class="mcq-search-mark fw-bold text-dark">$1</mark>',
+                $escaped
+            );
+        }
+
+        return $escaped;
+    }
+
     public function create(Request $request)
     {
         $subjects = Subject::active()->get();

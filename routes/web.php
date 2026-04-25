@@ -350,6 +350,9 @@ Route::group([
             // MCQs - Smart Export Template (pre-filled with selected subject/topic/test types)
             Route::get('mcqs/export-template', [McqController::class, 'exportTemplate'])->name('mcqs.exportTemplate');
 
+            // MCQs - Live search (JSON; must be before resource so "search" is not captured as {mcq})
+            Route::get('mcqs/search', [McqController::class, 'searchLive'])->name('mcqs.search');
+
             Route::resource('mcqs', McqController::class);
 
             // Mock Tests
