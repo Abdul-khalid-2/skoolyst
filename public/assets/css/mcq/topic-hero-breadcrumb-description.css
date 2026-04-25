@@ -166,7 +166,7 @@
 
 .breadcrumb-item + .breadcrumb-item::before {
     color: var(--color-neutral-muted);
-    content: "â€º";
+    content: "»";
     font-size: var(--font-size-lg);
     line-height: 1;
 }

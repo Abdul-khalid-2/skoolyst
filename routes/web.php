@@ -341,6 +341,15 @@ Route::group([
             Route::post('mcqs/{mcq}/unverify', [McqController::class, 'unverify'])->name('mcqs.unverify');
             Route::get('mcqs/get-topics', [McqController::class, 'getTopicsBySubject'])->name('mcqs.get-topics');
             Route::get('mcqs/get-test-types', [McqController::class, 'getTestTypesBySubject'])->name('mcqs.get-test-types');
+
+            // MCQs - Bulk Import
+            Route::get('mcqs/bulk-import/template', [McqController::class, 'downloadBulkImportTemplate'])->name('mcqs.bulk-import.template');
+            Route::post('mcqs/bulk-import/preview', [McqController::class, 'previewBulkImport'])->name('mcqs.bulk-import.preview');
+            Route::post('mcqs/bulk-import', [McqController::class, 'storeBulkImport'])->name('mcqs.bulk-import.store');
+
+            // MCQs - Smart Export Template (pre-filled with selected subject/topic/test types)
+            Route::get('mcqs/export-template', [McqController::class, 'exportTemplate'])->name('mcqs.exportTemplate');
+
             Route::resource('mcqs', McqController::class);
 
             // Mock Tests

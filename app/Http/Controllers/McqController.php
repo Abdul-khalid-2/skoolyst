@@ -6,10 +6,14 @@ use App\Models\Subject;
 use App\Models\Topic;
 use App\Models\TestType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
 
-class McqController extends Controller
+class McqController extends Controller 
 {
     public function index(Request $request)
     {
@@ -427,5 +431,683 @@ class McqController extends Controller
         }
         
         return response()->json($subject->testTypes);
+    }
+
+    /**
+     * Header columns expected in the bulk-import CSV/XLSX file.
+     *
+     * IMPORTANT: `question_type` is the question FORMAT (mcq, true_false,
+     * multi_select). `test_types` (plural) is a comma-separated list of
+     * exam-category names (e.g. "NTS,MDCAT") that map to TestType records
+     * via the mcq_test_type pivot. Older files using the legacy column
+     * name `test_type` for the question format are still accepted.
+     */
+    protected const BULK_IMPORT_HEADERS = [
+        'subject', 'topic', 'question', 'difficulty',
+        'question_type', 'test_types',
+        'option_a', 'option_b', 'option_c', 'option_d',
+        'correct_option', 'marks', 'negative_marks', 'status',
+        'tags', 'is_premium', 'explanation', 'hint',
+        'reference_book', 'reference_page',
+    ];
+
+    /**
+     * Sample rows for the downloadable template. Test types are left
+     * blank so a literal import does not fail on category lookup if the
+     * sample subjects do not exist in the database.
+     */
+    protected const BULK_IMPORT_SAMPLE_ROWS = [
+        [
+            'Mathematics', 'Algebra', 'What is the value of x in the equation 2x + 6 = 14?',
+            'easy', 'mcq', '',
+            'x = 2', 'x = 4', 'x = 6', 'x = 8',
+            'b', '1', '0', 'active',
+            'algebra,equations', 'false',
+            'Subtract 6 from both sides: 2x = 8, then divide by 2: x = 4',
+            'Isolate x by moving constants to the right side',
+            'NCERT Mathematics Class 9', '45',
+        ],
+        [
+            'Physics', 'Optics', 'True or False: A convex lens always forms a real image.',
+            'medium', 'true_false', '',
+            'True', 'False', '', '',
+            'b', '1', '0', 'active',
+            'optics,lens', 'false',
+            'A convex lens forms a virtual image when the object is placed inside its focal length.',
+            'Think about the position of the object relative to the focal length.',
+            'NCERT Physics Class 10', '168',
+        ],
+        [
+            'Biology', 'Cell Biology', 'Which of the following are organelles found in animal cells?',
+            'medium', 'multi_select', '',
+            'Mitochondria', 'Chloroplast', 'Ribosome', 'Cell wall',
+            'a,c', '2', '0', 'draft',
+            'cell,organelles', 'true',
+            'Animal cells contain mitochondria and ribosomes; chloroplasts and cell walls are found in plant cells.',
+            'Eliminate plant-only structures.',
+            'NCERT Biology Class 9', '67',
+        ],
+    ];
+
+    /**
+     * Stream the sample CSV template for bulk MCQ import.
+     *
+     * Returns Illuminate\Http\Response (not Symfony StreamedResponse) so
+     * downstream middleware that calls ->withCookie() (e.g. the locale
+     * middleware) keeps working.
+     */
+    public function downloadBulkImportTemplate()
+    {
+        $body = $this->buildCsvBody(self::BULK_IMPORT_HEADERS, self::BULK_IMPORT_SAMPLE_ROWS);
+
+        return $this->csvDownloadResponse($body, 'mcqs_import_template.csv');
+    }
+
+    /**
+     * Build a smart CSV template pre-filled with the user-selected
+     * subject, topic and (optional) test types. Other columns are
+     * pre-populated with editable placeholder values.
+     */
+    public function exportTemplate(Request $request)
+    {
+        $validated = $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'topic_id' => 'required|exists:topics,id',
+            'test_type_ids' => 'nullable|array',
+            'test_type_ids.*' => 'exists:test_types,id',
+        ]);
+
+        $subject = Subject::findOrFail($validated['subject_id']);
+        $topic = Topic::findOrFail($validated['topic_id']);
+
+        $testTypeNames = '';
+        if (!empty($validated['test_type_ids'])) {
+            $testTypeNames = TestType::whereIn('id', $validated['test_type_ids'])
+                ->pluck('name')
+                ->implode(',');
+        }
+
+        $headers = self::BULK_IMPORT_HEADERS;
+
+        $sampleRows = [
+            [
+                'subject' => $subject->name,
+                'topic' => $topic->title,
+                'question' => 'Enter your question here',
+                'difficulty' => 'easy',
+                'question_type' => 'mcq',
+                'test_types' => $testTypeNames,
+                'option_a' => 'Option A',
+                'option_b' => 'Option B',
+                'option_c' => 'Option C',
+                'option_d' => 'Option D',
+                'correct_option' => 'a',
+                'marks' => '1',
+                'negative_marks' => '0',
+                'status' => 'active',
+                'tags' => 'tag1,tag2',
+                'is_premium' => 'false',
+                'explanation' => 'Explain why the correct answer is correct',
+                'hint' => 'A helpful hint for the student',
+                'reference_book' => 'Book Name',
+                'reference_page' => '1',
+            ],
+            [
+                'subject' => $subject->name,
+                'topic' => $topic->title,
+                'question' => 'Enter your second question here',
+                'difficulty' => 'easy',
+                'question_type' => 'mcq',
+                'test_types' => $testTypeNames,
+                'option_a' => 'Option A',
+                'option_b' => 'Option B',
+                'option_c' => 'Option C',
+                'option_d' => 'Option D',
+                'correct_option' => 'b',
+                'marks' => '1',
+                'negative_marks' => '0',
+                'status' => 'active',
+                'tags' => 'tag1,tag2',
+                'is_premium' => 'false',
+                'explanation' => 'Explain why the correct answer is correct',
+                'hint' => 'A helpful hint for the student',
+                'reference_book' => 'Book Name',
+                'reference_page' => '1',
+            ],
+        ];
+
+        $orderedRows = array_map(function ($row) use ($headers) {
+            $ordered = [];
+            foreach ($headers as $col) {
+                $ordered[] = $row[$col] ?? '';
+            }
+            return $ordered;
+        }, $sampleRows);
+
+        $filename = sprintf(
+            'mcqs_template_%s_%s.csv',
+            Str::slug($subject->name) ?: 'subject',
+            Str::slug($topic->title) ?: 'topic'
+        );
+
+        $body = $this->buildCsvBody($headers, $orderedRows);
+
+        return $this->csvDownloadResponse($body, $filename);
+    }
+
+    /**
+     * Build a CSV body string with a UTF-8 BOM so Excel reads it
+     * correctly. Each row is expected to be a numerically-indexed array
+     * of cell values.
+     */
+    protected function buildCsvBody(array $headers, array $rows): string
+    {
+        $handle = fopen('php://temp', 'w+');
+        fwrite($handle, "\xEF\xBB\xBF");
+        fputcsv($handle, $headers);
+        foreach ($rows as $row) {
+            fputcsv($handle, $row);
+        }
+        rewind($handle);
+        $body = stream_get_contents($handle);
+        fclose($handle);
+
+        return $body !== false ? $body : '';
+    }
+
+    /**
+     * Wrap a CSV body string in an Illuminate\Http\Response with proper
+     * download headers. Returning an Illuminate response (rather than a
+     * Symfony StreamedResponse) keeps middleware like the locale
+     * middleware happy because it can still call ->withCookie() on it.
+     */
+    protected function csvDownloadResponse(string $body, string $filename)
+    {
+        $safeFilename = str_replace('"', '', $filename);
+
+        return response($body, 200, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $safeFilename . '"',
+            'Content-Length' => (string) strlen($body),
+            'Cache-Control' => 'no-store, no-cache, must-revalidate',
+            'Pragma' => 'no-cache',
+        ]);
+    }
+
+    /**
+     * Parse an uploaded CSV/XLSX, validate each row, and return a JSON
+     * preview without persisting anything.
+     */
+    public function previewBulkImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
+        ]);
+
+        try {
+            $rows = $this->readUploadedSheet($request->file('file'));
+        } catch (\Throwable $e) {
+            Log::warning('MCQ bulk import preview: failed to parse file', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not read the uploaded file. Please check the format.',
+            ], 422);
+        }
+
+        $parsed = $this->validateImportRows($rows);
+
+        return response()->json([
+            'success' => true,
+            'total' => count($parsed['rows']),
+            'valid' => $parsed['valid_count'],
+            'invalid' => $parsed['invalid_count'],
+            'rows' => $parsed['rows'],
+        ]);
+    }
+
+    /**
+     * Persist all valid rows from the uploaded file. Invalid rows are
+     * skipped and reported in the response.
+     */
+    public function storeBulkImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt,xlsx,xls|max:5120',
+        ]);
+
+        try {
+            $rows = $this->readUploadedSheet($request->file('file'));
+        } catch (\Throwable $e) {
+            Log::error('MCQ bulk import: failed to parse file', [
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not read the uploaded file. Please check the format.',
+            ], 422);
+        }
+
+        $parsed = $this->validateImportRows($rows);
+
+        $successCount = 0;
+        $failedCount = $parsed['invalid_count'];
+        $errors = $parsed['errors'];
+        $createdIds = [];
+
+        foreach ($parsed['rows'] as $row) {
+            if (! $row['valid']) {
+                continue;
+            }
+
+            try {
+                $mcq = DB::transaction(function () use ($row) {
+                    $created = Mcq::create($row['payload']);
+
+                    // Attach exam categories (NTS, MDCAT, …) selected
+                    // for this row, preserving the order they appeared
+                    // in the CSV via the pivot's sort_order column.
+                    $ttIds = $row['test_type_ids'] ?? [];
+                    if (! empty($ttIds)) {
+                        $sync = [];
+                        foreach (array_values($ttIds) as $idx => $id) {
+                            $sync[$id] = ['sort_order' => $idx];
+                        }
+                        $created->testTypes()->sync($sync);
+                    }
+
+                    return $created;
+                });
+
+                $createdIds[] = $mcq->id;
+                $successCount++;
+            } catch (\Throwable $e) {
+                $failedCount++;
+                $errors[] = [
+                    'row' => $row['row_number'],
+                    'field' => null,
+                    'message' => 'Database insert failed: ' . $e->getMessage(),
+                ];
+
+                Log::error('MCQ bulk import: failed to insert row', [
+                    'row' => $row['row_number'],
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'imported' => $successCount,
+            'failed' => $failedCount,
+            'errors' => $errors,
+            'created_ids' => $createdIds,
+        ]);
+    }
+
+    /**
+     * Read an uploaded CSV/XLSX file into an associative array of rows
+     * keyed by header name.
+     *
+     * @return array<int, array<string, string>>
+     */
+    protected function readUploadedSheet($uploadedFile): array
+    {
+        $path = $uploadedFile->getRealPath();
+        $extension = strtolower($uploadedFile->getClientOriginalExtension());
+
+        if (in_array($extension, ['csv', 'txt'], true)) {
+            $reader = new CsvReader();
+            $reader->setInputEncoding(CsvReader::GUESS_ENCODING);
+            $reader->setDelimiter(',');
+            $reader->setEnclosure('"');
+            $reader->setSheetIndex(0);
+            $spreadsheet = $reader->load($path);
+        } else {
+            $spreadsheet = IOFactory::load($path);
+        }
+
+        $sheet = $spreadsheet->getActiveSheet();
+        $raw = $sheet->toArray(null, true, true, false);
+
+        $rawRows = array_values(array_filter($raw, function ($row) {
+            foreach ($row as $cell) {
+                if ($cell !== null && trim((string) $cell) !== '') {
+                    return true;
+                }
+            }
+            return false;
+        }));
+
+        if (empty($rawRows)) {
+            return [];
+        }
+
+        $header = array_map(function ($value) {
+            return strtolower(trim((string) $value));
+        }, array_shift($rawRows));
+
+        $rows = [];
+        foreach ($rawRows as $rawRow) {
+            $assoc = [];
+            foreach ($header as $idx => $key) {
+                if ($key === '') {
+                    continue;
+                }
+                $assoc[$key] = isset($rawRow[$idx]) ? trim((string) $rawRow[$idx]) : '';
+            }
+            $rows[] = $assoc;
+        }
+
+        return $rows;
+    }
+
+    /**
+     * Validate the parsed rows and build payloads ready for insertion.
+     * Returns a structure with per-row status used for both preview and
+     * the actual import.
+     */
+    protected function validateImportRows(array $rows): array
+    {
+        $statusMap = [
+            'active' => 'published',
+            'inactive' => 'archived',
+            'draft' => 'draft',
+            'published' => 'published',
+            'archived' => 'archived',
+        ];
+
+        $testTypeMap = [
+            'mcq' => 'single',
+            'true_false' => 'single',
+            'truefalse' => 'single',
+            'true-false' => 'single',
+            'multi_select' => 'multiple',
+            'multiselect' => 'multiple',
+            'multi-select' => 'multiple',
+            'multiple' => 'multiple',
+            'single' => 'single',
+        ];
+
+        $optionLetterMap = [
+            'a' => 1, 'b' => 2, 'c' => 3, 'd' => 4,
+            '1' => 1, '2' => 2, '3' => 3, '4' => 4,
+        ];
+
+        $subjectsByName = Subject::active()
+            ->get(['id', 'name'])
+            ->keyBy(fn ($s) => Str::lower(trim($s->name)));
+
+        $topicsByName = Topic::active()
+            ->get(['id', 'subject_id', 'title'])
+            ->groupBy('subject_id');
+
+        $testTypesByName = TestType::query()
+            ->get(['id', 'name'])
+            ->keyBy(fn ($t) => Str::lower(trim($t->name)));
+
+        $userId = auth()->id();
+        $errors = [];
+        $processed = [];
+        $validCount = 0;
+        $invalidCount = 0;
+
+        foreach ($rows as $idx => $row) {
+            $rowNumber = $idx + 2; // header is row 1, data starts at row 2
+            $rowErrors = [];
+
+            $subjectName = trim((string) ($row['subject'] ?? ''));
+            $topicName = trim((string) ($row['topic'] ?? ''));
+            $question = (string) ($row['question'] ?? '');
+            $difficulty = strtolower(trim((string) ($row['difficulty'] ?? '')));
+
+            $explicitQuestionType = strtolower(trim((string) ($row['question_type'] ?? '')));
+            $testTypesRaw = trim((string) ($row['test_types'] ?? ''));
+            $legacyTestTypeCol = trim((string) ($row['test_type'] ?? ''));
+
+            // Resolve question format vs exam categories. Early "smart"
+            // exports wrongly put TestType *names* in the `test_type`
+            // column (19-col schema). Correct legacy files put mcq /
+            // true_false / multi_select there instead.
+            if ($explicitQuestionType !== '') {
+                $questionTypeRaw = $explicitQuestionType;
+            } elseif ($legacyTestTypeCol !== '') {
+                $legacyKey = strtolower($legacyTestTypeCol);
+                if (isset($testTypeMap[$legacyKey])) {
+                    $questionTypeRaw = $legacyKey;
+                } else {
+                    $questionTypeRaw = 'mcq';
+                    if ($testTypesRaw === '') {
+                        $testTypesRaw = $legacyTestTypeCol;
+                    }
+                }
+            } else {
+                $questionTypeRaw = '';
+            }
+
+            $statusRaw = strtolower(trim((string) ($row['status'] ?? '')));
+            $correctRaw = strtolower(trim((string) ($row['correct_option'] ?? '')));
+
+            $subject = $subjectsByName->get(Str::lower($subjectName));
+            if (! $subject) {
+                $rowErrors[] = ['field' => 'subject', 'message' => "Subject '{$subjectName}' not found."];
+            }
+
+            $topic = null;
+            if ($subject) {
+                $topicCollection = $topicsByName->get($subject->id, collect());
+                $topic = $topicCollection->first(function ($t) use ($topicName) {
+                    return Str::lower(trim($t->title)) === Str::lower(trim($topicName));
+                });
+                if (! $topic) {
+                    $rowErrors[] = ['field' => 'topic', 'message' => "Topic '{$topicName}' not found in subject '{$subject->name}'."];
+                }
+            } elseif ($topicName === '') {
+                $rowErrors[] = ['field' => 'topic', 'message' => 'Topic is required.'];
+            }
+
+            if (trim(strip_tags($question)) === '') {
+                $rowErrors[] = ['field' => 'question', 'message' => 'Question is required.'];
+            }
+
+            if (! in_array($difficulty, ['easy', 'medium', 'hard'], true)) {
+                $rowErrors[] = ['field' => 'difficulty', 'message' => "Difficulty must be one of: easy, medium, hard."];
+            }
+
+            $questionType = $testTypeMap[$questionTypeRaw] ?? null;
+            if ($questionType === null) {
+                $rowErrors[] = ['field' => 'question_type', 'message' => "question_type must be one of: mcq, true_false, multi_select."];
+            }
+
+            // Resolve the optional `test_types` (plural) column into a
+            // list of TestType IDs. Empty is fine; unknown names are
+            // reported per row so users can spot typos.
+            $testTypeIds = [];
+            if ($testTypesRaw !== '') {
+                $names = array_values(array_filter(array_map('trim', explode(',', $testTypesRaw)), fn ($n) => $n !== ''));
+                $missing = [];
+                foreach ($names as $name) {
+                    $key = Str::lower($name);
+                    $tt = $testTypesByName->get($key);
+                    if (! $tt) {
+                        $missing[] = $name;
+                        continue;
+                    }
+                    $testTypeIds[] = $tt->id;
+                }
+                $testTypeIds = array_values(array_unique($testTypeIds));
+                if (! empty($missing)) {
+                    $rowErrors[] = [
+                        'field' => 'test_types',
+                        'message' => 'Unknown test type(s): ' . implode(', ', $missing) . '.',
+                    ];
+                }
+            }
+
+            $optionsByLetter = [
+                'a' => trim((string) ($row['option_a'] ?? '')),
+                'b' => trim((string) ($row['option_b'] ?? '')),
+                'c' => trim((string) ($row['option_c'] ?? '')),
+                'd' => trim((string) ($row['option_d'] ?? '')),
+            ];
+
+            if ($optionsByLetter['a'] === '') {
+                $rowErrors[] = ['field' => 'option_a', 'message' => 'option_a is required.'];
+            }
+            if ($optionsByLetter['b'] === '') {
+                $rowErrors[] = ['field' => 'option_b', 'message' => 'option_b is required.'];
+            }
+
+            $formattedOptions = [];
+            $key = 1;
+            $letterToKey = [];
+            foreach (['a', 'b', 'c', 'd'] as $letter) {
+                if ($optionsByLetter[$letter] !== '') {
+                    $formattedOptions[$key] = $optionsByLetter[$letter];
+                    $letterToKey[$letter] = $key;
+                    $key++;
+                }
+            }
+
+            $correctAnswers = [];
+            if ($correctRaw === '') {
+                $rowErrors[] = ['field' => 'correct_option', 'message' => 'correct_option is required.'];
+            } else {
+                $tokens = array_filter(array_map('trim', explode(',', $correctRaw)));
+                foreach ($tokens as $token) {
+                    if (! isset($optionLetterMap[$token])) {
+                        $rowErrors[] = ['field' => 'correct_option', 'message' => "Invalid correct_option value '{$token}'. Use a, b, c, or d."];
+                        continue;
+                    }
+                    $letter = is_numeric($token) ? chr(96 + (int) $token) : $token;
+                    if (! isset($letterToKey[$letter])) {
+                        $rowErrors[] = ['field' => 'correct_option', 'message' => "correct_option '{$token}' refers to an empty option."];
+                        continue;
+                    }
+                    $correctAnswers[] = (string) $letterToKey[$letter];
+                }
+                $correctAnswers = array_values(array_unique($correctAnswers));
+            }
+
+            if ($questionType === 'single' && count($correctAnswers) > 1) {
+                $rowErrors[] = ['field' => 'correct_option', 'message' => 'Single-choice (mcq / true_false) questions can have only one correct option.'];
+            }
+            if ($questionType === 'multiple' && count($correctAnswers) < 2) {
+                $rowErrors[] = ['field' => 'correct_option', 'message' => 'multi_select questions must have at least two correct options (comma-separated).'];
+            }
+
+            $marks = trim((string) ($row['marks'] ?? ''));
+            if ($marks === '' || ! is_numeric($marks) || (float) $marks <= 0) {
+                $rowErrors[] = ['field' => 'marks', 'message' => 'marks must be a positive number.'];
+            }
+            $marksInt = (int) round((float) $marks);
+
+            $negativeMarksRaw = trim((string) ($row['negative_marks'] ?? ''));
+            if ($negativeMarksRaw === '') {
+                $negativeMarksInt = 0;
+            } elseif (! is_numeric($negativeMarksRaw) || (float) $negativeMarksRaw < 0) {
+                $rowErrors[] = ['field' => 'negative_marks', 'message' => 'negative_marks must be greater than or equal to 0.'];
+                $negativeMarksInt = 0;
+            } else {
+                $negativeMarksInt = (int) round((float) $negativeMarksRaw);
+            }
+
+            $status = $statusMap[$statusRaw] ?? null;
+            if ($status === null) {
+                $rowErrors[] = ['field' => 'status', 'message' => 'status must be one of: active, inactive, draft.'];
+            }
+
+            $isPremiumRaw = strtolower(trim((string) ($row['is_premium'] ?? '')));
+            $premiumTrue = ['1', 'true', 'yes', 'y'];
+            $premiumFalse = ['', '0', 'false', 'no', 'n'];
+            if (in_array($isPremiumRaw, $premiumTrue, true)) {
+                $isPremium = true;
+            } elseif (in_array($isPremiumRaw, $premiumFalse, true)) {
+                $isPremium = false;
+            } else {
+                $rowErrors[] = ['field' => 'is_premium', 'message' => 'is_premium must be true or false.'];
+                $isPremium = false;
+            }
+
+            $tagsRaw = trim((string) ($row['tags'] ?? ''));
+            $tagsArray = $tagsRaw === ''
+                ? null
+                : array_values(array_filter(array_map('trim', explode(',', $tagsRaw)), fn ($t) => $t !== ''));
+
+            $explanation = trim((string) ($row['explanation'] ?? ''));
+            $hint = trim((string) ($row['hint'] ?? ''));
+            $referenceBook = trim((string) ($row['reference_book'] ?? ''));
+            $referencePage = trim((string) ($row['reference_page'] ?? ''));
+
+            $isValid = empty($rowErrors);
+
+            $payload = null;
+            if ($isValid) {
+                $payload = [
+                    'uuid' => Str::uuid(),
+                    'question' => $question,
+                    'question_type' => $questionType,
+                    'subject_id' => $subject->id,
+                    'topic_id' => $topic->id,
+                    'options' => json_encode($formattedOptions),
+                    'correct_answers' => json_encode($correctAnswers),
+                    'explanation' => $explanation !== '' ? $explanation : null,
+                    'hint' => $hint !== '' ? $hint : null,
+                    'difficulty_level' => $difficulty,
+                    'time_limit_seconds' => null,
+                    'marks' => $marksInt,
+                    'negative_marks' => $negativeMarksInt,
+                    'tags' => $tagsArray ? json_encode($tagsArray) : null,
+                    'reference_book' => $referenceBook !== '' ? $referenceBook : null,
+                    'reference_page' => $referencePage !== '' ? $referencePage : null,
+                    'is_premium' => $isPremium,
+                    'is_verified' => false,
+                    'status' => $status ?? 'draft',
+                    'created_by' => $userId,
+                ];
+                $validCount++;
+            } else {
+                $invalidCount++;
+                foreach ($rowErrors as $err) {
+                    $errors[] = [
+                        'row' => $rowNumber,
+                        'field' => $err['field'],
+                        'message' => $err['message'],
+                    ];
+                }
+            }
+
+            $processed[] = [
+                'row_number' => $rowNumber,
+                'valid' => $isValid,
+                'errors' => $rowErrors,
+                'preview' => [
+                    'subject' => $subjectName,
+                    'topic' => $topicName,
+                    'question' => Str::limit(strip_tags($question), 120),
+                    'difficulty' => $difficulty,
+                    // `test_type` here is the question FORMAT (mcq /
+                    // true_false / multi_select); kept under the legacy
+                    // key name so the existing preview UI keeps working.
+                    'test_type' => $questionTypeRaw,
+                    'test_types' => $testTypesRaw,
+                    'correct_option' => $correctRaw,
+                    'marks' => $marks,
+                    'status' => $statusRaw,
+                ],
+                'payload' => $payload,
+                'test_type_ids' => $testTypeIds,
+            ];
+        }
+
+        return [
+            'rows' => $processed,
+            'valid_count' => $validCount,
+            'invalid_count' => $invalidCount,
+            'errors' => $errors,
+        ];
     }
 }

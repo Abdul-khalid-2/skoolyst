@@ -8,10 +8,26 @@
                         <h1 class="h3 mb-1 mb-md-2">MCQs Management</h1>
                         <p class="text-muted mb-0 d-none d-md-block">Create and manage multiple choice questions</p>
                         <p class="text-muted mb-0 d-block d-md-none">Manage questions</p>
-                    </div>
-                    <div class="w-100 w-md-auto">
+                    </div>  
+                    <div class="w-100 w-md-auto d-flex flex-column flex-sm-row gap-2">
+                        <button type="button"
+                                class="btn btn-outline-secondary w-100 w-md-auto d-flex align-items-center justify-content-center"
+                                data-bs-toggle="modal"
+                                data-bs-target="#exportTemplateModal">
+                            <i class="fas fa-file-download me-2"></i>
+                            <span class="d-none d-sm-inline">Download Template</span>
+                            <span class="d-inline d-sm-none">Template</span>
+                        </button>
+                        <button type="button"
+                                class="btn btn-outline-primary w-100 w-md-auto d-flex align-items-center justify-content-center"
+                                data-bs-toggle="modal"
+                                data-bs-target="#bulkImportMcqModal">
+                            <i class="fas fa-file-import me-2"></i>
+                            <span class="d-none d-sm-inline">Import MCQs</span>
+                            <span class="d-inline d-sm-none">Import</span>
+                        </button>
                         <a href="{{ route('mcqs.create') }}" class="btn btn-primary w-100 w-md-auto d-flex align-items-center justify-content-center">
-                            <i class="fas fa-plus me-2"></i> 
+                            <i class="fas fa-plus me-2"></i>
                             <span class="d-none d-sm-inline">Add MCQ</span>
                             <span class="d-inline d-sm-none">Add</span>
                         </a>
@@ -283,6 +299,188 @@
                                 <button class="btn btn-sm btn-outline-secondary" id="clearSelection">
                                     <span class="d-none d-md-inline">Clear</span>
                                     <i class="fas fa-times d-inline d-md-none"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Smart Export Template Modal -->
+            @include('dashboard.mcqs_system.mcqs._export_template_modal')
+
+            <!-- Bulk Import MCQs Modal -->
+            <div class="modal fade" id="bulkImportMcqModal" tabindex="-1" aria-labelledby="bulkImportMcqModalLabel" aria-hidden="true" data-bs-backdrop="static">
+                <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="bulkImportMcqModalLabel">
+                                <i class="fas fa-file-import me-2"></i> Bulk Import MCQs
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="bulkImportClose"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-info d-flex flex-column flex-md-row align-items-start">
+                                <i class="fas fa-info-circle me-2 mt-1"></i>
+                                <div class="flex-grow-1">
+                                    <strong>Before you start:</strong> Subjects and topics in your file must already exist in the system (matched by name).
+                                    Use one of the templates below to see all required and optional columns.
+                                    <div class="mt-2 d-flex flex-wrap gap-2">
+                                        <a href="{{ route('mcqs.bulk-import.template') }}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-download me-1"></i> Download Sample Template
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#exportTemplateModal"
+                                                data-bs-dismiss="modal">
+                                            <i class="fas fa-file-download me-1"></i> Download Pre-filled Template
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Step 1: Upload area --}}
+                            <div id="bulkImportStepUpload">
+                                <label for="bulkImportFileInput"
+                                       id="bulkImportDropzone"
+                                       class="d-flex flex-column align-items-center justify-content-center text-center w-100 mb-3"
+                                       style="border: 2px dashed #cbd5e1; border-radius: 0.5rem; padding: 2.5rem 1rem; cursor: pointer; background: #f8fafc; transition: background-color .2s, border-color .2s;">
+                                    <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                                    <h6 class="mb-1">Drag &amp; drop your file here</h6>
+                                    <p class="text-muted mb-2">or click to browse from your computer</p>
+                                    <small class="text-muted">Supported formats: <strong>.csv</strong>, <strong>.xlsx</strong>, <strong>.xls</strong> (max 5 MB)</small>
+                                    <input type="file"
+                                           id="bulkImportFileInput"
+                                           class="d-none"
+                                           accept=".csv,.xlsx,.xls,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                </label>
+
+                                <div id="bulkImportFileSummary" class="d-none align-items-center justify-content-between p-3 border rounded bg-white mb-3">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-csv fa-2x text-success me-3"></i>
+                                        <div>
+                                            <div class="fw-bold" id="bulkImportFileName"></div>
+                                            <small class="text-muted" id="bulkImportFileSize"></small>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" id="bulkImportRemoveFile">
+                                        <i class="fas fa-times me-1"></i> Remove
+                                    </button>
+                                </div>
+
+                                <div id="bulkImportProgressWrapper" class="d-none mb-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-1">
+                                        <small class="text-muted" id="bulkImportProgressLabel">Parsing file...</small>
+                                        <small class="text-muted" id="bulkImportProgressPercent">0%</small>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div id="bulkImportProgressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <div id="bulkImportInlineError" class="alert alert-danger d-none mb-0" role="alert"></div>
+                            </div>
+
+                            {{-- Step 2: Preview table --}}
+                            <div id="bulkImportStepPreview" class="d-none">
+                                <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-3 gap-2">
+                                    <div>
+                                        <h6 class="mb-0">Preview &amp; validation</h6>
+                                        <small class="text-muted">Review the rows below. Only valid rows will be imported.</small>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <span class="badge bg-secondary">Total: <span id="bulkImportTotalCount">0</span></span>
+                                        <span class="badge bg-success">Valid: <span id="bulkImportValidCount">0</span></span>
+                                        <span class="badge bg-danger">Invalid: <span id="bulkImportInvalidCount">0</span></span>
+                                    </div>
+                                </div>
+
+                                <div class="form-check form-switch mb-2">
+                                    <input class="form-check-input" type="checkbox" id="bulkImportShowOnlyInvalid">
+                                    <label class="form-check-label small text-muted" for="bulkImportShowOnlyInvalid">
+                                        Show only invalid rows
+                                    </label>
+                                </div>
+
+                                <div class="table-responsive border rounded" style="max-height: 360px;">
+                                    <table class="table table-sm table-hover mb-0 align-middle" id="bulkImportPreviewTable">
+                                        <thead class="table-light position-sticky top-0">
+                                            <tr>
+                                                <th style="width: 60px;">Row</th>
+                                                <th style="width: 90px;">Status</th>
+                                                <th>Subject / Topic</th>
+                                                <th>Question</th>
+                                                <th style="width: 100px;">Difficulty</th>
+                                                <th style="width: 100px;">Type</th>
+                                                <th style="width: 80px;">Correct</th>
+                                                <th style="width: 70px;">Marks</th>
+                                                <th>Errors</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bulkImportPreviewBody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- Step 3: Result summary --}}
+                            <div id="bulkImportStepResult" class="d-none">
+                                <div class="text-center py-4">
+                                    <div id="bulkImportResultIcon" class="mb-3">
+                                        <i class="fas fa-check-circle fa-4x text-success"></i>
+                                    </div>
+                                    <h5 id="bulkImportResultTitle" class="mb-2">Import complete</h5>
+                                    <p class="text-muted mb-3" id="bulkImportResultMessage"></p>
+
+                                    <div class="row justify-content-center g-3 mb-3">
+                                        <div class="col-6 col-md-4">
+                                            <div class="card border-success">
+                                                <div class="card-body py-2">
+                                                    <div class="text-success fw-bold h4 mb-0" id="bulkImportResultImported">0</div>
+                                                    <small class="text-muted">Imported</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 col-md-4">
+                                            <div class="card border-danger">
+                                                <div class="card-body py-2">
+                                                    <div class="text-danger fw-bold h4 mb-0" id="bulkImportResultFailed">0</div>
+                                                    <small class="text-muted">Failed</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div id="bulkImportResultErrorsWrapper" class="d-none text-start">
+                                        <h6 class="mb-2">Errors</h6>
+                                        <div class="table-responsive border rounded" style="max-height: 240px;">
+                                            <table class="table table-sm mb-0">
+                                                <thead class="table-light position-sticky top-0">
+                                                    <tr>
+                                                        <th style="width: 60px;">Row</th>
+                                                        <th style="width: 140px;">Field</th>
+                                                        <th>Message</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="bulkImportResultErrorsBody"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer d-flex flex-wrap gap-2 justify-content-between">
+                            <div class="text-muted small" id="bulkImportFooterHint">Choose a file to begin.</div>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-outline-secondary" id="bulkImportCancelBtn" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-secondary d-none" id="bulkImportBackBtn">
+                                    <i class="fas fa-arrow-left me-1"></i> Back
+                                </button>
+                                <button type="button" class="btn btn-primary d-none" id="bulkImportConfirmBtn">
+                                    <i class="fas fa-cloud-upload-alt me-1"></i> Import <span id="bulkImportConfirmCount"></span>
+                                </button>
+                                <button type="button" class="btn btn-primary d-none" id="bulkImportDoneBtn" data-bs-dismiss="modal">
+                                    Done
                                 </button>
                             </div>
                         </div>
@@ -700,7 +898,383 @@
                     });
                 }
             });
+
+            initBulkMcqImport();
         });
+
+        function initBulkMcqImport() {
+            const modalEl = document.getElementById('bulkImportMcqModal');
+            if (!modalEl) return;
+
+            const PREVIEW_URL = @json(route('mcqs.bulk-import.preview'));
+            const STORE_URL = @json(route('mcqs.bulk-import.store'));
+            const CSRF_TOKEN = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content')
+                || @json(csrf_token());
+
+            const dropzone = document.getElementById('bulkImportDropzone');
+            const fileInput = document.getElementById('bulkImportFileInput');
+            const fileSummary = document.getElementById('bulkImportFileSummary');
+            const fileNameEl = document.getElementById('bulkImportFileName');
+            const fileSizeEl = document.getElementById('bulkImportFileSize');
+            const removeFileBtn = document.getElementById('bulkImportRemoveFile');
+
+            const stepUpload = document.getElementById('bulkImportStepUpload');
+            const stepPreview = document.getElementById('bulkImportStepPreview');
+            const stepResult = document.getElementById('bulkImportStepResult');
+
+            const totalCountEl = document.getElementById('bulkImportTotalCount');
+            const validCountEl = document.getElementById('bulkImportValidCount');
+            const invalidCountEl = document.getElementById('bulkImportInvalidCount');
+            const previewBody = document.getElementById('bulkImportPreviewBody');
+            const showOnlyInvalidEl = document.getElementById('bulkImportShowOnlyInvalid');
+
+            const resultIcon = document.getElementById('bulkImportResultIcon');
+            const resultTitle = document.getElementById('bulkImportResultTitle');
+            const resultMessage = document.getElementById('bulkImportResultMessage');
+            const resultImported = document.getElementById('bulkImportResultImported');
+            const resultFailed = document.getElementById('bulkImportResultFailed');
+            const resultErrorsWrapper = document.getElementById('bulkImportResultErrorsWrapper');
+            const resultErrorsBody = document.getElementById('bulkImportResultErrorsBody');
+
+            const progressWrapper = document.getElementById('bulkImportProgressWrapper');
+            const progressBar = document.getElementById('bulkImportProgressBar');
+            const progressLabel = document.getElementById('bulkImportProgressLabel');
+            const progressPercent = document.getElementById('bulkImportProgressPercent');
+            const inlineError = document.getElementById('bulkImportInlineError');
+
+            const cancelBtn = document.getElementById('bulkImportCancelBtn');
+            const backBtn = document.getElementById('bulkImportBackBtn');
+            const confirmBtn = document.getElementById('bulkImportConfirmBtn');
+            const confirmCountEl = document.getElementById('bulkImportConfirmCount');
+            const doneBtn = document.getElementById('bulkImportDoneBtn');
+            const footerHint = document.getElementById('bulkImportFooterHint');
+
+            let currentFile = null;
+            let parsedRows = [];
+            let validCount = 0;
+            let invalidCount = 0;
+            let didImport = false;
+
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                resetAll();
+                if (didImport) {
+                    didImport = false;
+                    window.location.reload();
+                }
+            });
+
+            ['dragenter', 'dragover'].forEach(evt => {
+                dropzone.addEventListener(evt, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.style.borderColor = '#0d6efd';
+                    dropzone.style.background = '#eff6ff';
+                });
+            });
+            ['dragleave', 'drop'].forEach(evt => {
+                dropzone.addEventListener(evt, e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.style.borderColor = '#cbd5e1';
+                    dropzone.style.background = '#f8fafc';
+                });
+            });
+            dropzone.addEventListener('drop', e => {
+                const files = e.dataTransfer?.files;
+                if (files && files.length > 0) handleFileSelected(files[0]);
+            });
+            fileInput.addEventListener('change', function () {
+                if (this.files && this.files.length > 0) handleFileSelected(this.files[0]);
+            });
+
+            removeFileBtn.addEventListener('click', () => {
+                resetAll();
+            });
+
+            backBtn.addEventListener('click', () => {
+                showStep('upload');
+                confirmBtn.classList.add('d-none');
+                backBtn.classList.add('d-none');
+            });
+
+            confirmBtn.addEventListener('click', () => {
+                if (!currentFile || validCount === 0) return;
+                uploadFile(STORE_URL, currentFile, true);
+            });
+
+            function handleFileSelected(file) {
+                hideError();
+                if (!isAcceptedFile(file)) {
+                    showError('Unsupported file type. Please upload a .csv, .xlsx or .xls file.');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    showError('File is too large. Maximum allowed size is 5 MB.');
+                    return;
+                }
+                currentFile = file;
+                fileNameEl.textContent = file.name;
+                fileSizeEl.textContent = formatBytes(file.size);
+                fileSummary.classList.remove('d-none');
+                fileSummary.classList.add('d-flex');
+                dropzone.classList.add('d-none');
+                footerHint.textContent = 'Validating file with the server...';
+
+                uploadFile(PREVIEW_URL, file, false);
+            }
+
+            function uploadFile(url, file, isFinalImport) {
+                showProgress(isFinalImport ? 'Importing...' : 'Parsing file...');
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', url);
+                xhr.setRequestHeader('X-CSRF-TOKEN', CSRF_TOKEN);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.upload.addEventListener('progress', e => {
+                    if (e.lengthComputable) {
+                        const pct = Math.round((e.loaded / e.total) * 100);
+                        setProgress(pct, isFinalImport ? 'Uploading...' : 'Uploading file...');
+                    }
+                });
+
+                xhr.onload = function () {
+                    setProgress(100, isFinalImport ? 'Processing on server...' : 'Validating rows...');
+                    let payload = null;
+                    try {
+                        payload = JSON.parse(xhr.responseText);
+                    } catch (e) {
+                        hideProgress();
+                        showError('Server returned an unexpected response.');
+                        return;
+                    }
+
+                    if (xhr.status >= 200 && xhr.status < 300 && payload?.success) {
+                        hideProgress();
+                        if (isFinalImport) {
+                            renderResult(payload);
+                        } else {
+                            renderPreview(payload);
+                        }
+                        return;
+                    }
+
+                    hideProgress();
+                    if (payload && payload.errors && typeof payload.errors === 'object') {
+                        const messages = Object.values(payload.errors).flat();
+                        showError(messages.join(' ') || (payload.message || 'Validation failed.'));
+                    } else {
+                        showError(payload?.message || 'Something went wrong while processing the file.');
+                    }
+                };
+
+                xhr.onerror = function () {
+                    hideProgress();
+                    showError('Network error. Please check your connection and try again.');
+                };
+
+                xhr.send(formData);
+            }
+
+            function renderPreview(payload) {
+                parsedRows = payload.rows || [];
+                validCount = payload.valid || 0;
+                invalidCount = payload.invalid || 0;
+                totalCountEl.textContent = payload.total || 0;
+                validCountEl.textContent = validCount;
+                invalidCountEl.textContent = invalidCount;
+
+                renderPreviewRows();
+
+                showStep('preview');
+                backBtn.classList.remove('d-none');
+                if (validCount > 0) {
+                    confirmBtn.classList.remove('d-none');
+                    confirmBtn.disabled = false;
+                    confirmCountEl.textContent = `(${validCount})`;
+                    footerHint.textContent = `${validCount} valid row(s) ready to import.`;
+                } else {
+                    confirmBtn.classList.add('d-none');
+                    footerHint.textContent = 'No valid rows to import. Please fix the errors and try again.';
+                }
+            }
+
+            function renderPreviewRows() {
+                const onlyInvalid = showOnlyInvalidEl.checked;
+                previewBody.innerHTML = '';
+                let renderedAny = false;
+                parsedRows.forEach(row => {
+                    if (onlyInvalid && row.valid) return;
+                    renderedAny = true;
+                    const tr = document.createElement('tr');
+                    if (!row.valid) tr.classList.add('table-danger');
+
+                    const errorList = (row.errors || []).map(e => {
+                        const field = e.field ? `<strong>${escapeHtml(e.field)}:</strong> ` : '';
+                        return `<div class="small text-danger mb-1">${field}${escapeHtml(e.message)}</div>`;
+                    }).join('') || '<span class="text-success small"><i class="fas fa-check"></i> OK</span>';
+
+                    const p = row.preview || {};
+                    tr.innerHTML = `
+                        <td>${row.row_number}</td>
+                        <td>
+                            <span class="badge bg-${row.valid ? 'success' : 'danger'}">
+                                ${row.valid ? 'Valid' : 'Invalid'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-semibold small">${escapeHtml(p.subject || '')}</div>
+                            <div class="text-muted small">${escapeHtml(p.topic || '')}</div>
+                        </td>
+                        <td><div class="small">${escapeHtml(p.question || '')}</div></td>
+                        <td><span class="small text-capitalize">${escapeHtml(p.difficulty || '')}</span></td>
+                        <td><span class="small">${escapeHtml(p.test_type || '')}</span></td>
+                        <td><span class="small">${escapeHtml(p.correct_option || '')}</span></td>
+                        <td><span class="small">${escapeHtml(String(p.marks ?? ''))}</span></td>
+                        <td>${errorList}</td>
+                    `;
+                    previewBody.appendChild(tr);
+                });
+
+                if (!renderedAny) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="9" class="text-center text-muted py-3">No rows to display.</td>`;
+                    previewBody.appendChild(tr);
+                }
+            }
+
+            showOnlyInvalidEl.addEventListener('change', renderPreviewRows);
+
+            function renderResult(payload) {
+                didImport = (payload.imported || 0) > 0;
+                showStep('result');
+                backBtn.classList.add('d-none');
+                confirmBtn.classList.add('d-none');
+                doneBtn.classList.remove('d-none');
+                cancelBtn.classList.add('d-none');
+
+                resultImported.textContent = payload.imported || 0;
+                resultFailed.textContent = payload.failed || 0;
+
+                if ((payload.imported || 0) > 0 && (payload.failed || 0) === 0) {
+                    resultIcon.innerHTML = '<i class="fas fa-check-circle fa-4x text-success"></i>';
+                    resultTitle.textContent = 'Import complete';
+                    resultMessage.textContent = `Successfully imported ${payload.imported} MCQ(s).`;
+                } else if ((payload.imported || 0) > 0 && (payload.failed || 0) > 0) {
+                    resultIcon.innerHTML = '<i class="fas fa-exclamation-triangle fa-4x text-warning"></i>';
+                    resultTitle.textContent = 'Import partially complete';
+                    resultMessage.textContent = `Imported ${payload.imported} MCQ(s); ${payload.failed} row(s) failed.`;
+                } else {
+                    resultIcon.innerHTML = '<i class="fas fa-times-circle fa-4x text-danger"></i>';
+                    resultTitle.textContent = 'Import failed';
+                    resultMessage.textContent = 'No MCQs were imported. Please review the errors below.';
+                }
+
+                const errors = payload.errors || [];
+                if (errors.length > 0) {
+                    resultErrorsWrapper.classList.remove('d-none');
+                    resultErrorsBody.innerHTML = errors.map(e => `
+                        <tr>
+                            <td>${e.row ?? ''}</td>
+                            <td>${escapeHtml(e.field ?? '-')}</td>
+                            <td class="small">${escapeHtml(e.message ?? '')}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    resultErrorsWrapper.classList.add('d-none');
+                    resultErrorsBody.innerHTML = '';
+                }
+
+                footerHint.textContent = '';
+            }
+
+            function showStep(step) {
+                stepUpload.classList.toggle('d-none', step !== 'upload');
+                stepPreview.classList.toggle('d-none', step !== 'preview');
+                stepResult.classList.toggle('d-none', step !== 'result');
+            }
+
+            function resetAll() {
+                currentFile = null;
+                parsedRows = [];
+                validCount = 0;
+                invalidCount = 0;
+                fileInput.value = '';
+                fileSummary.classList.add('d-none');
+                fileSummary.classList.remove('d-flex');
+                dropzone.classList.remove('d-none');
+                hideError();
+                hideProgress();
+                showStep('upload');
+                backBtn.classList.add('d-none');
+                confirmBtn.classList.add('d-none');
+                doneBtn.classList.add('d-none');
+                cancelBtn.classList.remove('d-none');
+                showOnlyInvalidEl.checked = false;
+                footerHint.textContent = 'Choose a file to begin.';
+            }
+
+            function showProgress(label) {
+                progressWrapper.classList.remove('d-none');
+                setProgress(0, label);
+            }
+
+            function setProgress(pct, label) {
+                progressBar.style.width = pct + '%';
+                progressPercent.textContent = pct + '%';
+                if (label) progressLabel.textContent = label;
+            }
+
+            function hideProgress() {
+                progressWrapper.classList.add('d-none');
+                setProgress(0, '');
+            }
+
+            function showError(msg) {
+                inlineError.textContent = msg;
+                inlineError.classList.remove('d-none');
+            }
+
+            function hideError() {
+                inlineError.textContent = '';
+                inlineError.classList.add('d-none');
+            }
+
+            function isAcceptedFile(file) {
+                const name = (file.name || '').toLowerCase();
+                if (name.endsWith('.csv') || name.endsWith('.xlsx') || name.endsWith('.xls')) return true;
+                const acceptedTypes = [
+                    'text/csv', 'application/vnd.ms-excel',
+                    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                ];
+                return acceptedTypes.includes(file.type);
+            }
+
+            function formatBytes(bytes) {
+                if (!bytes) return '0 B';
+                const units = ['B', 'KB', 'MB', 'GB'];
+                let i = 0;
+                while (bytes >= 1024 && i < units.length - 1) {
+                    bytes /= 1024;
+                    i++;
+                }
+                return bytes.toFixed(bytes < 10 && i > 0 ? 1 : 0) + ' ' + units[i];
+            }
+
+            function escapeHtml(value) {
+                if (value === null || value === undefined) return '';
+                return String(value)
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#039;');
+            }
+        }
     </script>
     @endpush
 

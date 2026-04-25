@@ -10,7 +10,9 @@
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
+        "mcamara/laravel-localization": "^2.4",
         "mews/purifier": "^3.4",
+        "phpoffice/phpspreadsheet": "*",
         "spatie/laravel-permission": "^6.21",
         "spatie/laravel-sitemap": "^7.3"
     },
@@ -74,6 +76,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "ext-gd": "8.0"
         }
     },
     "minimum-stability": "stable",
