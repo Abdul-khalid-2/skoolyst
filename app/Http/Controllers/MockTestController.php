@@ -416,6 +416,15 @@ class MockTestController extends Controller
 
         $mcqs->getCollection()->transform(function (Mcq $mcq) use ($existingMcqIds) {
             $mcq->setAttribute('in_test', in_array($mcq->id, $existingMcqIds, true));
+            $opts = $this->mcqOptionsToOrderedList($mcq->getAttribute('options'));
+            $mcq->setAttribute('options', $opts);
+            $mcq->setAttribute(
+                'correct_answers',
+                $this->mcqCorrectAnswersToZeroBasedIndices(
+                    $mcq->getAttribute('correct_answers'),
+                    count($opts)
+                )
+            );
 
             return $mcq;
         });
@@ -475,6 +484,100 @@ class MockTestController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => $message]);
+    }
+
+    /**
+     * Turn stored options (JSON list or 1-based object {"1": "...", "2": "..."} into a 0..n-1 list for the client.
+     */
+    private function mcqOptionsToOrderedList($raw): array
+    {
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            $raw = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($raw) || $raw === []) {
+            return [];
+        }
+        if (array_is_list($raw)) {
+            return array_map(static function ($v) {
+                if (is_array($v) || is_object($v)) {
+                    return json_encode($v);
+                }
+
+                return (string) $v;
+            }, $raw);
+        }
+        $intKeys = [];
+        foreach (array_keys($raw) as $k) {
+            if (is_int($k)) {
+                $intKeys[] = $k;
+            } elseif (is_string($k) && ctype_digit($k)) {
+                $intKeys[] = (int) $k;
+            }
+        }
+        if ($intKeys === []) {
+            $vals = array_values($raw);
+
+            return array_map(static function ($v) {
+                if (is_array($v) || is_object($v)) {
+                    return json_encode($v);
+                }
+
+                return (string) $v;
+            }, $vals);
+        }
+        sort($intKeys);
+        $out = [];
+        foreach ($intKeys as $k) {
+            if (!array_key_exists($k, $raw) && !array_key_exists((string) $k, $raw)) {
+                continue;
+            }
+            $val = $raw[$k] ?? $raw[(string) $k];
+            if (is_array($val) || is_object($val)) {
+                $out[] = json_encode($val);
+            } else {
+                $out[] = (string) $val;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * correct_answers are usually 1-based option keys (1-4) from the MCQ form; also accept 0-based indices.
+     */
+    private function mcqCorrectAnswersToZeroBasedIndices($raw, int $optionCount): array
+    {
+        if ($optionCount < 1) {
+            return [];
+        }
+        if ($raw === null || $raw === '') {
+            return [];
+        }
+        if (is_string($raw)) {
+            $decoded = json_decode($raw, true);
+            $raw = is_array($decoded) ? $decoded : [];
+        }
+        if (!is_array($raw)) {
+            return [];
+        }
+        $out = [];
+        foreach ($raw as $a) {
+            if ($a === null || $a === '') {
+                continue;
+            }
+            $n = (int) $a;
+            if ($n >= 1 && $n <= $optionCount) {
+                $out[] = $n - 1;
+            } elseif ($n >= 0 && $n < $optionCount) {
+                $out[] = $n;
+            }
+        }
+
+        return array_values(array_unique($out, SORT_REGULAR));
     }
 
     /**

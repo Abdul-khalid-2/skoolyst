@@ -224,6 +224,25 @@
                 </div>
             </div>
         </div>
+
+        <!-- Full MCQ preview (card click) -->
+        <div class="modal fade" id="mcqPreviewModal" tabindex="-1" aria-labelledby="mcqPreviewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mcqPreviewModalLabel">Question <span id="mcqPreviewId">—</span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="mcqPreviewMeta" class="mb-3"></div>
+                        <div id="mcqPreviewQuestion" class="mb-3 text-break"></div>
+                        <h6 class="text-secondary border-bottom pb-2">Options</h6>
+                        <ul class="list-group" id="mcqPreviewOptions"></ul>
+                        <div id="mcqPreviewExplanation" class="mt-3 p-3 bg-light rounded small text-break d-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
 
     @php
@@ -231,10 +250,14 @@
         $removeQuestionUrlTemplate = route('mock-tests.remove-question', ['mockTest' => $mockTest, 'mcq' => $removeMcqPlaceholder]);
     @endphp
     @push('js')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @endpush
+    @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Pending to add to test. Already saved rows use `in_test` from the API and show checked.
             let pendingToAdd = new Set();
+            let lastRenderedMcqs = [];
             let currentPage = 1;
             let totalPages = 1;
             const removeQuestionUrlTemplate = @json($removeQuestionUrlTemplate);
@@ -242,6 +265,44 @@
             const CSRF = '{{ csrf_token() }}';
             const mockTestIdForQuery = {{ $mockTest->id }};
             const editMockTestUrl = @json(route('mock-tests.edit', $mockTest));
+
+            const Toast = (typeof Swal !== 'undefined')
+                ? Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                })
+                : null;
+
+            function showToastMessage(icon, text) {
+                if (Toast) {
+                    Toast.fire({ icon: icon, text: text });
+                } else {
+                    alert(text);
+                }
+            }
+
+            function showToastInfo(text) { showToastMessage('info', text); }
+            function showToastSuccess(text) { showToastMessage('success', text); }
+            function showToastError(text) { showToastMessage('error', text); }
+
+            function confirmRemoveFromTest() {
+                if (typeof Swal === 'undefined') {
+                    return Promise.resolve(confirm('Remove this question from the test?'));
+                }
+                return Swal.fire({
+                    title: 'Remove from test?',
+                    text: 'This question will be removed from this mock test.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, remove it',
+                    cancelButtonText: 'Cancel',
+                }).then((r) => r.isConfirmed === true);
+            }
 
             function escapeHtml(str) {
                 if (str == null || str === '') return '';
@@ -295,6 +356,190 @@
                     <div class="list-group list-group-flush">${rows}</div>
                     ${viewAll}`;
             }
+
+            function resolveBootstrap() {
+                if (typeof window.bootstrap !== 'undefined' && window.bootstrap.Modal) {
+                    return window.bootstrap;
+                }
+                try {
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                        return bootstrap;
+                    }
+                } catch (e) {
+                    /* not in global scope (e.g. module) */
+                }
+                return null;
+            }
+
+            /**
+             * correct_answers may arrive as a JSON array, object (numeric keys), or a JSON string.
+             */
+            function normalizeCorrectAnswers(value) {
+                if (value == null || value === '') {
+                    return [];
+                }
+                if (typeof value === 'number' && !Number.isNaN(value)) {
+                    return [value];
+                }
+                if (Array.isArray(value)) {
+                    return value;
+                }
+                if (typeof value === 'object') {
+                    return Object.values(value);
+                }
+                if (typeof value === 'string') {
+                    try {
+                        const p = JSON.parse(value);
+                        if (Array.isArray(p)) {
+                            return p;
+                        }
+                        if (p && typeof p === 'object') {
+                            return Object.values(p);
+                        }
+                    } catch (e) {
+                        return [];
+                    }
+                }
+                return [];
+            }
+
+            /**
+             * Options in DB are often 1-based keys: {"1":"A","2":"B"}; may arrive as a JSON string.
+             * Match server: sort numeric keys, then return ordered list.
+             */
+            function normalizeOptionsForPreview(value) {
+                if (value == null || value === '') {
+                    return [];
+                }
+                if (typeof value === 'string') {
+                    try {
+                        return normalizeOptionsForPreview(JSON.parse(value));
+                    } catch (e) {
+                        return [];
+                    }
+                }
+                if (Array.isArray(value)) {
+                    return value;
+                }
+                if (typeof value === 'object') {
+                    const keys = Object.keys(value).map((k) => parseInt(k, 10)).filter((n) => !Number.isNaN(n));
+                    if (keys.length && keys.length === Object.keys(value).length) {
+                        keys.sort((a, b) => a - b);
+                        return keys.map((k) => (value[k] !== undefined ? value[k] : value[String(k)]));
+                    }
+                    return Object.values(value);
+                }
+                return [];
+            }
+
+            function openMcqPreviewModal(mcq) {
+                if (!mcq) {
+                    return;
+                }
+                const el = document.getElementById('mcqPreviewModal');
+                if (!el) {
+                    return;
+                }
+                /* Avoid overflow/transform parents hiding fixed modal; Bootstrap expects this pattern */
+                if (el.parentNode !== document.body) {
+                    document.body.appendChild(el);
+                }
+                const idEl = document.getElementById('mcqPreviewId');
+                const qEl = document.getElementById('mcqPreviewQuestion');
+                const metaEl = document.getElementById('mcqPreviewMeta');
+                const optList = document.getElementById('mcqPreviewOptions');
+                const expEl = document.getElementById('mcqPreviewExplanation');
+                if (idEl) {
+                    idEl.textContent = '#' + mcq.id;
+                }
+                if (qEl) {
+                    qEl.innerHTML = mcq.question || '<p class="text-muted mb-0">No question text</p>';
+                }
+                if (metaEl) {
+                    const sub = (mcq.subject && mcq.subject.name) ? mcq.subject.name : '—';
+                    const top = (mcq.topic && mcq.topic.title) ? mcq.topic.title : '—';
+                    const qt = mcq.question_type === 'single' ? 'Single' : (mcq.question_type === 'multiple' ? 'Multiple' : (mcq.question_type || '—'));
+                    const diff = mcq.difficulty_level || '—';
+                    const diffClass = (diff === 'easy') ? 'success' : ((diff === 'medium') ? 'warning' : 'danger');
+                    const inBadge = mcq.in_test
+                        ? '<span class="badge bg-success">In this test</span>'
+                        : '';
+                    const typeBg = (mcq.question_type === 'single') ? 'primary' : 'info';
+                    metaEl.innerHTML = `
+                        <div class="d-flex flex-wrap gap-1 align-items-center">
+                            <span class="badge bg-secondary">${sub}</span>
+                            <span class="badge bg-info text-dark">${top}</span>
+                            <span class="badge bg-${typeBg}">${qt}</span>
+                            <span class="badge bg-${diffClass}">${diff}</span>
+                            ${inBadge}
+                        </div>`;
+                }
+                if (optList) {
+                    optList.innerHTML = '';
+                    const correct = new Set();
+                    normalizeCorrectAnswers(mcq.correct_answers).forEach((a) => {
+                        if (a === null || a === undefined) {
+                            return;
+                        }
+                        const n = parseInt(a, 10);
+                        if (!Number.isNaN(n)) {
+                            correct.add(n);
+                        }
+                    });
+                    const options = normalizeOptionsForPreview(mcq.options);
+                    if (options.length === 0) {
+                        const li = document.createElement('li');
+                        li.className = 'list-group-item text-muted';
+                        li.textContent = 'No options (check this MCQ in the MCQ library — options may be missing or invalid JSON).';
+                        optList.appendChild(li);
+                    } else {
+                        options.forEach((opt, idx) => {
+                            const isCorrect = correct.has(idx);
+                            const letter = String.fromCharCode(65 + idx);
+                            const li = document.createElement('li');
+                            li.className = 'list-group-item d-flex align-items-start' + (isCorrect
+                                ? ' list-group-item-success border border-success'
+                                : '');
+                            li.style.gap = '0.5rem';
+                            li.innerHTML = `
+                                <span class="badge ${isCorrect ? 'bg-success' : 'bg-secondary'} flex-shrink-0 align-self-start" style="min-width:1.9rem;">${letter}</span>
+                                <div class="flex-grow-1 mcq-option-content"></div>
+                                ${isCorrect
+                                    ? '<span class="badge bg-success flex-shrink-0 align-self-center"><i class="fas fa-check me-1"></i>Correct</span>'
+                                    : ''}`;
+                            const content = li.querySelector('.mcq-option-content');
+                            if (content) {
+                                if (opt == null || opt === '') {
+                                    content.innerHTML = '<em class="text-muted">Empty</em>';
+                                } else {
+                                    content.innerHTML = String(opt);
+                                }
+                            }
+                            optList.appendChild(li);
+                        });
+                    }
+                }
+                if (expEl) {
+                    if (mcq.explanation) {
+                        expEl.classList.remove('d-none');
+                        expEl.innerHTML = '<h6 class="text-muted">Explanation</h6><div class="mt-2 mcq-explanation-body">' + mcq.explanation + '</div>';
+                    } else {
+                        expEl.classList.add('d-none');
+                        expEl.innerHTML = '';
+                    }
+                }
+                const bs = resolveBootstrap();
+                if (!bs || !bs.Modal) {
+                    console.error('Bootstrap 5 Modal not found. Ensure bootstrap.bundle.js loads before this script.');
+                    showToastError('Could not open the preview. Please refresh the page.');
+                    return;
+                }
+                try {
+                    bs.Modal.getOrCreateInstance(el).show();
+                } catch (err) {
+                    console.error('Bootstrap modal show error', err);
+                }
+            }
             
             // DOM Elements
             const questionsContainer = document.getElementById('questions-container');
@@ -316,6 +561,38 @@
             const clearSelectionBtn = document.getElementById('clear-selection');
             const addSelectedBtn = document.getElementById('add-selected-questions');
             const defaultMarksInput = document.getElementById('default-marks');
+
+            /* One listener: works for every re-render, badge clicks, and "Click to view full question" */
+            questionsContainer.addEventListener('click', function (e) {
+                const card = e.target.closest('.question-card');
+                if (!card || !this.contains(card)) {
+                    return;
+                }
+                if (e.target.closest('.form-check')) {
+                    return;
+                }
+                e.preventDefault();
+                const id = card.getAttribute('data-mcq-id');
+                const mcq = lastRenderedMcqs.find((m) => String(m.id) === String(id));
+                if (mcq) {
+                    openMcqPreviewModal(mcq);
+                }
+            });
+            questionsContainer.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter' && e.key !== ' ') {
+                    return;
+                }
+                const card = e.target.closest('.question-card');
+                if (!card || !this.contains(card)) {
+                    return;
+                }
+                e.preventDefault();
+                const id = card.getAttribute('data-mcq-id');
+                const mcq = lastRenderedMcqs.find((m) => String(m.id) === String(id));
+                if (mcq) {
+                    openMcqPreviewModal(mcq);
+                }
+            });
             
             // Filter topics by subject
             filterSubject.addEventListener('change', function() {
@@ -430,7 +707,7 @@
                     
                     html += `
                         <div class="col-md-6">
-                            <div class="card question-card ${cardClass}">
+                            <div class="card question-card ${cardClass}" data-mcq-id="${mcq.id}" role="button" tabindex="0" title="View full question and answers">
                                 <div class="card-body">
                                     <div class="form-check mb-2">
                                         <input class="form-check-input question-checkbox" 
@@ -463,6 +740,7 @@
                                     <div class="small text-muted">
                                         <i class="fas fa-book me-1"></i>${mcq.topic?.title || 'No Topic'}
                                     </div>
+                                    <p class="small text-primary mb-0 mt-2"><i class="fas fa-expand-alt me-1"></i>Click to view full question</p>
                                 </div>
                             </div>
                         </div>
@@ -470,8 +748,13 @@
                 });
                 
                 html += '</div>';
+                lastRenderedMcqs = questions;
                 questionsContainer.innerHTML = html;
                 paginationContainer.classList.remove('d-none');
+                
+                document.querySelectorAll('.question-card .form-check').forEach((fc) => {
+                    fc.addEventListener('click', (e) => e.stopPropagation());
+                });
                 
                 // Add event listeners to checkboxes
                 document.querySelectorAll('.question-checkbox').forEach(checkbox => {
@@ -498,33 +781,36 @@
                         // Unchecking
                         if (inTest) {
                             box.checked = true;
-                            if (!confirm('Remove this question from the test?')) {
-                                return;
-                            }
-                            const url = removeQuestionUrlTemplate.replace(
-                                new RegExp(removeQuestionMcqPlaceholder + '$'),
-                                String(mcqId)
-                            );
-                            fetch(url, {
-                                method: 'DELETE',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': CSRF,
-                                    'Accept': 'application/json'
+                            confirmRemoveFromTest().then(function (confirmed) {
+                                if (!confirmed) {
+                                    return;
                                 }
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        applyTestStateFromResponse(data);
-                                        loadQuestions();
-                                    } else {
-                                        alert(data.message || 'Could not remove question');
+                                const url = removeQuestionUrlTemplate.replace(
+                                    new RegExp(removeQuestionMcqPlaceholder + '$'),
+                                    String(mcqId)
+                                );
+                                fetch(url, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': CSRF,
+                                        'Accept': 'application/json'
                                     }
                                 })
-                                .catch(function() {
-                                    alert('Could not remove question');
-                                });
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
+                                            showToastSuccess('Question removed from the test');
+                                            applyTestStateFromResponse(data);
+                                            loadQuestions();
+                                        } else {
+                                            showToastError(data.message || 'Could not remove question');
+                                        }
+                                    })
+                                    .catch(function() {
+                                        showToastError('Could not remove question');
+                                    });
+                            });
                             return;
                         }
 
@@ -661,7 +947,7 @@
             // Add pending questions to test
             addSelectedBtn.addEventListener('click', function() {
                 if (pendingToAdd.size === 0) {
-                    alert('Check one or more questions that are not already in the test (no green "In test" badge), or uncheck a pending selection first.');
+                    showToastInfo('Select one or more questions that are not already in the test (no green "In test" badge), or clear your pending selection.');
                     return;
                 }
                 
@@ -678,18 +964,19 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        showToastSuccess(data.message || 'Questions added to the test');
                         pendingToAdd.clear();
                         updateSelectedCount();
                         renderSelectedQuestions();
                         applyTestStateFromResponse(data);
                         loadQuestions();
                     } else {
-                        alert(data.message || 'An error occurred');
+                        showToastError(data.message || 'An error occurred');
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('An error occurred while adding questions');
+                    showToastError('An error occurred while adding questions');
                 });
             });
             
@@ -703,10 +990,24 @@
     @endpush
 
     <style>
+        .question-card[role="button"] {
+            cursor: pointer;
+        }
+        
+        .question-card[role="button"]:focus-visible {
+            outline: 2px solid var(--bs-primary);
+            outline-offset: 2px;
+        }
+        
+        #mcqPreviewModal #mcqPreviewQuestion img,
+        #mcqPreviewModal .mcq-option-content img {
+            max-width: 100%;
+            height: auto;
+        }
+        
         .question-card {
             height: 100%;
             transition: all 0.2s ease;
-            cursor: pointer;
         }
         
         .question-card:hover {
