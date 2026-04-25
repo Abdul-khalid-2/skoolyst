@@ -274,10 +274,10 @@ class MockTestController extends Controller
             'total_marks' => $mockTest->questions()->sum('marks'),
         ]);
 
-        return response()->json([
+        return response()->json(array_merge([
             'success' => true,
-            'message' => 'Question removed from test successfully.'
-        ]);
+            'message' => 'Question removed from test successfully.',
+        ], $this->addQuestionsStatePayload($mockTest)));
     }
 
     // Update question order/numbers
@@ -356,10 +356,10 @@ class MockTestController extends Controller
             'total_marks' => $mockTest->questions()->sum('marks'),
         ]);
 
-        return response()->json([
+        return response()->json(array_merge([
             'success' => true,
-            'message' => count($newMcqIds) . ' questions added successfully.'
-        ]);
+            'message' => count($newMcqIds) . ' questions added successfully.',
+        ], $this->addQuestionsStatePayload($mockTest)));
     }
 
     // Get MCQs for selection (AJAX)
@@ -381,11 +381,6 @@ class MockTestController extends Controller
         // Build query
         $query = Mcq::with(['subject', 'topic'])
             ->published();
-
-        // Exclude MCQs already in the test
-        if (!empty($existingMcqIds)) {
-            $query->whereNotIn('id', $existingMcqIds);
-        }
 
         // Apply filters
         if ($request->filled('subject_id')) {
@@ -418,6 +413,12 @@ class MockTestController extends Controller
         }
 
         $mcqs = $query->orderBy('created_at', 'desc')->paginate(20);
+
+        $mcqs->getCollection()->transform(function (Mcq $mcq) use ($existingMcqIds) {
+            $mcq->setAttribute('in_test', in_array($mcq->id, $existingMcqIds, true));
+
+            return $mcq;
+        });
 
         return response()->json([
             'mcqs' => $mcqs,
@@ -474,6 +475,33 @@ class MockTestController extends Controller
         }
 
         return response()->json(['success' => true, 'message' => $message]);
+    }
+
+    /**
+     * Stats + first 10 questions for the add-questions page (AJAX updates without full reload).
+     */
+    private function addQuestionsStatePayload(MockTest $mockTest): array
+    {
+        $mockTest->refresh();
+        $mockTest->load(['questions.mcq']);
+
+        $ordered = $mockTest->questions->sortBy('question_number');
+        $count = $ordered->count();
+        $preview = $ordered->take(10)->map(function (MockTestQuestion $q) {
+            return [
+                'number' => $q->question_number,
+                'preview' => Str::limit(strip_tags($q->mcq->question ?? ''), 40),
+                'marks' => (int) $q->marks,
+            ];
+        })->values()->all();
+
+        return [
+            'questions_count' => $count,
+            'total_questions' => (int) $mockTest->total_questions,
+            'marks_sum' => (int) $ordered->sum('marks'),
+            'total_marks' => (int) $mockTest->total_marks,
+            'current_questions_preview' => $preview,
+        ];
     }
 
     // Add this method to your MockTestController

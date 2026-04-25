@@ -28,14 +28,14 @@
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h5 class="mb-2">{{ $mockTest->title }}</h5>
-                            <div class="d-flex flex-wrap gap-3">
-                                <span class="badge bg-primary">
+                            <div class="d-flex flex-wrap gap-3" id="mock-test-stat-badges">
+                                <span class="badge bg-primary" id="stat-questions-line">
                                     <i class="fas fa-question-circle me-1"></i>
-                                    {{ $mockTest->questions->count() }}/{{ $mockTest->total_questions }} questions
+                                    <span id="stat-questions-text">{{ $mockTest->questions->count() }}/{{ $mockTest->total_questions }} questions</span>
                                 </span>
-                                <span class="badge bg-success">
+                                <span class="badge bg-success" id="stat-marks-line">
                                     <i class="fas fa-star me-1"></i>
-                                    {{ $mockTest->questions->sum('marks') }}/{{ $mockTest->total_marks }} marks
+                                    <span id="stat-marks-text">{{ $mockTest->questions->sum('marks') }}/{{ $mockTest->total_marks }} marks</span>
                                 </span>
                                 <span class="badge bg-warning">
                                     <i class="fas fa-clock me-1"></i>
@@ -191,9 +191,9 @@
                         <div class="card-header">
                             <h5 class="mb-0">Current Test Questions</h5>
                         </div>
-                        <div class="card-body">
+                        <div class="card-body" id="current-test-questions-body">
                             @if($mockTest->questions->count() > 0)
-                            <div class="list-group list-group-flush">
+                            <div class="list-group list-group-flush" id="current-test-questions-list">
                                 @foreach($mockTest->questions->sortBy('question_number')->take(10) as $question)
                                 <div class="list-group-item px-0">
                                     <div class="d-flex justify-content-between align-items-start">
@@ -208,15 +208,13 @@
                                 </div>
                                 @endforeach
                             </div>
-                            @if($mockTest->questions->count() > 10)
-                            <div class="text-center mt-2">
-                                <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-sm btn-outline-primary">
+                            <div class="text-center mt-2 @if($mockTest->questions->count() <= 10) d-none @endif" id="current-test-questions-view-all-wrap">
+                                <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-sm btn-outline-primary" id="current-test-questions-view-all-link">
                                     View All {{ $mockTest->questions->count() }} Questions
                                 </a>
                             </div>
-                            @endif
                             @else
-                            <div class="text-center py-3">
+                            <div class="text-center py-3" id="current-test-questions-empty">
                                 <i class="fas fa-question fa-2x text-muted mb-2"></i>
                                 <p class="text-muted">No questions added yet</p>
                             </div>
@@ -228,12 +226,75 @@
         </div>
     </main>
 
+    @php
+        $removeMcqPlaceholder = 900000001;
+        $removeQuestionUrlTemplate = route('mock-tests.remove-question', ['mockTest' => $mockTest, 'mcq' => $removeMcqPlaceholder]);
+    @endphp
     @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let selectedQuestions = new Set();
+            // Pending to add to test. Already saved rows use `in_test` from the API and show checked.
+            let pendingToAdd = new Set();
             let currentPage = 1;
             let totalPages = 1;
+            const removeQuestionUrlTemplate = @json($removeQuestionUrlTemplate);
+            const removeQuestionMcqPlaceholder = '{{ $removeMcqPlaceholder }}';
+            const CSRF = '{{ csrf_token() }}';
+            const mockTestIdForQuery = {{ $mockTest->id }};
+            const editMockTestUrl = @json(route('mock-tests.edit', $mockTest));
+
+            function escapeHtml(str) {
+                if (str == null || str === '') return '';
+                const d = document.createElement('div');
+                d.textContent = str;
+                return d.innerHTML;
+            }
+
+            function applyTestStateFromResponse(data) {
+                if (data.questions_count === undefined) return;
+                const qEl = document.getElementById('stat-questions-text');
+                const mEl = document.getElementById('stat-marks-text');
+                const body = document.getElementById('current-test-questions-body');
+                if (qEl) {
+                    qEl.textContent = data.questions_count + '/' + data.total_questions + ' questions';
+                }
+                if (mEl) {
+                    mEl.textContent = data.marks_sum + '/' + data.total_marks + ' marks';
+                }
+                if (!body) return;
+                const preview = data.current_questions_preview || [];
+                if (!data.questions_count) {
+                    body.innerHTML = `
+                        <div class="text-center py-3" id="current-test-questions-empty">
+                            <i class="fas fa-question fa-2x text-muted mb-2"></i>
+                            <p class="text-muted">No questions added yet</p>
+                        </div>`;
+                    return;
+                }
+                let rows = '';
+                preview.forEach(function(item) {
+                    rows += `
+                        <div class="list-group-item px-0">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <span class="badge bg-light text-dark me-2">${item.number}</span>
+                                    <div class="small question-preview">${escapeHtml(item.preview)}</div>
+                                </div>
+                                <span class="badge bg-primary">${item.marks}M</span>
+                            </div>
+                        </div>`;
+                });
+                const viewAll = data.questions_count > 10
+                    ? `<div class="text-center mt-2">
+                        <a href="${editMockTestUrl}" class="btn btn-sm btn-outline-primary">
+                            View All ${data.questions_count} Questions
+                        </a>
+                    </div>`
+                    : '';
+                body.innerHTML = `
+                    <div class="list-group list-group-flush">${rows}</div>
+                    ${viewAll}`;
+            }
             
             // DOM Elements
             const questionsContainer = document.getElementById('questions-container');
@@ -312,7 +373,8 @@
                     difficulty_level: filterDifficulty.value,
                     question_type: filterType.value,
                     search: filterSearch.value,
-                    page: currentPage
+                    page: currentPage,
+                    mock_test_id: mockTestIdForQuery
                 };
                 
                 questionsContainer.innerHTML = `
@@ -358,20 +420,27 @@
                 let html = '<div class="row g-3">';
                 
                 questions.forEach(mcq => {
-                    const isSelected = selectedQuestions.has(mcq.id.toString());
+                    const inTest = !!mcq.in_test;
+                    const pending = pendingToAdd.has(String(mcq.id));
+                    const isChecked = inTest || pending;
+                    const cardClass = inTest
+                        ? 'border-success'
+                        : (pending ? 'border-primary' : '');
                     const questionPreview = mcq.question.replace(/<[^>]*>/g, '').substring(0, 80) + '...';
                     
                     html += `
                         <div class="col-md-6">
-                            <div class="card question-card ${isSelected ? 'border-primary' : ''}">
+                            <div class="card question-card ${cardClass}">
                                 <div class="card-body">
                                     <div class="form-check mb-2">
                                         <input class="form-check-input question-checkbox" 
                                                type="checkbox" 
                                                value="${mcq.id}"
-                                               ${isSelected ? 'checked' : ''}>
+                                               data-in-test="${inTest ? '1' : '0'}"
+                                               ${isChecked ? 'checked' : ''}>
                                         <label class="form-check-label">
                                             <strong>Question #${mcq.id}</strong>
+                                            ${inTest ? '<span class="badge bg-success ms-1">In test</span>' : ''}
                                         </label>
                                     </div>
                                     
@@ -407,24 +476,62 @@
                 // Add event listeners to checkboxes
                 document.querySelectorAll('.question-checkbox').forEach(checkbox => {
                     checkbox.addEventListener('change', function() {
-                        const mcqId = this.value;
-                        
-                        if (this.checked) {
-                            selectedQuestions.add(mcqId);
-                        } else {
-                            selectedQuestions.delete(mcqId);
+                        const box = this;
+                        const mcqId = box.value;
+                        const inTest = box.dataset.inTest === '1';
+                        const card = box.closest('.question-card');
+
+                        if (box.checked) {
+                            if (!inTest) {
+                                pendingToAdd.add(mcqId);
+                            }
+                            if (inTest) {
+                                card.classList.add('border-success');
+                            } else {
+                                card.classList.add('border-primary');
+                            }
+                            updateSelectedCount();
+                            renderSelectedQuestions();
+                            return;
                         }
-                        
+
+                        // Unchecking
+                        if (inTest) {
+                            box.checked = true;
+                            if (!confirm('Remove this question from the test?')) {
+                                return;
+                            }
+                            const url = removeQuestionUrlTemplate.replace(
+                                new RegExp(removeQuestionMcqPlaceholder + '$'),
+                                String(mcqId)
+                            );
+                            fetch(url, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': CSRF,
+                                    'Accept': 'application/json'
+                                }
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        applyTestStateFromResponse(data);
+                                        loadQuestions();
+                                    } else {
+                                        alert(data.message || 'Could not remove question');
+                                    }
+                                })
+                                .catch(function() {
+                                    alert('Could not remove question');
+                                });
+                            return;
+                        }
+
+                        pendingToAdd.delete(mcqId);
+                        card.classList.remove('border-primary');
                         updateSelectedCount();
                         renderSelectedQuestions();
-                        
-                        // Update card border
-                        const card = this.closest('.question-card');
-                        if (this.checked) {
-                            card.classList.add('border-primary');
-                        } else {
-                            card.classList.remove('border-primary');
-                        }
                     });
                 });
             }
@@ -486,106 +593,96 @@
                 });
             }
             
-            // Render selected questions
+            // Render selected (pending) questions
             function renderSelectedQuestions() {
-                if (selectedQuestions.size === 0) {
+                if (pendingToAdd.size === 0) {
                     selectedContainer.innerHTML = `
                         <div class="text-center py-4">
                             <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                            <p class="text-muted">No questions selected yet</p>
-                            <p class="small text-muted">Select questions from the list on the left</p>
+                            <p class="text-muted">No new questions in queue</p>
+                            <p class="small text-muted">Check the boxes (left) for questions not yet in the test. Already added ones show a green <strong>In test</strong> badge and stay checked.</p>
                         </div>
                     `;
                     return;
                 }
                 
-                // In a real implementation, you would fetch details for selected questions
                 selectedContainer.innerHTML = `
                     <div class="alert alert-info">
                         <i class="fas fa-info-circle me-2"></i>
-                        ${selectedQuestions.size} question${selectedQuestions.size === 1 ? '' : 's'} selected
+                        ${pendingToAdd.size} new question${pendingToAdd.size === 1 ? '' : 's'} will be added
                     </div>
                     <div class="text-center">
-                        <p>Questions will be added with <strong>${defaultMarksInput.value} marks</strong> each</p>
+                        <p>They will be added with <strong>${defaultMarksInput.value} marks</strong> each (you can change marks on the test edit page)</p>
                     </div>
                 `;
             }
             
             // Update selected count
             function updateSelectedCount() {
-                selectedCount.textContent = selectedQuestions.size;
+                selectedCount.textContent = pendingToAdd.size;
             }
             
-            // Select all questions on current page
+            // Select all questions on current page (only pending, not "already in test")
             selectAllBtn.addEventListener('click', function() {
                 document.querySelectorAll('.question-checkbox').forEach(checkbox => {
                     checkbox.checked = true;
-                    selectedQuestions.add(checkbox.value);
-                    
-                    // Update card border
+                    if (checkbox.dataset.inTest !== '1') {
+                        pendingToAdd.add(checkbox.value);
+                    }
                     const card = checkbox.closest('.question-card');
-                    card.classList.add('border-primary');
+                    if (checkbox.dataset.inTest === '1') {
+                        card.classList.add('border-success');
+                    } else {
+                        card.classList.add('border-primary');
+                    }
                 });
-                
                 updateSelectedCount();
                 renderSelectedQuestions();
             });
             
-            // Clear selection
+            // Clear only pending (queue), keep in-test checkboxes on
             clearSelectionBtn.addEventListener('click', function() {
-                selectedQuestions.clear();
-                
-                // Uncheck all checkboxes
+                pendingToAdd.clear();
                 document.querySelectorAll('.question-checkbox').forEach(checkbox => {
-                    checkbox.checked = false;
-                    
-                    // Update card border
+                    const inTest = checkbox.dataset.inTest === '1';
+                    checkbox.checked = inTest;
                     const card = checkbox.closest('.question-card');
                     card.classList.remove('border-primary');
+                    if (inTest) {
+                        card.classList.add('border-success');
+                    } else {
+                        card.classList.remove('border-success');
+                    }
                 });
-                
                 updateSelectedCount();
                 renderSelectedQuestions();
             });
             
-            // Add selected questions to test
+            // Add pending questions to test
             addSelectedBtn.addEventListener('click', function() {
-                if (selectedQuestions.size === 0) {
-                    alert('Please select at least one question');
+                if (pendingToAdd.size === 0) {
+                    alert('Check one or more questions that are not already in the test (no green "In test" badge), or uncheck a pending selection first.');
                     return;
                 }
-                
-                const marks = parseInt(defaultMarksInput.value) || 1;
                 
                 fetch('{{ route("mock-tests.bulk-add-questions", $mockTest) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        'X-CSRF-TOKEN': CSRF
                     },
                     body: JSON.stringify({
-                        mcq_ids: Array.from(selectedQuestions)
+                        mcq_ids: Array.from(pendingToAdd)
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert(data.message);
-                        
-                        // Clear selection
-                        selectedQuestions.clear();
+                        pendingToAdd.clear();
                         updateSelectedCount();
                         renderSelectedQuestions();
-                        
-                        // Reload questions to update availability
+                        applyTestStateFromResponse(data);
                         loadQuestions();
-                        
-                        // Uncheck all checkboxes
-                        document.querySelectorAll('.question-checkbox').forEach(checkbox => {
-                            checkbox.checked = false;
-                            const card = checkbox.closest('.question-card');
-                            card.classList.remove('border-primary');
-                        });
                     } else {
                         alert(data.message || 'An error occurred');
                     }
@@ -596,6 +693,9 @@
                 });
             });
             
+            // Initial state for "Selected Questions" (pending only)
+            updateSelectedCount();
+            renderSelectedQuestions();
             // Initial load
             loadQuestions();
         });
