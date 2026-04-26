@@ -9,7 +9,7 @@ return [
     ],
 
     'schema' => [
-        'faq_q1' => 'Which exams are covered in MCQs practice?',
+        'faq_q1' => 'Which Exams Are Covered In MCQs Practice?',
         'faq_a1' => 'Skoolyst MCQs covers NTS, PPSC, FPSC, MDCAT, ECAT and other competitive exam categories.',
         'faq_q2' => 'Can I practice MCQs by subject and topic?',
         'faq_a2' => 'Yes, you can choose a test type, then subject, and practice focused topics with recent MCQs and mock tests.',
@@ -19,7 +19,7 @@ return [
 
     'hero' => [
         'title' => 'Practice MCQs for Competitive Exams',
-        'subheading' => 'Master your subjects with practice questions for NTS, PPSC, FPSC, MDCAT, ECAT and more.',
+        'subheading' => 'Master Your Subjects With Practice Questions For NTS, PPSC, FPSC, MDCAT, ECAT And More.',
     ],
 
     'stats' => [
@@ -31,21 +31,21 @@ return [
 
     'top_performers' => [
         'title' => 'Top Performers',
-        'subtitle' => 'Meet our top MCQs test takers! :login to see your ranking and compete with the best.',
+        'subtitle' => 'Meet Our Top MCQs Test Takers! :Login To See Your Ranking And Compete With The Best.',
         'login' => 'Login',
         'empty' => 'No users have attempted MCQs yet.',
     ],
 
     'test_types' => [
         'title' => 'Choose Your Test Type',
-        'subtitle' => 'Select from various test categories to start your preparation',
+        'subtitle' => 'Select From Various Test Categories To Start Your Preparation',
         'subjects_n' => ':count Subjects',
         'mcqs_n' => ':count MCQs',
     ],
 
     'subjects' => [
         'title' => 'Popular Subjects',
-        'subtitle' => 'Start practicing with our most popular subjects',
+        'subtitle' => 'Start Practicing With Our Most Popular Subjects',
         'view_topics' => 'View topics',
         'browse_all' => 'Browse all subjects',
         'badge_qs' => 'Qs',
@@ -53,20 +53,20 @@ return [
     ],
 
     'how_it_works' => [
-        'title' => 'How it works',
-        'subtitle' => 'Three simple steps to improve your preparation',
-        'step1_title' => 'Choose test type or subject',
+        'title' => 'How It Works',
+        'subtitle' => 'Three Simple Steps To Improve Your Preparation',
+        'step1_title' => 'Choose Test Type Or Subject',
         'step1_body' => 'Select from various test types like NTS, PPSC, FPSC or browse by subject.',
-        'step2_title' => 'Select topic',
+        'step2_title' => 'Select Topic',
         'step2_body' => 'Choose specific topics within your subject for focused practice.',
-        'step3_title' => 'Practice questions',
+        'step3_title' => 'Practice Questions',
         'step3_body' => 'Practice with detailed explanations and track your progress.',
     ],
 
     'recent' => [
-        'title' => 'Recent practice questions',
-        'subtitle' => 'Latest MCQs added to our database',
-        'view_all_mock_tests' => 'View all mock tests',
+        'title' => 'Recent Practice Questions',
+        'subtitle' => 'Latest MCQs Added To Our Database',
+        'view_all_mock_tests' => 'View All Mock Tests',
         'mark' => 'Mark',
         'marks' => 'Marks',
         'practice' => 'Practice',
@@ -74,7 +74,7 @@ return [
     ],
 
     'cta' => [
-        'title' => 'Ready to test your knowledge?',
+        'title' => 'Ready To Test Your Knowledge?',
         'body' => 'Take our comprehensive mock tests and track your progress over time.',
         'button' => 'Start mock test',
     ],

@@ -98,7 +98,7 @@
 <section class="mock-tests-hero">
     <div class="container">
         <h1 class="display-4 fw-bold mb-4">Practice Mock Tests</h1>
-        <p class="lead mb-4">Take comprehensive mock tests to evaluate your preparation level</p>
+        <p class="lead mb-4">Take Comprehensive Mock Tests To Evaluate Your Preparation Level</p>
         
         <div class="row justify-content-center mt-5">
             <div class="col-md-8">
