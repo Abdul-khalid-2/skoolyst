@@ -8,32 +8,32 @@
         <div class="quick-facts">
             <h3>Quick Facts</h3>
             <div class="facts-grid">
-                @if($school->profile->established_year)
+                @if($school->profile?->established_year)
                     <div class="fact-item">
                         <i class="fas fa-calendar"></i>
-                        <span>Established: {{ $school->profile->established_year ?? 'N/A' }}</span>
+                        <span>Established: {{ $school->profile->established_year }}</span>
                     </div>
                 @endif
-                @if($school->profile->student_strength)
+                @if($school->profile?->student_strength)
                 <div class="fact-item">
                     <i class="fas fa-users"></i>
-                    <span>Student Strength: {{ $school->profile->student_strength ?? 'N/A' }}</span>
+                    <span>Student Strength: {{ $school->profile->student_strength }}</span>
                 </div>
                 @endif
-                @if($school->profile->faculty_count)
+                @if($school->profile?->faculty_count)
                 <div class="fact-item">
                     <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Faculty: {{ $school->profile->faculty_count ?? 'N/A' }} teachers</span>
+                    <span>Faculty: {{ $school->profile->faculty_count }} teachers</span>
                 </div>
                 @endif
-                @if($school->profile->campus_size)
+                @if($school->profile?->campus_size)
                 <div class="fact-item">
                     <i class="fas fa-building"></i>
-                    <span>Campus Size: {{ $school->profile->campus_size ?? 'N/A' }}</span>
+                    <span>Campus Size: {{ $school->profile->campus_size }}</span>
                 </div>
                 @endif
 
-                @if($school->profile && $school->profile->quick_facts)
+                @if($school->profile?->quick_facts)
                     @php
                         $quickFacts = json_decode($school->profile->quick_facts, true);
                     @endphp

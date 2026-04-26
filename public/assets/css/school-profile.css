@@ -1,13 +1,37 @@
 /* === SCHOOL PROFILE - ONLY UNIQUE STYLES === */
 /* Removed all styles that conflict with global/navigation CSS */
 
-/* School Header Section - Unique to profile */
+/* Page shell — full profile layout */
+.school-profile-page {
+    --sp-surface: #ffffff;
+    --sp-muted: #64748b;
+    --sp-text: #0f172a;
+    --sp-border: #e2e8f0;
+    --sp-accent: #2563eb;
+    --sp-accent-2: #0d9488;
+    --sp-accent-soft: rgba(37, 99, 235, 0.09);
+    --sp-radius: 14px;
+    --sp-radius-sm: 10px;
+    --sp-shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 4px 20px rgba(15, 23, 42, 0.04);
+    --sp-shadow-hover: 0 8px 28px rgba(15, 23, 42, 0.08);
+    background: linear-gradient(180deg, #eef2f7 0%, #f8fafc 35%, #f1f5f9 100%);
+    color: var(--sp-text);
+}
+
+.school-profile-page .school-profile-container {
+    max-width: 1200px;
+}
+
+/* School hero / header — profile */
+.school-header.school-hero,
 .school-header {
     position: relative;
-    padding: 5rem 0;
-    color: #ffffff;
+    z-index: 0;
+    min-height: clamp(17rem, 32vw, 22rem);
+    padding: clamp(2rem, 5vw, 3.5rem) 0;
+    color: #f8fafc;
     overflow: hidden;
-    background: linear-gradient(120deg, #2563eb, #16a34a);
+    background: linear-gradient(125deg, #1d4ed8 0%, #0d9488 48%, #15803d 100%);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -21,31 +45,119 @@
 
 .school-header-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 1;
+    inset: 0;
+    z-index: 0;
     pointer-events: none;
 }
 
+/* Gradient fallback: soften brand gradient */
 .school-header:not(.has-banner-image) .school-header-overlay {
-    background: rgba(0, 0, 0, 0.25);
+    background: linear-gradient(
+        160deg,
+        rgba(15, 23, 42, 0.35) 0%,
+        rgba(15, 23, 42, 0.18) 100%
+    );
+}
+
+/* Banner photos: strong bottom-weighted scrim for readable type */
+.school-header.has-banner-image .school-header-overlay {
+    background: linear-gradient(
+        to top,
+        rgba(15, 23, 42, 0.92) 0%,
+        rgba(15, 23, 42, 0.55) 38%,
+        rgba(15, 23, 42, 0.2) 100%
+    );
+}
+
+.school-hero-pattern {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.45;
+    background-image:
+        radial-gradient(ellipse 80% 50% at 15% 20%, rgba(255, 255, 255, 0.12) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 45% at 85% 75%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+}
+
+.school-header.has-banner-image .school-hero-pattern {
+    opacity: 0.22;
+}
+
+.school-hero-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
 }
 
 .school-hero-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr;
     align-items: center;
-    gap: 2.5rem;
+    gap: clamp(1.25rem, 4vw, 2.75rem);
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+}
+
+.school-hero-brand {
+    display: flex;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .school-hero-brand {
+        justify-content: flex-start;
+    }
+}
+
+.school-hero-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.school-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+}
+
+.school-hero-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(248, 250, 252, 0.92);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.school-hero-meta-item i {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.school-hero-badge {
+    display: inline-block;
+    padding: 0.28rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #e0f2fe;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 999px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 .school-logo-wrapper {
     flex: 0 0 auto;
-    width: 140px;
-    height: 140px;
+    width: clamp(5.5rem, 18vw, 8.75rem);
+    height: clamp(5.5rem, 18vw, 8.75rem);
     position: relative;
 }
 
@@ -74,37 +186,49 @@
 }
 
 .school-text-content {
-    background-color: rgba(0, 0, 0, 0.822);
-    width: 40%;
-    padding: 16px;
-    color: white;
-    border-radius: 10px;
+    width: 100%;
+    max-width: 42rem;
+    padding: clamp(1rem, 3vw, 1.35rem) clamp(1.1rem, 3vw, 1.5rem);
+    color: #f8fafc;
+    border-radius: 1rem;
+    background: rgba(15, 23, 42, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 }
 
 .school-title {
-    font-size: 2.8rem;
+    font-size: clamp(1.65rem, 4vw + 0.5rem, 2.85rem);
     font-weight: 800;
-    line-height: 1.15;
-    margin: 0 0 0.8rem;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    color: white;
+    line-height: 1.12;
+    margin: 0 0 0.65rem;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+    color: #fff;
 }
 
 .school-tagline {
-    font-size: 1.4rem;
+    font-size: clamp(1rem, 1.5vw + 0.65rem, 1.35rem);
     font-weight: 500;
-    margin: 0 0 0.6rem;
-    opacity: 0.95;
-    line-height: 1.4;
-    max-width: 700px;
+    margin: 0 0 0.5rem;
+    opacity: 0.94;
+    line-height: 1.45;
+    max-width: 40rem;
+    color: rgba(248, 250, 252, 0.95);
 }
 
 .school-name-sub {
-    font-size: 1.2rem;
+    font-size: clamp(0.95rem, 1vw + 0.75rem, 1.1rem);
     font-weight: 600;
-    opacity: 0.85;
-    letter-spacing: 0.5px;
-    margin: 0;
+    opacity: 0.88;
+    letter-spacing: 0.02em;
+    margin: 0.35rem 0 0;
+    padding-top: 0.65rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(226, 232, 240, 0.95);
 }
 
 /* School Motto */
@@ -124,12 +248,18 @@
 
 /* School Navigation (under hero) - Unique to profile */
 .school-navigation {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
+    background: rgba(255, 255, 255, 0.92);
+    border-bottom: 1px solid var(--sp-border, #e2e8f0);
     position: sticky;
     top: 0;
     z-index: 99;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 0 rgba(15, 23, 42, 0.06), 0 8px 24px rgba(15, 23, 42, 0.04);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.school-navigation .nav-links li {
+    list-style: none;
 }
 
 .nav-links {
@@ -139,6 +269,7 @@
     margin: 0;
     overflow-x: auto;
     scrollbar-width: none;
+    gap: 0.15rem;
 }
 
 .nav-links::-webkit-scrollbar {
@@ -146,18 +277,28 @@
 }
 
 .nav-link {
-    padding: 1.1rem 1.4rem;
-    color: #64748b;
+    display: inline-block;
+    padding: 1rem 1.15rem;
+    color: var(--sp-muted, #64748b);
     font-weight: 600;
+    font-size: 0.9rem;
+    letter-spacing: 0.01em;
     white-space: nowrap;
     border-bottom: 3px solid transparent;
-    transition: all 0.25s ease;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    text-decoration: none;
+    border-radius: 8px 8px 0 0;
 }
 
-.nav-link:hover,
+.nav-link:hover {
+    color: var(--sp-accent, #2563eb);
+    background: var(--sp-accent-soft, rgba(37, 99, 235, 0.09));
+}
+
 .nav-link.active {
-    color: #2563eb;
-    border-bottom-color: #2563eb;
+    color: var(--sp-accent, #2563eb);
+    border-bottom-color: var(--sp-accent, #2563eb);
+    background: transparent;
 }
 
 /* Scroll buttons for mobile nav */
@@ -215,35 +356,66 @@
 
 /* Main Content Layout */
 .school-main-content {
-    padding: 2.5rem 0;
+    padding: clamp(1.75rem, 4vw, 2.75rem) 0 clamp(2.5rem, 6vw, 3.5rem);
+}
+
+.main-column {
+    min-width: 0;
+}
+
+.sidebar-column {
+    min-width: 0;
+}
+
+@media (min-width: 992px) {
+    .sidebar-column {
+        position: sticky;
+        top: 5.5rem;
+        align-self: start;
+    }
 }
 
 .content-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 3vw, 2rem);
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 1.5rem;
+    padding: 0 1rem;
+}
+
+@media (min-width: 992px) {
+    .content-grid {
+        grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+        gap: 2rem;
+        padding: 0 1.5rem;
+    }
 }
 
 .content-section {
-    margin-bottom: 3rem;
-    scroll-margin-top: 120px;
+    scroll-margin-top: 6.5rem;
     display: none;
 }
 
 .content-section.active {
     display: block;
+    background: var(--sp-surface, #fff);
+    border-radius: var(--sp-radius, 14px);
+    padding: clamp(1.35rem, 3.5vw, 2rem);
+    border: 1px solid var(--sp-border, #e2e8f0);
+    box-shadow: var(--sp-shadow);
+    margin-bottom: 0;
 }
 
 .section-title {
-    font-size: 1.8rem;
-    margin-bottom: 1.5rem;
-    color: #0f172a;
+    font-size: clamp(1.35rem, 2.5vw, 1.65rem);
+    margin: 0 0 1.25rem;
+    color: var(--sp-text, #0f172a);
     position: relative;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.65rem;
     font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.25;
 }
 
 .section-title::after {
@@ -251,17 +423,47 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 60px;
-    height: 4px;
-    background: #2563eb;
-    border-radius: 2px;
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--sp-accent, #2563eb), var(--sp-accent-2, #0d9488));
+    border-radius: 3px;
+}
+
+.section-content {
+    color: #334155;
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+.section-content > *:last-child {
+    margin-bottom: 0;
+}
+
+.school-description {
+    margin: 0 0 1.5rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: #475569;
+}
+
+.no-content {
+    margin: 0;
+    padding: 1.25rem 1.35rem;
+    text-align: center;
+    color: var(--sp-muted, #64748b);
+    background: #f8fafc;
+    border: 1px dashed var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    font-size: 0.95rem;
 }
 
 /* Quick Facts */
 .quick-facts h3 {
-    margin: 1.5rem 0 1rem;
-    font-size: 1.3rem;
-    color: #0f172a;
+    margin: 1.75rem 0 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--sp-muted, #64748b);
     font-weight: 700;
 }
 
@@ -276,15 +478,18 @@
     display: flex;
     align-items: center;
     gap: 0.8rem;
-    padding: 1rem;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease;
+    padding: 1rem 1.1rem;
+    background: #f8fafc;
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .fact-item:hover {
     transform: translateY(-2px);
+    border-color: rgba(37, 99, 235, 0.2);
+    box-shadow: var(--sp-shadow);
 }
 
 .fact-item i {
@@ -307,15 +512,16 @@
 }
 
 .gallery-item {
-    border-radius: 12px;
+    border-radius: var(--sp-radius-sm, 10px);
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--sp-border, #e2e8f0);
+    box-shadow: var(--sp-shadow);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .gallery-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+    box-shadow: var(--sp-shadow-hover);
 }
 
 .gallery-item img {
@@ -326,11 +532,243 @@
 }
 
 .image-caption {
-    padding: 0.75rem;
-    background: #ffffff;
-    font-size: 0.9rem;
+    padding: 0.75rem 0.9rem;
+    background: #f8fafc;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--sp-text, #0f172a);
+    border-top: 1px solid var(--sp-border, #e2e8f0);
+}
+
+/* Facilities */
+.facilities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+}
+
+.facility-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.15rem 1.2rem;
+    background: #f8fafc;
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.facility-item:hover {
+    border-color: rgba(37, 99, 235, 0.25);
+    box-shadow: var(--sp-shadow-hover);
+    transform: translateY(-2px);
+}
+
+.facility-item > i {
+    flex-shrink: 0;
+    font-size: 1.15rem;
+    color: var(--sp-accent, #2563eb);
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--sp-accent-soft, rgba(37, 99, 235, 0.09));
+    border-radius: var(--sp-radius-sm, 10px);
+    margin-top: 0.1rem;
+}
+
+.facility-item span {
+    font-weight: 600;
+    color: var(--sp-text, #0f172a);
+}
+
+.facility-description {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--sp-muted, #64748b);
+    margin: 0.35rem 0 0;
+    line-height: 1.55;
+}
+
+/* Reviews */
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.review-item {
+    padding: 1.25rem 1.35rem;
+    background: #f8fafc;
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    transition: box-shadow 0.2s ease;
+}
+
+.review-item:hover {
+    box-shadow: var(--sp-shadow);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.reviewer-info {
+    min-width: 0;
+}
+
+.reviewer-name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    color: var(--sp-text, #0f172a);
+    font-size: 1rem;
+}
+
+.review-item .verified-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+}
+
+.review-rating {
+    margin-top: 0.35rem;
+}
+
+.review-rating i {
+    color: #f59e0b;
+    font-size: 0.88rem;
+    margin-right: 0.1rem;
+}
+
+.review-date {
+    font-size: 0.8125rem;
+    color: var(--sp-muted, #64748b);
+    white-space: nowrap;
+}
+
+.review-content {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+/* Branches */
+.branches-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.branch-item {
+    padding: 1.25rem 1.35rem;
+    background: #f8fafc;
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    border-left: 4px solid var(--sp-accent-2, #0d9488);
+}
+
+.branch-name {
+    font-weight: 700;
+    margin: 0 0 0.75rem;
+    color: var(--sp-text, #0f172a);
+    font-size: 1.05rem;
+}
+
+.branch-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.branch-address,
+.branch-phone,
+.branch-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin: 0;
+    color: #475569;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+}
+
+.branch-address i,
+.branch-phone i,
+.branch-head i {
+    color: var(--sp-accent, #2563eb);
+    margin-top: 0.2rem;
+    width: 1rem;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Announcements (Bootstrap card integration) */
+.school-profile-page .announcements-list .announcement-item.card {
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    box-shadow: var(--sp-shadow);
+    overflow: hidden;
+    background: var(--sp-surface, #fff);
+}
+
+.school-profile-page .announcements-list .announcement-item .card-body {
+    padding: 1.15rem 1.25rem;
+}
+
+.school-profile-page .announcement-title a {
+    color: var(--sp-text, #0f172a);
+    font-weight: 700;
+    font-size: 1.05rem;
+    transition: color 0.2s ease;
+}
+
+.school-profile-page .announcement-title a:hover {
+    color: var(--sp-accent, #2563eb);
+}
+
+.school-profile-page .announcement-image {
+    border-radius: var(--sp-radius-sm, 10px);
+    object-fit: cover;
+    width: 100%;
+    max-height: 140px;
+}
+
+.school-profile-page .announcements-list .btn-outline-primary {
+    border-color: var(--sp-accent, #2563eb);
+    color: var(--sp-accent, #2563eb);
+    font-weight: 600;
+    border-radius: 8px;
+}
+
+.school-profile-page .announcements-list .btn-outline-primary:hover {
+    background: var(--sp-accent, #2563eb);
+    color: #fff;
+}
+
+.school-profile-page .announcements-list + .text-center .btn-primary {
+    border-radius: 10px;
+    font-weight: 600;
+    padding: 0.6rem 1.35rem;
+    background: linear-gradient(135deg, var(--sp-accent, #2563eb), #1d4ed8);
+    border: none;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
 
 /* Curriculum */
@@ -341,40 +779,56 @@
 }
 
 .curriculum-item {
-    padding: 1.4rem;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    border-left: 4px solid #2563eb;
-    transition: box-shadow 0.2s ease;
+    padding: 1.35rem 1.4rem;
+    background: #f8fafc;
+    border-radius: var(--sp-radius-sm, 10px);
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-left: 4px solid var(--sp-accent, #2563eb);
+    box-shadow: none;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .curriculum-item:hover {
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--sp-shadow);
+    border-color: rgba(37, 99, 235, 0.2);
 }
 
 .curriculum-item h4 {
-    margin-bottom: 0.6rem;
-    color: #0f172a;
+    margin-bottom: 0.5rem;
+    color: var(--sp-text, #0f172a);
     font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.curriculum-item p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
 
 /* Sidebar Sections */
 .sidebar-section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.25rem;
+    padding: 1.35rem 1.4rem;
+    background: var(--sp-surface, #ffffff);
+    border-radius: var(--sp-radius, 14px);
+    border: 1px solid var(--sp-border, #e2e8f0);
+    box-shadow: var(--sp-shadow);
+}
+
+.sidebar-section:last-child {
+    margin-bottom: 0;
 }
 
 .sidebar-title {
-    font-size: 1.3rem;
+    font-size: 1.05rem;
     font-weight: 700;
-    margin-bottom: 1.2rem;
-    color: #0f172a;
+    margin: 0 0 1.1rem;
+    color: var(--sp-text, #0f172a);
     position: relative;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.55rem;
+    letter-spacing: -0.01em;
 }
 
 .sidebar-title::after {
@@ -382,10 +836,10 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 40px;
+    width: 36px;
     height: 3px;
-    background: #16a34a;
-    border-radius: 2px;
+    background: linear-gradient(90deg, #16a34a, #0d9488);
+    border-radius: 3px;
 }
 
 /* Contact Info */
@@ -402,9 +856,26 @@
 }
 
 .contact-item i {
-    color: #2563eb;
+    color: var(--sp-accent, #2563eb);
     font-size: 1rem;
     margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.contact-item a {
+    color: var(--sp-accent, #2563eb);
+    font-weight: 600;
+    text-decoration: none;
+    word-break: break-word;
+}
+
+.contact-item a:hover {
+    text-decoration: underline;
+}
+
+.contact-item span {
+    color: #475569;
+    line-height: 1.5;
 }
 
 /* Fee Structure */
@@ -417,9 +888,12 @@
 .fee-item {
     display: flex;
     justify-content: space-between;
-    padding: 0.9rem;
-    background: rgba(37, 99, 235, 0.03);
-    border-radius: 6px;
+    align-items: baseline;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--sp-accent-soft, rgba(37, 99, 235, 0.09));
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
 }
 
 .fee-label {
@@ -442,7 +916,7 @@
 .action-btn {
     padding: 0.85rem 1rem;
     border: none;
-    border-radius: 6px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.25s ease;
@@ -584,41 +1058,69 @@
 /* Mission & Vision */
 .mission-vision-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin-top: 0.5rem;
 }
 
 .mission-vision-item {
     text-align: center;
-    padding: 2rem;
-    background: #f8f9fa;
-    border-radius: 10px;
-    transition: transform 0.3s ease;
+    padding: 1.65rem 1.5rem;
+    background: #f8fafc;
+    border: 1px solid var(--sp-border, #e2e8f0);
+    border-radius: var(--sp-radius-sm, 10px);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
 .mission-vision-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
+    box-shadow: var(--sp-shadow-hover);
+}
+
+.mission-vision-item h3 {
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--sp-text, #0f172a);
+}
+
+.mission-vision-item p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    text-align: left;
 }
 
 .mv-icon {
-    font-size: 2.5rem;
-    color: #4e73df;
-    margin-bottom: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.25rem;
+    height: 3.25rem;
+    margin: 0 auto 1rem;
+    color: var(--sp-accent, #2563eb);
+    background: var(--sp-accent-soft, rgba(37, 99, 235, 0.09));
+    border-radius: 12px;
+}
+
+.mv-icon i {
+    font-size: 1.35rem;
+    line-height: 1;
 }
 
 
 
 /* === CONTACT FORM STYLES === */
 .contact-form-section {
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
 }
 
 .contact-form {
-    background: #f8f9fa;
-    padding: 2rem;
-    border-radius: 12px;
-    border: 1px solid #eaeaea;
+    background: #f8fafc;
+    padding: clamp(1.35rem, 3vw, 2rem);
+    border-radius: var(--sp-radius-sm, 10px);
+    border: 1px solid var(--sp-border, #e2e8f0);
 }
 
 .contact-form .form-row {
@@ -832,35 +1334,45 @@
 
     .school-text-content {
         width: 100%;
+        max-width: none;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
+    .school-header.school-hero,
+    .school-header {
+        min-height: clamp(15rem, 52vw, 19rem);
+        padding: 1.75rem 0 2rem;
+    }
+
     .school-hero-content {
-        flex-direction: column;
+        grid-template-columns: 1fr;
+        justify-items: center;
         text-align: center;
-        gap: 1.8rem;
+        gap: 1.25rem;
     }
 
-    .school-title {
-        font-size: 2.2rem;
+    .school-hero-copy {
+        align-items: center;
+        width: 100%;
     }
 
-    .school-tagline {
-        font-size: 1.25rem;
-    }
-
-    .school-logo-wrapper {
-        width: 120px;
-        height: 120px;
+    .school-hero-meta {
+        justify-content: center;
     }
 
     .school-text-content {
-        width: 90%;
+        max-width: 100%;
+        text-align: center;
+    }
+
+    .school-name-sub {
+        text-align: center;
     }
 
     .facts-grid,
-    .gallery-grid {
+    .gallery-grid,
+    .facilities-grid {
         grid-template-columns: 1fr;
     }
 
@@ -878,6 +1390,8 @@
     .fact-item,
     .curriculum-item,
     .mission-vision-item,
+    .facility-item,
+    .review-item,
     .action-btn,
     .social-link {
         transition: none;
@@ -1272,21 +1786,30 @@
    Placed at end so it overrides .school-logo-* defaults.
    ------------------------------------------------------------------------- */
 .school-logo-img.school-logo-img--hero {
-    width: 150px;
-    height: 150px;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: cover;
-    border: 3px solid #fff;
+    border-radius: 1.125rem;
+    border: 3px solid rgba(255, 255, 255, 0.95);
     padding: 0;
-    background: transparent;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.12) inset;
 }
 
 .school-logo-placeholder.school-logo-placeholder--hero {
-    width: 80px;
-    height: 80px;
-    min-height: 80px;
-    background: rgba(255, 255, 255, 0.2);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    border-radius: 1.125rem;
+    font-size: clamp(2rem, 8vw, 2.75rem);
+    background: rgba(255, 255, 255, 0.18);
     color: #fff;
+    border: 3px solid rgba(255, 255, 255, 0.45);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
 }
 
 .school-nav-announcement-icon {

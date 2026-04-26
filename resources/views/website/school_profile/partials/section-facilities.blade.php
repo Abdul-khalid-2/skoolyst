@@ -21,7 +21,4 @@
             <p class="no-content">Facilities information not available.</p>
         @endif
     </div>
-    @if($school->localized('description') !== '')
-        <p>{{ $school->localized('description') }}</p>
-    @endif
 </section>

@@ -21,8 +21,8 @@
     @include('website.school_profile.partials.hero-header')
     @include('website.school_profile.partials.navigation')
 
-    <main class="school-main-content">
-        <div class="container">
+    <main class="school-main-content school-profile-page">
+        <div class="container school-profile-container">
             <div class="content-grid">
                 @include('website.school_profile.partials.main-column')
                 @include('website.school_profile.partials.sidebar')
