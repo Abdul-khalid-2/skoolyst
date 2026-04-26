@@ -49,9 +49,16 @@ class BrowseSchoolController extends Controller
             'curriculum' => $request->curriculum,
         ];
 
-        $schools = $this->schoolService->getAllSchools($filters);
-        
-        return response()->json(['schools' => $schools]);
+        $perPage = (int) $request->input('per_page', 20);
+        $paginator = $this->schoolService->getAllSchools($filters, $perPage);
+
+        return response()->json([
+            'schools' => $paginator->items(),
+            'current_page' => $paginator->currentPage(),
+            'last_page' => $paginator->lastPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+        ]);
     }
 
     public function show($uuid)

@@ -59,9 +59,14 @@ class VideoWebsiteController extends Controller
 
         // Get data
         $videos = $query->paginate(12);
-        $categories = VideoCategory::where('status', 'active')->get();
-        $schools = School::where('status', 'active')->with('translations')->get();
-        $shops = Shop::where('is_active', true)->get();
+        $categories = VideoCategory::where('status', 'active')->orderBy('name')->get();
+        // Cap filter lists (sidebar) — not full table scans; main listing is $videos (paginated)
+        $schools = School::where('status', 'active')
+            ->with('translations')
+            ->orderBy('name')
+            ->limit(300)
+            ->get();
+        $shops = Shop::where('is_active', true)->orderBy('name')->limit(300)->get();
 
         // Popular videos for sidebar
         $popularVideos = Video::published()
@@ -109,7 +114,10 @@ class VideoWebsiteController extends Controller
         $video->increment('views');
 
         // Get related videos
-        $relatedVideos = Video::where('category_id', $video->category_id)
+        $videoEager = ['category', 'user', 'school.translations', 'shop'];
+
+        $relatedVideos = Video::with($videoEager)
+            ->where('category_id', $video->category_id)
             ->where('id', '!=', $video->id)
             ->published()
             ->approved()
@@ -117,7 +125,8 @@ class VideoWebsiteController extends Controller
             ->get();
 
         // Get popular videos for sidebar
-        $popularVideos = Video::published()
+        $popularVideos = Video::with($videoEager)
+            ->published()
             ->approved()
             ->where('id', '!=', $video->id)
             ->popular()
@@ -125,7 +134,8 @@ class VideoWebsiteController extends Controller
             ->get();
 
         // Get featured videos
-        $featuredVideos = Video::published()
+        $featuredVideos = Video::with($videoEager)
+            ->published()
             ->approved()
             ->where('id', '!=', $video->id)
             ->featured()

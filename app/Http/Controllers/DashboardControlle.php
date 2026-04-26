@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
+use App\Models\Event;
+use App\Models\Review;
 use App\Models\School;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class DashboardControlle extends Controller
@@ -11,36 +15,17 @@ class DashboardControlle extends Controller
     {
 
         if (auth()->user()->hasRole('super-admin')) {
-            // Super Admin sees all schools with aggregated data
-            $schools = School::with([
-                'profile',  // Changed from 'schoolprofile'
-                'reviews',
-                'events',
-                'branches',
-                'users'
-            ])->get();
-
-            // Calculate aggregated statistics
+            // Aggregates only — avoids loading every school + relations (N+1 / memory on large DBs)
             $stats = [
-                'total_schools' => $schools->count(),
-                'total_reviews' => $schools->sum(function ($school) {
-                    return $school->reviews->count();
-                }),
-                'total_events' => $schools->sum(function ($school) {
-                    return $school->events->count();
-                }),
-                'total_branches' => $schools->sum(function ($school) {
-                    return $school->branches->count();
-                }),
-                'total_users' => $schools->sum(function ($school) {
-                    return $school->users->count();
-                }),
-                'average_rating' => $schools->avg(function ($school) {
-                    return $school->reviews->avg('rating');
-                }),
+                'total_schools' => School::count(),
+                'total_reviews' => Review::count(),
+                'total_events' => Event::count(),
+                'total_branches' => Branch::count(),
+                'total_users' => User::whereNotNull('school_id')->count(),
+                'average_rating' => (float) (Review::avg('rating') ?? 0),
             ];
 
-            return view('dashboard.dashboard', compact('schools', 'stats'));
+            return view('dashboard.dashboard', compact('stats'));
         } elseif (auth()->user()->hasRole('school-admin')) {
             // School Admin sees only their school data
             $schoolAdminSchoolId = auth()->user()->school_id;

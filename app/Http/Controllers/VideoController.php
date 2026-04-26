@@ -178,7 +178,10 @@ class VideoController extends Controller
             });
         }
 
-        $relatedVideos = $relatedQuery->limit(6)->get();
+        $relatedVideos = $relatedQuery
+            ->with(['category', 'user', 'school', 'shop'])
+            ->limit(6)
+            ->get();
 
         return view('dashboard.videos.show', compact('video', 'relatedVideos'));
     }

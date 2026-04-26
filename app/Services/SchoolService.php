@@ -91,17 +91,21 @@ class SchoolService
     }
 
     /**
-     * Get all schools (without pagination) for API responses
+     * Search schools (paginated) for API / AJAX responses (e.g. homepage directory search).
      */
-    public function getAllSchools(array $filters)
+    public function getAllSchools(array $filters, int $perPage = 20): LengthAwarePaginator
     {
+        $perPage = max(1, min($perPage, 100));
+
         $query = $this->getBaseQuery();
         $query = $this->applyFilters($query, $filters);
 
-        return $query->orderBy('created_at', 'desc')->get()
-            ->map(function ($school) {
-                return $this->formatSchoolData($school);
-            });
+        $paginator = $query->orderBy('created_at', 'desc')->paginate($perPage);
+        $paginator->getCollection()->transform(function ($school) {
+            return $this->formatSchoolData($school);
+        });
+
+        return $paginator;
     }
 
     /**
