@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\School;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -84,7 +85,7 @@ class UserController extends Controller
     /**
      * Store a newly created user in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -133,8 +134,7 @@ class UserController extends Controller
             // Handle profile picture upload
             if ($request->hasFile('profile_picture')) {
                 $folderName = 'users/' . $user->uuid;
-                $path = $request->file('profile_picture')
-                    ->store($folderName, 'public');
+                $path = $imageWebp->putUploadedAsWebp('public', $folderName, $request->file('profile_picture'));
                 $user->profile_picture = $path;
                 $user->save();
             }
@@ -227,7 +227,7 @@ class UserController extends Controller
     /**
      * Update the specified user in storage.
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ImageWebpService $imageWebp)
     {
         try {
             $user = User::findOrFail($id);
@@ -309,8 +309,7 @@ class UserController extends Controller
                 }
                 
                 $folderName = 'users/' . $user->uuid;
-                $path = $request->file('profile_picture')
-                    ->store($folderName, 'public');
+                $path = $imageWebp->putUploadedAsWebp('public', $folderName, $request->file('profile_picture'));
                 $user->profile_picture = $path;
                 $user->save();
             }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SchoolImageGallery;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,7 +25,7 @@ class SchoolImageGalleryController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $request->validate([
             'school_id' => 'required|exists:schools,id',
@@ -46,21 +47,8 @@ class SchoolImageGalleryController extends Controller
             $school = \App\Models\School::findOrFail($schoolId);
             $folderName = Str::slug($school->name, '-');
 
-            // Create directory if not exists
-            $directory = "website/school/{$folderName}/gallery";
-            $fullDirectory = public_path($directory);
-            if (!file_exists($fullDirectory)) {
-                mkdir($fullDirectory, 0755, true);
-            }
-
-            // Generate unique name
-            $uniqueName = Str::uuid() . '.' . $imageFile->getClientOriginalExtension();
-
-            // Move file to public directory
-            $imageFile->move($fullDirectory, $uniqueName);
-
-            // Store relative path
-            $imagePath = $directory . '/' . $uniqueName;
+            $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/gallery", $imageFile);
+            $uniqueName = basename($imagePath);
 
             $image = SchoolImageGallery::create([
                 'school_id' => $schoolId,
@@ -131,10 +119,14 @@ class SchoolImageGalleryController extends Controller
         try {
 
 
-            // Delete physical file from public directory
-            $filePath = public_path($schoolImageGallery->image_path);
-            if (file_exists($filePath)) {
-                unlink($filePath);
+            $rel = (string) $schoolImageGallery->image_path;
+            if (str_starts_with($rel, 'website/')) {
+                $rel = substr($rel, strlen('website/'));
+            }
+            if ($rel !== '' && Storage::disk('website')->exists($rel)) {
+                Storage::disk('website')->delete($rel);
+            } elseif (file_exists(public_path($schoolImageGallery->image_path))) {
+                unlink(public_path($schoolImageGallery->image_path));
             }
 
             // Delete database record

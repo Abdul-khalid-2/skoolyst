@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Page;
 use App\Models\Event;
 use App\Models\School;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
@@ -52,7 +53,7 @@ class PageController extends Controller
     /**
      * Store a newly created page
      */
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -73,7 +74,7 @@ class PageController extends Controller
             $formData = json_decode($request->form_data, true);
 
             // Process images from base64 to file storage
-            $processedData = $this->processImages($formData, $request->school_id);
+            $processedData = $this->processImages($formData, $request->school_id, $imageWebp);
 
             // Extract individual element data for separate columns
             $elementData = $this->extractElementData($processedData);
@@ -146,7 +147,7 @@ class PageController extends Controller
     }
 
     // Update existing page
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ImageWebpService $imageWebp)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -168,7 +169,7 @@ class PageController extends Controller
             $formData = json_decode($request->form_data, true);
 
             // Process images from base64 to file storage
-            $processedData = $this->processImages($formData, $page->school_id);
+            $processedData = $this->processImages($formData, $page->school_id, $imageWebp);
 
             // Extract individual element data for separate columns
             $elementData = $this->extractElementData($processedData);
@@ -293,7 +294,7 @@ class PageController extends Controller
     /**
      * Process images from base64 to file storage
      */
-    private function processImages($data, $schoolId)
+    private function processImages($data, $schoolId, ImageWebpService $imageWebp)
     {
         if (!isset($data['elements']) || !is_array($data['elements'])) {
             return $data;
@@ -310,7 +311,7 @@ class PageController extends Controller
         foreach ($data['elements'] as &$element) {
             if (in_array($element['type'], ['image', 'banner'])) {
                 if (isset($element['content']['src']) && $this->isBase64Image($element['content']['src'])) {
-                    $filePath = $this->saveBase64Image($element['content']['src'], $folderName);
+                    $filePath = $this->saveBase64Image($element['content']['src'], $folderName, $imageWebp);
                     if ($filePath) {
                         $processedImages[$element['content']['src']] = $filePath;
                         $element['content']['src'] = $filePath;
@@ -321,7 +322,7 @@ class PageController extends Controller
             // Process HTML content for base64 images
             foreach ($element['content'] as $key => &$value) {
                 if (is_string($value) && $this->containsBase64Image($value)) {
-                    $value = $this->processHtmlImages($value, $folderName, $processedImages);
+                    $value = $this->processHtmlImages($value, $folderName, $processedImages, $imageWebp);
                 }
             }
         }
@@ -342,36 +343,15 @@ class PageController extends Controller
     /**
      * Save base64 image to storage
      */
-    private function saveBase64Image($base64Image, $folderName)
+    private function saveBase64Image($base64Image, $folderName, ImageWebpService $imageWebp)
     {
-        try {
-            preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches);
-            $imageType = $matches[1] ?? 'jpeg';
-            $imageData = base64_decode(substr($base64Image, strpos($base64Image, ',') + 1));
-
-            if (!$imageData) {
-                throw new \Exception('Invalid base64 image data');
-            }
-
-            // Generate unique filename
-            $filename = Str::uuid() . '.' . $imageType;
-
-            // Define the path structure
-            $filePath = "school/{$folderName}/page/images/{$filename}";
-
-            // Store image using website disk
-            Storage::disk('website')->put($filePath, $imageData);
-
-            return $filePath;
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $imageWebp->putDataUriAsWebp('website', $base64Image, "school/{$folderName}/page/images");
     }
 
     /**
      * Process HTML content and replace base64 images
      */
-    private function processHtmlImages($html, $folderName, &$processedImages = [])
+    private function processHtmlImages($html, $folderName, &$processedImages, ImageWebpService $imageWebp)
     {
         preg_match_all('/src="(data:image\/[^"]+)"/', $html, $matches);
 
@@ -384,7 +364,7 @@ class PageController extends Controller
                 if (isset($processedImages[$base64Image])) {
                     $html = str_replace($base64Image, $processedImages[$base64Image], $html);
                 } else {
-                    $imagePath = $this->saveBase64Image($base64Image, $folderName);
+                    $imagePath = $this->saveBase64Image($base64Image, $folderName, $imageWebp);
                     if ($imagePath) {
                         $processedImages[$base64Image] = $imagePath;
                         $html = str_replace($base64Image, $imagePath, $html);

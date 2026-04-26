@@ -8,6 +8,7 @@ use App\Models\School;
 use App\Models\SchoolImage;
 use App\Models\SchoolProfile;
 use App\Models\User;
+use App\Services\ImageWebpService;
 use App\Services\SchoolTranslationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -72,7 +73,7 @@ class SchoolController extends Controller
         return view('dashboard.schooles.create', compact('features', 'curriculums'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
 
         $validated = $request->validate([
@@ -230,15 +231,13 @@ class SchoolController extends Controller
 
             // ✅ Handle logo upload (to profile)
             if ($request->hasFile('logo')) {
-                $logoPath = Storage::disk('website')
-                    ->putFile("school/{$folderName}/logo", $request->file('logo'));
+                $logoPath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/logo", $request->file('logo'));
                 $schoolProfile->update(['logo' => $logoPath]);
             }
 
             // ✅ Handle banner image upload (to school)
             if ($request->hasFile('banner_image')) {
-                $bannerPath = Storage::disk('website')
-                    ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
+                $bannerPath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/banner", $request->file('banner_image'));
                 $school->update(['banner_image' => $bannerPath]);
             }
 
@@ -246,8 +245,7 @@ class SchoolController extends Controller
             if ($request->hasFile('school_images')) {
                 foreach ($request->file('school_images') as $index => $imageFile) {
                     if ($imageFile) {
-                        $imagePath = Storage::disk('website')
-                            ->putFile("school/{$folderName}/gallery", $imageFile);
+                        $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/gallery", $imageFile);
 
                         SchoolImage::create([
                             'school_id'  => $school->id,
@@ -290,9 +288,23 @@ class SchoolController extends Controller
                 : redirect()->route('schools.index')->with('success', 'School and admin created successfully!');
 
             return $redirect;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error creating school: ' . $e->getMessage())->withInput();
+            report($e);
+
+            $userMessage = 'Could not save the school. Please review the highlighted fields and the message below, then try again.';
+
+            if (str_contains($e->getMessage(), 'GD extension')
+                || str_contains($e->getMessage(), 'Imagick extension')
+                || str_contains($e->getMessage(), 'Image uploads require')) {
+                $userMessage = 'Image upload failed: PHP GD or Imagick is not enabled for this site. Enable extension=gd in the php.ini used by your web server and restart it, or see WEBP_IMAGE_DEPLOY_INSTRUCTIONS.md. You can set IMAGE_NO_DRIVER_STORE_ORIGINAL=true in .env as a temporary workaround.';
+            } elseif (config('app.debug')) {
+                $userMessage .= ' Technical detail: ' . $e->getMessage();
+            }
+
+            return redirect()->back()
+                ->with('error', $userMessage)
+                ->withInput();
         }
     }
 
@@ -359,7 +371,7 @@ class SchoolController extends Controller
         }
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, ImageWebpService $imageWebp)
     {
 
 
@@ -579,8 +591,7 @@ class SchoolController extends Controller
                 if ($schoolProfile->logo) {
                     Storage::disk('website')->delete($schoolProfile->logo);
                 }
-                $logoPath = Storage::disk('website')
-                    ->putFile("school/{$folderName}/logo", $request->file('logo'));
+                $logoPath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/logo", $request->file('logo'));
                 $schoolProfile->update(['logo' => $logoPath]);
             }
 
@@ -597,8 +608,7 @@ class SchoolController extends Controller
                 if ($school->banner_image) {
                     Storage::disk('website')->delete($school->banner_image);
                 }
-                $bannerPath = Storage::disk('website')
-                    ->putFile("school/{$folderName}/banner", $request->file('banner_image'));
+                $bannerPath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/banner", $request->file('banner_image'));
                 $school->update(['banner_image' => $bannerPath]);
             }
 
@@ -617,8 +627,7 @@ class SchoolController extends Controller
             // ✅ Add new images
             if ($request->hasFile('school_images')) {
                 foreach ($request->file('school_images') as $index => $imageFile) {
-                    $imagePath = Storage::disk('website')
-                        ->putFile("school/{$folderName}/gallery", $imageFile);
+                    $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/gallery", $imageFile);
 
                     SchoolImage::create([
                         'school_id'  => $school->id,

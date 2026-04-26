@@ -172,6 +172,21 @@
                     </div>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('products.index') }}"
+                    class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <i class="fas fa-box"></i>
+                        <span>Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('dashboard.orders.index') }}"
+                    class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span>Orders</span>
+                    </a>
+                </li>
+
             @endrole
 
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -40,7 +41,7 @@ class UserProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(Request $request)
+    public function update(Request $request, ImageWebpService $imageWebp)
     {
         $user = auth()->user();
 
@@ -76,8 +77,7 @@ class UserProfileController extends Controller
                 }
 
                 // Store new profile picture in website disk
-                $profilePath = Storage::disk('website')
-                    ->putFile("school/{$folderName}/profiles", $request->file('profile_picture'));
+                $profilePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/profiles", $request->file('profile_picture'));
 
                 $user->update(['profile_picture' => $profilePath]);
             }

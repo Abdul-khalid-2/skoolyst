@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SchoolImageGallery extends Model
@@ -40,6 +41,11 @@ class SchoolImageGallery extends Model
 
     public function getImageUrlAttribute()
     {
-        return asset($this->image_path);
+        $p = (string) $this->image_path;
+        if (str_starts_with($p, 'website/')) {
+            return asset($p);
+        }
+
+        return Storage::disk('website')->url($p);
     }
 }

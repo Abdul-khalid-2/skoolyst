@@ -6,10 +6,10 @@ use App\Models\Shop;
 use App\Models\School;
 use App\Models\ShopSchoolAssociation;
 use App\Models\User;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ShopController extends Controller
@@ -106,7 +106,7 @@ class ShopController extends Controller
         }
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
 
         $validated = $request->validate([
@@ -163,14 +163,12 @@ class ShopController extends Controller
 
         // Handle file uploads after shop creation
         if ($request->hasFile('logo_url')) {
-            $logoPath = Storage::disk('website')
-                ->putFile("shop/{$shop->id}/logo", $request->file('logo_url'));
+            $logoPath = $imageWebp->putUploadedAsWebp('website', "shop/{$shop->id}/logo", $request->file('logo_url'));
             $shop->update(['logo_url' => $logoPath]);
         }
 
         if ($request->hasFile('banner_url')) {
-            $bannerPath = Storage::disk('website')
-                ->putFile("shop/{$shop->id}/banner", $request->file('banner_url'));
+            $bannerPath = $imageWebp->putUploadedAsWebp('website', "shop/{$shop->id}/banner", $request->file('banner_url'));
             $shop->update(['banner_url' => $bannerPath]);
         }
 
@@ -202,7 +200,7 @@ class ShopController extends Controller
         return view('dashboard.shops.edit', compact('shop'));
     }
 
-    public function update(Request $request, Shop $shop)
+    public function update(Request $request, Shop $shop, ImageWebpService $imageWebp)
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -233,14 +231,12 @@ class ShopController extends Controller
 
         // Handle file uploads
         if ($request->hasFile('logo_url')) {
-            $logoPath = Storage::disk('website')
-                ->putFile("shop/{$shop->id}/logo", $request->file('logo_url'));
+            $logoPath = $imageWebp->putUploadedAsWebp('website', "shop/{$shop->id}/logo", $request->file('logo_url'));
             $validated['logo_url'] = $logoPath;
         }
 
         if ($request->hasFile('banner_url')) {
-            $bannerPath = Storage::disk('website')
-                ->putFile("shop/{$shop->id}/banner", $request->file('banner_url'));
+            $bannerPath = $imageWebp->putUploadedAsWebp('website', "shop/{$shop->id}/banner", $request->file('banner_url'));
             $validated['banner_url'] = $bannerPath;
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\ImageWebpService;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -12,7 +13,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(ImageWebpService::class, function () {
+            return new ImageWebpService;
+        });
     }
 
     /**

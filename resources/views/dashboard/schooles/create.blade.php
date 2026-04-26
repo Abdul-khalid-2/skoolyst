@@ -13,8 +13,39 @@
                 </a>
             </div>
 
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-1"></i> {{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
 
-            <form class="row" method="POST" action="{{ route('schools.store') }}" enctype="multipart/form-data">
+            @if (session('error'))
+                <div class="alert alert-danger border-danger" id="school-form-session-error" role="alert">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fas fa-exclamation-triangle fa-lg mt-1"></i>
+                        <div>
+                            <strong class="d-block">Something went wrong</strong>
+                            <span class="d-block small">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-warning border border-warning" id="school-form-validation-summary" role="alert">
+                    <h3 class="h6 text-dark mb-2">
+                        <i class="fas fa-clipboard-list me-1 text-warning"></i> Please correct the following
+                    </h3>
+                    <ul class="mb-0 ps-3 small text-dark">
+                        @foreach ($errors->all() as $message)
+                            <li>{{ $message }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form class="row" id="main-school-form" method="POST" action="{{ route('schools.store') }}" enctype="multipart/form-data" novalidate>
                 @csrf
 
                 <div class="col-lg-8">
@@ -25,11 +56,17 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="admin-name" class="form-label">Admin Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="admin-name" name="admin-name" placeholder="Enter Admin Name" required value="{{ old('admin-name') }}">
+                                    <input type="text" class="form-control @error('admin-name') is-invalid @enderror" id="admin-name" name="admin-name" placeholder="Enter Admin Name" required value="{{ old('admin-name') }}">
+                                    @error('admin-name')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="admin-email" class="form-label">Admin Email <span class="text-danger">*</span></label>
-                                    <input type="email" class="form-control" id="admin-email" name="admin-email" placeholder="Enter Admin email address" required value="{{ old('admin-email') }}">
+                                    <input type="email" class="form-control @error('admin-email') is-invalid @enderror" id="admin-email" name="admin-email" placeholder="Enter Admin email address" required value="{{ old('admin-email') }}">
+                                    @error('admin-email')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -38,22 +75,35 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="name" class="form-label">School Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="name" name="name" placeholder="Enter school name" required value="{{ old('name') }}">
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" placeholder="Enter school name" required value="{{ old('name') }}">
+                                    @error('name')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">School Email</label>
-                                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email address" value="{{ old('email') }}">
+                                    <label for="email" class="form-label">School Email <span class="text-danger">*</span></label>
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" placeholder="Enter school contact email" required value="{{ old('email') }}">
+                                    <div class="form-text">This email is used for the school contact record (must be unique).</div>
+                                    @error('email')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="address" class="form-label">Address <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required value="{{ old('address') }}">
+                                    <input type="text" class="form-control @error('address') is-invalid @enderror" id="address" name="address" placeholder="Enter address" required value="{{ old('address') }}">
+                                    @error('address')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="city" class="form-label">City <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required value="{{ old('city') }}">
+                                    <input type="text" class="form-control @error('city') is-invalid @enderror" id="city" name="city" placeholder="Enter city" required value="{{ old('city') }}">
+                                    @error('city')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -64,7 +114,10 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="website" class="form-label">Website</label>
-                                    <input type="url" class="form-control" id="website" name="website" placeholder="Enter school website URL" value="{{ old('website') }}">
+                                    <input type="url" class="form-control @error('website') is-invalid @enderror" id="website" name="website" placeholder="https://…" value="{{ old('website') }}">
+                                    @error('website')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -137,27 +190,32 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="facebook_url" class="form-label">Facebook</label>
-                                    <input type="url" class="form-control" id="facebook_url" name="facebook_url" placeholder="https://facebook.com/..." value="{{ old('facebook_url') }}">
+                                    <input type="url" class="form-control @error('facebook_url') is-invalid @enderror" id="facebook_url" name="facebook_url" placeholder="https://facebook.com/..." value="{{ old('facebook_url') }}">
+                                    @error('facebook_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="twitter_url" class="form-label">Twitter</label>
-                                    <input type="url" class="form-control" id="twitter_url" name="twitter_url" placeholder="https://twitter.com/..." value="{{ old('twitter_url') }}">
+                                    <input type="url" class="form-control @error('twitter_url') is-invalid @enderror" id="twitter_url" name="twitter_url" placeholder="https://twitter.com/..." value="{{ old('twitter_url') }}">
+                                    @error('twitter_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="instagram_url" class="form-label">Instagram</label>
-                                    <input type="url" class="form-control" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/..." value="{{ old('instagram_url') }}">
+                                    <input type="url" class="form-control @error('instagram_url') is-invalid @enderror" id="instagram_url" name="instagram_url" placeholder="https://instagram.com/..." value="{{ old('instagram_url') }}">
+                                    @error('instagram_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="linkedin_url" class="form-label">LinkedIn</label>
-                                    <input type="url" class="form-control" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/..." value="{{ old('linkedin_url') }}">
+                                    <input type="url" class="form-control @error('linkedin_url') is-invalid @enderror" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/..." value="{{ old('linkedin_url') }}">
+                                    @error('linkedin_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="youtube_url" class="form-label">YouTube</label>
-                                    <input type="url" class="form-control" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/..." value="{{ old('youtube_url') }}">
+                                    <input type="url" class="form-control @error('youtube_url') is-invalid @enderror" id="youtube_url" name="youtube_url" placeholder="https://youtube.com/..." value="{{ old('youtube_url') }}">
+                                    @error('youtube_url')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                             </div>
 
@@ -176,12 +234,15 @@
 
                             <div class="mb-3">
                                 <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
-                                <select class="form-control" id="school_type" name="school_type" required>
+                                <select class="form-control @error('school_type') is-invalid @enderror" id="school_type" name="school_type" required>
                                     <option value="">Select School Type</option>
                                     <option value="Co-Ed" {{ old('school_type') == 'Co-Ed' ? 'selected' : '' }}>Co-Ed</option>
                                     <option value="Boys" {{ old('school_type') == 'Boys' ? 'selected' : '' }}>Boys</option>
                                     <option value="Girls" {{ old('school_type') == 'Girls' ? 'selected' : '' }}>Girls</option>
                                 </select>
+                                @error('school_type')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <!-- Features Section -->
@@ -244,11 +305,17 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="password" class="form-label">Admin Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="password" name="password" placeholder="Enter admin password" required>
+                                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" placeholder="Min. 8 characters" required autocomplete="new-password" minlength="8">
+                                    @error('password')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="password_confirmation" class="form-label">Confirm Password <span class="text-danger">*</span></label>
-                                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Confirm password" required>
+                                    <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror" id="password_confirmation" name="password_confirmation" placeholder="Re-enter password" required autocomplete="new-password" minlength="8">
+                                    @error('password_confirmation')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
 
@@ -360,18 +427,24 @@
                             <h5 class="mb-3">Additional Information</h5>
                             <div class="mb-3">
                                 <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                                <select class="form-control" id="status" name="status" required>
+                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
                                     <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>Active</option>
                                     <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                 </select>
+                                @error('status')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
                                 <label for="visibility" class="form-label">Visibility <span class="text-danger">*</span></label>
-                                <select class="form-control" id="visibility" name="visibility" required>
+                                <select class="form-control @error('visibility') is-invalid @enderror" id="visibility" name="visibility" required>
                                     <option value="public" {{ old('visibility') == 'public' ? 'selected' : '' }}>Public</option>
                                     <option value="private" {{ old('visibility', 'private') == 'private' ? 'selected' : '' }}>Private</option>
                                 </select>
+                                @error('visibility')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -404,8 +477,11 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="logo" class="form-label">Upload school logo</label>
-                                <input type="file" class="form-control" id="logo" name="logo" accept=".webp,.jpg,.png">
-                                <div class="form-text">Recommended size: 200x200px. Max file size: 2MB.</div>
+                                <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo" accept="image/jpeg,image/png,image/jpg,image/webp,image/gif">
+                                <div class="form-text">JPEG, PNG, WebP, GIF. Max 2MB each.</div>
+                                @error('logo')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
                             <div class="logo-preview mt-3 text-center" id="logo-preview" style="display: none;">
                                 <p class="text-muted">Logo Preview</p>
@@ -422,8 +498,11 @@
                         <div class="card-body">
                             <div class="mb-3">
                                 <label for="banner_image" class="form-label">Upload cover/banner image</label>
-                                <input type="file" class="form-control" id="banner_image" name="banner_image" accept=".webp,.jpg,.png">
-                                <div class="form-text">Recommended size: 1200x400px. Max file size: 2MB.</div>
+                                <input type="file" class="form-control @error('banner_image') is-invalid @enderror" id="banner_image" name="banner_image" accept="image/jpeg,image/png,image/jpg,image/webp,image/gif">
+                                <div class="form-text">Recommended 1200×400px. Max 2MB.</div>
+                                @error('banner_image')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
                             </div>
 
                             <div class="mb-3">
@@ -468,6 +547,9 @@
                                 </div>
                             </div>
                             <p class="text-muted small mb-0">Upload up to 10 images with title. Max file size: 2MB each.</p>
+                            @error('school_images')
+                                <div class="text-danger small mt-2" role="alert">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
@@ -968,4 +1050,17 @@
             background-color: #f8f9fa;
         }
     </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const target = document.querySelector('#school-form-validation-summary')
+                || document.querySelector('#school-form-session-error')
+                || document.querySelector('.is-invalid');
+            if (target) {
+                setTimeout(function() {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 100);
+            }
+        });
+    </script>
 </x-app-layout>

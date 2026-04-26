@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
@@ -54,7 +55,7 @@ class BlogPostController extends Controller
         return view('dashboard.posts.create', compact('categories', 'schools'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255',
@@ -89,7 +90,7 @@ class BlogPostController extends Controller
             $structureData = json_decode($request->structure, true);
 
             // Process images from base64 to file storage
-            $processedData = $this->processImages($structureData, Auth::id());
+            $processedData = $this->processImages($structureData, Auth::id(), $imageWebp);
 
             // Extract individual element data for separate columns
             $elementData = $this->extractElementData($processedData);
@@ -122,7 +123,7 @@ class BlogPostController extends Controller
 
             // Handle featured image upload
             if ($request->hasFile('featured_image')) {
-                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'website');
+                $featuredImagePath = $imageWebp->putUploadedAsWebp('website', 'blog/featured-images', $request->file('featured_image'));
                 $blogData['featured_image'] = $featuredImagePath;
             }
 
@@ -189,7 +190,7 @@ class BlogPostController extends Controller
         return view('dashboard.posts.edit', compact('blogPost', 'categories', 'schools'));
     }
 
-    public function update(Request $request, BlogPost $blogPost)
+    public function update(Request $request, BlogPost $blogPost, ImageWebpService $imageWebp)
     {
         // Check authorization
         $this->checkBlogPostAuthorization($blogPost);
@@ -232,7 +233,7 @@ class BlogPostController extends Controller
             $structureData = json_decode($request->structure, true);
 
             // Process images from base64 to file storage
-            $processedData = $this->processImages($structureData, Auth::id());
+            $processedData = $this->processImages($structureData, Auth::id(), $imageWebp);
 
             // Extract individual element data for separate columns
             $elementData = $this->extractElementData($processedData);
@@ -280,7 +281,7 @@ class BlogPostController extends Controller
                 if ($blogPost->featured_image) {
                     Storage::disk('website')->delete($blogPost->featured_image);
                 }
-                $featuredImagePath = $request->file('featured_image')->store('blog/featured-images', 'website');
+                $featuredImagePath = $imageWebp->putUploadedAsWebp('website', 'blog/featured-images', $request->file('featured_image'));
                 $blogData['featured_image'] = $featuredImagePath;
             }
 
@@ -400,7 +401,7 @@ class BlogPostController extends Controller
     /**
      * Process images from base64 to file storage
      */
-    private function processImages($data, $userId)
+    private function processImages($data, $userId, ImageWebpService $imageWebp)
     {
         if (!isset($data['elements']) || !is_array($data['elements'])) {
             return $data;
@@ -412,7 +413,7 @@ class BlogPostController extends Controller
         foreach ($data['elements'] as &$element) {
             if (in_array($element['type'], ['image', 'banner'])) {
                 if (isset($element['content']['src']) && $this->isBase64Image($element['content']['src'])) {
-                    $filePath = $this->saveBase64Image($element['content']['src'], $folderName);
+                    $filePath = $this->saveBase64Image($element['content']['src'], $folderName, $imageWebp);
                     if ($filePath) {
                         $processedImages[$element['content']['src']] = $filePath;
                         $element['content']['src'] = $filePath;
@@ -423,7 +424,7 @@ class BlogPostController extends Controller
             // Process HTML content for base64 images
             foreach ($element['content'] as $key => &$value) {
                 if (is_string($value) && $this->containsBase64Image($value)) {
-                    $value = $this->processHtmlImages($value, $folderName, $processedImages);
+                    $value = $this->processHtmlImages($value, $folderName, $processedImages, $imageWebp);
                 }
             }
         }
@@ -443,32 +444,15 @@ class BlogPostController extends Controller
     /**
      * Save base64 image to storage
      */
-    private function saveBase64Image($base64Image, $folderName)
+    private function saveBase64Image($base64Image, $folderName, ImageWebpService $imageWebp)
     {
-        try {
-            preg_match('/^data:image\/(\w+);base64,/', $base64Image, $matches);
-            $imageType = $matches[1] ?? 'jpeg';
-            $imageData = base64_decode(substr($base64Image, strpos($base64Image, ',') + 1));
-
-            if (!$imageData) {
-                throw new \Exception('Invalid base64 image data');
-            }
-
-            $filename = Str::uuid() . '.' . $imageType;
-            $filePath = "blog/images/{$folderName}/{$filename}";
-
-            Storage::disk('website')->put($filePath, $imageData);
-
-            return $filePath;
-        } catch (\Exception $e) {
-            return null;
-        }
+        return $imageWebp->putDataUriAsWebp('website', $base64Image, "blog/images/{$folderName}");
     }
 
     /**
      * Process HTML content and replace base64 images
      */
-    private function processHtmlImages($html, $folderName, &$processedImages = [])
+    private function processHtmlImages($html, $folderName, &$processedImages, ImageWebpService $imageWebp)
     {
         preg_match_all('/src="(data:image\/[^"]+)"/', $html, $matches);
 
@@ -481,7 +465,7 @@ class BlogPostController extends Controller
                 if (isset($processedImages[$base64Image])) {
                     $html = str_replace($base64Image, $processedImages[$base64Image], $html);
                 } else {
-                    $imagePath = $this->saveBase64Image($base64Image, $folderName);
+                    $imagePath = $this->saveBase64Image($base64Image, $folderName, $imageWebp);
                     if ($imagePath) {
                         $processedImages[$base64Image] = $imagePath;
                         $html = str_replace($base64Image, $imagePath, $html);

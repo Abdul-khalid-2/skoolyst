@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Announcement;
 use App\Models\AnnouncementComment;
 use App\Models\School;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -31,7 +32,7 @@ class AnnouncementController extends Controller
         return view('dashboard.announcements.create', compact('branches'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $request->validate([
             'title' => 'required|string|max:255',
@@ -53,8 +54,7 @@ class AnnouncementController extends Controller
 
         // ✅ Handle feature image upload (stored under website disk)
         if ($request->hasFile('feature_image')) {
-            $imagePath = Storage::disk('website')
-                ->putFile("school/{$folderName}/announcements", $request->file('feature_image'));
+            $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/announcements", $request->file('feature_image'));
             $data['feature_image'] = $imagePath;
         }
 
@@ -85,7 +85,7 @@ class AnnouncementController extends Controller
         return view('dashboard.announcements.edit', compact('announcement', 'branches'));
     }
 
-    public function update(Request $request, $uuid)
+    public function update(Request $request, $uuid, ImageWebpService $imageWebp)
     {
         $announcement = Announcement::where('uuid', $uuid)->firstOrFail();
 
@@ -112,8 +112,7 @@ class AnnouncementController extends Controller
                 Storage::disk('website')->delete($announcement->feature_image);
             }
 
-            $imagePath = Storage::disk('website')
-                ->putFile("school/{$folderName}/announcements", $request->file('feature_image'));
+            $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$folderName}/announcements", $request->file('feature_image'));
             $data['feature_image'] = $imagePath;
         }
 

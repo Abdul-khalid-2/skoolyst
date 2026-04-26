@@ -123,4 +123,18 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Image uploads (WebP)
+    |--------------------------------------------------------------------------
+    |
+    | If PHP has no GD or Imagick, uploads normally fail. Set
+    | IMAGE_NO_DRIVER_STORE_ORIGINAL=true to store originals (not WebP) as a
+    | temporary measure. Production should enable ext-gd or ext-imagick.
+    |
+    */
+    'image' => [
+        'no_driver_store_original' => (bool) env('IMAGE_NO_DRIVER_STORE_ORIGINAL', false),
+    ],
+
 ];

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ProductCategory;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,7 @@ class ProductCategoryController extends Controller
         return view('dashboard.product_categories.create', compact('parentCategories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -45,8 +46,7 @@ class ProductCategoryController extends Controller
 
         // Handle image upload after category creation
         if ($request->hasFile('image')) {
-            $imagePath = Storage::disk('website')
-                ->putFile("product-categories/{$category->id}", $request->file('image'));
+            $imagePath = $imageWebp->putUploadedAsWebp('website', "product-categories/{$category->id}", $request->file('image'));
             $category->update(['image_url' => $imagePath]);
         }
 
@@ -64,7 +64,7 @@ class ProductCategoryController extends Controller
         return view('dashboard.product_categories.edit', compact('productCategory', 'parentCategories'));
     }
 
-    public function update(Request $request, ProductCategory $productCategory)
+    public function update(Request $request, ProductCategory $productCategory, ImageWebpService $imageWebp)
     {
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -101,8 +101,7 @@ class ProductCategoryController extends Controller
             }
 
             // Store new image
-            $imagePath = Storage::disk('website')
-                ->putFile("product-categories/{$productCategory->id}", $request->file('image'));
+            $imagePath = $imageWebp->putUploadedAsWebp('website', "product-categories/{$productCategory->id}", $request->file('image'));
             $productCategory->update(['image_url' => $imagePath]);
         }
 

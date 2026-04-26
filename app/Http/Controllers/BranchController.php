@@ -6,6 +6,7 @@ use App\Models\School;
 use App\Models\Branch;
 use App\Models\Feature;
 use App\Models\BranchImage;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -225,7 +226,7 @@ class BranchController extends Controller
     /**
      * Upload multiple images
      */
-    public function storeImages(Request $request, School $school, Branch $branch)
+    public function storeImages(Request $request, School $school, Branch $branch, ImageWebpService $imageWebp)
     {
         // Verify the branch belongs to the school
         if ($branch->school_id !== $school->id) {
@@ -245,11 +246,9 @@ class BranchController extends Controller
 
             foreach ($request->file('images') as $image) {
                 $originalName = $image->getClientOriginalName();
-                $extension = $image->getClientOriginalExtension();
-                $uniqueName = Str::uuid() . '.' . $extension;
 
-                $imagePath = Storage::disk('website')
-                    ->putFile("school/{$school->id}/branches/{$branch->id}/{$imageType}", $image);
+                $imagePath = $imageWebp->putUploadedAsWebp('website', "school/{$school->id}/branches/{$branch->id}/{$imageType}", $image);
+                $uniqueName = basename($imagePath);
 
                 // Get next sort order
                 $maxSortOrder = $branch->images()->max('sort_order') ?? 0;

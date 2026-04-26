@@ -7,6 +7,7 @@ use App\Models\Shop;
 use App\Models\School;
 use App\Models\ProductCategory;
 use App\Models\ShopSchoolAssociation;
+use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -80,7 +81,7 @@ class ProductController extends Controller
         return view('dashboard.products.create', compact('shops', 'categories'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageWebpService $imageWebp)
     {
         $validated = $request->validate([
             'shop_id' => 'required|exists:shops,id',
@@ -161,8 +162,7 @@ class ProductController extends Controller
 
             // Handle main image upload
             if ($request->hasFile('main_image')) {
-                $mainImagePath = Storage::disk('website')
-                    ->putFile("products/{$product->id}/main", $request->file('main_image'));
+                $mainImagePath = $imageWebp->putUploadedAsWebp('website', "products/{$product->id}/main", $request->file('main_image'));
                 $product->update(['main_image_url' => $mainImagePath]);
             }
 
@@ -170,8 +170,7 @@ class ProductController extends Controller
             if ($request->hasFile('image_gallery')) {
                 $galleryPaths = [];
                 foreach ($request->file('image_gallery') as $image) {
-                    $galleryPath = Storage::disk('website')
-                        ->putFile("products/{$product->id}/gallery", $image);
+                    $galleryPath = $imageWebp->putUploadedAsWebp('website', "products/{$product->id}/gallery", $image);
                     $galleryPaths[] = $galleryPath;
                 }
                 $product->update(['image_gallery' => $galleryPaths]);
@@ -209,7 +208,7 @@ class ProductController extends Controller
         return view('dashboard.products.edit', compact('product', 'shops', 'categories'));
     }
 
-    public function update(Request $request, Product $product)
+    public function update(Request $request, Product $product, ImageWebpService $imageWebp)
     {
         // Authorization check
         $this->authorizeProductAccess($product);
@@ -328,8 +327,7 @@ class ProductController extends Controller
                     Storage::disk('website')->delete($product->main_image_url);
                 }
 
-                $mainImagePath = Storage::disk('website')
-                    ->putFile("products/{$product->id}/main", $request->file('main_image'));
+                $mainImagePath = $imageWebp->putUploadedAsWebp('website', "products/{$product->id}/main", $request->file('main_image'));
                 $product->update(['main_image_url' => $mainImagePath]);
             }
 
@@ -349,8 +347,7 @@ class ProductController extends Controller
 
                 foreach ($request->file('image_gallery') as $image) {
                     if ($image->isValid()) {
-                        $galleryPath = Storage::disk('website')
-                            ->putFile("products/{$product->id}/gallery", $image);
+                        $galleryPath = $imageWebp->putUploadedAsWebp('website', "products/{$product->id}/gallery", $image);
                         $galleryPaths[] = $galleryPath;
                     }
                 }
