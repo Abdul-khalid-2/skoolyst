@@ -68,10 +68,30 @@
             const contactNotificationsDropdown = document.getElementById('contactNotificationsDropdown');
             
             // Function to update notification count
+            const notificationCountUrl = @json(route('admin.inquiries.notification-count'));
             function updateNotificationCount() {
-                fetch('/admin/inquiries/notification-count')
-                    .then(response => response.json())
+                // Accept: application/json + X-Requested-With so unauth responses are 401 JSON, not
+                // a login redirect (which would store this URL as url.intended and break post-login redirect).
+                fetch(notificationCountUrl, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    credentials: 'same-origin',
+                })
+                    .then(function (response) {
+                        if (response.status === 401 || response.status === 403) {
+                            return null;
+                        }
+                        if (!response.ok) {
+                            return null;
+                        }
+                        return response.json();
+                    })
                     .then(data => {
+                        if (data == null) {
+                            return;
+                        }
                         if (data.count > 0) {
                             if (notificationBadge) {
                                 notificationBadge.textContent = data.count;

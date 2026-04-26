@@ -37,7 +37,35 @@ class AuthenticatedSessionController extends Controller
         //     );
         // }
 
-        return redirect()->intended(route('website.home', absolute: false));
+        $default = route('website.home', absolute: false);
+        $intended = $request->session()->pull('url.intended', $default);
+
+        // When the session expired, a background fetch to JSON endpoints (e.g. contact-inquiry
+        // notification count) can be saved as "intended". Never redirect the browser there after login.
+        if ($this->isUrlNotSafeForIntendedRedirect($intended, $default)) {
+            $intended = $default;
+        }
+
+        return redirect()->to($intended);
+    }
+
+    /**
+     * @param  string  $intended  Full URL or path from session (Laravel may store fullUrl()).
+     */
+    private function isUrlNotSafeForIntendedRedirect(string $intended, string $default): bool
+    {
+        if ($intended === $default) {
+            return false;
+        }
+        $path = parse_url($intended, PHP_URL_PATH) ?? $intended;
+        if (str_contains($path, 'notification-count')) {
+            return true;
+        }
+        if (str_contains($path, '/api/') || str_ends_with($path, '/api') || $path === '/api') {
+            return true;
+        }
+
+        return false;
     }
 
     /**
