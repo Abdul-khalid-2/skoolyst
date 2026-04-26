@@ -6,8 +6,8 @@
         </div>
 
         <div class="question-meta">
-            <span class="difficulty-badge {{ $mcq->difficulty_level }}">
-                {{ ucfirst($mcq->difficulty_level) }}
+            <span class="difficulty-badge {{ $mcq->difficulty_value }}">
+                {{ $mcq->difficulty_label }}
             </span>
             <span class="marks-badge">
                 <i class="fas fa-star"></i>{{ $mcq->marks }} Mark{{ $mcq->marks > 1 ? 's' : '' }}

@@ -159,8 +159,8 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $topic->difficulty_level == 'beginner' ? 'success' : ($topic->difficulty_level == 'intermediate' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($topic->difficulty_level) }}
+                                                <span class="badge bg-{{ $topic->difficulty_badge_variant }}">
+                                                    {{ $topic->formatted_difficulty }}
                                                 </span>
                                             </td>
                                             <td>{{ $topic->estimated_time_minutes }} mins</td>
@@ -257,8 +257,8 @@
                                                 {{ $mcq->question_type == 'single' ? 'Single' : 'Multiple' }} Choice
                                             </div>
                                         </div>
-                                        <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                            {{ ucfirst($mcq->difficulty_level) }}
+                                        <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                            {{ $mcq->difficulty_label }}
                                         </span>
                                     </div>
                                 </div>

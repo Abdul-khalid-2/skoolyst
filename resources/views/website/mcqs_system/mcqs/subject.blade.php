@@ -92,8 +92,8 @@
                                 <p class="topic-description">{{ Str::limit($topic->description, 80) }}</p>
                                 @endif
                                 <div class="topic-footer">
-                                    <span class="topic-difficulty {{ $topic->difficulty_level }}">
-                                        {{ ucfirst($topic->difficulty_level) }}
+                                    <span class="topic-difficulty {{ $topic->difficulty_value }}">
+                                        {{ $topic->formatted_difficulty }}
                                     </span>
                                     <span class="topic-time">
                                         <i class="fas fa-clock"></i> {{ $topic->estimated_time_minutes }} min
@@ -124,8 +124,8 @@
                                 <div class="question-number">{{ $index + 1 }}</div>
                                 <div class="flex-grow-1">
                                     <div class="question-meta">
-                                        <span class="difficulty-badge {{ $mcq->difficulty_level }}">
-                                            {{ ucfirst($mcq->difficulty_level) }}
+                                        <span class="difficulty-badge {{ $mcq->difficulty_value }}">
+                                            {{ $mcq->difficulty_label }}
                                         </span>
                                         @if($mcq->topic)
                                         <span class="topic-tag">

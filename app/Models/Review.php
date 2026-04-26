@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -24,6 +25,7 @@ class Review extends Model
 
     protected $casts = [
         'created_by_admin' => 'boolean',
+        'status' => ModerationStatus::class,
     ];
 
     public function user()
@@ -55,13 +57,13 @@ class Review extends Model
     // Scope for approved reviews
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', ModerationStatus::Approved);
     }
 
     // Scope for pending reviews
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', ModerationStatus::Pending);
     }
 
     // Scope for school-admin
@@ -87,12 +89,11 @@ class Review extends Model
     // Get status badge HTML
     public function getStatusBadgeAttribute()
     {
-        $badges = [
-            'pending' => '<span class="badge bg-warning">Pending</span>',
-            'approved' => '<span class="badge bg-success">Approved</span>',
-            'rejected' => '<span class="badge bg-danger">Rejected</span>',
-        ];
-
-        return $badges[$this->status] ?? '<span class="badge bg-secondary">Unknown</span>';
+        return match ($this->status) {
+            ModerationStatus::Pending => '<span class="badge bg-warning">Pending</span>',
+            ModerationStatus::Approved => '<span class="badge bg-success">Approved</span>',
+            ModerationStatus::Rejected => '<span class="badge bg-danger">Rejected</span>',
+            default => '<span class="badge bg-secondary">Unknown</span>',
+        };
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
+use App\Enums\TestimonialExperienceRating;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -34,6 +36,8 @@ class Testimonial extends Model
         'approved_at' => 'datetime',
         'featured' => 'boolean',
         'show_on_homepage' => 'boolean',
+        'status' => ModerationStatus::class,
+        'experience_rating' => TestimonialExperienceRating::class,
     ];
 
     protected static function boot()
@@ -54,7 +58,7 @@ class Testimonial extends Model
     // Scopes
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', ModerationStatus::Approved);
     }
 
     public function scopeFeatured($query)

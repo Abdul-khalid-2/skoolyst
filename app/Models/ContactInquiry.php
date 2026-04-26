@@ -3,6 +3,8 @@
 
 namespace App\Models;
 
+use App\Enums\ContactInquiryStatus;
+use App\Enums\ContactInquirySubject;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +34,8 @@ class ContactInquiry extends Model
 
     protected $casts = [
         'responded_at' => 'datetime',
+        'status' => ContactInquiryStatus::class,
+        'subject' => ContactInquirySubject::class,
     ];
 
     /**
@@ -79,17 +83,17 @@ class ContactInquiry extends Model
      */
     public function getFullSubjectAttribute(): string
     {
-        if ($this->subject === 'other' && $this->custom_subject) {
+        if ($this->subject === ContactInquirySubject::Other && $this->custom_subject) {
             return $this->custom_subject;
         }
 
         return match ($this->subject) {
-            'admission' => 'Admission Inquiry',
-            'tour' => 'Schedule a Tour',
-            'general' => 'General Information',
-            'feedback' => 'Feedback',
-            'other' => 'Other Inquiry',
-            default => ucfirst(str_replace('_', ' ', $this->subject)),
+            ContactInquirySubject::Admission => 'Admission Inquiry',
+            ContactInquirySubject::Tour => 'Schedule a Tour',
+            ContactInquirySubject::General => 'General Information',
+            ContactInquirySubject::Feedback => 'Feedback',
+            ContactInquirySubject::Other => 'Other Inquiry',
+            default => ucfirst(str_replace('_', ' ', (string) $this->subject?->value)),
         };
     }
 
@@ -104,7 +108,7 @@ class ContactInquiry extends Model
 
             // Set default status if not provided
             if (empty($inquiry->status)) {
-                $inquiry->status = 'new';
+                $inquiry->status = ContactInquiryStatus::Inbox;
             }
         });
     }

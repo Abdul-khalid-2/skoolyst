@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
+use App\Enums\McqDifficulty;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -42,6 +44,8 @@ class Mcq extends Model
         'is_premium' => 'boolean',
         'is_verified' => 'boolean',
         'approved_at' => 'datetime',
+        'status' => ContentStatus::class,
+        'difficulty_level' => McqDifficulty::class,
     ];
 
     // Relationships
@@ -117,10 +121,67 @@ class Mcq extends Model
         return $formatted;
     }
 
+    /** @internal Stored value (for CSS classes, JS, string comparisons) */
+    public function getDifficultyValueAttribute(): string
+    {
+        $d = $this->difficulty_level;
+        if ($d instanceof \BackedEnum) {
+            return $d->value;
+        }
+
+        return (string) ($d ?? '');
+    }
+
+    /** @internal Shown in UI; replaces ucfirst($mcq->difficulty_level) when column is cast to enum */
+    public function getDifficultyLabelAttribute(): string
+    {
+        $v = $this->difficulty_value;
+
+        return $v === '' ? '' : ucfirst($v);
+    }
+
+    /** Bootstrap `bg-*` variant for difficulty (success, warning, danger, secondary) */
+    public function getDifficultyBadgeVariantAttribute(): string
+    {
+        return match ($this->difficulty_level) {
+            McqDifficulty::Easy => 'success',
+            McqDifficulty::Medium => 'warning',
+            McqDifficulty::Hard => 'danger',
+            default => 'secondary',
+        };
+    }
+
+    /**
+     * Full alert/pill classes (e.g. bg-warning text-dark) for website practice views.
+     */
+    public function getDifficultyPillClassAttribute(): string
+    {
+        return match ($this->difficulty_level) {
+            McqDifficulty::Easy => 'bg-success',
+            McqDifficulty::Medium => 'bg-warning text-dark',
+            McqDifficulty::Hard => 'bg-danger',
+            default => 'bg-secondary',
+        };
+    }
+
+    /** @internal For Blade when `status` is cast to ContentStatus (avoid ucfirst on enum) */
+    public function getStatusLabelAttribute(): string
+    {
+        $s = $this->status;
+        if ($s === null) {
+            return '';
+        }
+        if ($s instanceof \BackedEnum) {
+            return ucfirst($s->value);
+        }
+
+        return ucfirst((string) $s);
+    }
+
     // Scopes
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', ContentStatus::Published);
     }
 
     public function scopeVerified($query)

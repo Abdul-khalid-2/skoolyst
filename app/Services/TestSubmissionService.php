@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTOs\TestSubmissionDTO;
+use App\Enums\ContentStatus;
 use App\Models\Mcq;
 use App\Models\Topic;
 use App\Models\Subject;
@@ -47,7 +48,7 @@ class TestSubmissionService
 
     private function getMcqs(TestSubmissionDTO $dto)
     {
-        $query = Mcq::where('status', 'published');
+        $query = Mcq::where('status', ContentStatus::Published);
         
         if ($dto->hasTopic()) {
             // Topic-specific test

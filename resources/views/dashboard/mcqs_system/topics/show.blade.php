@@ -72,8 +72,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Difficulty Level</label>
                                         <div>
-                                            <span class="badge bg-{{ $topic->difficulty_level == 'beginner' ? 'success' : ($topic->difficulty_level == 'intermediate' ? 'warning' : 'danger') }} fs-6">
-                                                {{ ucfirst($topic->difficulty_level) }}
+                                            <span class="badge bg-{{ $topic->difficulty_badge_variant }} fs-6">
+                                                {{ $topic->formatted_difficulty }}
                                             </span>
                                         </div>
                                     </div>
@@ -173,13 +173,13 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                    {{ $mcq->difficulty_label }}
                                                 </span>
                                             </td>
                                             <td>
                                                 <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'secondary' : 'dark') }}">
-                                                    {{ ucfirst($mcq->status) }}
+                                                    {{ $mcq->status_label }}
                                                 </span>
                                             </td>
                                             <td>

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\BranchImageType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -28,6 +30,8 @@ class BranchImage extends Model
         'is_featured' => 'boolean',
         'is_main_banner' => 'boolean',
         'sort_order' => 'integer',
+        'type' => BranchImageType::class,
+        'status' => ActiveStatus::class,
     ];
 
     public function branch()

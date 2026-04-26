@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\ContentStatus;
+use App\Enums\FeeStructureType;
+use App\Enums\SchoolType;
+use App\Enums\SchoolVisibility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -52,6 +57,10 @@ class School extends Model
 
     protected $casts = [
         'publish_date' => 'datetime',
+        'school_type' => SchoolType::class,
+        'fee_structure_type' => FeeStructureType::class,
+        'status' => ActiveStatus::class,
+        'visibility' => SchoolVisibility::class,
     ];
     public function branches()
     {
@@ -222,7 +231,7 @@ class School extends Model
     public function recentAnnouncements()
     {
         return $this->hasMany(Announcement::class)
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->where(function ($query) {
                 $query->whereNull('publish_at')
                     ->orWhere('publish_at', '<=', now());
@@ -239,7 +248,7 @@ class School extends Model
     {
         // Consider announcements as "new" if created within the last 7 days
         return $this->announcements()
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->where('created_at', '>=', now()->subDays(7))
             ->exists();
     }
@@ -247,7 +256,7 @@ class School extends Model
     public function getLatestAnnouncementDate()
     {
         $latestAnnouncement = $this->announcements()
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->orderBy('created_at', 'desc')
             ->first();
 

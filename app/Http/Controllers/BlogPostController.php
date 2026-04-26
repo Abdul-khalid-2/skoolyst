@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActiveStatus;
+use App\Enums\ContentStatus;
+use App\Enums\ModerationStatus;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use App\Models\BlogCategory;
@@ -43,12 +46,12 @@ class BlogPostController extends Controller
         $categories = BlogCategory::where('is_active', true)->get();
 
         if (auth()->user()->hasRole('super-admin')) {
-            $schools = School::where('status', 'active')->get();
+            $schools = School::where('status', ActiveStatus::Active)->get();
         } else {
             $schools = School::when(auth()->user()->hasRole('super-admin'), function ($q) {
-                $q->where('status', 'active');
+                $q->where('status', ActiveStatus::Active);
             })->when(auth()->user()->hasRole('school-admin'), function ($q) {
-                $q->where('id', auth()->user()->school_id)->where('status', 'active');
+                $q->where('id', auth()->user()->school_id)->where('status', ActiveStatus::Active);
             })->get();
         }
 
@@ -110,7 +113,7 @@ class BlogPostController extends Controller
                 'structure' => $processedData,
                 'status' => $request->status,
                 'is_featured' => $request->is_featured ?? false,
-                'published_at' => $request->published_at ?: ($request->status === 'published' ? now() : null),
+                'published_at' => $request->published_at ?: ($request->status === ContentStatus::Published->value ? now() : null),
                 'meta_title' => $request->meta_title,
                 'meta_description' => $request->meta_description,
                 'read_time' => $this->calculateReadTime($this->generateContentFromStructure($processedData)),
@@ -151,7 +154,7 @@ class BlogPostController extends Controller
         $this->checkBlogPostAuthorization($blogPost);
 
         $blogPost->load(['category', 'user', 'school', 'comments' => function ($query) {
-            $query->where('status', 'approved')->with('replies');
+            $query->where('status', ModerationStatus::Approved)->with('replies');
         }]);
 
         // Prepare structure for display
@@ -173,11 +176,11 @@ class BlogPostController extends Controller
 
         // Get schools based on user role
         $schools = School::when(auth()->user()->hasRole('super-admin'), function ($q) {
-            $q->where('status', 'active');
+            $q->where('status', ActiveStatus::Active);
         })->when(auth()->user()->hasRole('school-admin'), function ($q) {
-            $q->where('id', auth()->user()->school_id)->where('status', 'active');
+            $q->where('id', auth()->user()->school_id)->where('status', ActiveStatus::Active);
         })->when(auth()->user()->hasRole('shop-owner'), function ($q) {
-            $q->where('status', 'active');
+            $q->where('status', ActiveStatus::Active);
         })->get();
 
         // Prepare structure for editing
@@ -262,9 +265,9 @@ class BlogPostController extends Controller
             // Handle published_at
             if ($request->published_at) {
                 $blogData['published_at'] = $request->published_at;
-            } elseif ($request->status === 'published' && !$blogPost->published_at) {
+            } elseif ($request->status === ContentStatus::Published->value && !$blogPost->published_at) {
                 $blogData['published_at'] = now();
-            } elseif ($request->status !== 'published') {
+            } elseif ($request->status !== ContentStatus::Published->value) {
                 $blogData['published_at'] = null;
             }
 

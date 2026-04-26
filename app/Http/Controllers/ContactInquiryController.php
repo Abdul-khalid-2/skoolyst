@@ -3,9 +3,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AssignContactInquiryRequest;
+use App\Http\Requests\StoreContactInquiryRequest;
+use App\Http\Requests\UpdateContactInquiryStatusRequest;
+use App\Enums\ContactInquiryStatus;
 use App\Mail\SchoolContactInquiryMail;
 use App\Models\ContactInquiry;
-use App\Models\School;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -15,31 +18,10 @@ class ContactInquiryController extends Controller
     /**
      * Store a newly created contact inquiry.
      */
-    public function store(Request $request)
+    public function store(StoreContactInquiryRequest $request)
     {
-        // Check if user is authenticated
-        if (!auth()->check()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Please login to submit an inquiry.',
-                'login_required' => true
-            ], 401);
-        }
-
-        $validated = $request->validate([
-            'school_id' => 'required|exists:schools,id',
-            'branch_id' => 'nullable|exists:branches,id',
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'subject' => 'required|in:admission,tour,general,feedback,other',
-            'custom_subject' => 'required_if:subject,other|string|max:255',
-            'message' => 'required|string|min:10|max:2000',
-        ]);
-
         try {
-            // Sanitize and secure the data
-            $sanitizedData = $this->sanitizeInquiryData($validated);
+            $sanitizedData = $this->sanitizeInquiryData($request->validated());
 
             // Add user_id to the data
             $sanitizedData['user_id'] = auth()->id();
@@ -155,9 +137,9 @@ class ContactInquiryController extends Controller
 
         // Get statistics
         $totalInquiries = ContactInquiry::forSchool($schoolId)->count();
-        $newInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'new')->count();
-        $inProgressInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'in_progress')->count();
-        $resolvedInquiries = ContactInquiry::forSchool($schoolId)->where('status', 'resolved')->count();
+        $newInquiries = ContactInquiry::forSchool($schoolId)->where('status', ContactInquiryStatus::Inbox)->count();
+        $inProgressInquiries = ContactInquiry::forSchool($schoolId)->where('status', ContactInquiryStatus::InProgress)->count();
+        $resolvedInquiries = ContactInquiry::forSchool($schoolId)->where('status', ContactInquiryStatus::Resolved)->count();
 
         return view('dashboard.inquiries_contacts.index', compact(
             'inquiries',
@@ -186,19 +168,14 @@ class ContactInquiryController extends Controller
     /**
      * Update inquiry status (admin only).
      */
-    public function updateStatus(Request $request, ContactInquiry $inquiry)
+    public function updateStatus(UpdateContactInquiryStatusRequest $request, ContactInquiry $inquiry)
     {
         // Add basic authorization check
         if ($inquiry->school_id !== auth()->user()->school_id) {
             abort(403, 'Unauthorized action.');
         }
 
-        $validated = $request->validate([
-            'status' => 'required|in:new,in_progress,resolved,closed',
-            'admin_notes' => 'nullable|string|max:1000',
-        ]);
-
-        $inquiry->update($validated);
+        $inquiry->update($request->validated());
 
         return redirect()->back()->with('success', 'Inquiry status updated successfully.');
     }
@@ -206,20 +183,16 @@ class ContactInquiryController extends Controller
     /**
      * Assign inquiry to admin user.
      */
-    public function assign(Request $request, ContactInquiry $inquiry)
+    public function assign(AssignContactInquiryRequest $request, ContactInquiry $inquiry)
     {
         // Add basic authorization check
         if ($inquiry->school_id !== auth()->user()->school_id) {
             abort(403, 'Unauthorized action.');
         }
 
-        $validated = $request->validate([
-            'assigned_to' => 'required|exists:users,id',
-        ]);
-
         $inquiry->update([
-            'assigned_to' => $validated['assigned_to'],
-            'status' => 'in_progress',
+            'assigned_to' => $request->validated('assigned_to'),
+            'status' => ContactInquiryStatus::InProgress,
         ]);
 
         return response()->json([
@@ -258,7 +231,7 @@ class ContactInquiryController extends Controller
         $schoolId = auth()->user()->school_id;
 
         $newCount = ContactInquiry::forSchool($schoolId)
-            ->where('status', 'new')
+            ->where('status', ContactInquiryStatus::Inbox)
             ->count();
 
         return response()->json([
@@ -280,7 +253,7 @@ class ContactInquiryController extends Controller
         }
 
         $inquiry->update([
-            'status' => 'in_progress'
+            'status' => ContactInquiryStatus::InProgress,
         ]);
 
         return redirect()->back()->with('success', 'Inquiry marked as read successfully.');

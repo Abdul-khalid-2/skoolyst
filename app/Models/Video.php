@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VideoPublishStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +44,7 @@ class Video extends Model
         'views' => 'integer',
         'likes_count' => 'integer',
         'comments_count' => 'integer',
+        'status' => VideoPublishStatus::class,
     ];
 
     protected static function boot()
@@ -117,7 +119,7 @@ class Video extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', VideoPublishStatus::Published);
     }
 
     public function scopeApproved($query)

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
+use App\Enums\StudyMaterialType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -37,8 +39,8 @@ class StudyMaterial extends Model
         'view_count' => 'integer',
         'page_count' => 'integer',
         'file_size' => 'integer',
-        'material_type' => 'string',
-        'status' => 'string'
+        'material_type' => StudyMaterialType::class,
+        'status' => ContentStatus::class,
     ];
 
     public function user()
@@ -105,7 +107,7 @@ class StudyMaterial extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', ContentStatus::Published);
     }
 
     public function scopeFree($query)

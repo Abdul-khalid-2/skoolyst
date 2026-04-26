@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\BookReviewType;
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,8 +37,8 @@ class BookReview extends Model
         'rating' => 'integer',
         'helpful_count' => 'integer',
         'unhelpful_count' => 'integer',
-        'review_type' => 'string',
-        'status' => 'string'
+        'review_type' => BookReviewType::class,
+        'status' => ModerationStatus::class,
     ];
 
     public function book()

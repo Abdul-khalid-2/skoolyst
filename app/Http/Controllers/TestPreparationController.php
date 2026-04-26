@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActiveStatus;
+use App\Enums\ContentStatus;
+use App\Enums\UserProgressType;
+use App\Enums\UserTestAttemptStatus;
+use App\Enums\UserTestResultStatus;
 use App\Models\TestType;
 use App\Models\Subject;
 use App\Models\Topic;
@@ -17,18 +22,18 @@ class TestPreparationController extends Controller
     // Home page for test preparation
     public function index()
     {
-        $testTypes = TestType::where('status', 'active')
+        $testTypes = TestType::where('status', ActiveStatus::Active)
             ->orderBy('sort_order')
             ->get();
 
         $popularSubjects = Subject::with('testType')
-            ->where('status', 'active')
+            ->where('status', ActiveStatus::Active)
             ->orderBy('sort_order')
             ->limit(8)
             ->get();
 
         $featuredMockTests = MockTest::with('testType')
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->where('is_free', true)
             ->orderBy('created_at', 'desc')
             ->limit(6)
@@ -40,7 +45,7 @@ class TestPreparationController extends Controller
     // Show test types
     public function testTypes()
     {
-        $testTypes = TestType::where('status', 'active')
+        $testTypes = TestType::where('status', ActiveStatus::Active)
             ->orderBy('sort_order')
             ->get();
 
@@ -52,7 +57,7 @@ class TestPreparationController extends Controller
     {
         $testType = TestType::where('slug', $slug)->firstOrFail();
         $subjects = Subject::where('test_type_id', $testType->id)
-            ->where('status', 'active')
+            ->where('status', ActiveStatus::Active)
             ->orderBy('sort_order')
             ->get();
 
@@ -68,7 +73,7 @@ class TestPreparationController extends Controller
             ->firstOrFail();
 
         $topics = Topic::where('subject_id', $subject->id)
-            ->where('status', 'active')
+            ->where('status', ActiveStatus::Active)
             ->orderBy('sort_order')
             ->get();
 
@@ -102,7 +107,7 @@ class TestPreparationController extends Controller
                 'user_id' => Auth::id(),
                 'topic_id' => $topic->id,
                 'subject_id' => $subject->id,
-                'progress_type' => 'topic_read'
+                'progress_type' => UserProgressType::TopicRead
             ], [
                 'total_items' => 1,
                 'completed_items' => 1,
@@ -130,7 +135,7 @@ class TestPreparationController extends Controller
             ->firstOrFail();
 
         $mcqs = Mcq::where('topic_id', $topic->id)
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->orderBy('id')
             ->paginate(10);
 
@@ -167,7 +172,7 @@ class TestPreparationController extends Controller
         $progress = UserProgress::firstOrCreate([
             'user_id' => Auth::id(),
             'topic_id' => $mcq->topic_id,
-            'progress_type' => 'mcq_practice'
+            'progress_type' => UserProgressType::McqPractice
         ], [
             'subject_id' => $mcq->subject_id,
             'total_items' => 0,
@@ -195,7 +200,7 @@ class TestPreparationController extends Controller
     public function mockTests()
     {
         $mockTests = MockTest::with('testType')
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
@@ -312,8 +317,10 @@ class TestPreparationController extends Controller
         $attempt->total_marks_obtained = $totalMarks;
         $attempt->total_possible_marks = $attempt->mockTest->total_marks;
         $attempt->percentage = ($totalMarks / $attempt->mockTest->total_marks) * 100;
-        $attempt->result_status = $attempt->percentage >= $attempt->mockTest->passing_marks ? 'passed' : 'failed';
-        $attempt->status = 'completed';
+        $attempt->result_status = $attempt->percentage >= $attempt->mockTest->passing_marks
+            ? UserTestResultStatus::Passed
+            : UserTestResultStatus::Failed;
+        $attempt->status = UserTestAttemptStatus::Completed;
         $attempt->time_taken_seconds = now()->diffInSeconds($attempt->started_at);
         $attempt->save();
 
@@ -321,7 +328,7 @@ class TestPreparationController extends Controller
         $progress = UserProgress::firstOrCreate([
             'user_id' => Auth::id(),
             'subject_id' => $attempt->mockTest->testType->id,
-            'progress_type' => 'test_completed'
+            'progress_type' => UserProgressType::TestCompleted
         ], [
             'total_items' => 0,
             'completed_items' => 0
@@ -363,7 +370,7 @@ class TestPreparationController extends Controller
 
         $subjectProgress = UserProgress::with('subject')
             ->where('user_id', $user->id)
-            ->where('progress_type', 'mcq_practice')
+            ->where('progress_type', UserProgressType::McqPractice)
             ->orderBy('progress_percentage', 'desc')
             ->limit(6)
             ->get();
@@ -373,7 +380,7 @@ class TestPreparationController extends Controller
             ->count();
 
         $totalTestsTaken = UserTestAttempt::where('user_id', $user->id)
-            ->where('status', 'completed')
+            ->where('status', UserTestAttemptStatus::Completed)
             ->count();
 
         return view('test-preparation.dashboard', compact(
@@ -388,7 +395,7 @@ class TestPreparationController extends Controller
     public function searchMcqs(Request $request)
     {
         $query = Mcq::with(['topic', 'subject', 'testType'])
-            ->where('status', 'published');
+            ->where('status', ContentStatus::Published);
 
         if ($request->has('q') && $request->q) {
             $query->where('question', 'like', '%' . $request->q . '%');
@@ -403,7 +410,7 @@ class TestPreparationController extends Controller
         }
 
         $mcqs = $query->orderBy('id', 'desc')->paginate(20);
-        $subjects = Subject::where('status', 'active')->get();
+        $subjects = Subject::where('status', ActiveStatus::Active)->get();
 
         return view('test-preparation.search-mcqs', compact('mcqs', 'subjects'));
     }

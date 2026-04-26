@@ -2,22 +2,29 @@
 
 namespace App\Services;
 
-use App\Models\School;
+use App\Actions\School\RecordSchoolProfileVisitAction;
+use App\Enums\ActiveStatus;
+use App\Enums\SchoolVisibility;
 use App\Models\Curriculum;
-use Illuminate\Http\Request;
+use App\Models\School;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
 class SchoolService
 {
+    public function __construct(
+        private readonly RecordSchoolProfileVisitAction $recordSchoolProfileVisit,
+    ) {
+    }
+
     /**
      * Get base school query with common relationships
      */
     protected function getBaseQuery()
     {
         return School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
-            ->where('status', 'active')
-            ->where('visibility', 'public');
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public);
     }
 
     /**
@@ -112,16 +119,12 @@ class SchoolService
             'branches',
             'events'
         ])
-            ->where('status', 'active')
-            ->where('visibility', 'public')
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
             ->where('uuid', $uuid)
             ->firstOrFail();
 
-        // Increment visitor count
-        if ($school->profile) {
-            $school->profile->increment('visitor_count');
-            $school->profile->update(['last_visited_at' => now()]);
-        }
+        $this->recordSchoolProfileVisit->execute($school);
 
         return $school;
     }
@@ -154,8 +157,8 @@ class SchoolService
     public function getCities()
     {
         return Cache::remember('cities_list', 3600, function () {
-            return School::where('status', 'active')
-                ->where('visibility', 'public')
+            return School::where('status', ActiveStatus::Active)
+                ->where('visibility', SchoolVisibility::Public)
                 ->whereNotNull('city')
                 ->distinct()
                 ->pluck('city')
@@ -197,7 +200,7 @@ class SchoolService
             'id' => $school->id,
             'uuid' => $school->uuid ?? $school->id,
             'name' => $school->localized('name'),
-            'type' => $school->school_type,
+            'type' => $school->school_type->value,
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),

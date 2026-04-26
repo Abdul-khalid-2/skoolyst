@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
@@ -23,6 +24,10 @@ class SchoolImageGallery extends Model
 
     protected $appends = [
         'image_url'
+    ];
+
+    protected $casts = [
+        'status' => ActiveStatus::class,
     ];
 
     protected static function boot()

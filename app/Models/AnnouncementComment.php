@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,6 +19,10 @@ class AnnouncementComment extends Model
         'status'
     ];
 
+    protected $casts = [
+        'status' => ModerationStatus::class,
+    ];
+
     // Relationships
     public function announcement()
     {
@@ -32,12 +37,12 @@ class AnnouncementComment extends Model
     // Scopes
     public function scopeApproved($query)
     {
-        return $query->where('status', 'approved');
+        return $query->where('status', ModerationStatus::Approved);
     }
 
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', ModerationStatus::Pending);
     }
 
     // Methods

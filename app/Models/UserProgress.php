@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserProgressType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,7 +27,7 @@ class UserProgress extends Model
         'progress_data' => 'array',
         'last_accessed_at' => 'datetime',
         'completed_at' => 'datetime',
-        'progress_type' => 'string'
+        'progress_type' => UserProgressType::class,
     ];
 
     public function user()

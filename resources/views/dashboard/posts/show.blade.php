@@ -118,8 +118,8 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6 text-end">
-                                        <span class="badge bg-{{ $blogPost->status === 'published' ? 'success' : ($blogPost->status === 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($blogPost->status) }}
+                                        <span class="badge bg-{{ $blogPost->status?->value === 'published' ? 'success' : ($blogPost->status?->value === 'draft' ? 'warning' : 'secondary') }}">
+                                            {{ $blogPost->status_label }}
                                         </span>
                                         @if($blogPost->is_featured)
                                         <span class="badge bg-warning ms-1">
@@ -254,8 +254,8 @@
                                             </div>
                                             <p class="mb-2 mt-2">{{ $comment->comment }}</p>
                                             <div class="d-flex gap-2">
-                                                <span class="badge bg-{{ $comment->status === 'approved' ? 'success' : ($comment->status === 'pending' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($comment->status) }}
+                                                <span class="badge bg-{{ $comment->status?->value === 'approved' ? 'success' : ($comment->status?->value === 'pending' ? 'warning' : 'danger') }}">
+                                                    {{ $comment->status_label }}
                                                 </span>
                                             </div>
                                             
@@ -299,8 +299,8 @@
                                     <tr>
                                         <th>Status:</th>
                                         <td>
-                                            <span class="badge bg-{{ $blogPost->status === 'published' ? 'success' : ($blogPost->status === 'draft' ? 'warning' : 'secondary') }}">
-                                                {{ ucfirst($blogPost->status) }}
+                                            <span class="badge bg-{{ $blogPost->status?->value === 'published' ? 'success' : ($blogPost->status?->value === 'draft' ? 'warning' : 'secondary') }}">
+                                                {{ $blogPost->status_label }}
                                             </span>
                                         </td>
                                     </tr>

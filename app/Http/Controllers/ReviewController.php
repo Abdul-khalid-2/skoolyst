@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ModerationStatus;
 use App\Models\Review;
 use App\Models\School;
 use App\Models\Branch;
@@ -116,7 +117,7 @@ class ReviewController extends Controller
                 function ($q) {
                     $q->where('school_id', auth()->user()->school_id);
                 }
-            )->where('status', 'pending')->count(),
+            )->where('status', ModerationStatus::Pending)->count(),
         ];
 
         return view('dashboard.review.index', compact('reviews', 'schools', 'branches', 'reviewStats'));

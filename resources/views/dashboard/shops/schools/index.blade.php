@@ -64,7 +64,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-info text-capitalize">
-                                            {{ str_replace('_', ' ', $shop->shop_type) }}
+                                            {{ $shop->shop_type_label }}
                                         </span>
                                     </td>
                                     <td>

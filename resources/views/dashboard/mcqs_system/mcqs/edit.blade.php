@@ -90,9 +90,9 @@
                                         <select class="form-select @error('difficulty_level') is-invalid @enderror" 
                                                 id="difficulty_level" name="difficulty_level" required>
                                             <option value="">Select Difficulty</option>
-                                            <option value="easy" {{ old('difficulty_level', $mcq->difficulty_level) == 'easy' ? 'selected' : '' }}>Easy</option>
-                                            <option value="medium" {{ old('difficulty_level', $mcq->difficulty_level) == 'medium' ? 'selected' : '' }}>Medium</option>
-                                            <option value="hard" {{ old('difficulty_level', $mcq->difficulty_level) == 'hard' ? 'selected' : '' }}>Hard</option>
+                                            <option value="easy" {{ old('difficulty_level', $mcq->difficulty_value) == 'easy' ? 'selected' : '' }}>Easy</option>
+                                            <option value="medium" {{ old('difficulty_level', $mcq->difficulty_value) == 'medium' ? 'selected' : '' }}>Medium</option>
+                                            <option value="hard" {{ old('difficulty_level', $mcq->difficulty_value) == 'hard' ? 'selected' : '' }}>Hard</option>
                                         </select>
                                         @error('difficulty_level')
                                             <div class="invalid-feedback">{{ $message }}</div>

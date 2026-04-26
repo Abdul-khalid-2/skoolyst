@@ -10,7 +10,7 @@
                         {{ $topic->estimated_time_minutes }} minutes
                     </span>
                     <span class="topic-difficulty-badge">
-                        {{ ucfirst($topic->difficulty_level) }}
+                        {{ $topic->formatted_difficulty }}
                     </span>
                     <span class="topic-stats-badge">
                         <i class="fas fa-question-circle"></i>{{ $mcqs->total() }} Questions

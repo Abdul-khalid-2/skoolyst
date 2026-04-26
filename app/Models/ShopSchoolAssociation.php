@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
+use App\Enums\ShopAssociationType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,7 +35,9 @@ class ShopSchoolAssociation extends Model
         'approved_at' => 'datetime',
         'can_add_products' => 'boolean',
         'can_manage_products' => 'boolean',
-        'can_view_analytics' => 'boolean'
+        'can_view_analytics' => 'boolean',
+        'association_type' => ShopAssociationType::class,
+        'status' => ModerationStatus::class,
     ];
 
     public function shop(): BelongsTo
@@ -63,7 +67,7 @@ class ShopSchoolAssociation extends Model
 
     public function isApproved(): bool
     {
-        return $this->status === 'approved' && $this->is_active;
+        return $this->status === ModerationStatus::Approved && $this->is_active;
     }
 
     protected static function boot()

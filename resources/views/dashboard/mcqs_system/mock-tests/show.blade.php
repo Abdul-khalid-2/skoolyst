@@ -309,8 +309,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $question->mcq->difficulty_level == 'easy' ? 'success' : ($question->mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($question->mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                    {{ $question->mcq->difficulty_label }}
                                                 </span>
                                             </td>
                                             <td>
@@ -348,8 +348,8 @@
                                                 </div>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $question->mcq->difficulty_level == 'easy' ? 'success' : ($question->mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($question->mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                    {{ $question->mcq->difficulty_label }}
                                                 </span>
                                             </div>
                                         </div>

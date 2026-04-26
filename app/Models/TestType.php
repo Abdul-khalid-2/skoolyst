@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,7 +21,7 @@ class TestType extends Model
     ];
 
     protected $casts = [
-        'status' => 'string'
+        'status' => ActiveStatus::class,
     ];
 
     // Relationships
@@ -51,7 +52,7 @@ class TestType extends Model
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', ActiveStatus::Active);
     }
 
     // Attribute getters

@@ -598,8 +598,8 @@
                                     <td>
                                         <div class="small">
                                             <div>
-                                                <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                    {{ $mcq->difficulty_label }}
                                                 </span>
                                             </div>
                                             @if($mcq->time_limit_seconds)
@@ -619,7 +619,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($mcq->status) }}
+                                            {{ $mcq->status_label }}
                                         </span>
                                     </td>
                                     <td class="text-end">
@@ -682,12 +682,12 @@
                                                 <input type="checkbox" class="form-check-input me-2 mcq-checkbox" value="{{ $mcq->id }}">
                                                 <strong class="me-2">#{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $loop->iteration }}</strong>
                                                 <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
-                                                    {{ ucfirst($mcq->status) }}
+                                                    {{ $mcq->status_label }}
                                                 </span>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }} me-1">
-                                                    {{ ucfirst($mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $mcq->difficulty_badge_variant }} me-1">
+                                                    {{ $mcq->difficulty_label }}
                                                 </span>
                                                 <span class="badge bg-{{ $mcq->question_type == 'single' ? 'primary' : 'info' }}">
                                                     {{ $mcq->question_type == 'single' ? 'S' : 'M' }}

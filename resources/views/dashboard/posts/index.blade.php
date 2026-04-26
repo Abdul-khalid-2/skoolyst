@@ -45,8 +45,8 @@
                                     <td>{{ $post->category->name ?? 'Uncategorized' }}</td>
                                     <td>{{ $post->user->name }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $post->status === 'published' ? 'success' : ($post->status === 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($post->status) }}
+                                        <span class="badge bg-{{ $post->status?->value === 'published' ? 'success' : ($post->status?->value === 'draft' ? 'warning' : 'secondary') }}">
+                                            {{ $post->status_label }}
                                         </span>
                                     </td>
                                     <td>

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\OrderPaymentMethod;
+use App\Enums\OrderPaymentStatus;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -77,6 +80,9 @@ class Order extends Model
         'cancelled_at' => 'datetime',
         'estimated_delivery_date' => 'datetime',
         'billing_same_as_shipping' => 'boolean',
+        'status' => OrderStatus::class,
+        'payment_method' => OrderPaymentMethod::class,
+        'payment_status' => OrderPaymentStatus::class,
     ];
 
     // Relationships
@@ -113,37 +119,37 @@ class Order extends Model
     // Scopes
     public function scopePending($query)
     {
-        return $query->where('status', 'pending');
+        return $query->where('status', OrderStatus::Pending);
     }
 
     public function scopeConfirmed($query)
     {
-        return $query->where('status', 'confirmed');
+        return $query->where('status', OrderStatus::Confirmed);
     }
 
     public function scopeProcessing($query)
     {
-        return $query->where('status', 'processing');
+        return $query->where('status', OrderStatus::Processing);
     }
 
     public function scopeShipped($query)
     {
-        return $query->where('status', 'shipped');
+        return $query->where('status', OrderStatus::Shipped);
     }
 
     public function scopeDelivered($query)
     {
-        return $query->where('status', 'delivered');
+        return $query->where('status', OrderStatus::Delivered);
     }
 
     public function scopeCancelled($query)
     {
-        return $query->where('status', 'cancelled');
+        return $query->where('status', OrderStatus::Cancelled);
     }
 
     public function scopePaid($query)
     {
-        return $query->where('payment_status', 'paid');
+        return $query->where('payment_status', OrderPaymentStatus::Paid);
     }
 
     // Methods
@@ -154,13 +160,13 @@ class Order extends Model
 
     public function canBeCancelled(): bool
     {
-        return in_array($this->status, ['pending', 'confirmed']);
+        return in_array($this->status, [OrderStatus::Pending, OrderStatus::Confirmed], true);
     }
 
     public function markAsPaid(): void
     {
         $this->update([
-            'payment_status' => 'paid',
+            'payment_status' => OrderPaymentStatus::Paid,
             'paid_at' => now(),
         ]);
     }
@@ -169,12 +175,13 @@ class Order extends Model
     public function getStatusColorAttribute()
     {
         return match ($this->status) {
-            'pending' => 'warning',
-            'confirmed' => 'info',
-            'processing' => 'primary',
-            'shipped' => 'secondary',
-            'delivered' => 'success',
-            'cancelled' => 'danger',
+            OrderStatus::Pending => 'warning',
+            OrderStatus::Confirmed => 'info',
+            OrderStatus::Processing => 'primary',
+            OrderStatus::Shipped => 'secondary',
+            OrderStatus::Delivered => 'success',
+            OrderStatus::Cancelled => 'danger',
+            OrderStatus::Refunded, OrderStatus::Failed => 'secondary',
             default => 'secondary'
         };
     }
@@ -182,11 +189,11 @@ class Order extends Model
     public function getPaymentStatusColorAttribute()
     {
         return match ($this->payment_status) {
-            'pending' => 'warning',
-            'paid' => 'success',
-            'failed' => 'danger',
-            'refunded' => 'info',
-            'partially_refunded' => 'primary',
+            OrderPaymentStatus::Pending => 'warning',
+            OrderPaymentStatus::Paid => 'success',
+            OrderPaymentStatus::Failed => 'danger',
+            OrderPaymentStatus::Refunded => 'info',
+            OrderPaymentStatus::PartiallyRefunded => 'primary',
             default => 'secondary'
         };
     }

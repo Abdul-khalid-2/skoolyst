@@ -82,8 +82,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Difficulty Level</label>
                                         <p>
-                                            <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                {{ ucfirst($mcq->difficulty_level) }}
+                                            <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                {{ $mcq->difficulty_label }}
                                             </span>
                                         </p>
                                     </div>
@@ -152,8 +152,8 @@
                             <div class="mb-3">
                                 <label class="form-label text-muted">Status</label>
                                 <p>
-                                    <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
-                                        {{ ucfirst($mcq->status) }}
+                                    <span class="badge bg-{{ $mcq->status->value === 'published' ? 'success' : ($mcq->status->value === 'draft' ? 'warning' : 'secondary') }}">
+                                        {{ ucfirst($mcq->status->value) }}
                                     </span>
                                 </p>
                             </div>
@@ -242,8 +242,8 @@
                                     @if($mcq->topic)
                                     <strong>{{ $mcq->topic->title }}</strong>
                                     <div class="small text-muted">
-                                        <span class="badge bg-{{ $mcq->topic->difficulty_level == 'beginner' ? 'success' : ($mcq->topic->difficulty_level == 'intermediate' ? 'warning' : 'danger') }}">
-                                            {{ ucfirst($mcq->topic->difficulty_level) }}
+                                        <span class="badge bg-{{ $mcq->topic->difficulty_badge_variant }}">
+                                            {{ $mcq->topic->formatted_difficulty }}
                                         </span>
                                     </div>
                                     @else

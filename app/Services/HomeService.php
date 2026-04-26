@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\ActiveStatus;
+use App\Enums\SchoolVisibility;
 use App\Models\School;
 use App\Models\Curriculum;
 use App\Models\Testimonial;
@@ -39,8 +41,8 @@ class HomeService
             ->with(['curriculums', 'features', 'profile', 'translations'])
             ->withCount('reviews')
             ->withAvg('reviews', 'rating')
-            ->where('status', 'active')
-            ->where('visibility', 'public')
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
             ->orderBy('created_at', 'desc')
             ->take($limit)
             ->get()
@@ -55,8 +57,8 @@ class HomeService
     public function searchSchools(array $filters): array
     {
         $query = School::query()
-            ->where('status', 'active')
-            ->where('visibility', 'public')
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
             ->with([
                 'curriculums',
                 'features',
@@ -99,8 +101,8 @@ class HomeService
         }
 
         $query = School::query()
-            ->where('status', 'active')
-            ->where('visibility', 'public')
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
             ->with(['curriculums', 'translations']);
 
         $this->applyTextSearchToQuery($query, $q, 100, 6);
@@ -204,7 +206,7 @@ class HomeService
             'id' => $school->id,
             'name' => $name,
             'city' => $school->city ?? '',
-            'type' => $school->school_type,
+            'type' => $school->school_type->value,
             'curriculum' => $primaryCurriculum,
             'excerpt' => $excerpt,
             'highlight' => $this->highlightQueryInText($excerpt, $query),
@@ -264,8 +266,8 @@ class HomeService
     public function getCities()
     {
         return Cache::remember('cities_list', 3600, function () {
-            return School::where('status', 'active')
-                ->where('visibility', 'public')
+            return School::where('status', ActiveStatus::Active)
+                ->where('visibility', SchoolVisibility::Public)
                 ->whereNotNull('city')
                 ->distinct()
                 ->pluck('city')
@@ -324,7 +326,7 @@ class HomeService
             'id' => $school->id,
             'uuid' => $uuid,
             'name' => $school->localized('name'),
-            'type' => $school->school_type,
+            'type' => $school->school_type->value,
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),

@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\UserTestAttemptStatus;
+use App\Enums\UserTestResultStatus;
+use App\Enums\UserTestSource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -46,8 +49,9 @@ class UserTestAttempt extends Model
         'started_at' => 'datetime',
         'completed_at' => 'datetime',
         'submitted_at' => 'datetime',
-        'result_status' => 'string',
-        'status' => 'string'
+        'result_status' => UserTestResultStatus::class,
+        'status' => UserTestAttemptStatus::class,
+        'test_source' => UserTestSource::class,
     ];
 
     public function user()

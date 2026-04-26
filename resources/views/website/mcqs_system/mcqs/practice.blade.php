@@ -221,8 +221,8 @@
                     <div class="d-flex align-items-center">
                         <div class="question-number">Q</div>
                         <div>
-                            <span class="difficulty-badge {{ $mcq->difficulty_level == 'easy' ? 'bg-success' : ($mcq->difficulty_level == 'medium' ? 'bg-warning text-dark' : 'bg-danger') }}">
-                                {{ ucfirst($mcq->difficulty_level) }}
+                            <span class="difficulty-badge {{ $mcq->difficulty_pill_class }}">
+                                {{ $mcq->difficulty_label }}
                             </span>
                             <span class="badge bg-light text-dark ms-2">
                                 {{ $mcq->marks }} Mark{{ $mcq->marks > 1 ? 's' : '' }}
@@ -326,8 +326,8 @@
                                         {!! Str::limit(strip_tags($similarMcq->question), 100) !!}
                                     </h6>
                                     <div class="d-flex align-items-center">
-                                        <span class="badge {{ $similarMcq->difficulty_level == 'easy' ? 'bg-success' : ($similarMcq->difficulty_level == 'medium' ? 'bg-warning text-dark' : 'bg-danger') }} me-2">
-                                            {{ ucfirst($similarMcq->difficulty_level) }}
+                                        <span class="badge {{ $similarMcq->difficulty_pill_class }} me-2">
+                                            {{ $similarMcq->difficulty_label }}
                                         </span>
                                         <small class="text-muted">{{ $similarMcq->subject->name }}</small>
                                     </div>

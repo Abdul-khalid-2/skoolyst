@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Enums\ModerationStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Shop;
@@ -30,7 +31,7 @@ class WebsiteShopController extends Controller
             ->where(function ($query) {
                 $query->whereHas('schoolAssociations', function ($subQuery) {
                     $subQuery->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 })
                     ->orWhereDoesntHave('schoolAssociations');
             });
@@ -70,7 +71,7 @@ class WebsiteShopController extends Controller
         // Get unique school types from associated schools for filter
         $schoolTypes = School::whereHas('shopAssociations', function ($query) {
             $query->where('is_active', true)
-                ->where('status', 'approved');
+                ->where('status', ModerationStatus::Approved);
         })->distinct()->pluck('school_type');
 
         // Get unique cities for filter
@@ -87,7 +88,7 @@ class WebsiteShopController extends Controller
             ->where('is_featured', true)
             ->whereHas('shop.schoolAssociations', function ($query) {
                 $query->where('is_active', true)
-                    ->where('status', 'approved');
+                    ->where('status', ModerationStatus::Approved);
             })
             ->inRandomOrder()
             ->limit(6)
@@ -100,7 +101,7 @@ class WebsiteShopController extends Controller
                     ->where('is_approved', true);
                 // ->whereHas('shop.schoolAssociations', function ($q) {
                 //     $q->where('is_active', true)
-                //         ->where('status', 'approved');
+                //         ->where('status', ModerationStatus::Approved);
                 // });
             })
             ->withCount(['products' => function ($query) {
@@ -108,7 +109,7 @@ class WebsiteShopController extends Controller
                     ->where('is_approved', true);
                 // ->whereHas('shop.schoolAssociations', function ($q) {
                 //     $q->where('is_active', true)
-                //         ->where('status', 'approved');
+                //         ->where('status', ModerationStatus::Approved);
                 // });
 
             }])

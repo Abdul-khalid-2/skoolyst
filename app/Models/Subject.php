@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,7 +23,7 @@ class Subject extends Model
     ];
 
     protected $casts = [
-        'status' => 'string'
+        'status' => ActiveStatus::class,
     ];
 
     public function testTypes()
@@ -61,7 +62,7 @@ class Subject extends Model
     // Add these scope methods
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', ActiveStatus::Active);
     }
 
     public function scopeByTestType($query, $testTypeId)

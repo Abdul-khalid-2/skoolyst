@@ -69,10 +69,10 @@
                                     <label for="shop_type" class="form-label">Shop Type *</label>
                                     <select class="form-select @error('shop_type') is-invalid @enderror" 
                                             id="shop_type" name="shop_type" required>
-                                        <option value="stationery" {{ old('shop_type', $shop->shop_type) == 'stationery' ? 'selected' : '' }}>Stationery</option>
-                                        <option value="book_store" {{ old('shop_type', $shop->shop_type) == 'book_store' ? 'selected' : '' }}>Book Store</option>
+                                        <option value="stationery" {{ old('shop_type', $shop->shop_type?->value) == 'stationery' ? 'selected' : '' }}>Stationery</option>
+                                        <option value="book_store" {{ old('shop_type', $shop->shop_type?->value) == 'book_store' ? 'selected' : '' }}>Book Store</option>
                                         <option value="mixed" {{ old('shop_type', $shop->shop_type) == 'mixed' ? 'selected' : '' }}>Mixed</option>
-                                        <option value="school_affiliated" {{ old('shop_type', $shop->shop_type) == 'school_affiliated' ? 'selected' : '' }}>School Affiliated</option>
+                                        <option value="school_affiliated" {{ old('shop_type', $shop->shop_type?->value) == 'school_affiliated' ? 'selected' : '' }}>School Affiliated</option>
                                     </select>
                                     @error('shop_type')
                                         <div class="invalid-feedback">{{ $message }}</div>

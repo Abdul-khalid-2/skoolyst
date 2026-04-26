@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,7 +20,7 @@ class VideoCategory extends Model
     ];
 
     protected $casts = [
-        'status' => 'string',
+        'status' => ActiveStatus::class,
     ];
 
     public function videos(): HasMany

@@ -378,8 +378,8 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $question->mcq->difficulty_level == 'easy' ? 'success' : ($question->mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($question->mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                    {{ $question->mcq->difficulty_label }}
                                                 </span>
                                             </td>
                                             <td>
@@ -439,8 +439,8 @@
                                                 {!! Str::limit(strip_tags($question->mcq->question), 80) !!}
                                             </div>
                                             <div class="small">
-                                                <span class="badge bg-{{ $question->mcq->difficulty_level == 'easy' ? 'success' : ($question->mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                    {{ ucfirst($question->mcq->difficulty_level) }}
+                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                    {{ $question->mcq->difficulty_label }}
                                                 </span>
                                                 @if($question->mcq->is_premium)
                                                 <span class="badge bg-warning ms-1">Premium</span>

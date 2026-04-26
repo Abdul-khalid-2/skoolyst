@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,7 +53,22 @@ class BlogPost extends Model
         'is_featured' => 'boolean',
         'published_at' => 'datetime',
         'total_tracked_read_minutes' => 'decimal:5',
+        'status' => ContentStatus::class,
     ];
+
+    /** @internal For Blade when `status` is cast to ContentStatus (avoid ucfirst on enum) */
+    public function getStatusLabelAttribute(): string
+    {
+        $s = $this->status;
+        if ($s === null) {
+            return '';
+        }
+        if ($s instanceof \BackedEnum) {
+            return ucfirst($s->value);
+        }
+
+        return ucfirst((string) $s);
+    }
 
     public function user(): BelongsTo
     {
@@ -120,7 +136,7 @@ class BlogPost extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
+        return $query->where('status', ContentStatus::Published)
             ->where('published_at', '<=', now());
     }
 

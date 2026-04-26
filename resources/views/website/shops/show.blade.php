@@ -1005,7 +1005,7 @@
                 @endif
             </div> -->
             <h1 class="shop-hero-title">{{ $shop->name }}</h1>
-            <span class="shop-hero-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+            <span class="shop-hero-type">{{ ucfirst($shop->shop_type_label) }}</span>
             
             <div class="shop-hero-rating">
                 <div class="stars">
@@ -1078,7 +1078,7 @@
                 <h4>Shop Details</h4>
                 <div class="detail-item">
                     <span class="detail-label">Shop Type:</span>
-                    <span class="detail-value">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+                    <span class="detail-value">{{ ucfirst($shop->shop_type_label) }}</span>
                 </div>
                 <div class="detail-item">
                     <span class="detail-label">Location:</span>

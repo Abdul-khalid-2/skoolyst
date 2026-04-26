@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\TopicDifficultyLevel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -24,8 +26,8 @@ class Topic extends Model
     ];
 
     protected $casts = [
-        'difficulty_level' => 'string',
-        'status' => 'string'
+        'difficulty_level' => TopicDifficultyLevel::class,
+        'status' => ActiveStatus::class,
     ];
 
     // Relationships
@@ -52,7 +54,7 @@ class Topic extends Model
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('status', ActiveStatus::Active);
     }
 
     public function scopeBySubject($query, $subjectId)
@@ -73,11 +75,33 @@ class Topic extends Model
 
     public function getFormattedDifficultyAttribute()
     {
-        return ucfirst($this->difficulty_level);
+        return ucfirst($this->difficulty_level?->value ?? '');
+    }
+
+    /** Raw value for CSS classes (beginner, intermediate, advanced) */
+    public function getDifficultyValueAttribute(): string
+    {
+        $d = $this->difficulty_level;
+        if ($d instanceof \BackedEnum) {
+            return $d->value;
+        }
+
+        return (string) ($d ?? '');
     }
 
     public function getFormattedStatusAttribute()
     {
-        return ucfirst($this->status);
+        return ucfirst($this->status?->value ?? '');
+    }
+
+    /** Bootstrap `bg-*` variant for topic difficulty */
+    public function getDifficultyBadgeVariantAttribute(): string
+    {
+        return match ($this->difficulty_level) {
+            TopicDifficultyLevel::Beginner => 'success',
+            TopicDifficultyLevel::Intermediate => 'warning',
+            TopicDifficultyLevel::Advanced => 'danger',
+            default => 'secondary',
+        };
     }
 }

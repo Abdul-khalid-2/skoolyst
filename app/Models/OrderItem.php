@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\OrderItemStatus;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,6 +45,7 @@ class OrderItem extends Model
         'tax_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
         'cancelled_at' => 'datetime',
+        'status' => OrderItemStatus::class,
     ];
 
     // Relationships
@@ -85,7 +88,7 @@ class OrderItem extends Model
 
     public function canBeCancelled(): bool
     {
-        return in_array($this->status, ['pending', 'confirmed']) &&
-            in_array($this->order->status, ['pending', 'confirmed']);
+        return in_array($this->status, [OrderItemStatus::Pending, OrderItemStatus::Confirmed], true) &&
+            in_array($this->order->status, [OrderStatus::Pending, OrderStatus::Confirmed], true);
     }
 }

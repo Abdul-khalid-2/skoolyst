@@ -1244,7 +1244,7 @@
                 </div>
                 <div class="shop-content">
                     <h3 class="shop-name">{{ $shop->name }}</h3>
-                    <span class="shop-type">{{ ucfirst(str_replace('_', ' ', $shop->shop_type)) }}</span>
+                    <span class="shop-type">{{ ucfirst($shop->shop_type_label) }}</span>
 
                     <div class="shop-location">
                         <i class="fas fa-map-marker-alt"></i>

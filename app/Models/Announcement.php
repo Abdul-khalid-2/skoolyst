@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -29,6 +31,7 @@ class Announcement extends Model
     protected $casts = [
         'publish_at' => 'datetime',
         'expire_at' => 'datetime',
+        'status' => ContentStatus::class,
     ];
 
     protected static function boot()
@@ -64,7 +67,7 @@ class Announcement extends Model
 
     public function comments()
     {
-        return $this->hasMany(AnnouncementComment::class)->where('status', 'approved');
+        return $this->hasMany(AnnouncementComment::class)->where('status', ModerationStatus::Approved);
     }
 
     public function allComments()
@@ -75,7 +78,7 @@ class Announcement extends Model
     // Scopes
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')
+        return $query->where('status', ContentStatus::Published)
             ->where(function ($q) {
                 $q->whereNull('publish_at')
                     ->orWhere('publish_at', '<=', now());
@@ -111,7 +114,7 @@ class Announcement extends Model
 
     public function isPublished()
     {
-        return $this->status === 'published' &&
+        return $this->status === ContentStatus::Published &&
             (!$this->publish_at || $this->publish_at <= now()) &&
             (!$this->expire_at || $this->expire_at >= now());
     }

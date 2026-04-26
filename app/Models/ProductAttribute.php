@@ -3,6 +3,13 @@
 
 namespace App\Models;
 
+use App\Enums\CopyPaperQuality;
+use App\Enums\CopyPaperSize;
+use App\Enums\EducationBoard;
+use App\Enums\InstructionMedium;
+use App\Enums\ProductAttributeType;
+use App\Enums\RuledCopyType;
+use App\Enums\SchoolBagType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -43,7 +50,14 @@ class ProductAttribute extends Model
         'bag_compartments' => 'integer',
         'bag_water_resistant' => 'boolean',
         'bag_wheels' => 'boolean',
-        'weight_grams' => 'decimal:2'
+        'weight_grams' => 'decimal:2',
+        'attribute_type' => ProductAttributeType::class,
+        'education_board' => EducationBoard::class,
+        'medium' => InstructionMedium::class,
+        'copy_quality' => CopyPaperQuality::class,
+        'copy_size' => CopyPaperSize::class,
+        'copy_type' => RuledCopyType::class,
+        'bag_type' => SchoolBagType::class,
     ];
 
     public function product(): BelongsTo

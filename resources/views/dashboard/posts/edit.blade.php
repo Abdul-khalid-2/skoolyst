@@ -179,9 +179,9 @@
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select" id="status" name="status">
-                                            <option value="draft" {{ old('status', $blogPost->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                                            <option value="published" {{ old('status', $blogPost->status) == 'published' ? 'selected' : '' }}>Published</option>
-                                            <option value="archived" {{ old('status', $blogPost->status) == 'archived' ? 'selected' : '' }}>Archived</option>
+                                            <option value="draft" {{ old('status', $blogPost->status?->value) == 'draft' ? 'selected' : '' }}>Draft</option>
+                                            <option value="published" {{ old('status', $blogPost->status?->value) == 'published' ? 'selected' : '' }}>Published</option>
+                                            <option value="archived" {{ old('status', $blogPost->status?->value) == 'archived' ? 'selected' : '' }}>Archived</option>
                                         </select>
                                     </div>
                                 </div>

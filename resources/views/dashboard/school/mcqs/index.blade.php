@@ -247,8 +247,8 @@
                                             <span class="badge bg-{{ $mcq->question_type == 'single' ? 'primary' : 'info' }}">
                                                 {{ ucfirst($mcq->question_type) }}
                                             </span>
-                                            <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }} mt-1">
-                                                {{ ucfirst($mcq->difficulty_level) }}
+                                            <span class="badge bg-{{ $mcq->difficulty_badge_variant }} mt-1">
+                                                {{ $mcq->difficulty_label }}
                                             </span>
                                         </div>
                                     </td>
@@ -266,7 +266,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($mcq->status) }}
+                                            {{ $mcq->status_label }}
                                         </span>
                                         @if($mcq->is_verified)
                                         <div class="small text-success">

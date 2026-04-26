@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ShopType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,7 +42,8 @@ class Shop extends Model
         'longitude' => 'decimal:8',
         'is_verified' => 'boolean',
         'is_active' => 'boolean',
-        'rating' => 'decimal:2'
+        'rating' => 'decimal:2',
+        'shop_type' => ShopType::class,
     ];
 
     public function user(): BelongsTo
@@ -87,6 +89,18 @@ class Shop extends Model
             ->where('is_active', true)
             ->where('status', 'approved')
             ->exists();
+    }
+
+    /** @internal For Blade when `shop_type` is cast to ShopType (e.g. str_replace) */
+    public function getShopTypeLabelAttribute(): string
+    {
+        $v = $this->shop_type;
+        if ($v === null) {
+            return '';
+        }
+        $s = $v instanceof \BackedEnum ? $v->value : (string) $v;
+
+        return str_replace('_', ' ', $s);
     }
 
     protected static function boot()

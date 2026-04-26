@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\BookCategoryType;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -26,8 +28,8 @@ class BookCategory extends Model
     ];
 
     protected $casts = [
-        'book_type' => 'string',
-        'status' => 'string'
+        'book_type' => BookCategoryType::class,
+        'status' => ActiveStatus::class,
     ];
 
     public function parent()

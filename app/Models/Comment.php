@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ModerationStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -20,6 +21,24 @@ class Comment extends Model
         'comment',
         'status'
     ];
+
+    protected $casts = [
+        'status' => ModerationStatus::class,
+    ];
+
+    /** @internal For Blade when `status` is cast to ModerationStatus */
+    public function getStatusLabelAttribute(): string
+    {
+        $s = $this->status;
+        if ($s === null) {
+            return '';
+        }
+        if ($s instanceof \BackedEnum) {
+            return ucfirst($s->value);
+        }
+
+        return ucfirst((string) $s);
+    }
 
     public function user(): BelongsTo
     {

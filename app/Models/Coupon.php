@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\CouponDiscountType;
+use App\Enums\CouponScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -39,6 +41,8 @@ class Coupon extends Model
         'valid_until' => 'datetime',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
+        'discount_type' => CouponDiscountType::class,
+        'scope' => CouponScope::class,
     ];
 
     // Relationships

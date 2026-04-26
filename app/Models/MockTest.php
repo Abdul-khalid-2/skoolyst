@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+use App\Enums\ContentStatus;
+use App\Enums\MockTestMode;
+use App\Enums\UserTestAttemptStatus;
+use App\Enums\UserTestResultStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -38,7 +42,8 @@ class MockTest extends Model
         'allow_retake' => 'boolean',
         'is_free' => 'boolean',
         'subject_breakdown' => 'array',
-        'status' => 'string',
+        'status' => ContentStatus::class,
+        'test_mode' => MockTestMode::class,
         'total_questions' => 'integer',
         'total_marks' => 'integer',
         'total_time_minutes' => 'integer',
@@ -89,21 +94,21 @@ class MockTest extends Model
     // Get completed attempts only
     public function getCompletedAttemptsCountAttribute()
     {
-        return $this->attempts()->where('status', 'completed')->count();
+        return $this->attempts()->where('status', UserTestAttemptStatus::Completed)->count();
     }
 
     public function getAverageScoreAttribute()
     {
-        return $this->attempts()->where('status', 'completed')->avg('percentage');
+        return $this->attempts()->where('status', UserTestAttemptStatus::Completed)->avg('percentage');
     }
 
     // Get pass rate percentage
     public function getPassRateAttribute()
     {
-        $completedAttempts = $this->attempts()->where('status', 'completed')->count();
+        $completedAttempts = $this->attempts()->where('status', UserTestAttemptStatus::Completed)->count();
         if ($completedAttempts === 0) return 0;
 
-        $passedAttempts = $this->attempts()->where('status', 'completed')->where('result_status', 'passed')->count();
+        $passedAttempts = $this->attempts()->where('status', UserTestAttemptStatus::Completed)->where('result_status', UserTestResultStatus::Passed)->count();
         return ($passedAttempts / $completedAttempts) * 100;
     }
 
@@ -119,7 +124,7 @@ class MockTest extends Model
     // Scopes
     public function scopePublished($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', ContentStatus::Published);
     }
 
     public function scopeFree($query)
@@ -139,7 +144,7 @@ class MockTest extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'published');
+        return $query->where('status', ContentStatus::Published);
     }
 
     // Check if user can attempt test

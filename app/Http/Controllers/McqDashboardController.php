@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActiveStatus;
+use App\Enums\ContentStatus;
 use App\Models\Mcq;
 use App\Models\MockTest;
 use App\Models\Subject;
@@ -30,11 +32,11 @@ class McqDashboardController extends Controller
     {
         return [
             'total_mcqs' => Mcq::count(),
-            'published_mcqs' => Mcq::where('status', 'published')->count(),
+            'published_mcqs' => Mcq::where('status', ContentStatus::Published)->count(),
             'total_tests' => MockTest::count(),
-            'published_tests' => MockTest::where('status', 'published')->count(),
+            'published_tests' => MockTest::where('status', ContentStatus::Published)->count(),
             'total_subjects' => Subject::count(),
-            'active_subjects' => Subject::where('status', 'active')->count(),
+            'active_subjects' => Subject::where('status', ActiveStatus::Active)->count(),
             'total_topics' => Topic::count(),
             'study_materials' => StudyMaterial::count(),
             'free_materials' => StudyMaterial::where('is_free', true)->count(),

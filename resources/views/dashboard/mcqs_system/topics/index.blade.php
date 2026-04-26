@@ -218,8 +218,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $topic->difficulty_level == 'beginner' ? 'success' : ($topic->difficulty_level == 'intermediate' ? 'warning' : 'danger') }}">
-                                            {{ ucfirst($topic->difficulty_level) }}
+                                        <span class="badge bg-{{ $topic->difficulty_badge_variant }}">
+                                            {{ $topic->formatted_difficulty }}
                                         </span>
                                     </td>
                                     <td>

@@ -16,8 +16,8 @@
             <div class="col-md-6">
                 <div class="mcq-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span class="mcq-difficulty difficulty-{{ $mcq->difficulty_level }}">
-                            {{ ucfirst($mcq->difficulty_level) }}
+                        <span class="mcq-difficulty difficulty-{{ $mcq->difficulty_value }}">
+                            {{ $mcq->difficulty_label }}
                         </span>
                         <span class="badge bg-light text-dark">
                             {{ $mcq->marks }} {{ $mcq->marks > 1 ? __('mcqs.recent.marks') : __('mcqs.recent.mark') }}

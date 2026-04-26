@@ -37,9 +37,12 @@
         </div>
 
         @php
-            $easyCount = $mcqs->where('difficulty_level', 'easy')->count();
-            $mediumCount = $mcqs->where('difficulty_level', 'medium')->count();
-            $hardCount = $mcqs->where('difficulty_level', 'hard')->count();
+            $mcqList = $mcqs instanceof \Illuminate\Pagination\LengthAwarePaginator
+                ? $mcqs->getCollection()
+                : $mcqs;
+            $easyCount = $mcqList->filter(fn ($m) => $m->difficulty_value === 'easy')->count();
+            $mediumCount = $mcqList->filter(fn ($m) => $m->difficulty_value === 'medium')->count();
+            $hardCount = $mcqList->filter(fn ($m) => $m->difficulty_value === 'hard')->count();
         @endphp
 
         <div class="difficulty-stats">

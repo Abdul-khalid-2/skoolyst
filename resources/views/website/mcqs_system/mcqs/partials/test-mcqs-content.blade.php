@@ -14,8 +14,8 @@
             </div>
             
             <div class="question-meta">
-                <span class="difficulty-badge {{ $mcq->difficulty_level ?? 'medium' }}">
-                    {{ ucfirst($mcq->difficulty_level ?? 'medium') }}
+                <span class="difficulty-badge {{ $mcq->difficulty_value !== '' ? $mcq->difficulty_value : 'medium' }}">
+                    {{ $mcq->difficulty_label !== '' ? $mcq->difficulty_label : 'Medium' }}
                 </span>
                 <span class="marks-badge">
                     <i class="fas fa-star"></i>{{ $mcq->marks ?? 1 }} Mark{{ ($mcq->marks ?? 1) > 1 ? 's' : '' }}

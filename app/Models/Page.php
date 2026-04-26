@@ -3,6 +3,7 @@
 
 namespace App\Models;
 
+use App\Enums\PageStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -40,6 +41,9 @@ class Page extends Model
         'text_left_image_right' => 'array',
         'custom_html' => 'array',
         'canvas_elements' => 'array',
+        'start_date' => 'datetime',
+        'end_date' => 'datetime',
+        'status' => PageStatus::class,
     ];
 
     // Relationship with Event

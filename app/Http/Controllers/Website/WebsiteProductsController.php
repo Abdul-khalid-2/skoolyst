@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Enums\ModerationStatus;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
@@ -44,10 +45,10 @@ class WebsiteProductsController extends Controller
         $productsQuery->where(function ($query) {
             $query->whereHas('shop.schoolAssociations', function ($q) {
                 $q->where('is_active', true)
-                    ->where('status', 'approved');
+                    ->where('status', ModerationStatus::Approved);
             })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
                 $q->where('is_active', true)
-                    ->where('status', 'approved');
+                    ->where('status', ModerationStatus::Approved);
             });
         });
 
@@ -151,10 +152,10 @@ class WebsiteProductsController extends Controller
                     ->where(function ($q) {
                         $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
                             $schoolQ->where('is_active', true)
-                                ->where('status', 'approved');
+                                ->where('status', ModerationStatus::Approved);
                         })->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
                             $schoolQ->where('is_active', true)
-                                ->where('status', 'approved');
+                                ->where('status', ModerationStatus::Approved);
                         });
                     });
             })
@@ -166,7 +167,7 @@ class WebsiteProductsController extends Controller
 
         $schools = School::whereHas('shopAssociations', function ($query) {
             $query->where('is_active', true)
-                ->where('status', 'approved');
+                ->where('status', ModerationStatus::Approved);
         })->get();
 
         // Get unique product types
@@ -176,10 +177,10 @@ class WebsiteProductsController extends Controller
             ->where(function ($query) {
                 $query->whereHas('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 });
             })
             ->distinct()
@@ -194,11 +195,11 @@ class WebsiteProductsController extends Controller
                 ->where(function ($q) {
                     $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
                         $schoolQ->where('is_active', true)
-                            ->where('status', 'approved');
+                            ->where('status', ModerationStatus::Approved);
                     })
                         ->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
                             $schoolQ->where('is_active', true)
-                                ->where('status', 'approved');
+                                ->where('status', ModerationStatus::Approved);
                         });
                 });
         })
@@ -214,10 +215,10 @@ class WebsiteProductsController extends Controller
                 ->where(function ($q) {
                     $q->whereHas('shop.schoolAssociations', function ($schoolQ) {
                         $schoolQ->where('is_active', true)
-                            ->where('status', 'approved');
+                            ->where('status', ModerationStatus::Approved);
                     })->orWhereDoesntHave('shop.schoolAssociations', function ($schoolQ) {
                         $schoolQ->where('is_active', true)
-                            ->where('status', 'approved');
+                            ->where('status', ModerationStatus::Approved);
                     });
                 });
         })
@@ -265,10 +266,10 @@ class WebsiteProductsController extends Controller
             ->where(function ($query) {
                 $query->whereHas('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 });
             })
             ->firstOrFail();
@@ -282,10 +283,10 @@ class WebsiteProductsController extends Controller
             ->where(function ($query) {
                 $query->whereHas('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 })->orWhereDoesntHave('shop.schoolAssociations', function ($q) {
                     $q->where('is_active', true)
-                        ->where('status', 'approved');
+                        ->where('status', ModerationStatus::Approved);
                 });
             })
             ->where(function ($query) use ($product) {

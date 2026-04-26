@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActiveStatus;
 use App\Models\SchoolImageGallery;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ class SchoolImageGalleryController extends Controller
         $schoolId = $request->get('school_id');
 
         $images = SchoolImageGallery::where('school_id', $schoolId)
-            ->where('status', 'active')
+            ->where('status', ActiveStatus::Active)
             ->latest()
             ->get();
 

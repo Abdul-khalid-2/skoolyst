@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ActiveStatus;
+use App\Enums\BranchImageType;
+use App\Enums\SchoolType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,6 +37,8 @@ class Branch extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'features' => 'array',
+        'school_type' => SchoolType::class,
+        'status' => ActiveStatus::class,
     ];
 
     public function school(): BelongsTo
@@ -48,22 +53,22 @@ class Branch extends Model
 
     public function galleryImages()
     {
-        return $this->images()->where('type', 'gallery')->where('status', 'active');
+        return $this->images()->where('type', BranchImageType::Gallery)->where('status', ActiveStatus::Active);
     }
 
     public function bannerImages()
     {
-        return $this->images()->where('type', 'banner')->where('status', 'active');
+        return $this->images()->where('type', BranchImageType::Banner)->where('status', ActiveStatus::Active);
     }
 
     public function featuredImages()
     {
-        return $this->images()->where('is_featured', true)->where('status', 'active');
+        return $this->images()->where('is_featured', true)->where('status', ActiveStatus::Active);
     }
 
     public function mainBanner()
     {
-        return $this->images()->where('is_main_banner', true)->where('status', 'active')->first();
+        return $this->images()->where('is_main_banner', true)->where('status', ActiveStatus::Active)->first();
     }
 
     public function events()

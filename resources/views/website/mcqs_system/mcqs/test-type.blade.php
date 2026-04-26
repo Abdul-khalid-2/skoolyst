@@ -148,8 +148,8 @@
                         <div class="featured-mcq-card">
                             <div class="featured-mcq-header">
                                 <span class="featured-mcq-subject">{{ $mcq->subject->name }}</span>
-                                <span class="featured-mcq-difficulty {{ $mcq->difficulty_level }}">
-                                    {{ ucfirst($mcq->difficulty_level) }}
+                                <span class="featured-mcq-difficulty {{ $mcq->difficulty_value }}">
+                                    {{ $mcq->difficulty_label }}
                                 </span>
                             </div>
                             <div class="featured-mcq-question">

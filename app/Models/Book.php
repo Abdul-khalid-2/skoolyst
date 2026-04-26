@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\BookCondition;
+use App\Enums\BookLanguage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -38,8 +40,8 @@ class Book extends Model
 
     protected $casts = [
         'is_digital' => 'boolean',
-        'book_condition' => 'string',
-        'language' => 'string'
+        'book_condition' => BookCondition::class,
+        'language' => BookLanguage::class,
     ];
 
     public function product()
@@ -59,14 +61,13 @@ class Book extends Model
 
     public function getConditionColorAttribute()
     {
-        $colors = [
-            'new' => 'success',
-            'like_new' => 'primary',
-            'good' => 'info',
-            'fair' => 'warning',
-            'poor' => 'danger'
-        ];
-
-        return $colors[$this->book_condition] ?? 'secondary';
+        return match ($this->book_condition) {
+            BookCondition::AsNew => 'success',
+            BookCondition::LikeNew => 'primary',
+            BookCondition::Good => 'info',
+            BookCondition::Fair => 'warning',
+            BookCondition::Poor => 'danger',
+            default => 'secondary',
+        };
     }
 }

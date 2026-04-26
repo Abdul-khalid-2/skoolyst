@@ -105,8 +105,8 @@
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                     <span>Difficulty</span>
-                                    <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                        {{ ucfirst($mcq->difficulty_level) }}
+                                    <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                        {{ $mcq->difficulty_label }}
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -116,7 +116,7 @@
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                     <span>Status</span>
                                     <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
-                                        {{ ucfirst($mcq->status) }}
+                                        {{ $mcq->status_label }}
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">

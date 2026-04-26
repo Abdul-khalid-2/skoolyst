@@ -167,13 +167,13 @@
                                                 <td>{{ $mcq->subject->name ?? 'N/A' }}</td>
                                                 <td>{{ $mcq->topic->title ?? 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $mcq->difficulty_level == 'easy' ? 'success' : ($mcq->difficulty_level == 'medium' ? 'warning' : 'danger') }}">
-                                                        {{ ucfirst($mcq->difficulty_level) }}
+                                                    <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                        {{ $mcq->difficulty_label }}
                                                     </span>
                                                 </td>
                                                 <td>
                                                     <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'secondary' : 'dark') }}">
-                                                        {{ ucfirst($mcq->status) }}
+                                                        {{ $mcq->status_label }}
                                                     </span>
                                                 </td>
                                                 <td>
