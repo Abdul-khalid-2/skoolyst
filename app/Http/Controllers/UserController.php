@@ -2,52 +2,92 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Enums\ActiveStatus;
 use App\Models\School;
+use App\Models\User;
 use App\Services\ImageWebpService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of users.
      */
-    public function index()
+    public function index(Request $request)
     {
         try {
-            // Super admin can see all users
+            $roles = collect();
+            $schools = collect();
+
             if (auth()->user()->hasRole('super-admin')) {
-                $users = User::with(['school', 'roles'])
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
-                    
-                return view('dashboard.users.index', compact('users'));
-            } 
-            // School admin can only see users from their school
-            elseif (auth()->user()->hasRole('school-admin')) {
+                $query = User::with(['school', 'roles']);
+                $roles = Role::orderBy('name')->get();
+                $schools = School::where('status', ActiveStatus::Active)
+                    ->select('id', 'name')
+                    ->orderBy('name')
+                    ->get();
+            } elseif (auth()->user()->hasRole('school-admin')) {
                 $schoolId = auth()->user()->school_id;
-                
-                $users = User::with(['school', 'roles'])
-                    ->where('school_id', $schoolId)
-                    ->orderBy('created_at', 'desc')
-                    ->paginate(10);
-                    
-                return view('dashboard.users.index', compact('users'));
-            } 
-            // Unauthorized access
-            else {
+                $query = User::with(['school', 'roles'])->where('school_id', $schoolId);
+                $roles = Role::orderBy('name')->get();
+                $schools = School::where('id', $schoolId)->select('id', 'name')->get();
+            } else {
                 return redirect()->route('dashboard')
                     ->with('error', 'Unauthorized access.');
             }
+
+            if ($request->filled('role')) {
+                $query->whereHas('roles', function ($q) use ($request) {
+                    $q->where('name', $request->role);
+                });
+            }
+
+            if ($request->filled('school_id') && auth()->user()->hasRole('super-admin')) {
+                $query->where('school_id', $request->school_id);
+            }
+
+            $search = $request->string('search')->trim()->toString();
+            if ($search !== '') {
+                $searchableColumns = ['name', 'email', 'phone', 'uuid'];
+                $query->where(function ($q) use ($search, $searchableColumns) {
+                    $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                    foreach (array_slice($searchableColumns, 1) as $column) {
+                        $q->orWhere($column, 'like', '%'.$search.'%');
+                    }
+                });
+            }
+
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $allowedSort = [
+                'id', 'name', 'email', 'phone', 'school_id', 'created_at', 'email_verified_at', 'school',
+            ];
+            if (! in_array($sortBy, $allowedSort, true)) {
+                $sortBy = 'created_at';
+            }
+
+            if ($sortBy === 'school') {
+                $query->select('users.*')
+                    ->leftJoin('schools', 'users.school_id', '=', 'schools.id')
+                    ->orderBy('schools.name', $sortDir);
+            } else {
+                $query->orderBy($sortBy, $sortDir);
+            }
+
+            $users = $query->paginate(10)->withQueryString();
+
+            return view('dashboard.users.index', compact('users', 'roles', 'schools'));
         } catch (\Exception $e) {
-            Log::error('Error loading users: ' . $e->getMessage());
+            Log::error('Error loading users: '.$e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to load users. Please try again.');
         }
@@ -61,7 +101,7 @@ class UserController extends Controller
         try {
             // Get schools for dropdown (only for super-admin)
             $schools = [];
-            
+
             if (auth()->user()->hasRole('super-admin')) {
                 $schools = School::where('status', 'active')
                     ->select('id', 'name')
@@ -76,7 +116,8 @@ class UserController extends Controller
 
             return view('dashboard.users.create', compact('schools'));
         } catch (\Exception $e) {
-            Log::error('Error loading create user form: ' . $e->getMessage());
+            Log::error('Error loading create user form: '.$e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to load create user form. Please try again.');
         }
@@ -113,7 +154,7 @@ class UserController extends Controller
             DB::beginTransaction();
 
             // Create user
-            $user = new User();
+            $user = new User;
             $user->uuid = Str::uuid();
             $user->name = $validated['name'];
             $user->email = $validated['email'];
@@ -121,19 +162,19 @@ class UserController extends Controller
             $user->phone = $validated['phone'] ?? null;
             $user->address = $validated['address'] ?? null;
             $user->bio = $validated['bio'] ?? null;
-            
+
             // Set school_id based on role
             if (auth()->user()->hasRole('super-admin')) {
                 $user->school_id = $validated['school_id'] ?? null;
             } elseif (auth()->user()->hasRole('school-admin')) {
                 $user->school_id = auth()->user()->school_id;
             }
-            
+
             $user->save();
 
             // Handle profile picture upload
             if ($request->hasFile('profile_picture')) {
-                $folderName = 'users/' . $user->uuid;
+                $folderName = 'users/'.$user->uuid;
                 $path = $imageWebp->putUploadedAsWebp('public', $folderName, $request->file('profile_picture'));
                 $user->profile_picture = $path;
                 $user->save();
@@ -151,10 +192,10 @@ class UserController extends Controller
             return $redirect;
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error creating user: ' . $e->getMessage());
-            
+            Log::error('Error creating user: '.$e->getMessage());
+
             return redirect()->back()
-                ->with('error', 'Error creating user: ' . $e->getMessage())
+                ->with('error', 'Error creating user: '.$e->getMessage())
                 ->withInput();
         }
     }
@@ -180,6 +221,7 @@ class UserController extends Controller
                 ->with('error', 'User not found.');
         } catch (\Exception $e) {
             Log::error('Error loading user details: ' . $e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to load user details. Please try again.');
         }
@@ -218,7 +260,8 @@ class UserController extends Controller
             return redirect()->route('users.index')
                 ->with('error', 'User not found.');
         } catch (\Exception $e) {
-            Log::error('Error loading edit user form: ' . $e->getMessage());
+            Log::error('Error loading edit user form: '.$e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to load edit user form. Please try again.');
         }
@@ -277,12 +320,12 @@ class UserController extends Controller
             // Update user basic info
             $user->name = $validated['name'];
             $user->email = $validated['email'];
-            
+
             // Update password only if provided
-            if (!empty($validated['password'])) {
+            if (! empty($validated['password'])) {
                 $user->password = Hash::make($validated['password']);
             }
-            
+
             $user->phone = $validated['phone'] ?? null;
             $user->address = $validated['address'] ?? null;
             $user->bio = $validated['bio'] ?? null;
@@ -307,8 +350,8 @@ class UserController extends Controller
                 if ($user->profile_picture) {
                     Storage::disk('public')->delete($user->profile_picture);
                 }
-                
-                $folderName = 'users/' . $user->uuid;
+
+                $folderName = 'users/'.$user->uuid;
                 $path = $imageWebp->putUploadedAsWebp('public', $folderName, $request->file('profile_picture'));
                 $user->profile_picture = $path;
                 $user->save();
@@ -330,8 +373,8 @@ class UserController extends Controller
                 ->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error updating user: ' . $e->getMessage());
-            
+            Log::error('Error updating user: '.$e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to update user. Please try again.')
                 ->withInput();
@@ -379,8 +422,8 @@ class UserController extends Controller
                 ->with('error', 'User not found.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Error deleting user: ' . $e->getMessage());
-            
+            Log::error('Error deleting user: '.$e->getMessage());
+
             return redirect()->back()
                 ->with('error', 'Failed to delete user. Please try again.');
         }
@@ -402,7 +445,7 @@ class UserController extends Controller
             }
 
             $validated = $request->validate([
-                'status' => 'required|in:active,inactive'
+                'status' => 'required|in:active,inactive',
             ]);
 
             // You'll need to add a 'status' column to users table if you want this feature
@@ -411,7 +454,8 @@ class UserController extends Controller
 
             return response()->json(['success' => true, 'message' => 'User status updated successfully']);
         } catch (\Exception $e) {
-            Log::error('Error updating user status: ' . $e->getMessage());
+            Log::error('Error updating user status: '.$e->getMessage());
+
             return response()->json(['error' => 'Failed to update status'], 500);
         }
     }

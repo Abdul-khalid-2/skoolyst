@@ -1,16 +1,16 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Mcq;
 use App\Models\Subject;
-use App\Models\Topic;
 use App\Models\TestType;
+use App\Models\Topic;
 use App\Services\McqImportValidationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
 
@@ -18,65 +18,100 @@ class McqController extends Controller
 {
     public function __construct(
         protected McqImportValidationService $mcqImportValidation
-    ) {
-    }
+    ) {}
 
     public function index(Request $request)
     {
         $query = Mcq::with(['subject', 'topic', 'testTypes', 'createdBy'])
             ->withCount('mockTests');
-        
-        // Filters
+
         if ($request->filled('subject_id')) {
             $query->where('subject_id', $request->subject_id);
         }
-        
+
         if ($request->filled('topic_id')) {
             $query->where('topic_id', $request->topic_id);
         }
-        
+
         if ($request->filled('test_type_id')) {
             $query->whereHas('testTypes', function ($q) use ($request) {
                 $q->where('test_type_id', $request->test_type_id);
             });
         }
-        
+
         if ($request->filled('difficulty_level')) {
             $query->where('difficulty_level', $request->difficulty_level);
         }
-        
+
         if ($request->filled('question_type')) {
             $query->where('question_type', $request->question_type);
         }
-        
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
-        
+
         if ($request->filled('is_premium')) {
             $query->where('is_premium', $request->is_premium);
         }
-        
+
         if ($request->filled('is_verified')) {
             $query->where('is_verified', $request->is_verified);
         }
-        
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('question', 'LIKE', "%{$search}%")
-                  ->orWhere('explanation', 'LIKE', "%{$search}%")
-                  ->orWhere('tags', 'LIKE', "%{$search}%");
-            });
-        }
-        
-        $mcqs = $query->latest()->paginate(20)->withQueryString();
+
+        $this->applyMcqIndexSearch($query, $request);
+        $this->applyMcqIndexSort($query, $request);
+
+        $mcqs = $query->paginate(10)->withQueryString();
         $subjects = Subject::active()->get();
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
-        
+
         return view('dashboard.mcqs_system.mcqs.index', compact('mcqs', 'subjects', 'topics', 'testTypes'));
+    }
+
+    private function applyMcqIndexSearch($query, Request $request): void
+    {
+        $search = $request->string('search')->trim()->toString();
+        if ($search === '') {
+            return;
+        }
+
+        $searchableColumns = ['question', 'explanation', 'hint', 'reference_book', 'reference_page'];
+        $query->where(function ($q) use ($search, $searchableColumns) {
+            $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+            foreach (array_slice($searchableColumns, 1) as $column) {
+                $q->orWhere($column, 'like', '%'.$search.'%');
+            }
+        });
+    }
+
+    private function applyMcqIndexSort($query, Request $request): void
+    {
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'id', 'question', 'difficulty_level', 'question_type', 'marks', 'negative_marks',
+            'status', 'is_premium', 'is_verified', 'created_at', 'time_limit_seconds',
+            'mock_tests_count', 'subject', 'topic',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+        }
+
+        if ($sortBy === 'subject') {
+            $query->select('mcqs.*')
+                ->leftJoin('subjects', 'mcqs.subject_id', '=', 'subjects.id')
+                ->orderBy('subjects.name', $sortDir);
+        } elseif ($sortBy === 'topic') {
+            $query->select('mcqs.*')
+                ->leftJoin('topics', 'mcqs.topic_id', '=', 'topics.id')
+                ->orderBy('topics.title', $sortDir);
+        } elseif ($sortBy === 'mock_tests_count') {
+            $query->orderBy('mock_tests_count', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
     }
 
     /**
@@ -335,18 +370,18 @@ class McqController extends Controller
         $subjects = Subject::active()->get();
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
-        
+
         $selectedSubject = $request->get('subject_id');
         $selectedTopic = $request->get('topic_id');
-        
+
         // If topic_id is provided but subject_id is not, find the subject from the topic
-        if ($selectedTopic && !$selectedSubject) {
+        if ($selectedTopic && ! $selectedSubject) {
             $topic = Topic::find($selectedTopic);
             if ($topic) {
                 $selectedSubject = $topic->subject_id;
             }
         }
-        
+
         return view('dashboard.mcqs_system.mcqs.create', compact('subjects', 'topics', 'testTypes', 'selectedSubject', 'selectedTopic'));
     }
 
@@ -359,11 +394,11 @@ class McqController extends Controller
             'topic_id' => 'required|exists:topics,id',
             'test_type_ids' => 'nullable|array',
             'test_type_ids.*' => 'exists:test_types,id',
-            
+
             // Options validation
             'options' => 'required|array|min:2',
             'options.*' => 'required|string',
-            
+
             // Correct answers validation
             'correct_answers' => 'required|array|min:1',
             'correct_answers.*' => 'required|string',
@@ -398,10 +433,10 @@ class McqController extends Controller
         // Validate that correct answers are valid option keys
         $validOptionKeys = array_keys($formattedOptions);
         foreach ($request->correct_answers as $answer) {
-            if (!in_array($answer, $validOptionKeys)) {
+            if (! in_array($answer, $validOptionKeys)) {
                 return redirect()->back()
                     ->withInput()
-                    ->with('error', "Invalid correct answer: '{$answer}'. Valid options are: " . implode(', ', $validOptionKeys));
+                    ->with('error', "Invalid correct answer: '{$answer}'. Valid options are: ".implode(', ', $validOptionKeys));
             }
         }
 
@@ -446,6 +481,7 @@ class McqController extends Controller
     public function show(Mcq $mcq)
     {
         $mcq->load(['subject', 'topic', 'testTypes', 'createdBy', 'approvedBy']);
+
         return view('dashboard.mcqs_system.mcqs.show', compact('mcq'));
     }
 
@@ -454,17 +490,17 @@ class McqController extends Controller
         $subjects = Subject::active()->get();
         $topics = Topic::active()->get();
         $testTypes = TestType::active()->get();
-        
+
         // Load options and correct answers
         $options = json_decode($mcq->options, true) ?? [];
         $correctAnswers = json_decode($mcq->correct_answers, true) ?? [];
         $tags = $mcq->tags ? implode(', ', json_decode($mcq->tags, true)) : '';
-        
+
         // Load test types for this MCQ
         $mcq->load('testTypes');
         $selectedTestTypeIds = $mcq->testTypes->pluck('id')->toArray();
-        
-        return view('dashboard.mcqs_system.mcqs.edit', 
+
+        return view('dashboard.mcqs_system.mcqs.edit',
             compact('mcq', 'subjects', 'topics', 'testTypes', 'options', 'correctAnswers', 'tags', 'selectedTestTypeIds')
         );
     }
@@ -478,13 +514,13 @@ class McqController extends Controller
             'topic_id' => 'required|exists:topics,id',
             'test_type_ids' => 'nullable|array',
             'test_type_ids.*' => 'exists:test_types,id',
-            
+
             'options' => 'required|array|min:2',
             'options.*' => 'required|string',
-            
+
             'correct_answers' => 'required|array|min:1',
-            'correct_answers.*' => 'required|string|in:' . implode(',', array_keys($request->options)),
-            
+            'correct_answers.*' => 'required|string|in:'.implode(',', array_keys($request->options)),
+
             'explanation' => 'nullable|string',
             'hint' => 'nullable|string',
             'difficulty_level' => 'required|in:easy,medium,hard',
@@ -570,17 +606,17 @@ class McqController extends Controller
     // Verify MCQ
     public function verify(Mcq $mcq)
     {
-        if (!$mcq->is_verified) {
+        if (! $mcq->is_verified) {
             $mcq->update([
                 'is_verified' => true,
                 'approved_by' => auth()->id(),
                 'approved_at' => now(),
             ]);
-            
+
             return redirect()->route('mcqs.show', $mcq)
                 ->with('success', 'MCQ verified successfully.');
         }
-        
+
         return redirect()->route('mcqs.show', $mcq)
             ->with('info', 'MCQ is already verified.');
     }
@@ -594,11 +630,11 @@ class McqController extends Controller
                 'approved_by' => null,
                 'approved_at' => null,
             ]);
-            
+
             return redirect()->route('mcqs.show', $mcq)
                 ->with('success', 'MCQ verification removed.');
         }
-        
+
         return redirect()->route('mcqs.show', $mcq)
             ->with('info', 'MCQ is not verified.');
     }
@@ -618,17 +654,17 @@ class McqController extends Controller
                 Mcq::whereIn('id', $ids)->update(['status' => 'published']);
                 $message = 'Selected MCQs published successfully.';
                 break;
-                
+
             case 'draft':
                 Mcq::whereIn('id', $ids)->update(['status' => 'draft']);
                 $message = 'Selected MCQs moved to draft.';
                 break;
-                
+
             case 'archive':
                 Mcq::whereIn('id', $ids)->update(['status' => 'archived']);
                 $message = 'Selected MCQs archived successfully.';
                 break;
-                
+
             case 'verify':
                 Mcq::whereIn('id', $ids)->update([
                     'is_verified' => true,
@@ -637,7 +673,7 @@ class McqController extends Controller
                 ]);
                 $message = 'Selected MCQs verified successfully.';
                 break;
-                
+
             case 'unverify':
                 Mcq::whereIn('id', $ids)->update([
                     'is_verified' => false,
@@ -646,20 +682,20 @@ class McqController extends Controller
                 ]);
                 $message = 'Selected MCQs unverified successfully.';
                 break;
-                
+
             case 'delete':
                 // Check for dependencies
                 $hasDependencies = Mcq::whereIn('id', $ids)
                     ->whereHas('mockTests')
                     ->exists();
-                    
+
                 if ($hasDependencies) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Cannot delete MCQs that are used in mock tests.'
+                        'message' => 'Cannot delete MCQs that are used in mock tests.',
                     ]);
                 }
-                
+
                 Mcq::whereIn('id', $ids)->delete();
                 $message = 'Selected MCQs deleted successfully.';
                 break;
@@ -674,7 +710,7 @@ class McqController extends Controller
         $topics = Topic::where('subject_id', $request->subject_id)
             ->active()
             ->get();
-            
+
         return response()->json($topics);
     }
 
@@ -682,11 +718,11 @@ class McqController extends Controller
     public function getTestTypesBySubject(Request $request)
     {
         $subject = Subject::with('testTypes')->find($request->subject_id);
-        
-        if (!$subject) {
+
+        if (! $subject) {
             return response()->json([]);
         }
-        
+
         return response()->json($subject->testTypes);
     }
 
@@ -778,7 +814,7 @@ class McqController extends Controller
         $topic = Topic::findOrFail($validated['topic_id']);
 
         $testTypeNames = '';
-        if (!empty($validated['test_type_ids'])) {
+        if (! empty($validated['test_type_ids'])) {
             $testTypeNames = TestType::whereIn('id', $validated['test_type_ids'])
                 ->pluck('name')
                 ->implode(',');
@@ -838,6 +874,7 @@ class McqController extends Controller
             foreach ($headers as $col) {
                 $ordered[] = $row[$col] ?? '';
             }
+
             return $ordered;
         }, $sampleRows);
 
@@ -884,7 +921,7 @@ class McqController extends Controller
 
         return response($body, 200, [
             'Content-Type' => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => 'attachment; filename="' . $safeFilename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$safeFilename.'"',
             'Content-Length' => (string) strlen($body),
             'Cache-Control' => 'no-store, no-cache, must-revalidate',
             'Pragma' => 'no-cache',
@@ -986,7 +1023,7 @@ class McqController extends Controller
                 $errors[] = [
                     'row' => $row['row_number'],
                     'field' => null,
-                    'message' => 'Database insert failed: ' . $e->getMessage(),
+                    'message' => 'Database insert failed: '.$e->getMessage(),
                 ];
 
                 Log::error('MCQ bulk import: failed to insert row', [
@@ -1017,7 +1054,7 @@ class McqController extends Controller
         $extension = strtolower($uploadedFile->getClientOriginalExtension());
 
         if (in_array($extension, ['csv', 'txt'], true)) {
-            $reader = new CsvReader();
+            $reader = new CsvReader;
             $reader->setInputEncoding(CsvReader::GUESS_ENCODING);
             $reader->setDelimiter(',');
             $reader->setEnclosure('"');
@@ -1036,6 +1073,7 @@ class McqController extends Controller
                     return true;
                 }
             }
+
             return false;
         }));
 

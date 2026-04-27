@@ -1,17 +1,8 @@
-/* dashboard/schooles/index — table scroll */
-.schools-table-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.schools-table .school-email-col {
+/* dashboard/schooles/index — column widths (works with x-data-table) */
+#schools .school-email-col {
     max-width: 150px;
 }
 
-.schools-table .school-address-col {
+#schools .school-address-col {
     max-width: 180px;
-}
-
-.schools-table-actions form {
-    display: inline;
 }

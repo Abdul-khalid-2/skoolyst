@@ -5,19 +5,19 @@ namespace App\Http\Controllers;
 use App\Enums\ActiveStatus;
 use App\Enums\ContentStatus;
 use App\Enums\ModerationStatus;
-use App\Services\ImageWebpService;
-use Illuminate\Http\Request;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\School;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
+use App\Services\ImageWebpService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class BlogPostController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $query = BlogPost::with(['category', 'user', 'school']);
 
@@ -36,7 +36,41 @@ class BlogPostController extends Controller
             $query->where('user_id', auth()->id());
         }
 
-        $posts = $query->latest()->paginate(10);
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['title', 'slug', 'excerpt'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
+            });
+        }
+
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'title', 'slug', 'status', 'is_featured', 'view_count',
+            'published_at', 'created_at', 'id', 'blog_category_id',
+            'category', 'author',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+        }
+
+        if ($sortBy === 'category') {
+            $query->select('blog_posts.*')
+                ->leftJoin('blog_categories', 'blog_posts.blog_category_id', '=', 'blog_categories.id')
+                ->orderBy('blog_categories.name', $sortDir);
+        } elseif ($sortBy === 'author') {
+            $query->select('blog_posts.*')
+                ->leftJoin('users', 'blog_posts.user_id', '=', 'users.id')
+                ->orderBy('users.name', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
+
+        $posts = $query->paginate(10)->withQueryString();
 
         return view('dashboard.posts.index', compact('posts'));
     }
@@ -80,14 +114,14 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             // Auto-set school_id for school admins if not provided
             $schoolId = $request->school_id;
-            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && !$schoolId) {
+            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && ! $schoolId) {
                 $schoolId = auth()->user()->school_id;
             }
             $structureData = json_decode($request->structure, true);
@@ -138,12 +172,12 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Blog post created successfully!',
-                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug])
+                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug]),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to create blog post: ' . $e->getMessage()
+                'message' => 'Failed to create blog post: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -158,7 +192,7 @@ class BlogPostController extends Controller
         }]);
 
         // Prepare structure for display
-        if (!$blogPost->structure) {
+        if (! $blogPost->structure) {
             $blogPost->structure = ['elements' => []];
         } else {
             $blogPost->structure = $this->prepareForDisplay($blogPost->structure);
@@ -184,7 +218,7 @@ class BlogPostController extends Controller
         })->get();
 
         // Prepare structure for editing
-        if (!$blogPost->structure) {
+        if (! $blogPost->structure) {
             $blogPost->structure = ['elements' => []];
         } else {
             $blogPost->structure = $this->prepareForDisplay($blogPost->structure);
@@ -217,19 +251,19 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Validation failed',
-                'errors' => $validator->errors()
+                'errors' => $validator->errors(),
             ], 422);
         }
 
         try {
             // Auto-set school_id for school admins if not provided
             $schoolId = $request->school_id;
-            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && !$schoolId) {
+            if (auth()->user()->hasRole('school-admin') && auth()->user()->school_id && ! $schoolId) {
                 $schoolId = auth()->user()->school_id;
             }
 
             // For shop owners and other users, don't force school_id
-            if (auth()->user()->hasRole('shop-owner') && !$schoolId) {
+            if (auth()->user()->hasRole('shop-owner') && ! $schoolId) {
                 $schoolId = null;
             }
 
@@ -265,7 +299,7 @@ class BlogPostController extends Controller
             // Handle published_at
             if ($request->published_at) {
                 $blogData['published_at'] = $request->published_at;
-            } elseif ($request->status === ContentStatus::Published->value && !$blogPost->published_at) {
+            } elseif ($request->status === ContentStatus::Published->value && ! $blogPost->published_at) {
                 $blogData['published_at'] = now();
             } elseif ($request->status !== ContentStatus::Published->value) {
                 $blogData['published_at'] = null;
@@ -296,12 +330,12 @@ class BlogPostController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Blog post updated successfully!',
-                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug])
+                'redirect_url' => route('admin.blog-posts.show', ['blog_post' => $blogPost->slug]),
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update blog post: ' . $e->getMessage()
+                'message' => 'Failed to update blog post: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -339,6 +373,7 @@ class BlogPostController extends Controller
             if ($blogPost->school_id !== auth()->user()->school_id) {
                 abort(403, 'Unauthorized access to this blog post.');
             }
+
             return true;
         }
 
@@ -355,7 +390,7 @@ class BlogPostController extends Controller
      */
     private function deleteStructureImages($structure)
     {
-        if (!isset($structure['elements']) || !is_array($structure['elements'])) {
+        if (! isset($structure['elements']) || ! is_array($structure['elements'])) {
             return;
         }
 
@@ -363,7 +398,7 @@ class BlogPostController extends Controller
             if (in_array($element['type'], ['image', 'banner']) && isset($element['content']['src'])) {
                 $imagePath = $element['content']['src'];
                 // Only delete if it's a storage path (not external URL)
-                if (!filter_var($imagePath, FILTER_VALIDATE_URL) && strpos($imagePath, 'blog/') === 0) {
+                if (! filter_var($imagePath, FILTER_VALIDATE_URL) && strpos($imagePath, 'blog/') === 0) {
                     Storage::disk('website')->delete($imagePath);
                 }
             }
@@ -384,33 +419,32 @@ class BlogPostController extends Controller
      */
     private function deleteImagesFromHtml($html)
     {
-        if (empty($html) || !is_string($html)) {
+        if (empty($html) || ! is_string($html)) {
             return;
         }
 
         preg_match_all('/src=(["\'])(blog\/[^\1]+?\.(jpg|jpeg|png|gif|webp))\1/i', $html, $matches);
 
-        if (!empty($matches[2])) {
+        if (! empty($matches[2])) {
             foreach ($matches[2] as $imagePath) {
                 // Only delete if it's a storage path (not external URL)
-                if (!filter_var($imagePath, FILTER_VALIDATE_URL)) {
+                if (! filter_var($imagePath, FILTER_VALIDATE_URL)) {
                     Storage::disk('website')->delete($imagePath);
                 }
             }
         }
     }
 
-
     /**
      * Process images from base64 to file storage
      */
     private function processImages($data, $userId, ImageWebpService $imageWebp)
     {
-        if (!isset($data['elements']) || !is_array($data['elements'])) {
+        if (! isset($data['elements']) || ! is_array($data['elements'])) {
             return $data;
         }
 
-        $folderName = 'user-' . $userId;
+        $folderName = 'user-'.$userId;
         $processedImages = [];
 
         foreach ($data['elements'] as &$element) {
@@ -440,7 +474,10 @@ class BlogPostController extends Controller
      */
     private function isBase64Image($string)
     {
-        if (!is_string($string)) return false;
+        if (! is_string($string)) {
+            return false;
+        }
+
         return strpos($string, 'data:image/') === 0 && strpos($string, 'base64,') !== false;
     }
 
@@ -499,7 +536,7 @@ class BlogPostController extends Controller
             'image' => [],
             'rich_text' => [],
             'text_left_image_right' => [],
-            'canvas_elements' => []
+            'canvas_elements' => [],
         ];
 
         if (isset($formData['elements']) && is_array($formData['elements'])) {
@@ -513,7 +550,7 @@ class BlogPostController extends Controller
                     'type' => $type,
                     'content' => $content,
                     'position' => $position,
-                    'created_at' => now()->toISOString()
+                    'created_at' => now()->toISOString(),
                 ];
 
                 // Map element types to database columns
@@ -548,7 +585,7 @@ class BlogPostController extends Controller
      */
     private function generateContentFromStructure($structureData)
     {
-        if (!isset($structureData['elements']) || !is_array($structureData['elements'])) {
+        if (! isset($structureData['elements']) || ! is_array($structureData['elements'])) {
             return '';
         }
 
@@ -566,15 +603,15 @@ class BlogPostController extends Controller
     private function renderElementForContent($element)
     {
         $templates = [
-            'heading' => fn($el) => "<{$el['content']['level']}>{$el['content']['text']}</{$el['content']['level']}>",
-            'text' => fn($el) => $el['content']['content'],
-            'image' => fn($el) => $el['content']['src'] ?
-                "<figure><img src=\"" . $this->getImageUrlForContent($el['content']['src']) . "\" alt=\"{$el['content']['alt']}\">" .
-                ($el['content']['caption'] ? "<figcaption>{$el['content']['caption']}</figcaption>" : "") . "</figure>" : '',
-            'banner' => fn($el) => $el['content']['src'] ?
-                "<div class=\"banner\"><img src=\"" . $this->getImageUrlForContent($el['content']['src']) . "\" alt=\"Banner\">" .
+            'heading' => fn ($el) => "<{$el['content']['level']}>{$el['content']['text']}</{$el['content']['level']}>",
+            'text' => fn ($el) => $el['content']['content'],
+            'image' => fn ($el) => $el['content']['src'] ?
+                '<figure><img src="'.$this->getImageUrlForContent($el['content']['src'])."\" alt=\"{$el['content']['alt']}\">".
+                ($el['content']['caption'] ? "<figcaption>{$el['content']['caption']}</figcaption>" : '').'</figure>' : '',
+            'banner' => fn ($el) => $el['content']['src'] ?
+                '<div class="banner"><img src="'.$this->getImageUrlForContent($el['content']['src']).'" alt="Banner">'.
                 "<div class=\"banner-content\"><h2>{$el['content']['title']}</h2><p>{$el['content']['subtitle']}</p></div></div>" : '',
-            'columns' => fn($el) => "<div class=\"row\"><div class=\"col-md-6\">{$el['content']['left']}</div><div class=\"col-md-6\">{$el['content']['right']}</div></div>"
+            'columns' => fn ($el) => "<div class=\"row\"><div class=\"col-md-6\">{$el['content']['left']}</div><div class=\"col-md-6\">{$el['content']['right']}</div></div>",
         ];
 
         return $templates[$element['type']]($element) ?? '';
@@ -591,7 +628,7 @@ class BlogPostController extends Controller
         }
 
         // If it's a storage path, add the asset path
-        return asset('website/' . $path);
+        return asset('website/'.$path);
     }
 
     /**
@@ -609,7 +646,7 @@ class BlogPostController extends Controller
         }
 
         while ($query->exists()) {
-            $slug = $originalSlug . '-' . $counter;
+            $slug = $originalSlug.'-'.$counter;
             $counter++;
             $query = BlogPost::where('slug', $slug);
             if ($excludeId) {
@@ -625,7 +662,7 @@ class BlogPostController extends Controller
      */
     private function prepareForDisplay($structure)
     {
-        if (!isset($structure['elements']) || !is_array($structure['elements'])) {
+        if (! isset($structure['elements']) || ! is_array($structure['elements'])) {
             return $structure;
         }
 
@@ -648,7 +685,6 @@ class BlogPostController extends Controller
         return $structure;
     }
 
-
     private function getCorrectImageUrl($path)
     {
         // If it's already a full URL, return as is
@@ -661,14 +697,15 @@ class BlogPostController extends Controller
             // Check if the path already contains the base URL to avoid duplication
             $baseUrl = request()->getSchemeAndHttpHost();
             if (strpos($path, $baseUrl) === false) {
-                return $baseUrl . '/website/' . $path;
+                return $baseUrl.'/website/'.$path;
             }
+
             return $path;
         }
 
         // For any other case, only add if not already a full URL
-        if (!filter_var($path, FILTER_VALIDATE_URL)) {
-            return asset('website/' . $path);
+        if (! filter_var($path, FILTER_VALIDATE_URL)) {
+            return asset('website/'.$path);
         }
 
         return $path;
@@ -679,7 +716,7 @@ class BlogPostController extends Controller
      */
     private function convertImagePathsToUrls($content)
     {
-        if (empty($content) || !is_string($content)) {
+        if (empty($content) || ! is_string($content)) {
             return $content;
         }
 
@@ -687,7 +724,7 @@ class BlogPostController extends Controller
         $content = preg_replace_callback(
             '/src=(["\'])(blog\/[^\1]+?\.(jpg|jpeg|png|gif|webp))\1/i',
             function ($matches) {
-                return 'src=' . $matches[1] . $this->getCorrectImageUrl($matches[2]) . $matches[1];
+                return 'src='.$matches[1].$this->getCorrectImageUrl($matches[2]).$matches[1];
             },
             $content
         );
@@ -701,6 +738,7 @@ class BlogPostController extends Controller
     private function calculateReadTime($content)
     {
         $wordCount = str_word_count(strip_tags($content));
+
         return max(1, ceil($wordCount / 200)); // 200 words per minute
     }
 }

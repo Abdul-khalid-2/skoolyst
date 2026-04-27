@@ -106,34 +106,15 @@
                 <div class="collapse d-md-block" style="visibility: visible;" id="filterCollapse">
                     <div class="card-body">
                         <form action="{{ route('mcqs.index') }}" method="GET" class="row g-3" id="mcqIndexFiltersForm">
-                            <div class="col-12 col-lg-8">
-                                <label class="form-label small fw-bold" for="mcqListSearchInput">Search in list</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
-                                    <input
-                                        type="text"
-                                        name="search"
-                                        id="mcqListSearchInput"
-                                        class="form-control"
-                                        value="{{ request('search') }}"
-                                        placeholder="Filter table: question, explanation, tags…"
-                                        autocomplete="off"
-                                    >
-                                    @if (request()->filled('search'))
-                                        <a
-                                            class="btn btn-outline-secondary d-flex align-items-center"
-                                            href="{{ route('mcqs.index', request()->except('search')) }}"
-                                            title="Clear text filter"
-                                        >
-                                            <i class="fas fa-times" aria-hidden="true"></i>
-                                        </a>
-                                    @else
-                                        <span class="btn btn-outline-secondary disabled d-flex align-items-center" tabindex="-1" aria-disabled="true" title="No text filter to clear">
-                                            <i class="fas fa-times" aria-hidden="true"></i>
-                                        </span>
-                                    @endif
-                                </div>
-                            </div>
+                            @if (request()->filled('sort_by'))
+                                <input type="hidden" name="sort_by" value="{{ request('sort_by') }}">
+                            @endif
+                            @if (request()->filled('sort_dir'))
+                                <input type="hidden" name="sort_dir" value="{{ request('sort_dir') }}">
+                            @endif
+                            @if (request()->filled('search'))
+                                <input type="hidden" name="search" value="{{ request('search') }}">
+                            @endif
                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                 <label class="form-label small fw-bold">Subject</label>
                                 <select name="subject_id" class="form-select form-select-sm js-select2">
@@ -325,35 +306,33 @@
                 </div>
             </div>
 
-            <!-- Bulk Actions - Responsive -->
-            <x-card class="mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
-                <div class="card-body p-3">
-                    <div class="d-flex flex-column flex-md-row align-items-center gap-3">
-                        <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 MCQs selected</span>
-                        <div class="d-flex flex-column flex-md-row align-items-center gap-2 w-100 w-md-auto">
-                            <select class="form-select form-select-sm me-md-2 flex-grow-1" id="bulkActionSelect">
-                                <option value="">Bulk Actions</option>
-                                <option value="publish">Publish</option>
-                                <option value="draft">Move to Draft</option>
-                                <option value="archive">Archive</option>
-                                <option value="verify">Verify</option>
-                                <option value="unverify">Unverify</option>
-                                <option value="delete">Delete</option>
-                            </select>
-                            <div class="d-flex gap-2 mt-2 mt-md-0">
-                                <x-button variant="primary" type="button" class="btn-sm flex-grow-1" id="applyBulkAction">
-                                    <span class="d-none d-md-inline">Apply</span>
-                                    <i class="fas fa-check d-inline d-md-none"></i>
-                                </x-button>
-                                <x-button variant="outline-secondary" type="button" class="btn-sm" id="clearSelection">
-                                    <span class="d-none d-md-inline">Clear</span>
-                                    <i class="fas fa-times d-inline d-md-none"></i>
-                                </x-button>
-                            </div>
+            <!-- Bulk Actions toolbar (shown when rows selected) -->
+            <div class="mb-3 mx-3 mx-md-0 border rounded bg-light px-3 py-3 d-none" id="bulkActionsCard">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-3">
+                    <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 MCQs selected</span>
+                    <div class="d-flex flex-column flex-md-row align-items-center gap-2 w-100 w-md-auto">
+                        <select class="form-select form-select-sm me-md-2 flex-grow-1" id="bulkActionSelect">
+                            <option value="">Bulk Actions</option>
+                            <option value="publish">Publish</option>
+                            <option value="draft">Move to Draft</option>
+                            <option value="archive">Archive</option>
+                            <option value="verify">Verify</option>
+                            <option value="unverify">Unverify</option>
+                            <option value="delete">Delete</option>
+                        </select>
+                        <div class="d-flex gap-2 mt-2 mt-md-0">
+                            <x-button variant="primary" type="button" class="btn-sm flex-grow-1" id="applyBulkAction">
+                                <span class="d-none d-md-inline">Apply</span>
+                                <i class="fas fa-check d-inline d-md-none"></i>
+                            </x-button>
+                            <x-button variant="outline-secondary" type="button" class="btn-sm" id="clearSelection">
+                                <span class="d-none d-md-inline">Clear</span>
+                                <i class="fas fa-times d-inline d-md-none"></i>
+                            </x-button>
                         </div>
                     </div>
                 </div>
-            </x-card>
+            </div>
 
             <!-- Smart Export Template Modal -->
             @include('dashboard.mcqs_system.mcqs._export_template_modal')
@@ -537,302 +516,138 @@
                 </div>
             </div>
 
-            <!-- MCQs Table - Responsive -->
-            <x-card class="mx-3 mx-md-0">
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover mb-0" id="mcqsTable">
-                            <thead class="d-none d-md-table-header-group">
-                                <tr>
-                                    <th width="40">
-                                        <input type="checkbox" class="form-check-input" id="selectAll">
-                                    </th>
-                                    <th width="40">#</th>
-                                    <th>Question</th>
-                                    <th>Subject/Topic</th>
-                                    <th>Type/Level</th>
-                                    <th width="70">Marks</th>
-                                    <th width="100">Status</th>
-                                    <th width="150" class="text-end">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($mcqs as $mcq)
-                                <tr data-id="{{ $mcq->id }}" class="d-none d-md-table-row {{ $mcq->status == 'draft' ? 'table-warning' : ($mcq->status == 'archived' ? 'table-secondary' : '') }}">
-                                    <td>
-                                        <input type="checkbox" class="form-check-input mcq-checkbox" value="{{ $mcq->id }}">
-                                    </td>
-                                    <td>{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $loop->iteration }}</td>
-                                    <td>
-                                        <div class="question-preview">
-                                            <div class="fw-bold mb-1">
-                                                {!! Str::limit(strip_tags($mcq->question), 60) !!}
-                                            </div>
-                                            <div class="small text-muted">
-                                                <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
-                                                    {{ $mcq->question_type == 'single' ? 'Single' : 'Multiple' }}
-                                                </x-badge>
-                                                @if($mcq->is_premium)
-                                                <x-badge variant="warning" class="ms-1">Premium</x-badge>
-                                                @endif
-                                                @if($mcq->is_verified)
-                                                <x-badge variant="success" class="ms-1">✓</x-badge>
-                                                @endif
-                                            </div>
+            <div id="mcq-data-table-wrap" class="mx-3 mx-md-0">
+                <x-data-table
+                    class="mb-0 shadow-sm"
+                    bulkActions="true"
+                    :headers="[
+                        ['label' => '#', 'key' => 'id', 'sortable' => true],
+                        ['label' => 'Question', 'key' => 'question', 'sortable' => true],
+                        ['label' => 'Subject/Topic', 'key' => 'subject', 'sortable' => true],
+                        ['label' => 'Type/Level', 'key' => 'difficulty_level', 'sortable' => true],
+                        ['label' => 'Marks', 'key' => 'marks', 'sortable' => true],
+                        ['label' => 'Status', 'key' => 'status', 'sortable' => true],
+                        ['label' => 'Actions', 'key' => 'actions', 'sortable' => false],
+                    ]"
+                    :records="$mcqs"
+                    :sortBy="request('sort_by')"
+                    :sortDir="request('sort_dir', 'desc')"
+                    :searchValue="request('search')"
+                    emptyTitle="No MCQs found"
+                    emptyDescription="Try adjusting your filters or add a new MCQ."
+                    emptyIcon="fa-question-circle"
+                >
+                    <x-slot name="emptyActions">
+                        <x-button href="{{ route('mcqs.create') }}" variant="primary">
+                            <i class="fas fa-plus me-2"></i>Add MCQ
+                        </x-button>
+                    </x-slot>
+                    <x-slot name="rows">
+                        @foreach ($mcqs as $mcq)
+                            <tr
+                                data-id="{{ $mcq->id }}"
+                                class="{{ $mcq->status?->value === 'draft' ? 'table-warning' : ($mcq->status?->value === 'archived' ? 'table-secondary' : '') }}"
+                            >
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        class="form-check-input data-table-row-checkbox mcq-checkbox"
+                                        value="{{ $mcq->id }}"
+                                    >
+                                </td>
+                                <td>{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $loop->iteration }}</td>
+                                <td>
+                                    <div class="question-preview">
+                                        <div class="fw-bold mb-1">
+                                            {!! Str::limit(strip_tags($mcq->question), 60) !!}
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="small">
-                                            <div class="fw-bold">{{ $mcq->subject->name ?? 'N/A' }}</div>
-                                            <div class="text-muted">{{ Str::limit($mcq->topic->title ?? 'N/A', 20) }}</div>
-                                            @if($mcq->testType)
-                                            <div class="text-muted">
-                                                <i class="fas fa-tag fa-xs me-1"></i>{{ Str::limit($mcq->testType->name, 15) }}
-                                            </div>
+                                        <div class="small text-muted">
+                                            <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
+                                                {{ $mcq->question_type == 'single' ? 'Single' : 'Multiple' }}
+                                            </x-badge>
+                                            @if ($mcq->is_premium)
+                                                <x-badge variant="warning" class="ms-1">Premium</x-badge>
+                                            @endif
+                                            @if ($mcq->is_verified)
+                                                <x-badge variant="success" class="ms-1">✓</x-badge>
                                             @endif
                                         </div>
-                                    </td>
-                                    <td>
-                                        <div class="small">
-                                            <div>
-                                                <x-badge :variant="$mcq->difficulty_badge_variant">
-                                                    {{ $mcq->difficulty_label }}
-                                                </x-badge>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div class="fw-bold">{{ $mcq->subject->name ?? 'N/A' }}</div>
+                                        <div class="text-muted">{{ Str::limit($mcq->topic->title ?? 'N/A', 20) }}</div>
+                                        @php $firstTestType = $mcq->testTypes->first(); @endphp
+                                        @if ($firstTestType)
+                                            <div class="text-muted">
+                                                <i class="fas fa-tag fa-xs me-1"></i>{{ Str::limit($firstTestType->name, 15) }}
                                             </div>
-                                            @if($mcq->time_limit_seconds)
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small">
+                                        <div>
+                                            <x-badge :variant="$mcq->difficulty_badge_variant">
+                                                {{ $mcq->difficulty_label }}
+                                            </x-badge>
+                                        </div>
+                                        @if ($mcq->time_limit_seconds)
                                             <div class="text-muted mt-1">
                                                 <i class="fas fa-clock fa-xs me-1"></i>{{ $mcq->time_limit_seconds }}s
                                             </div>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="text-center">
-                                            <span class="fw-bold">{{ $mcq->marks }}</span>
-                                            @if($mcq->negative_marks > 0)
-                                            <div class="small text-danger">-{{ $mcq->negative_marks }}</div>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <x-badge :variant="$mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary')">
-                                            {{ $mcq->status_label }}
-                                        </x-badge>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="btn-group" role="group">
-                                            <x-button
-                                                href="{{ route('mcqs.show', $mcq) }}"
-                                                variant="outline-info"
-                                                class="btn-sm"
-                                                data-bs-toggle="tooltip"
-                                                title="View"
-                                            >
-                                                <i class="fas fa-eye"></i>
-                                            </x-button>
-                                            <x-button
-                                                href="{{ route('mcqs.edit', $mcq) }}"
-                                                variant="outline-primary"
-                                                class="btn-sm"
-                                                data-bs-toggle="tooltip"
-                                                title="Edit"
-                                            >
-                                                <i class="fas fa-edit"></i>
-                                            </x-button>
-                                            @if(!$mcq->is_verified)
-                                            <form action="{{ route('mcqs.verify', $mcq) }}" 
-                                                  method="POST" class="d-inline"
-                                                  data-bs-toggle="tooltip" title="Verify">
-                                                @csrf
-                                                <x-button type="submit" variant="outline-success" class="btn-sm">
-                                                    <i class="fas fa-check"></i>
-                                                </x-button>
-                                            </form>
-                                            @else
-                                            <form action="{{ route('mcqs.unverify', $mcq) }}" 
-                                                  method="POST" class="d-inline"
-                                                  data-bs-toggle="tooltip" title="Unverify">
-                                                @csrf
-                                                <x-button type="submit" variant="outline-warning" class="btn-sm">
-                                                    <i class="fas fa-times"></i>
-                                                </x-button>
-                                            </form>
-                                            @endif
-                                            @if($mcq->mock_tests_count == 0)
-                                            <form action="{{ route('mcqs.destroy', $mcq) }}" 
-                                                  method="POST" class="d-inline"
-                                                  data-bs-toggle="tooltip" title="Delete">
-                                                @csrf @method('DELETE')
-                                                <x-button
-                                                    type="submit"
-                                                    variant="outline-danger"
-                                                    class="btn-sm"
-                                                    onclick="return confirm('Are you sure you want to delete this MCQ?')"
-                                                >
-                                                    <i class="fas fa-trash"></i>
-                                                </x-button>
-                                            </form>
-                                            @else
-                                            <x-button
-                                                type="button"
-                                                variant="outline-secondary"
-                                                class="btn-sm"
-                                                data-bs-toggle="tooltip"
-                                                title="Cannot delete MCQ used in mock tests"
-                                            >
-                                                <i class="fas fa-trash"></i>
-                                            </x-button>
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Mobile View Card -->
-                                <x-card class="mb-3 d-block d-md-none mx-3 {{ $mcq->status == 'draft' ? 'border-warning' : ($mcq->status == 'archived' ? 'border-secondary' : '') }}">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-start mb-2">
-                                            <div class="d-flex align-items-center">
-                                                <input type="checkbox" class="form-check-input me-2 mcq-checkbox" value="{{ $mcq->id }}">
-                                                <strong class="me-2">#{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $loop->iteration }}</strong>
-                                                <x-badge :variant="$mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary')">
-                                                    {{ $mcq->status_label }}
-                                                </x-badge>
-                                            </div>
-                                            <div class="text-end">
-                                                <x-badge :variant="$mcq->difficulty_badge_variant" class="me-1">
-                                                    {{ $mcq->difficulty_label }}
-                                                </x-badge>
-                                                <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
-                                                    {{ $mcq->question_type == 'single' ? 'S' : 'M' }}
-                                                </x-badge>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="mb-3">
-                                            <div class="fw-bold mb-1">
-                                                {!! Str::limit(strip_tags($mcq->question), 80) !!}
-                                            </div>
-                                            <div class="small text-muted">
-                                                <div>
-                                                    <i class="fas fa-book me-1"></i>
-                                                    {{ $mcq->subject->name ?? 'N/A' }}
-                                                </div>
-                                                @if($mcq->topic)
-                                                <div>
-                                                    <i class="fas fa-folder me-1"></i>
-                                                    {{ Str::limit($mcq->topic->title, 30) }}
-                                                </div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <div class="d-flex flex-wrap gap-1">
-                                                @if($mcq->is_premium)
-                                                <x-badge variant="warning">Premium</x-badge>
-                                                @endif
-                                                @if($mcq->is_verified)
-                                                <x-badge variant="success">Verified</x-badge>
-                                                @endif
-                                                @if($mcq->time_limit_seconds)
-                                                <x-badge variant="info">
-                                                    <i class="fas fa-clock me-1"></i>{{ $mcq->time_limit_seconds }}s
-                                                </x-badge>
-                                                @endif
-                                            </div>
-                                            <div class="text-end">
-                                                <div class="fw-bold">{{ $mcq->marks }} marks</div>
-                                                @if($mcq->negative_marks > 0)
-                                                <div class="small text-danger">-{{ $mcq->negative_marks }}</div>
-                                                @endif
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="d-flex justify-content-between">
-                                            <div class="btn-group" role="group">
-                                                <x-button href="{{ route('mcqs.show', $mcq) }}" variant="outline-info" class="btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </x-button>
-                                                <x-button href="{{ route('mcqs.edit', $mcq) }}" variant="outline-primary" class="btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </x-button>
-                                            </div>
-                                            <div class="btn-group" role="group">
-                                                @if(!$mcq->is_verified)
-                                                <form action="{{ route('mcqs.verify', $mcq) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <x-button type="submit" variant="outline-success" class="btn-sm">
-                                                        <i class="fas fa-check"></i>
-                                                    </x-button>
-                                                </form>
-                                                @else
-                                                <form action="{{ route('mcqs.unverify', $mcq) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <x-button type="submit" variant="outline-warning" class="btn-sm">
-                                                        <i class="fas fa-times"></i>
-                                                    </x-button>
-                                                </form>
-                                                @endif
-                                                @if($mcq->mock_tests_count == 0)
-                                                <form action="{{ route('mcqs.destroy', $mcq) }}" method="POST" class="d-inline">
-                                                    @csrf @method('DELETE')
-                                                    <x-button
-                                                        type="submit"
-                                                        variant="outline-danger"
-                                                        class="btn-sm"
-                                                        onclick="return confirm('Delete this MCQ?')"
-                                                    >
-                                                        <i class="fas fa-trash"></i>
-                                                    </x-button>
-                                                </form>
-                                                @else
-                                                <x-button
-                                                    type="button"
-                                                    variant="outline-secondary"
-                                                    class="btn-sm"
-                                                    data-bs-toggle="tooltip"
-                                                    title="Cannot delete"
-                                                >
-                                                    <i class="fas fa-trash"></i>
-                                                </x-button>
-                                                @endif
-                                            </div>
-                                        </div>
+                                        @endif
                                     </div>
-                                </x-card>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        
-                        @if($mcqs->count() == 0)
-                        <x-empty-state
-                            class="py-5"
-                            icon="fa-question-circle"
-                            title="No MCQs found"
-                            description="Try adjusting your filters or add a new MCQ"
-                        >
-                            <x-slot name="actions">
-                                <x-button href="{{ route('mcqs.create') }}" variant="primary" class="mt-2">
-                                    <i class="fas fa-plus me-2"></i> Add MCQ
-                                </x-button>
-                            </x-slot>
-                        </x-empty-state>
-                        @endif
-                    </div>
-                    
-                    <!-- Pagination - Responsive -->
-                    @if($mcqs->hasPages())
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center p-3 border-top">
-                        <div class="text-muted small mb-2 mb-md-0 text-center text-md-start">
-                            Showing {{ $mcqs->firstItem() }} to {{ $mcqs->lastItem() }} of {{ $mcqs->total() }}
-                        </div>
-                        <nav>
-                            {{ $mcqs->onEachSide(1)->links('pagination::bootstrap-5') }}
-                        </nav>
-                    </div>
-                    @endif
-                </div>
-            </x-card>
+                                </td>
+                                <td>
+                                    <div class="text-center">
+                                        <span class="fw-bold">{{ $mcq->marks }}</span>
+                                        @if ($mcq->negative_marks > 0)
+                                            <div class="small text-danger">-{{ $mcq->negative_marks }}</div>
+                                        @endif
+                                    </div>
+                                </td>
+                                <td>
+                                    <x-badge :variant="$mcq->status?->value === 'published' ? 'success' : ($mcq->status?->value === 'draft' ? 'warning' : 'secondary')">
+                                        {{ $mcq->status_label }}
+                                    </x-badge>
+                                </td>
+                                <td class="text-end">
+                                    <x-table-action>
+                                        <x-table-action-item href="{{ route('mcqs.show', $mcq) }}" icon="fa-eye">
+                                            View
+                                        </x-table-action-item>
+                                        <x-table-action-item href="{{ route('mcqs.edit', $mcq) }}" icon="fa-edit">
+                                            Edit
+                                        </x-table-action-item>
+                                        @if (! $mcq->is_verified)
+                                            <x-table-action-item href="{{ route('mcqs.verify', $mcq) }}" icon="fa-check" method="POST">
+                                                Verify
+                                            </x-table-action-item>
+                                        @else
+                                            <x-table-action-item href="{{ route('mcqs.unverify', $mcq) }}" icon="fa-times" method="POST">
+                                                Unverify
+                                            </x-table-action-item>
+                                        @endif
+                                        @if ($mcq->mock_tests_count == 0)
+                                            <x-table-action-item
+                                                href="{{ route('mcqs.destroy', $mcq) }}"
+                                                icon="fa-trash"
+                                                variant="danger"
+                                                method="DELETE"
+                                                onclick="return confirm('Are you sure you want to delete this MCQ?')"
+                                            >
+                                                Delete
+                                            </x-table-action-item>
+                                        @endif
+                                    </x-table-action>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </x-slot>
+                </x-data-table>
+            </div>
         </div>
     </main>
 
@@ -843,35 +658,37 @@
             const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
             tooltips.forEach(tooltip => new bootstrap.Tooltip(tooltip));
             
-            // Bulk selection functionality
-            const selectAll = document.getElementById('selectAll');
+            // Bulk selection: data-table header checkbox + row .mcq-checkbox
+            const tableWrap = document.getElementById('mcq-data-table-wrap');
+            const selectAll = tableWrap ? tableWrap.querySelector('table thead tr th input.form-check-input') : null;
             const checkboxes = document.querySelectorAll('.mcq-checkbox');
             const bulkActionsCard = document.getElementById('bulkActionsCard');
             const selectedCount = document.getElementById('selectedCount');
             const clearSelectionBtn = document.getElementById('clearSelection');
-            
-            // Select all checkbox
-            selectAll.addEventListener('change', function() {
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+
+            if (selectAll) {
+                selectAll.addEventListener('change', function() {
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                    updateBulkActions();
                 });
-                updateBulkActions();
-            });
-            
-            // Individual checkbox change
+            }
+
             checkboxes.forEach(checkbox => {
                 checkbox.addEventListener('change', updateBulkActions);
             });
+
+            if (clearSelectionBtn) {
+                clearSelectionBtn.addEventListener('click', function() {
+                    checkboxes.forEach(checkbox => { checkbox.checked = false; });
+                    if (selectAll) selectAll.checked = false;
+                    updateBulkActions();
+                });
+            }
             
-            // Clear selection
-            clearSelectionBtn.addEventListener('click', function() {
-                checkboxes.forEach(checkbox => checkbox.checked = false);
-                if (selectAll) selectAll.checked = false;
-                updateBulkActions();
-            });
-            
-            // Apply bulk action
-            document.getElementById('applyBulkAction').addEventListener('click', function() {
+            const applyBulkBtn = document.getElementById('applyBulkAction');
+            if (applyBulkBtn) applyBulkBtn.addEventListener('click', function() {
                 const action = document.getElementById('bulkActionSelect').value;
                 const selectedIds = Array.from(checkboxes)
                     .filter(cb => cb.checked)
@@ -923,6 +740,8 @@
                 if (selected > 0) {
                     if (bulkActionsCard) {
                         bulkActionsCard.classList.remove('d-none');
+                    }
+                    if (selectedCount) {
                         selectedCount.textContent = `${selected} MCQ${selected === 1 ? '' : 's'} selected`;
                     }
                 } else {
@@ -943,25 +762,6 @@
                     this.previousElementSibling.querySelector('.fa-chevron-up').className = 'fas fa-chevron-down';
                 });
             }
-            
-            // Mobile responsive table initialization
-            function initMobileTable() {
-                if (window.innerWidth < 768) {
-                    // Hide desktop table, show mobile cards
-                    document.querySelectorAll('#mcqsTable .d-none.d-md-table-row').forEach(row => {
-                        row.style.display = 'none';
-                    });
-                } else {
-                    // Show desktop table, hide mobile cards
-                    document.querySelectorAll('#mcqsTable .d-block.d-md-none').forEach(card => {
-                        card.style.display = 'none';
-                    });
-                }
-            }
-            
-            // Initialize and add resize listener
-            initMobileTable();
-            window.addEventListener('resize', initMobileTable);
             
             initMcqLiveSearch();
             initBulkMcqImport();
@@ -1560,18 +1360,6 @@
                 background: transparent;
             }
             
-            #mcqsTable {
-                min-width: auto;
-            }
-            
-            .card.mb-3.d-block.d-md-none {
-                margin-left: 0 !important;
-                margin-right: 0 !important;
-            }
-            
-            .card.mb-3.d-block.d-md-none:first-child {
-                margin-top: 1rem;
-            }
         }
         
         /* Badge Adjustments */

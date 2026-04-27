@@ -2,29 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreSchoolRequest;
+use App\Http\Requests\UpdateSchoolRequest;
 use App\Models\Curriculum;
 use App\Models\Feature;
 use App\Models\School;
 use App\Models\User;
-use App\Http\Requests\StoreSchoolRequest;
-use App\Http\Requests\UpdateSchoolRequest;
 use App\Services\AdminSchoolService;
 use App\Services\ImageWebpService;
-use App\Services\SchoolTranslationService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
+
 class SchoolController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try {
+            $user = auth()->user();
 
-            if (auth()->user()->hasRole('super-admin')) {
-                $schools = School::select([
+            if ($user->hasRole('super-admin')) {
+                $query = School::query()->select([
                     'id',
                     'name',
                     'email',
@@ -33,14 +33,12 @@ class SchoolController extends Controller
                     'address',
                     'status',
                     'school_type',
-                    'created_at'
-                ])->latest()->paginate(10);
-
-                return view('dashboard.schooles.index', compact('schools'));
-            } elseif (auth()->user()->hasRole('school-admin')) {
-
-                $schoolAdminSchoolId = auth()->user()->school_id;
-                $schools = School::where('visibility', 'public')
+                    'created_at',
+                ]);
+            } elseif ($user->hasRole('school-admin')) {
+                $query = School::query()
+                    ->where('visibility', 'public')
+                    ->where('id', $user->school_id)
                     ->select([
                         'id',
                         'name',
@@ -50,13 +48,38 @@ class SchoolController extends Controller
                         'status',
                         'address',
                         'school_type',
-                        'created_at'
-                    ])->where('id', $schoolAdminSchoolId)->latest()->paginate(10);
-
-                return view('dashboard.schooles.index', compact('schools'));
+                        'created_at',
+                    ]);
             } else {
                 return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
             }
+
+            $search = $request->string('search')->trim()->toString();
+            if ($search !== '') {
+                $searchableColumns = ['name', 'email', 'contact_number', 'address', 'city'];
+                $query->where(function ($q) use ($search, $searchableColumns) {
+                    $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                    foreach (array_slice($searchableColumns, 1) as $column) {
+                        $q->orWhere($column, 'like', '%'.$search.'%');
+                    }
+                });
+            }
+
+            $sortBy = $request->get('sort_by', 'created_at');
+            $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+            $allowedSort = [
+                'id', 'name', 'email', 'contact_number', 'address', 'city',
+                'status', 'school_type', 'created_at',
+            ];
+            if (! in_array($sortBy, $allowedSort, true)) {
+                $sortBy = 'created_at';
+            }
+
+            $query->orderBy($sortBy, $sortDir);
+
+            $schools = $query->paginate(10)->withQueryString();
+
+            return view('dashboard.schooles.index', compact('schools'));
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to load schools. Please try again.');
         }
@@ -82,7 +105,7 @@ class SchoolController extends Controller
                 || str_contains($e->getMessage(), 'Image uploads require')) {
                 $userMessage = 'Image upload failed: PHP GD or Imagick is not enabled for this site. Enable extension=gd in the php.ini used by your web server and restart it, or see WEBP_IMAGE_DEPLOY_INSTRUCTIONS.md. You can set IMAGE_NO_DRIVER_STORE_ORIGINAL=true in .env as a temporary workaround.';
             } elseif (config('app.debug')) {
-                $userMessage .= ' Technical detail: ' . $e->getMessage();
+                $userMessage .= ' Technical detail: '.$e->getMessage();
             }
 
             return redirect()->back()
@@ -108,7 +131,7 @@ class SchoolController extends Controller
                 'reviews',
                 'images',
                 'branches',
-                'events'
+                'events',
             ])->findOrFail($id);
 
             return view('dashboard.schooles.show', compact('school'));
@@ -130,7 +153,7 @@ class SchoolController extends Controller
                 'reviews',
                 'images',
                 'branches',
-                'events'
+                'events',
             ])->findOrFail($id);
 
             $user = User::where('school_id', $school->id)->first();
@@ -190,8 +213,6 @@ class SchoolController extends Controller
         }
     }
 
-
-
     public function register(Request $request)
     {
         $validated = $request->validate([
@@ -236,7 +257,7 @@ class SchoolController extends Controller
                         $transformedFees[$feeEntry['range']] = $feeEntry['amount'];
                     }
                 }
-                $classWiseFees = json_encode($transformedFees);      
+                $classWiseFees = json_encode($transformedFees);
             }
 
             // Create the school
@@ -278,7 +299,8 @@ class SchoolController extends Controller
             return redirect()->route('school.dashboard')->with('success', 'School registered successfully!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Registration failed: ' . $e->getMessage())->withInput();
+
+            return back()->with('error', 'Registration failed: '.$e->getMessage())->withInput();
         }
     }
 }

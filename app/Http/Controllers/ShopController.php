@@ -3,13 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Shop;
-use App\Models\School;
-use App\Models\ShopSchoolAssociation;
 use App\Models\User;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class ShopController extends Controller
@@ -21,53 +18,13 @@ class ShopController extends Controller
 
     public function index(Request $request)
     {
-        $query = Shop::with(['user', 'schoolAssociations.school']);
+        if (Auth::user()->hasRole('school-admin')) {
+            $query = Shop::with(['user', 'schoolAssociations.school'])->withCount('schoolAssociations');
 
-        if (Auth::user()->hasRole('shop-owner')) {
-            $query->where('user_id', Auth::id());
-
-            // Apply filters
-            if ($request->has('city')) {
-                $query->where('city', $request->city);
-            }
-
-            if ($request->has('shop_type')) {
-                $query->where('shop_type', $request->shop_type);
-            }
-
-            if ($request->has('is_verified')) {
-                $query->where('is_verified', $request->boolean('is_verified'));
-            }
-
-            $shops = $query->paginate(15);
-
-            return view('dashboard.shops.index', compact('shops'));
-        } elseif (Auth::user()->hasRole('super-admin')) {
-
-            // Apply filters
-            if ($request->has('city')) {
-                $query->where('city', $request->city);
-            }
-
-            if ($request->has('shop_type')) {
-                $query->where('shop_type', $request->shop_type);
-            }
-
-            if ($request->has('is_verified')) {
-                $query->where('is_verified', $request->boolean('is_verified'));
-            }
-
-            $shops = $query->paginate(15);
-
-            return view('dashboard.shops.index', compact('shops'));
-        } elseif (Auth::user()->hasRole('school-admin')) {
-            // Fix: Use the school() relationship instead of schools()
             $schoolId = Auth::user()->school_id;
-
             if ($schoolId) {
                 $query->whereHas('schoolAssociations', function ($q) use ($schoolId) {
                     $q->where('school_id', $schoolId)
-                        // ->where('status', 'approved')
                         ->where('association_type', 'affiliated')
                         ->where('is_active', true);
                 });
@@ -75,23 +32,75 @@ class ShopController extends Controller
                 $query->where('id', 0);
             }
 
+            $this->applyShopIndexLegacyFilters($query, $request);
+            $this->applyShopIndexSearchAndSort($query, $request);
 
-            // Apply filters
-            if ($request->has('city')) {
-                $query->where('city', $request->city);
-            }
-
-            if ($request->has('shop_type')) {
-                $query->where('shop_type', $request->shop_type);
-            }
-
-            if ($request->has('is_verified')) {
-                $query->where('is_verified', $request->boolean('is_verified'));
-            }
-
-            $shops = $query->paginate(15);
+            $shops = $query->paginate(10)->withQueryString();
 
             return view('dashboard.shops.schools.index', compact('shops'));
+        }
+
+        if (! Auth::user()->hasRole('shop-owner') && ! Auth::user()->hasRole('super-admin')) {
+            abort(403);
+        }
+
+        $query = Shop::with(['user', 'schoolAssociations.school'])->withCount('schoolAssociations');
+
+        if (Auth::user()->hasRole('shop-owner')) {
+            $query->where('user_id', Auth::id());
+        }
+
+        $this->applyShopIndexLegacyFilters($query, $request);
+        $this->applyShopIndexSearchAndSort($query, $request);
+
+        $shops = $query->paginate(10)->withQueryString();
+
+        return view('dashboard.shops.index', compact('shops'));
+    }
+
+    private function applyShopIndexLegacyFilters($query, Request $request): void
+    {
+        if ($request->has('city')) {
+            $query->where('city', $request->city);
+        }
+
+        if ($request->has('shop_type')) {
+            $query->where('shop_type', $request->shop_type);
+        }
+
+        if ($request->has('is_verified')) {
+            $query->where('is_verified', $request->boolean('is_verified'));
+        }
+    }
+
+    private function applyShopIndexSearchAndSort($query, Request $request): void
+    {
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['name', 'email', 'slug', 'phone', 'city', 'state', 'address'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
+            });
+        }
+
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'name', 'email', 'slug', 'shop_type', 'city', 'state',
+            'is_active', 'is_verified', 'rating', 'total_reviews',
+            'created_at', 'id', 'associations',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+        }
+
+        if ($sortBy === 'associations') {
+            $query->orderBy('school_associations_count', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
         }
     }
 
@@ -135,8 +144,6 @@ class ShopController extends Controller
             'owner_password' => 'required|string|min:8|confirmed',
         ]);
 
-
-
         // try {
         // Create Shop Owner User
         $owner = User::create([
@@ -172,7 +179,6 @@ class ShopController extends Controller
             $shop->update(['banner_url' => $bannerPath]);
         }
 
-
         return redirect()->route('shops.show', $shop)->with('success', 'Shop created successfully with owner account.');
         // } catch (\Exception $e) {
         //     return back()->with('error', 'Failed to create shop: ' . $e->getMessage());
@@ -184,13 +190,16 @@ class ShopController extends Controller
 
         if (Auth::user()->hasRole('shop-owner')) {
             $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+
             return view('dashboard.shops.show', compact('shop'));
         } elseif (Auth::user()->hasRole('super-admin')) {
 
             $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+
             return view('dashboard.shops.show', compact('shop'));
         } elseif (Auth::user()->hasRole('school-admin')) {
             $shop->load(['user', 'schoolAssociations.school', 'products.category']);
+
             return view('dashboard.shops.schools.show', compact('shop'));
         }
     }
@@ -248,6 +257,7 @@ class ShopController extends Controller
     public function destroy(Shop $shop)
     {
         $shop->delete();
+
         return redirect()->route('shops.index')->with('success', 'Shop deleted successfully.');
     }
 
@@ -307,6 +317,7 @@ class ShopController extends Controller
     {
         $slug = \Illuminate\Support\Str::slug($name);
         $count = Shop::where('slug', 'LIKE', "{$slug}%")->count();
+
         return $count ? "{$slug}-{$count}" : $slug;
     }
 }
