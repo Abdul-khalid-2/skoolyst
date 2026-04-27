@@ -1,0 +1,19 @@
+/* dashboard/products/index */
+.products-index-thumb {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.products-index-thumb-placeholder {
+    width: 50px;
+    height: 50px;
+}
+
+.products-badge-sm {
+    font-size: 0.7rem;
+}
+
+.products-table-actions form {
+    display: inline;
+}

@@ -1,25 +1,27 @@
 <x-app-layout>
     <main class="main-content">
         <section id="product-details" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">{{ $product->name }}</h2>
                     <p class="mb-0 text-muted">Product details and information</p>
-                </div>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('products.edit', $product) }}" class="btn btn-primary">
-                        <i class="fas fa-edit me-2"></i>Edit
-                    </a>
-                    <a href="{{ route('products.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left me-2"></i>Back
-                    </a>
-                </div>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <div class="d-flex gap-2">
+                        <x-button href="{{ route('products.edit', $product) }}" variant="primary">
+                            <i class="fas fa-edit me-2"></i>Edit
+                        </x-button>
+                        <x-button href="{{ route('products.index') }}" variant="secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back
+                        </x-button>
+                    </div>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-4">
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-body text-center">
                             @if($product->main_image_url)
                                 <img src="{{ asset('website/'. $product->main_image_url) }}" alt="{{ $product->name }}" 
@@ -41,10 +43,10 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Quick Actions -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Quick Actions</h5>
                         </div>
@@ -59,30 +61,30 @@
                                         <option value="add">Add</option>
                                         <option value="subtract">Subtract</option>
                                     </select>
-                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <x-button type="submit" variant="primary">Update</x-button>
                                 </div>
                             </form>
 
                             <!-- Status Badges -->
                             <div class="text-center">
                                 @if($product->is_featured)
-                                    <span class="badge bg-warning mb-2">Featured</span>
+                                    <x-badge variant="warning" class="mb-2">Featured</x-badge>
                                 @endif
-                                <span class="badge bg-{{ $product->is_active ? 'success' : 'secondary' }} mb-2">
+                                <x-badge variant="{{ $product->is_active ? 'success' : 'secondary' }}" class="mb-2">
                                     {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                </span>
+                                </x-badge>
                                 @if(!$product->is_approved)
-                                    <span class="badge bg-warning mb-2">Pending Approval</span>
+                                    <x-badge variant="warning" class="mb-2">Pending Approval</x-badge>
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
 
                 <!-- Product Details -->
                 <div class="col-lg-8">
                     <!-- Basic Information -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">Basic Information</h5>
                         </div>
@@ -97,7 +99,7 @@
                                         <tr>
                                             <th>Product Type:</th>
                                             <td>
-                                                <span class="badge bg-info text-capitalize">{{ $product->product_type }}</span>
+                                                <x-badge variant="info" class="text-capitalize">{{ $product->product_type }}</x-badge>
                                             </td>
                                         </tr>
                                         <tr>
@@ -146,12 +148,12 @@
                                 </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Pricing & Inventory -->
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="card mb-4">
+                            <x-card class="mb-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Pricing</h5>
                                 </div>
@@ -183,11 +185,11 @@
                                         @endif
                                     </table>
                                 </div>
-                            </div>
+                            </x-card>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="card mb-4">
+                            <x-card class="mb-4">
                                 <div class="card-header">
                                     <h5 class="mb-0">Inventory</h5>
                                 </div>
@@ -196,9 +198,9 @@
                                         <tr>
                                             <th width="60%">Stock Quantity:</th>
                                             <td class="text-end">
-                                                <span class="badge bg-{{ $product->is_in_stock ? 'success' : 'danger' }}">
+                                                <x-badge variant="{{ $product->is_in_stock ? 'success' : 'danger' }}">
                                                     {{ $product->stock_quantity }}
-                                                </span>
+                                                </x-badge>
                                             </td>
                                         </tr>
                                         <tr>
@@ -216,24 +218,24 @@
                                                 <th>Stock Status:</th>
                                                 <td class="text-end">
                                                     @if($product->isLowStock())
-                                                        <span class="badge bg-warning">Low Stock</span>
+                                                        <x-badge variant="warning">Low Stock</x-badge>
                                                     @elseif($product->is_in_stock)
-                                                        <span class="badge bg-success">In Stock</span>
+                                                        <x-badge variant="success">In Stock</x-badge>
                                                     @else
-                                                        <span class="badge bg-danger">Out of Stock</span>
+                                                        <x-badge variant="danger">Out of Stock</x-badge>
                                                     @endif
                                                 </td>
                                             </tr>
                                         @endif
                                     </table>
                                 </div>
-                            </div>
+                            </x-card>
                         </div>
                     </div>
 
                     <!-- Product Attributes -->
                     @if($product->attributes)
-                        <div class="card mb-4">
+                        <x-card class="mb-4">
                             <div class="card-header">
                                 <h5 class="mb-0">Product Attributes</h5>
                             </div>
@@ -322,7 +324,7 @@
                                     </div>
                                 @endif
                             </div>
-                        </div>
+                        </x-card>
                     @endif
                 </div>
             </div>

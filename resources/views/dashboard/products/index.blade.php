@@ -1,26 +1,26 @@
 <x-app-layout>
+    @push('css')
+        <link rel="stylesheet" href="{{ asset('css/dashboard/products/index.css') }}">
+    @endpush
     <main class="main-content">
         <section id="products" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Products</h2>
                     <p class="mb-0 text-muted">Manage your products inventory</p>
-                </div>
-                <a href="{{ route('products.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i> Add Product
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('products.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i> Add Product
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
-            <!-- Filters -->
-            <div class="card mb-4">
+            <x-card class="mb-4">
                 <div class="card-body">
                     <form action="{{ route('products.index') }}" method="GET">
                         <div class="row g-3">
@@ -51,15 +51,14 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <button type="submit" class="btn btn-primary w-100">Filter</button>
+                                <x-button type="submit" variant="primary" class="w-100">Filter</x-button>
                             </div>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-card>
 
-            <!-- Products Table -->
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -81,11 +80,10 @@
                                     <tr>
                                         <td>
                                             @if($product->main_image_url)
-                                                <img src="{{ asset('website/'.$product->main_image_url) }}" alt="{{ $product->name }}" 
-                                                     class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                <img src="{{ asset('website/'.$product->main_image_url) }}" alt="{{ $product->name }}"
+                                                     class="img-thumbnail products-index-thumb">
                                             @else
-                                                <div class="bg-light d-flex align-items-center justify-content-center rounded" 
-                                                     style="width: 50px; height: 50px;">
+                                                <div class="bg-light d-flex align-items-center justify-content-center rounded products-index-thumb-placeholder">
                                                     <i class="fas fa-image text-muted"></i>
                                                 </div>
                                             @endif
@@ -94,7 +92,7 @@
                                             <div class="d-flex flex-column">
                                                 <strong>{{ $product->name }}</strong>
                                                 @if($product->is_featured)
-                                                    <span class="badge bg-warning mt-1" style="font-size: 0.7rem;">Featured</span>
+                                                    <x-badge variant="warning" class="mt-1 products-badge-sm">Featured</x-badge>
                                                 @endif
                                             </div>
                                         </td>
@@ -115,65 +113,65 @@
                                         </td>
                                         <td>
                                             @if($product->manage_stock)
-                                                <span class="badge bg-{{ $product->is_in_stock ? 'success' : 'danger' }}">
+                                                <x-badge variant="{{ $product->is_in_stock ? 'success' : 'danger' }}">
                                                     {{ $product->stock_quantity }} in stock
-                                                </span>
+                                                </x-badge>
                                                 @if($product->isLowStock())
-                                                    <span class="badge bg-warning mt-1">Low Stock</span>
+                                                    <x-badge variant="warning" class="d-inline-block mt-1">Low Stock</x-badge>
                                                 @endif
                                             @else
-                                                <span class="badge bg-info">Not Tracked</span>
+                                                <x-badge variant="info">Not Tracked</x-badge>
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ $product->is_active ? 'success' : 'secondary' }}">
+                                            <x-badge variant="{{ $product->is_active ? 'success' : 'secondary' }}">
                                                 {{ $product->is_active ? 'Active' : 'Inactive' }}
-                                            </span>
+                                            </x-badge>
                                             @if(!$product->is_approved)
-                                                <span class="badge bg-warning mt-1">Pending</span>
+                                                <x-badge variant="warning" class="d-inline-block mt-1">Pending</x-badge>
                                             @endif
                                         </td>
                                         <td>
-                                            <div class="btn-group">
-                                                <a href="{{ route('products.show', $product) }}" 
-                                                   class="btn btn-sm btn-outline-info" title="View">
+                                            <div class="btn-group products-table-actions">
+                                                <x-button href="{{ route('products.show', $product) }}"
+                                                   variant="outline-info" class="btn-sm" title="View">
                                                     <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('products.edit', $product) }}" 
-                                                   class="btn btn-sm btn-outline-primary" title="Edit">
+                                                </x-button>
+                                                <x-button href="{{ route('products.edit', $product) }}"
+                                                   variant="outline-primary" class="btn-sm" title="Edit">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('products.destroy', $product) }}" method="POST" 
+                                                </x-button>
+                                                <form action="{{ route('products.destroy', $product) }}" method="POST"
                                                       class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                    <x-button type="submit" variant="outline-danger" class="btn-sm" title="Delete">
                                                         <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    </x-button>
                                                 </form>
                                             </div>
                                         </td>
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-4">
-                                            <div class="text-muted">
-                                                <i class="fas fa-box-open fa-2x mb-3"></i>
-                                                <p>No products found.</p>
-                                                <a href="{{ route('products.create') }}" class="btn btn-primary">
-                                                    <i class="fas fa-plus me-2"></i>Create Your First Product
-                                                </a>
-                                            </div>
+                                        <td colspan="9" class="p-0 border-0">
+                                            <x-empty-state title="No products found" icon="fa-box-open" class="py-4">
+                                                <x-slot name="actions">
+                                                    <x-button href="{{ route('products.create') }}" variant="primary">
+                                                        <i class="fas fa-plus me-2"></i>Create Your First Product
+                                                    </x-button>
+                                                </x-slot>
+                                            </x-empty-state>
                                         </td>
                                     </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    
+
                     {{ $products->links() }}
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

@@ -1,17 +1,19 @@
 <x-app-layout>
     <main class="main-content">
         <section id="edit-product" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Edit Product</h2>
                     <p class="mb-0 text-muted">Update product information</p>
-                </div>
-                <a href="{{ route('products.show', $product) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Product
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('products.show', $product) }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Product
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <form action="{{ route('products.update', $product) }}" method="POST" enctype="multipart/form-data">
                         @csrf
@@ -20,7 +22,7 @@
                         <div class="row">
                             <!-- Basic Information -->
                             <div class="col-lg-8">
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Basic Information</h5>
                                     </div>
@@ -66,10 +68,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- Product Images -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Product Images</h5>
                                     </div>
@@ -104,9 +106,9 @@
                                         <!-- New Main Image Preview -->
                                         <div id="mainImagePreview" class="mt-3 text-center d-none">
                                             <img id="previewMainImage" class="img-thumbnail" style="max-height: 200px;">
-                                            <button type="button" id="removeMainImage" class="btn btn-sm btn-danger mt-2">
+                                            <x-button type="button" id="removeMainImage" variant="danger" class="btn-sm mt-2">
                                                 <i class="fas fa-times me-1"></i>Remove New Image
-                                            </button>
+                                            </x-button>
                                         </div>
 
                                         <!-- Current Gallery Images -->
@@ -145,10 +147,10 @@
                                         <!-- New Gallery Preview -->
                                         <div id="galleryPreview" class="mt-3 row g-2 d-none"></div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- Product Attributes -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Product Attributes</h5>
                                     </div>
@@ -221,14 +223,13 @@
                                         <div id="productAttributes" class="mt-4">
                                             @if($product->attributes)
                                                 <!-- You can load existing attributes here -->
-                                                <div class="alert alert-info">
-                                                    <i class="fas fa-info-circle me-2"></i>
+                                                <x-alert variant="info" :dismissible="false">
                                                     Product attributes are loaded. You can update them in the form below.
-                                                </div>
+                                                </x-alert>
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- SEO Information -->
                                 {{-- <div class="card mb-4">
@@ -272,7 +273,7 @@
                             <!-- Sidebar -->
                             <div class="col-lg-4">
                                 <!-- Shop & Category -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Shop & Category</h5>
                                     </div>
@@ -309,10 +310,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- Pricing -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Pricing</h5>
                                     </div>
@@ -344,10 +345,10 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- Inventory -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Inventory</h5>
                                     </div>
@@ -375,10 +376,10 @@
                                             <label class="form-check-label" for="manage_stock">Manage Stock</label>
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
 
                                 <!-- Status -->
-                                <div class="card mb-4">
+                                <x-card class="mb-4">
                                     <div class="card-header">
                                         <h5 class="mb-0">Status</h5>
                                     </div>
@@ -393,7 +394,7 @@
                                             <label class="form-check-label" for="is_active">Active</label>
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                             </div>
                         </div>
 
@@ -401,18 +402,29 @@
                         <div class="row mt-4">
                             <div class="col-12">
                                 <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Update Product
-                                    </button>
-                                    <a href="{{ route('products.show', $product) }}" class="btn btn-secondary">Cancel</a>
+                                    </x-button>
+                                    <x-button href="{{ route('products.show', $product) }}" variant="secondary">Cancel</x-button>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
+
+    <template id="product-gallery-thumb-template">
+        <div class="col-4">
+            <div class="position-relative">
+                <img alt="" class="img-thumbnail gallery-thumb-img" style="height: 80px; object-fit: cover;">
+                <x-button type="button" variant="danger" class="btn-sm position-absolute top-0 end-0" data-gallery-remove="true">
+                    <i class="fas fa-times"></i>
+                </x-button>
+            </div>
+        </div>
+    </template>
 
     @push('scripts')
     <script>
@@ -438,40 +450,40 @@
             document.getElementById('mainImagePreview').classList.add('d-none');
         });
 
+        const galleryPreviewEl = document.getElementById('galleryPreview');
+        const galleryThumbTemplate = document.getElementById('product-gallery-thumb-template');
+
+        galleryPreviewEl.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-gallery-remove]');
+            if (btn) {
+                e.preventDefault();
+                btn.closest('.col-4').remove();
+            }
+        });
+
         // Gallery images preview
         document.getElementById('image_gallery').addEventListener('change', function(e) {
             const files = e.target.files;
-            const previewContainer = document.getElementById('galleryPreview');
-            
+            const previewContainer = galleryPreviewEl;
+
             previewContainer.innerHTML = '';
             previewContainer.classList.remove('d-none');
-            
+
             if (files.length > 0) {
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        const col = document.createElement('div');
-                        col.className = 'col-4';
-                        col.innerHTML = `
-                            <div class="position-relative">
-                                <img src="${e.target.result}" class="img-thumbnail" style="height: 80px; object-fit: cover;">
-                                <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0" onclick="removeGalleryImage(this)">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        `;
-                        previewContainer.appendChild(col);
-                    }
+
+                    reader.onload = function(ev) {
+                        const node = galleryThumbTemplate.content.cloneNode(true);
+                        const img = node.querySelector('.gallery-thumb-img');
+                        img.src = ev.target.result;
+                        previewContainer.appendChild(node);
+                    };
                     reader.readAsDataURL(file);
                 }
             }
         });
-
-        function removeGalleryImage(button) {
-            button.closest('.col-4').remove();
-        }
     </script>
     @endpush
 </x-app-layout>
