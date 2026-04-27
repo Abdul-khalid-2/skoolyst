@@ -1,35 +1,33 @@
 <x-app-layout>
     <main class="main-content">
         <section id="shops" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Shops</h2>
                     <p class="mb-0 text-muted">Manage your shops and associations</p>
-                </div>
+                </x-slot>
                 @role('super-admin')
-                <a href="{{ route('shops.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i> Create Shop
-                </a>
+                <x-slot name="actions">
+                    <x-button href="{{ route('shops.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i> Create Shop
+                    </x-button>
+                </x-slot>
                 @endrole
-            </div>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
+                <x-alert variant="success" class="mb-4">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                </x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
+                <x-alert variant="error" class="mb-4">
                     {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                </x-alert>
             @endif
 
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                    <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
                         <table class="table table-hover align-middle mb-0 text-nowrap">
@@ -51,10 +49,10 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($shop->logo_url)
-                                            <img src="{{ asset('website/'. $shop->logo_url) }}" alt="{{ $shop->name }}" 
+                                            <img src="{{ asset('website/'. $shop->logo_url) }}" alt="{{ $shop->name }}"
                                                  class="rounded me-3" width="40" height="40">
                                             @else
-                                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-3" 
+                                            <div class="bg-light rounded d-flex align-items-center justify-content-center me-3"
                                                  style="width: 40px; height: 40px;">
                                                 <i class="fas fa-store text-muted"></i>
                                             </div>
@@ -68,9 +66,9 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info text-capitalize">
+                                        <x-badge variant="info" class="text-capitalize">
                                             {{ $shop->shop_type_label }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         @if($shop->city)
@@ -83,17 +81,17 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $shop->is_active ? 'success' : 'secondary' }} me-1">
+                                        <x-badge :variant="$shop->is_active ? 'success' : 'secondary'" class="me-1">
                                             {{ $shop->is_active ? 'Active' : 'Inactive' }}
-                                        </span>
+                                        </x-badge>
                                         @if($shop->is_verified)
-                                        <span class="badge bg-primary">Verified</span>
+                                        <x-badge variant="primary">Verified</x-badge>
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-warning">
+                                        <x-badge variant="warning">
                                             {{ $shop->schoolAssociations->count() }} Schools
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -107,21 +105,21 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('shops.show', $shop) }}" 
-                                               class="btn btn-sm btn-outline-primary" title="View">
+                                            <x-button href="{{ route('shops.show', $shop) }}"
+                                               variant="outline-primary" class="btn-sm" title="View">
                                                 <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('shops.edit', $shop) }}" 
-                                               class="btn btn-sm btn-outline-secondary" title="Edit">
+                                            </x-button>
+                                            <x-button href="{{ route('shops.edit', $shop) }}"
+                                               variant="outline-secondary" class="btn-sm" title="Edit">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('shops.destroy', $shop) }}" method="POST" 
+                                            </x-button>
+                                            <form action="{{ route('shops.destroy', $shop) }}" method="POST"
                                                   class="d-inline" onsubmit="return confirm('Are you sure you want to delete this shop?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm" title="Delete">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                         </div>
                                     </td>
@@ -129,23 +127,28 @@
                                 @empty
                                 <tr>
                                     <td colspan="8" class="text-center py-4">
-                                        <div class="text-muted">
-                                            <i class="fas fa-store fa-2x mb-3"></i>
-                                            <p>No shops found. Create your first shop to get started.</p>
-                                            <a href="{{ route('shops.create') }}" class="btn btn-primary">
-                                                <i class="fas fa-plus me-2"></i>Create Shop
-                                            </a>
-                                        </div>
+                                        <x-empty-state
+                                            title="No shops found"
+                                            description="Create your first shop to get started."
+                                            icon="fa-store"
+                                            class="py-4"
+                                        >
+                                            <x-slot name="actions">
+                                                <x-button href="{{ route('shops.create') }}" variant="primary">
+                                                    <i class="fas fa-plus me-2"></i>Create Shop
+                                                </x-button>
+                                            </x-slot>
+                                        </x-empty-state>
                                     </td>
                                 </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    
+
                     {{ $shops->links() }}
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

@@ -1,17 +1,19 @@
 <x-app-layout>
     <main class="main-content">
         <section id="blog-posts" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Blog Posts</h2>
                     <p class="mb-0 text-muted">Manage your blog posts and content</p>
-                </div>
-                <a href="{{ route('admin.blog-posts.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i> Create Post
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('admin.blog-posts.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i> Create Post
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
                         <table class="table table-hover align-middle mb-0 text-nowrap">
@@ -45,9 +47,12 @@
                                     <td>{{ $post->category->name ?? 'Uncategorized' }}</td>
                                     <td>{{ $post->user->name }}</td>
                                     <td>
-                                        <span class="badge bg-{{ $post->status?->value === 'published' ? 'success' : ($post->status?->value === 'draft' ? 'warning' : 'secondary') }}">
+                                        @php
+                                            $postStatusVariant = $post->status?->value === 'published' ? 'success' : ($post->status?->value === 'draft' ? 'warning' : 'secondary');
+                                        @endphp
+                                        <x-badge :variant="$postStatusVariant">
                                             {{ $post->status_label }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         @if($post->is_featured)
@@ -58,28 +63,33 @@
                                     <td>{{ $post->published_at?->format('M j, Y') ?? '-' }}</td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.blog-posts.show', ['blog_post' => $post->slug]) }}" 
-                                               class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <x-button
+                                                href="{{ route('admin.blog-posts.show', ['blog_post' => $post->slug]) }}"
+                                                variant="outline-primary"
+                                                class="btn-sm"
+                                                target="_blank"
+                                            >
                                                 <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.blog-posts.edit', $post) }}" 
-                                               class="btn btn-sm btn-outline-secondary">
+                                            </x-button>
+                                            <x-button href="{{ route('admin.blog-posts.edit', $post) }}" variant="outline-secondary" class="btn-sm">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </x-button>
                                             <form action="{{ route('admin.blog-posts.destroy', $post) }}" method="POST" 
                                                   class="d-inline" onsubmit="return confirm('Are you sure?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                         </div>
                                     </td>
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="8" class="text-center">No blog posts found.</td>
+                                    <td colspan="8" class="text-center">
+                                        <x-empty-state title="No blog posts found." icon="fa-newspaper" class="py-4" />
+                                    </td>
                                 </tr>
                                 @endforelse
                             </tbody>
@@ -88,7 +98,7 @@
                     
                     {{ $posts->links() }}
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

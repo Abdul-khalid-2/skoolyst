@@ -10,6 +10,7 @@
         'primary' => 'btn-primary',
         'secondary' => 'btn-secondary',
         'danger' => 'btn-danger',
+        'info' => 'btn-info',
         'success' => 'btn-success',
         'warning' => 'btn-warning',
         'info' => 'btn-info',

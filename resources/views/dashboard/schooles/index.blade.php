@@ -1,19 +1,21 @@
 <x-app-layout>
     <main class="main-content">
         <section id="schools" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-                <div>
+            <x-page-header class="mb-4 flex-wrap gap-2">
+                <x-slot name="heading">
                     <h2 class="mb-0">Schools</h2>
                     <p class="text-muted">Manage registered schools</p>
-                </div>
+                </x-slot>
                 @role('super-admin')
-                <a href="{{ route('schools.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Add School
-                </a>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i>Add School
+                    </x-button>
+                </x-slot>
                 @endrole
-            </div>
+            </x-page-header>
 
-            <div class="card">
+            <x-card>
                 <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
                     <table class="table table-hover align-middle mb-0 text-nowrap">
                         <thead class="table-light">
@@ -37,26 +39,26 @@
                                 <td class="text-truncate" style="max-width:180px;">{{ $school->address ?? '-' }}</td>
                                 <td>
                                     @if($school->status === 'active')
-                                    <span class="badge bg-success">Active</span>
+                                    <x-badge variant="success">Active</x-badge>
                                     @else
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <x-badge variant="secondary">Inactive</x-badge>
                                     @endif
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <x-button href="{{ route('schools.edit', $school->id) }}" variant="outline-primary" class="btn-sm">
                                             <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{{ route('schools.show', $school->id) }}" class="btn btn-sm btn-outline-info">
+                                        </x-button>
+                                        <x-button href="{{ route('schools.show', $school->id) }}" variant="outline-info" class="btn-sm">
                                             <i class="fas fa-eye"></i>
-                                        </a>
+                                        </x-button>
                                         @role('super-admin')
                                         <form action="{{ route('schools.destroy', $school->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure?')">
+                                            <x-button type="submit" variant="outline-danger" class="btn-sm" onclick="return confirm('Are you sure?')">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                         </form>
                                         @endrole
                                     </div>
@@ -64,7 +66,9 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">No schools found</td>
+                                <td colspan="7" class="text-center">
+                                    <x-empty-state title="No schools found" icon="fa-school" class="py-4" />
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -77,7 +81,7 @@
                     {{ $schools->links() }}
                 </div>
                 @endif
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>
