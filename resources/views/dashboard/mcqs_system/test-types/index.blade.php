@@ -196,8 +196,8 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $testType->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($testType->status) }}
+                                        <span class="badge bg-{{ $testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            {{ ucfirst($testType->status->value) }}
                                         </span>
                                     </td>
                                     <td>
@@ -248,8 +248,8 @@
                                             <div class="d-flex align-items-center">
                                                 <input type="checkbox" class="form-check-input me-2 test-type-checkbox" value="{{ $testType->id }}">
                                                 <strong class="me-2">#{{ ($testTypes->currentPage() - 1) * $testTypes->perPage() + $loop->iteration }}</strong>
-                                                <span class="badge bg-{{ $testType->status == 'active' ? 'success' : 'secondary' }}">
-                                                    {{ ucfirst($testType->status) }}
+                                                <span class="badge bg-{{ $testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                    {{ ucfirst($testType->status->value) }}
                                                 </span>
                                             </div>
                                             @if($testType->icon)

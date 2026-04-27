@@ -245,8 +245,8 @@
                         <span class="badge bg-light text-dark">
                             {{ $test->testType->name }}
                         </span>
-                        <span class="mode-badge mode-{{ $test->test_mode }}">
-                            {{ ucfirst($test->test_mode) }}
+                        <span class="mode-badge mode-{{ $test->test_mode->value }}">
+                            {{ ucfirst($test->test_mode->value) }}
                         </span>
                     </div>
 

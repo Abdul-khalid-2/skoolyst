@@ -235,8 +235,8 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $topic->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($topic->status) }}
+                                        <span class="badge bg-{{ $topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            {{ ucfirst($topic->status->value) }}
                                         </span>
                                     </td>
                                     <td>

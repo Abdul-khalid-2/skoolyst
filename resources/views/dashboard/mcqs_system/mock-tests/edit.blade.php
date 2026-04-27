@@ -192,9 +192,9 @@
                                         <select class="form-select @error('test_mode') is-invalid @enderror" 
                                                 id="test_mode" name="test_mode" required>
                                             <option value="">Select Mode</option>
-                                            <option value="practice" {{ old('test_mode', $mockTest->test_mode) == 'practice' ? 'selected' : '' }}>Practice</option>
-                                            <option value="timed" {{ old('test_mode', $mockTest->test_mode) == 'timed' ? 'selected' : '' }}>Timed</option>
-                                            <option value="exam" {{ old('test_mode', $mockTest->test_mode) == 'exam' ? 'selected' : '' }}>Exam</option>
+                                            <option value="practice" {{ old('test_mode', $mockTest->test_mode->value) == 'practice' ? 'selected' : '' }}>Practice</option>
+                                            <option value="timed" {{ old('test_mode', $mockTest->test_mode->value) == 'timed' ? 'selected' : '' }}>Timed</option>
+                                            <option value="exam" {{ old('test_mode', $mockTest->test_mode->value) == 'exam' ? 'selected' : '' }}>Exam</option>
                                         </select>
                                         @error('test_mode')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -205,9 +205,9 @@
                                         <label for="status" class="form-label">Status *</label>
                                         <select class="form-select @error('status') is-invalid @enderror" 
                                                 id="status" name="status" required>
-                                            <option value="draft" {{ old('status', $mockTest->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                                            <option value="published" {{ old('status', $mockTest->status) == 'published' ? 'selected' : '' }}>Published</option>
-                                            <option value="archived" {{ old('status', $mockTest->status) == 'archived' ? 'selected' : '' }}>Archived</option>
+                                            <option value="draft" {{ old('status', $mockTest->status->value) == 'draft' ? 'selected' : '' }}>Draft</option>
+                                            <option value="published" {{ old('status', $mockTest->status->value) == 'published' ? 'selected' : '' }}>Published</option>
+                                            <option value="archived" {{ old('status', $mockTest->status->value) == 'archived' ? 'selected' : '' }}>Archived</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -516,8 +516,8 @@
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                     <span class="small">Test Mode</span>
-                                    <span class="badge bg-{{ $mockTest->test_mode == 'exam' ? 'danger' : ($mockTest->test_mode == 'timed' ? 'warning' : 'primary') }}">
-                                        {{ ucfirst($mockTest->test_mode) }}
+                                    <span class="badge bg-{{ $mockTest->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($mockTest->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                        {{ ucfirst($mockTest->test_mode->value) }}
                                     </span>
                                 </li>
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">

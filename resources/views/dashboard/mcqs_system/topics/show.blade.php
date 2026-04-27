@@ -93,8 +93,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Status</label>
                                         <div>
-                                            <span class="badge bg-{{ $topic->status == 'active' ? 'success' : 'secondary' }}">
-                                                {{ ucfirst($topic->status) }}
+                                            <span class="badge bg-{{ $topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                {{ ucfirst($topic->status->value) }}
                                             </span>
                                         </div>
                                     </div>

@@ -186,7 +186,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Test Mode</small>
-                                    <strong>{{ ucfirst($mockTest->test_mode) }}</strong>
+                                    <strong>{{ ucfirst($mockTest->test_mode->value) }}</strong>
                                 </div>
                             </div>
                             

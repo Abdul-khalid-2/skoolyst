@@ -305,7 +305,7 @@
                                 </div>
                                 
                                 <div class="d-flex justify-content-between align-items-center mt-4">
-                                    <span class="test-mode-badge">{{ ucfirst($test->test_mode) }}</span>
+                                    <span class="test-mode-badge">{{ ucfirst($test->test_mode->value) }}</span>
                                     <a href="{{ route('website.mcqs.mock-test-detail', $test->slug) }}" 
                                        class="btn btn-primary btn-sm">
                                         View Details <i class="fas fa-arrow-right ms-1"></i>

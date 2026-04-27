@@ -224,8 +224,8 @@
                                                 <td>{{ $test->total_questions }}</td>
                                                 <td>{{ $test->total_time_minutes }} mins</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $test->status == 'published' ? 'success' : ($test->status == 'draft' ? 'secondary' : 'dark') }}">
-                                                        {{ ucfirst($test->status) }}
+                                                    <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'secondary' : 'dark') }}">
+                                                        {{ ucfirst($test->status->value) }}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -504,8 +504,8 @@
                                         <td>{{ $subject->mcqs_count }}</td>
                                         <td>{{ $subject->topics_count }}</td>
                                         <td>
-                                            <span class="badge bg-{{ $subject->status == 'active' ? 'success' : 'secondary' }}">
-                                                {{ ucfirst($subject->status) }}
+                                            <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                {{ ucfirst($subject->status->value) }}
                                             </span>
                                         </td>
                                     </tr>

@@ -233,7 +233,7 @@
                         <ul class="feature-list">
                             <li>
                                 <i class="fas fa-check-circle"></i>
-                                <strong>Test Mode:</strong> {{ ucfirst($mockTest->test_mode) }}
+                                <strong>Test Mode:</strong> {{ ucfirst($mockTest->test_mode->value) }}
                             </li>
                             <li>
                                 <i class="fas fa-check-circle"></i>

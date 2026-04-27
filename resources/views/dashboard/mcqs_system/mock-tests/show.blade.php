@@ -155,8 +155,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted small">Test Mode</label>
                                         <p>
-                                            <span class="badge bg-{{ $mockTest->test_mode == 'exam' ? 'danger' : ($mockTest->test_mode == 'timed' ? 'warning' : 'primary') }}">
-                                                {{ ucfirst($mockTest->test_mode) }}
+                                            <span class="badge bg-{{ $mockTest->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($mockTest->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                                {{ ucfirst($mockTest->test_mode->value) }}
                                             </span>
                                         </p>
                                     </div>
@@ -183,8 +183,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted small">Status</label>
                                         <p>
-                                            <span class="badge bg-{{ $mockTest->status == 'published' ? 'success' : ($mockTest->status == 'draft' ? 'warning' : 'secondary') }}">
-                                                {{ ucfirst($mockTest->status) }}
+                                            <span class="badge bg-{{ $mockTest->status === \App\Enums\ContentStatus::Published ? 'success' : ($mockTest->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                                {{ ucfirst($mockTest->status->value) }}
                                             </span>
                                         </p>
                                     </div>
@@ -499,8 +499,8 @@
                                         </div>
                                         <div class="text-end">
                                             <div class="fw-bold small">{{ $attempt->percentage }}%</div>
-                                            <span class="badge bg-{{ $attempt->result_status == 'passed' ? 'success' : ($attempt->result_status == 'failed' ? 'danger' : 'secondary') }}">
-                                                {{ ucfirst($attempt->result_status) }}
+                                            <span class="badge bg-{{ $attempt->result_status === \App\Enums\UserTestResultStatus::Passed ? 'success' : ($attempt->result_status === \App\Enums\UserTestResultStatus::Failed ? 'danger' : 'secondary') }}">
+                                                {{ ucfirst($attempt->result_status->value) }}
                                             </span>
                                         </div>
                                     </div>

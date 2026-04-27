@@ -293,8 +293,8 @@
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $subject->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($subject->status) }}
+                                        <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            {{ ucfirst($subject->status->value) }}
                                         </span>
                                     </td>
                                     <td>
@@ -348,8 +348,8 @@
                                                 @if($subject->icon)
                                                 <i class="{{ $subject->icon }} me-2 text-primary"></i>
                                                 @endif
-                                                <span class="badge bg-{{ $subject->status == 'active' ? 'success' : 'secondary' }}">
-                                                    {{ ucfirst($subject->status) }}
+                                                <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                    {{ ucfirst($subject->status->value) }}
                                                 </span>
                                             </div>
                                             @if($subject->testTypes->count() > 0)

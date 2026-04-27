@@ -93,8 +93,8 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Status</label>
                                         <div>
-                                            <span class="badge bg-{{ $subject->status == 'active' ? 'success' : 'secondary' }}">
-                                                {{ ucfirst($subject->status) }}
+                                            <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                {{ ucfirst($subject->status->value) }}
                                             </span>
                                         </div>
                                     </div>
@@ -165,8 +165,8 @@
                                             </td>
                                             <td>{{ $topic->estimated_time_minutes }} mins</td>
                                             <td>
-                                                <span class="badge bg-{{ $topic->status == 'active' ? 'success' : 'secondary' }}">
-                                                    {{ ucfirst($topic->status) }}
+                                                <span class="badge bg-{{ $topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                    {{ ucfirst($topic->status->value) }}
                                                 </span>
                                             </td>
                                             <td>

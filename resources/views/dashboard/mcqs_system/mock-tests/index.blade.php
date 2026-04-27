@@ -230,7 +230,7 @@
                             <tbody>
                                 @foreach($mockTests as $test)
                                 <!-- Desktop View -->
-                                <tr data-id="{{ $test->id }}" class="d-none d-md-table-row {{ $test->status == 'draft' ? 'table-warning' : ($test->status == 'archived' ? 'table-secondary' : '') }}">
+                                <tr data-id="{{ $test->id }}" class="d-none d-md-table-row {{ $test->status === \App\Enums\ContentStatus::Draft ? 'table-warning' : ($test->status === \App\Enums\ContentStatus::Archived ? 'table-secondary' : '') }}">
                                     <td>
                                         <input type="checkbox" class="form-check-input test-checkbox" value="{{ $test->id }}">
                                     </td>
@@ -247,8 +247,8 @@
                                     </td>
                                     <td>
                                         <div class="small">
-                                            <span class="badge bg-{{ $test->test_mode == 'exam' ? 'danger' : ($test->test_mode == 'timed' ? 'warning' : 'primary') }}">
-                                                {{ ucfirst($test->test_mode) }}
+                                            <span class="badge bg-{{ $test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                                {{ ucfirst($test->test_mode->value) }}
                                             </span>
                                             @if($test->shuffle_questions)
                                             <span class="badge bg-info mt-1">Shuffle</span>
@@ -297,8 +297,8 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $test->status == 'published' ? 'success' : ($test->status == 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($test->status) }}
+                                        <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                            {{ ucfirst($test->status->value) }}
                                         </span>
                                     </td>
                                     <td class="text-end">
@@ -340,19 +340,19 @@
                                 </tr>
                                 
                                 <!-- Mobile View Card -->
-                                <div class="card mb-3 d-block d-md-none mx-3 {{ $test->status == 'draft' ? 'border-warning' : ($test->status == 'archived' ? 'border-secondary' : '') }}">
+                                <div class="card mb-3 d-block d-md-none mx-3 {{ $test->status === \App\Enums\ContentStatus::Draft ? 'border-warning' : ($test->status === \App\Enums\ContentStatus::Archived ? 'border-secondary' : '') }}">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="d-flex align-items-center">
                                                 <input type="checkbox" class="form-check-input me-2 test-checkbox" value="{{ $test->id }}">
                                                 <strong class="me-2">#{{ ($mockTests->currentPage() - 1) * $mockTests->perPage() + $loop->iteration }}</strong>
-                                                <span class="badge bg-{{ $test->status == 'published' ? 'success' : ($test->status == 'draft' ? 'warning' : 'secondary') }}">
-                                                    {{ ucfirst($test->status) }}
+                                                <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                                    {{ ucfirst($test->status->value) }}
                                                 </span>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $test->test_mode == 'exam' ? 'danger' : ($test->test_mode == 'timed' ? 'warning' : 'primary') }}">
-                                                    {{ ucfirst($test->test_mode) }}
+                                                <span class="badge bg-{{ $test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                                    {{ ucfirst($test->test_mode->value) }}
                                                 </span>
                                             </div>
                                         </div>
