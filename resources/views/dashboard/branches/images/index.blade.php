@@ -1,25 +1,25 @@
 <x-app-layout>
     <main class="main-content">
         <section id="branch-images" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Image Gallery: {{ $branch->name }}</h2>
                     <p class="mb-0 text-muted">Manage images for {{ $branch->name }} branch</p>
-                </div>
-                <div>
-                    <a href="{{ route('schools.branches.edit', [$school, $branch]) }}" class="btn btn-outline-secondary me-2">
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.branches.edit', [$school, $branch]) }}" variant="outline-secondary" class="me-2">
                         <i class="fas fa-edit me-2"></i>Edit Branch
-                    </a>
-                    <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-secondary">
+                    </x-button>
+                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="secondary">
                         <i class="fas fa-arrow-left me-2"></i>Back to Branches
-                    </a>
-                </div>
-            </div>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Statistics Cards -->
             <div class="row mb-4">
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-start border-primary border-4 h-100">
+                    <x-card class="border-start border-primary border-4 h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -31,11 +31,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
-                
+
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-start border-success border-4 h-100">
+                    <x-card class="border-start border-success border-4 h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -47,11 +47,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
-                
+
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-start border-info border-4 h-100">
+                    <x-card class="border-start border-info border-4 h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -63,11 +63,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
-                
+
                 <div class="col-xl-3 col-md-6 mb-4">
-                    <div class="card border-start border-warning border-4 h-100">
+                    <x-card class="border-start border-warning border-4 h-100">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -79,12 +79,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Upload Section -->
-            <div class="card mb-4">
+            <x-card class="mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">Upload Images</h5>
                 </div>
@@ -126,19 +126,19 @@
                         </div>
                         
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary" id="uploadBtn">
+                            <x-button type="submit" variant="primary" id="uploadBtn">
                                 <i class="fas fa-upload me-2"></i>Upload Images
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary" onclick="clearSelection()">
+                            </x-button>
+                            <x-button type="button" variant="outline-secondary" onclick="clearSelection()">
                                 <i class="fas fa-times me-2"></i>Clear Selection
-                            </button>
+                            </x-button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Image Gallery -->
-            <div class="card">
+            <x-card>
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Image Gallery</h5>
                     <div class="d-flex align-items-center gap-2">
@@ -161,7 +161,7 @@
                             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4 image-item" 
                                  data-id="{{ $image->id }}" 
                                  data-type="{{ $image->type }}">
-                                <div class="card h-100 shadow-sm">
+                                <x-card class="h-100 shadow-sm">
                                     <div class="position-relative">
                                         <img src="{{ asset('website/'. $image->image_path) }}" 
                                              class="card-img-top gallery-image" 
@@ -172,29 +172,29 @@
                                         <!-- Image Badges -->
                                         <div class="position-absolute top-0 start-0 m-2">
                                             @if($image->is_featured)
-                                            <span class="badge bg-success" title="Featured Image">
+                                            <x-badge variant="success" title="Featured Image">
                                                 <i class="fas fa-star"></i>
-                                            </span>
+                                            </x-badge>
                                             @endif
                                             @if($image->is_main_banner)
-                                            <span class="badge bg-primary ms-1" title="Main Banner">
+                                            <x-badge variant="primary" class="ms-1" title="Main Banner">
                                                 <i class="fas fa-image"></i>
-                                            </span>
+                                            </x-badge>
                                             @endif
                                         </div>
-                                        
+
                                         <!-- Type Badge -->
                                         <div class="position-absolute top-0 end-0 m-2">
-                                            <span class="badge bg-info">
+                                            <x-badge variant="info">
                                                 {{ $imageTypes[$image->type] ?? $image->type }}
-                                            </span>
+                                            </x-badge>
                                         </div>
-                                        
+
                                         <!-- Sort Handle -->
                                         <div class="position-absolute bottom-0 start-0 m-2 sort-handle d-none">
-                                            <span class="badge bg-secondary">
+                                            <x-badge variant="secondary">
                                                 <i class="fas fa-arrows-alt"></i>
-                                            </span>
+                                            </x-badge>
                                         </div>
                                     </div>
                                     
@@ -212,11 +212,11 @@
                                                 {{ $image->created_at->format('M d, Y') }}
                                             </small>
                                             <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
-                                                        type="button" 
+                                                <x-button variant="outline-secondary" class="btn-sm dropdown-toggle"
+                                                        type="button"
                                                         data-bs-toggle="dropdown">
                                                     <i class="fas fa-ellipsis-v"></i>
-                                                </button>
+                                                </x-button>
                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                     <li>
                                                         <a class="dropdown-item edit-image" 
@@ -259,113 +259,91 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                             </div>
                             @endforeach
                         </div>
-                        
+
                         <!-- Empty State -->
-                        <div id="emptyGallery" class="text-center py-5 d-none">
-                            <div class="mb-3">
-                                <i class="fas fa-images fa-4x text-muted"></i>
-                            </div>
-                            <h5 class="text-muted">No images found</h5>
-                            <p class="text-muted">Try changing your filter or upload new images</p>
+                        <div id="emptyGallery" class="d-none">
+                            <x-empty-state
+                                title="No images found"
+                                description="Try changing your filter or upload new images"
+                                icon="fa-images"
+                            />
                         </div>
                     @else
                         <!-- Initial Empty State -->
-                        <div class="text-center py-5">
-                            <div class="mb-3">
-                                <i class="fas fa-images fa-4x text-muted"></i>
-                            </div>
-                            <h5 class="text-muted">No images uploaded yet</h5>
-                            <p class="text-muted">Start by uploading some images using the form above</p>
-                        </div>
+                        <x-empty-state
+                            title="No images uploaded yet"
+                            description="Start by uploading some images using the form above"
+                            icon="fa-images"
+                        />
                     @endif
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 
-    <!-- Edit Image Modal -->
-    <div class="modal fade" id="editImageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Image Details</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="editImageForm">
-                    <div class="modal-body">
-                        <div class="mb-3 text-center">
-                            <img id="editImagePreview" 
-                                 src="" 
-                                 alt="Preview" 
-                                 class="img-fluid rounded mb-3"
-                                 style="max-height: 200px;">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="editTitle" class="form-label">Title</label>
-                            <input type="text" class="form-control" id="editTitle" name="title">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="editCaption" class="form-label">Caption</label>
-                            <textarea class="form-control" id="editCaption" name="caption" rows="3"></textarea>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="editType" class="form-label">Type</label>
-                            <select class="form-select" id="editType" name="type">
-                                @foreach($imageTypes as $key => $label)
-                                <option value="{{ $key }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="editFeatured" name="is_featured">
-                                    <label class="form-check-label" for="editFeatured">Featured Image</label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="editBanner" name="is_main_banner">
-                                    <label class="form-check-label" for="editBanner">Main Banner</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-primary" id="saveImageBtn">Save Changes</button>
-                    </div>
-                </form>
+    <x-bs-modal id="editImageModal" title="Edit Image Details" :centered="true">
+        <form id="editImageForm">
+            <div class="mb-3 text-center">
+                <img id="editImagePreview"
+                     src=""
+                     alt="Preview"
+                     class="img-fluid rounded mb-3"
+                     style="max-height: 200px;">
             </div>
-        </div>
-    </div>
 
-    <!-- Image Preview Modal -->
-    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="previewImageTitle"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="mb-3">
+                <label for="editTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="editTitle" name="title">
+            </div>
+
+            <div class="mb-3">
+                <label for="editCaption" class="form-label">Caption</label>
+                <textarea class="form-control" id="editCaption" name="caption" rows="3"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label for="editType" class="form-label">Type</label>
+                <select class="form-select" id="editType" name="type">
+                    @foreach($imageTypes as $key => $label)
+                    <option value="{{ $key }}">{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="editFeatured" name="is_featured">
+                        <label class="form-check-label" for="editFeatured">Featured Image</label>
+                    </div>
                 </div>
-                <div class="modal-body text-center">
-                    <img id="previewImage" src="" alt="" class="img-fluid rounded">
-                    <p id="previewImageCaption" class="mt-3 text-muted"></p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <div class="col-md-6">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox" id="editBanner" name="is_main_banner">
+                        <label class="form-check-label" for="editBanner">Main Banner</label>
+                    </div>
                 </div>
             </div>
+        </form>
+        <x-slot name="footer">
+            <x-button type="button" variant="secondary" data-bs-dismiss="modal">Cancel</x-button>
+            <x-button type="submit" variant="primary" id="saveImageBtn" form="editImageForm">Save Changes</x-button>
+        </x-slot>
+    </x-bs-modal>
+
+    <x-bs-modal id="imagePreviewModal" :title="''" labelledBy="previewImageTitle" size="lg">
+        <div class="text-center">
+            <img id="previewImage" src="" alt="" class="img-fluid rounded">
+            <p id="previewImageCaption" class="mt-3 text-muted"></p>
         </div>
-    </div>
+        <x-slot name="footer">
+            <x-button type="button" variant="secondary" data-bs-dismiss="modal">Close</x-button>
+        </x-slot>
+    </x-bs-modal>
 
 
     <style>

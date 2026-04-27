@@ -1,70 +1,67 @@
 <x-app-layout>
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Add Questions to Test</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('mock-tests.edit', $mockTest) }}">{{ $mockTest->title }}</a></li>
-                                <li class="breadcrumb-item active">Add Questions</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back to Test
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid px-0 px-md-3">
+            <x-page-header class="mb-4 px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Add Questions to Test</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('mock-tests.edit', $mockTest) }}">{{ $mockTest->title }}</a></li>
+                            <li class="breadcrumb-item active">Add Questions</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('mock-tests.edit', $mockTest) }}" variant="outline-secondary" class="w-100 w-md-auto">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Test
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Test Info -->
-            <div class="card mb-4">
+            <x-card class="mb-4 mx-3 mx-md-0">
                 <div class="card-body">
                     <div class="row align-items-center">
                         <div class="col-md-8">
                             <h5 class="mb-2">{{ $mockTest->title }}</h5>
                             <div class="d-flex flex-wrap gap-3" id="mock-test-stat-badges">
-                                <span class="badge bg-primary" id="stat-questions-line">
+                                <x-badge variant="primary" id="stat-questions-line">
                                     <i class="fas fa-question-circle me-1"></i>
                                     <span id="stat-questions-text">{{ $mockTest->questions->count() }}/{{ $mockTest->total_questions }} questions</span>
-                                </span>
-                                <span class="badge bg-success" id="stat-marks-line">
+                                </x-badge>
+                                <x-badge variant="success" id="stat-marks-line">
                                     <i class="fas fa-star me-1"></i>
                                     <span id="stat-marks-text">{{ $mockTest->questions->sum('marks') }}/{{ $mockTest->total_marks }} marks</span>
-                                </span>
-                                <span class="badge bg-warning">
+                                </x-badge>
+                                <x-badge variant="warning">
                                     <i class="fas fa-clock me-1"></i>
                                     {{ $mockTest->total_time_minutes }} min
-                                </span>
-                                <span class="badge bg-info">
+                                </x-badge>
+                                <x-badge variant="info">
                                     <i class="fas fa-tag me-1"></i>
                                     {{ $mockTest->testType->name ?? 'N/A' }}
-                                </span>
+                                </x-badge>
                             </div>
                         </div>
                         <div class="col-md-4 text-end">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-primary" id="save-selection">
+                                <x-button type="button" variant="primary" id="save-selection">
                                     <i class="fas fa-save me-2"></i> Save Selection
-                                </button>
-                                <button type="button" class="btn btn-outline-primary" id="select-all-questions">
+                                </x-button>
+                                <x-button type="button" variant="outline-primary" id="select-all-questions">
                                     Select All
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <div class="row">
                 <!-- Available Questions -->
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Available MCQs</h5>
                         </div>
@@ -114,18 +111,18 @@
                                 
                                 <div class="col-md-2">
                                     <label class="form-label">&nbsp;</label>
-                                    <button type="button" class="btn btn-primary w-100" id="apply-filters">
+                                    <x-button type="button" variant="primary" class="w-100" id="apply-filters">
                                         <i class="fas fa-filter"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 
                                 <div class="col-12">
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="filter-search" 
                                                placeholder="Search questions...">
-                                        <button class="btn btn-outline-secondary" type="button" id="clear-filters">
+                                        <x-button variant="outline-secondary" type="button" class="btn" id="clear-filters">
                                             <i class="fas fa-times"></i>
-                                        </button>
+                                        </x-button>
                                     </div>
                                 </div>
                             </div>
@@ -149,23 +146,24 @@
                                 </nav>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Selected Questions -->
                 <div class="col-lg-4">
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">Selected Questions</h5>
-                            <span class="badge bg-primary" id="selected-count">0</span>
+                            <x-badge variant="primary" id="selected-count">0</x-badge>
                         </div>
                         <div class="card-body">
                             <div id="selected-questions-container">
-                                <div class="text-center py-4">
-                                    <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                                    <p class="text-muted">No questions selected yet</p>
-                                    <p class="small text-muted">Select questions from the list on the left</p>
-                                </div>
+                                <x-empty-state
+                                    class="py-4"
+                                    icon="fa-question-circle"
+                                    title="No questions selected yet"
+                                    description="Select questions from the list on the left"
+                                />
                             </div>
                             
                             <div class="mt-3">
@@ -175,19 +173,19 @@
                                 </div>
                                 
                                 <div class="d-grid gap-2">
-                                    <button type="button" class="btn btn-success" id="add-selected-questions">
+                                    <x-button type="button" variant="success" id="add-selected-questions">
                                         <i class="fas fa-plus me-2"></i> Add Selected to Test
-                                    </button>
-                                    <button type="button" class="btn btn-outline-danger" id="clear-selection">
+                                    </x-button>
+                                    <x-button type="button" variant="outline-danger" id="clear-selection">
                                         <i class="fas fa-times me-2"></i> Clear Selection
-                                    </button>
+                                    </x-button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Test Questions Preview -->
-                    <div class="card mt-4">
+                    <x-card class="mt-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Current Test Questions</h5>
                         </div>
@@ -198,51 +196,57 @@
                                 <div class="list-group-item px-0">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <span class="badge bg-light text-dark me-2">{{ $question->question_number }}</span>
+                                            <x-badge variant="light" class="me-2 text-dark">{{ $question->question_number }}</x-badge>
                                             <div class="small question-preview">
                                                 {!! Str::limit(strip_tags($question->mcq->question), 40) !!}
                                             </div>
                                         </div>
-                                        <span class="badge bg-primary">{{ $question->marks }}M</span>
+                                        <x-badge variant="primary">{{ $question->marks }}M</x-badge>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                             <div class="text-center mt-2 @if($mockTest->questions->count() <= 10) d-none @endif" id="current-test-questions-view-all-wrap">
-                                <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-sm btn-outline-primary" id="current-test-questions-view-all-link">
+                                <x-button
+                                    href="{{ route('mock-tests.edit', $mockTest) }}"
+                                    variant="outline-primary"
+                                    class="btn-sm"
+                                    id="current-test-questions-view-all-link"
+                                >
                                     View All {{ $mockTest->questions->count() }} Questions
-                                </a>
+                                </x-button>
                             </div>
                             @else
-                            <div class="text-center py-3" id="current-test-questions-empty">
-                                <i class="fas fa-question fa-2x text-muted mb-2"></i>
-                                <p class="text-muted">No questions added yet</p>
-                            </div>
+                            <x-empty-state
+                                class="py-3"
+                                icon="fa-question"
+                                title="No questions added yet"
+                                id="current-test-questions-empty"
+                            />
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>
 
         <!-- Full MCQ preview (card click) -->
-        <div class="modal fade" id="mcqPreviewModal" tabindex="-1" aria-labelledby="mcqPreviewModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="mcqPreviewModalLabel">Question <span id="mcqPreviewId">—</span></h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div id="mcqPreviewMeta" class="mb-3"></div>
-                        <div id="mcqPreviewQuestion" class="mb-3 text-break"></div>
-                        <h6 class="text-secondary border-bottom pb-2">Options</h6>
-                        <ul class="list-group" id="mcqPreviewOptions"></ul>
-                        <div id="mcqPreviewExplanation" class="mt-3 p-3 bg-light rounded small text-break d-none"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <x-bs-modal
+            id="mcqPreviewModal"
+            title=""
+            size="lg"
+            :scrollable="true"
+            labelledBy="mcqPreviewModalLabel"
+        >
+            <x-slot name="modalTitle">
+                Question <span id="mcqPreviewId">—</span>
+            </x-slot>
+            <div id="mcqPreviewMeta" class="mb-3"></div>
+            <div id="mcqPreviewQuestion" class="mb-3 text-break"></div>
+            <h6 class="text-secondary border-bottom pb-2">Options</h6>
+            <ul class="list-group" id="mcqPreviewOptions"></ul>
+            <div id="mcqPreviewExplanation" class="mt-3 p-3 bg-light rounded small text-break d-none"></div>
+        </x-bs-modal>
     </main>
 
     @php

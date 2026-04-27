@@ -1,30 +1,27 @@
 <x-app-layout>
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Create Mock Test</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
-                                <li class="breadcrumb-item active">Create</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('mock-tests.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid px-0 px-md-3">
+            <x-page-header class="mb-4 px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Create Mock Test</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
+                            <li class="breadcrumb-item active">Create</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('mock-tests.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Test Details</h5>
                         </div>
@@ -243,64 +240,64 @@
                                                        placeholder="Question Count" min="1">
                                             </div>
                                             <div class="col-md-2">
-                                                <button type="button" class="btn btn-outline-danger w-100 remove-subject" disabled>
+                                                <x-button type="button" variant="outline-danger" class="w-100 remove-subject" disabled>
                                                     <i class="fas fa-times"></i>
-                                                </button>
+                                                </x-button>
                                             </div>
                                         </div>
                                     </div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-subject">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm mt-2" id="add-subject">
                                         <i class="fas fa-plus me-1"></i> Add Subject
-                                    </button>
+                                    </x-button>
                                     <small class="text-muted d-block mt-1">Define how many questions from each subject (optional)</small>
                                 </div>
                                 
                                 <!-- Submit -->
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Create Test
-                                    </button>
-                                    <a href="{{ route('mock-tests.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('mock-tests.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <!-- Information Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-info">
-                                <h6><i class="fas fa-lightbulb me-2"></i>Tips</h6>
+                            <x-alert variant="info" :dismissible="false">
+                                <h6 class="mb-2"><i class="fas fa-lightbulb me-2"></i>Tips</h6>
                                 <ul class="mb-0 ps-3">
                                     <li>Create test structure first, then add questions</li>
                                     <li>Set appropriate time limits based on difficulty</li>
                                     <li>Define passing marks according to test standards</li>
                                     <li>Choose test mode based on purpose</li>
                                 </ul>
-                            </div>
+                            </x-alert>
                             
                             <div class="mt-3">
                                 <h6 class="mb-2">Test Modes:</h6>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Practice</span>
-                                        <span class="badge bg-primary">Unlimited time</span>
+                                        <x-badge variant="primary">Unlimited time</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Timed</span>
-                                        <span class="badge bg-warning">Time limited</span>
+                                        <x-badge variant="warning">Time limited</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Exam</span>
-                                        <span class="badge bg-danger">Strict rules</span>
+                                        <x-badge variant="danger">Strict rules</x-badge>
                                     </li>
                                 </ul>
                             </div>
@@ -323,10 +320,10 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Test Preview -->
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Test Preview</h5>
                         </div>
@@ -335,7 +332,7 @@
                                 <p class="text-muted">Test preview will appear here</p>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

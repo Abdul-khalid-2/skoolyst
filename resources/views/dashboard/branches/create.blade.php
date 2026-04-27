@@ -1,19 +1,21 @@
 <x-app-layout>
     <main class="main-content">
         <section id="branches-create" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Add New Branch for {{ $school->name }}</h2>
                     <p class="mb-0 text-muted">Add a new branch to the school</p>
-                </div>
-                <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Branches
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Branches
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <form method="POST" action="{{ route('schools.branches.store', $school) }}" id="branchForm">
                                 @csrf
@@ -22,7 +24,7 @@
                                     <!-- Basic Information -->
                                     <div class="col-lg-8">
                                         <h5 class="mb-4">Basic Information</h5>
-                                        
+
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Branch Name *</label>
                                             <input type="text" class="form-control" id="name" name="name"
@@ -79,7 +81,7 @@
                                         </div>
 
                                         <h5 class="mb-4 mt-5">Academic Information</h5>
-                                        
+
                                         <div class="mb-3">
                                             <label for="school_type" class="form-label">School Type</label>
                                             <select class="form-select" id="school_type" name="school_type">
@@ -126,16 +128,16 @@
                                     <!-- Sidebar -->
                                     <div class="col-lg-4">
                                         <h5 class="mb-4">Settings & Features</h5>
-                                        
-                                        <div class="card mb-4">
+
+                                        <x-card class="mb-4">
                                             <div class="card-body">
                                                 <div class="mb-3">
                                                     <label for="features" class="form-label">Features</label>
                                                     <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
                                                         @foreach($features as $feature)
                                                         <div class="form-check mb-2">
-                                                            <input class="form-check-input" type="checkbox" 
-                                                                name="features[]" 
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="features[]"
                                                                 value="{{ $feature->id }}"
                                                                 id="feature_{{ $feature->id }}"
                                                                 {{ is_array(old('features')) && in_array($feature->id, old('features')) ? 'checked' : '' }}>
@@ -165,12 +167,12 @@
                                                     <small class="text-muted">If checked, this branch will be marked as the main branch and any existing main branch will be demoted.</small>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
 
-                                        <div class="card mb-4">
+                                        <x-card class="mb-4">
                                             <div class="card-body">
                                                 <h6 class="mb-3">Location</h6>
-                                                
+
                                                 <div class="mb-3">
                                                     <label for="latitude" class="form-label">Latitude</label>
                                                     <input type="number" step="any" class="form-control" id="latitude" name="latitude"
@@ -190,31 +192,31 @@
                                                 </div>
 
                                                 <div class="mt-3">
-                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100" id="getLocation">
+                                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100" id="getLocation">
                                                         <i class="fas fa-map-marker-alt me-2"></i>Get Current Location
-                                                    </button>
+                                                    </x-button>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
 
-                                        <div class="card">
+                                        <x-card>
                                             <div class="card-body">
                                                 <h6 class="mb-3">Actions</h6>
                                                 <div class="d-grid gap-2">
-                                                    <button type="submit" class="btn btn-primary">
+                                                    <x-button type="submit" variant="primary">
                                                         <i class="fas fa-save me-2"></i>Create Branch
-                                                    </button>
-                                                    <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-outline-secondary">
+                                                    </x-button>
+                                                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="outline-secondary">
                                                         Cancel
-                                                    </a>
+                                                    </x-button>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
                                     </div>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>

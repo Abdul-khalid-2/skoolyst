@@ -1,37 +1,28 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Topics</h1>
-                        <p class="text-muted mb-0">Manage topics within subjects</p>
-                    </div>
-                    <div>
-                        <a href="{{ route('topics.create') }}" class="btn btn-primary">
-                            <i class="fas fa-plus me-2"></i> Add Topic
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Topics</h1>
+                    <p class="text-muted mb-0">Manage topics within subjects</p>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('topics.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i> Add Topic
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="danger">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Filters -->
-            <div class="card mb-4">
+            <x-card class="mb-4">
                 <div class="card-body">
                     <form action="{{ route('topics.index') }}" method="GET" class="row g-3">
                         <div class="col-md-3">
@@ -71,26 +62,26 @@
                                 <input type="text" name="search" class="form-control" 
                                        placeholder="Search by title or description..." 
                                        value="{{ request('search') }}">
-                                <button class="btn btn-outline-secondary" type="button" onclick="this.form.reset()">
+                                <x-button variant="outline-secondary" type="button" onclick="this.form.reset()">
                                     <i class="fas fa-times"></i>
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                         
                         <div class="col-md-1">
                             <label class="form-label">&nbsp;</label>
-                            <button type="submit" class="btn btn-primary w-100">
+                            <x-button type="submit" variant="primary" class="w-100">
                                 <i class="fas fa-filter"></i>
-                            </button>
+                            </x-button>
                         </div>
                     </form>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Stats Cards -->
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <div class="card card-hover">
+                    <x-card class="card-hover">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -102,11 +93,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card card-hover">
+                    <x-card class="card-hover">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -118,11 +109,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card card-hover">
+                    <x-card class="card-hover">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -134,11 +125,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-md-3">
-                    <div class="card card-hover">
+                    <x-card class="card-hover">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -150,12 +141,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Bulk Actions -->
-            <div class="card mb-3 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 d-none" id="bulkActionsCard">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <span class="me-3" id="selectedCount">0 topics selected</span>
@@ -165,14 +156,14 @@
                             <option value="deactivate">Deactivate</option>
                             <option value="delete">Delete</option>
                         </select>
-                        <button class="btn btn-sm btn-primary" id="applyBulkAction">Apply</button>
-                        <button class="btn btn-sm btn-outline-secondary ms-2" id="clearSelection">Clear</button>
+                        <x-button type="button" variant="primary" class="btn-sm" id="applyBulkAction">Apply</x-button>
+                        <x-button type="button" variant="outline-secondary" class="btn-sm ms-2" id="clearSelection">Clear</x-button>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Topics Table -->
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover" id="topicsTable">
@@ -218,26 +209,25 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $topic->difficulty_badge_variant }}">
+                                        <x-badge :variant="$topic->difficulty_badge_variant">
                                             {{ $topic->formatted_difficulty }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark">
+                                        <x-badge variant="light">
                                             <i class="fas fa-clock me-1"></i>
                                             {{ $topic->estimated_time_minutes }} min
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
-                                        <a href="{{ route('mcqs.index', ['topic_id' => $topic->id]) }}" 
-                                           class="badge bg-warning">
-                                            {{ $topic->mcqs_count }}
+                                        <a href="{{ route('mcqs.index', ['topic_id' => $topic->id]) }}" class="text-decoration-none">
+                                            <x-badge variant="warning">{{ $topic->mcqs_count }}</x-badge>
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                        <x-badge :variant="$topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                             {{ ucfirst($topic->status->value) }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         <input type="number" 
@@ -248,29 +238,29 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('topics.edit', $topic) }}" 
-                                               class="btn btn-sm btn-outline-primary">
+                                            <x-button href="{{ route('topics.edit', $topic) }}"
+                                               variant="outline-primary" class="btn-sm">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{{ route('topics.show', $topic) }}" 
-                                               class="btn btn-sm btn-outline-info">
+                                            </x-button>
+                                            <x-button href="{{ route('topics.show', $topic) }}"
+                                               variant="outline-info" class="btn-sm">
                                                 <i class="fas fa-eye"></i>
-                                            </a>
+                                            </x-button>
                                             @if($topic->mcqs_count == 0)
                                             <form action="{{ route('topics.destroy', $topic) }}" 
                                                   method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm" 
                                                         onclick="return confirm('Are you sure you want to delete this topic?')">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                            <x-button type="button" variant="outline-secondary" class="btn-sm" 
                                                     data-bs-toggle="tooltip" 
                                                     title="Cannot delete topic with MCQs">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </td>
@@ -292,7 +282,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </div>
     </main>
 

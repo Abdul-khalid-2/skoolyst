@@ -7,81 +7,82 @@
     Required parent variables:
       - $subjects   : collection of active Subject models
 --}}
-<div class="modal fade"
-     id="exportTemplateModal"
-     tabindex="-1"
-     aria-labelledby="exportTemplateModalLabel"
-     aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exportTemplateModalLabel">
-                    <i class="fas fa-file-download me-2"></i> Download MCQ Import Template
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<x-bs-modal
+    id="exportTemplateModal"
+    title="Download MCQ Import Template"
+    size="lg"
+    :scrollable="true"
+    labelledBy="exportTemplateModalLabel"
+>
+    <p class="text-muted mb-4">
+        Select subject, topic and test type to pre-fill your template.
+        The downloaded CSV will contain the correct headers and sample rows ready for editing.
+    </p>
+
+    <x-alert
+        variant="error"
+        :dismissible="false"
+        :icon="false"
+        id="exportTemplateError"
+        class="d-none mb-3 mx-0"
+    />
+
+    <form id="exportTemplateForm" novalidate>
+        <div class="row g-3">
+            <div class="col-12 col-md-6">
+                <label for="exportTemplateSubject" class="form-label">
+                    Subject <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" id="exportTemplateSubject" name="subject_id" required>
+                    <option value="">Select Subject</option>
+                    @foreach($subjects as $subject)
+                        <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                    @endforeach
+                </select>
             </div>
-            <div class="modal-body">
-                <p class="text-muted mb-4">
-                    Select subject, topic and test type to pre-fill your template.
-                    The downloaded CSV will contain the correct headers and sample rows ready for editing.
-                </p>
 
-                <div id="exportTemplateError" class="alert alert-danger d-none" role="alert"></div>
-
-                <form id="exportTemplateForm" novalidate>
-                    <div class="row g-3">
-                        <div class="col-12 col-md-6">
-                            <label for="exportTemplateSubject" class="form-label">
-                                Subject <span class="text-danger">*</span>
-                            </label>
-                            <select class="form-select" id="exportTemplateSubject" name="subject_id" required>
-                                <option value="">Select Subject</option>
-                                @foreach($subjects as $subject)
-                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                            <label for="exportTemplateTopic" class="form-label">
-                                Topic <span class="text-danger">*</span>
-                            </label>
-                            <select class="form-select" id="exportTemplateTopic" name="topic_id" required disabled>
-                                <option value="">Select a subject first</option>
-                            </select>
-                        </div>
-
-                        <div class="col-12">
-                            <label class="form-label d-flex align-items-center justify-content-between mb-2">
-                                <span>Test Types <small class="text-muted">(optional)</small></span>
-                                <small class="text-muted" id="exportTemplateTestTypeHint"></small>
-                            </label>
-                            <div id="exportTemplateTestTypesContainer"
-                                 class="border rounded p-3 bg-light"
-                                 style="min-height: 80px;">
-                                <p class="text-muted mb-0">Select a subject to see available test types.</p>
-                            </div>
-                            <small class="text-muted d-block mt-1">
-                                Selected test type names will be joined with commas in the <code>test_types</code> column
-                                and attached to every imported MCQ. The <code>question_type</code> column controls the
-                                question format (<code>mcq</code> / <code>true_false</code> / <code>multi_select</code>).
-                            </small>
-                        </div>
-                    </div>
-                </form>
+            <div class="col-12 col-md-6">
+                <label for="exportTemplateTopic" class="form-label">
+                    Topic <span class="text-danger">*</span>
+                </label>
+                <select class="form-select" id="exportTemplateTopic" name="topic_id" required disabled>
+                    <option value="">Select a subject first</option>
+                </select>
             </div>
-            <div class="modal-footer d-flex flex-wrap gap-2 justify-content-between">
-                <small class="text-muted" id="exportTemplateFooterHint">Choose a subject and topic to enable download.</small>
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="exportTemplateDownloadBtn" disabled>
-                        <i class="fas fa-download me-1"></i> Download Template
-                    </button>
+
+            <div class="col-12">
+                <label class="form-label d-flex align-items-center justify-content-between mb-2">
+                    <span>Test Types <small class="text-muted">(optional)</small></span>
+                    <small class="text-muted" id="exportTemplateTestTypeHint"></small>
+                </label>
+                <div
+                    id="exportTemplateTestTypesContainer"
+                    class="border rounded p-3 bg-light"
+                    style="min-height: 80px;"
+                >
+                    <p class="text-muted mb-0">Select a subject to see available test types.</p>
                 </div>
+                <small class="text-muted d-block mt-1">
+                    Selected test type names will be joined with commas in the <code>test_types</code> column
+                    and attached to every imported MCQ. The <code>question_type</code> column controls the
+                    question format (<code>mcq</code> / <code>true_false</code> / <code>multi_select</code>).
+                </small>
             </div>
         </div>
-    </div>
-</div>
+    </form>
+
+    <x-slot name="footer">
+        <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center w-100">
+            <small class="text-muted" id="exportTemplateFooterHint">Choose a subject and topic to enable download.</small>
+            <div class="d-flex gap-2">
+                <x-button variant="outline-secondary" type="button" data-bs-dismiss="modal">Cancel</x-button>
+                <x-button variant="primary" type="button" id="exportTemplateDownloadBtn" disabled>
+                    <i class="fas fa-download me-1"></i> Download Template
+                </x-button>
+            </div>
+        </div>
+    </x-slot>
+</x-bs-modal>
 
 @push('js')
 <script>
@@ -264,14 +265,28 @@
             updateDownloadState();
         }
 
+        function exportTemplateErrorTarget() {
+            return errorBox && errorBox.querySelector ? (errorBox.querySelector('.flex-grow-1') || errorBox) : null;
+        }
+
         function showError(msg) {
-            errorBox.textContent = msg;
-            errorBox.classList.remove('d-none');
+            const t = exportTemplateErrorTarget();
+            if (t) {
+                t.textContent = msg;
+            }
+            if (errorBox) {
+                errorBox.classList.remove('d-none');
+            }
         }
 
         function hideError() {
-            errorBox.textContent = '';
-            errorBox.classList.add('d-none');
+            const t = exportTemplateErrorTarget();
+            if (t) {
+                t.textContent = '';
+            }
+            if (errorBox) {
+                errorBox.classList.add('d-none');
+            }
         }
 
         function escapeHtml(value) {

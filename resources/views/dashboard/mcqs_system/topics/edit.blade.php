@@ -29,30 +29,27 @@
 
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Edit Topic</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('topics.index') }}">Topics</a></li>
-                                <li class="breadcrumb-item active">Edit {{ $topic->title }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('topics.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Edit Topic</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('topics.index') }}">Topics</a></li>
+                            <li class="breadcrumb-item active">Edit {{ $topic->title }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('topics.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Edit Topic: {{ $topic->title }}</h5>
                         </div>
@@ -167,29 +164,29 @@
                                 </div>
                                 
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Update Topic
-                                    </button>
-                                    <a href="{{ route('topics.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('topics.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-warning">
+                            <x-alert variant="warning" :dismissible="false" :icon="false">
                                 <h6><i class="fas fa-exclamation-triangle me-2"></i>Important</h6>
                                 <p class="mb-0">Changing the title will update the slug. This may affect existing links.</p>
-                            </div>
+                            </x-alert>
                             
                             <div class="mt-3">
                                 <h6 class="mb-2">Topic Details:</h6>
@@ -204,9 +201,8 @@
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>MCQs</span>
-                                        <a href="{{ route('mcqs.index', ['topic_id' => $topic->id]) }}" 
-                                           class="badge bg-warning text-decoration-none">
-                                            {{ $topic->mcqs_count ?? 0 }} MCQs
+                                        <a href="{{ route('mcqs.index', ['topic_id' => $topic->id]) }}" class="text-decoration-none">
+                                            <x-badge variant="warning">{{ $topic->mcqs_count ?? 0 }} MCQs</x-badge>
                                         </a>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -219,13 +215,13 @@
                             </div>
                             
                             @if($topic->mcqs_count > 0)
-                            <div class="alert alert-info mt-3">
+                            <x-alert variant="info" :dismissible="false" :icon="false" class="mt-3">
                                 <h6><i class="fas fa-link me-2"></i>Connected Data</h6>
                                 <p class="mb-0">This topic has {{ $topic->mcqs_count }} MCQ(s). Deleting it will affect all connected data.</p>
-                            </div>
+                            </x-alert>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

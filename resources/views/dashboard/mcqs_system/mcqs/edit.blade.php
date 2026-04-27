@@ -1,30 +1,27 @@
 <x-app-layout>
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Edit MCQ</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
-                                <li class="breadcrumb-item active">Edit MCQ #{{ $mcq->id }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid px-0 px-md-3">
+            <x-page-header class="mb-4 px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Edit MCQ</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
+                            <li class="breadcrumb-item active">Edit MCQ #{{ $mcq->id }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Edit MCQ</h5>
                         </div>
@@ -316,22 +313,22 @@
                                 
                                 <!-- Submit -->
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Update MCQ
-                                    </button>
-                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <!-- MCQ Info -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>MCQ Information</h5>
                         </div>
@@ -361,20 +358,20 @@
                                 @endif
                                 <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                     <span>Used in Mock Tests</span>
-                                    <span class="badge bg-primary">{{ $mcq->mock_tests_count }}</span>
+                                    <x-badge variant="primary">{{ $mcq->mock_tests_count }}</x-badge>
                                 </li>
                             </ul>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Verification Status -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i>Verification Status</h5>
                         </div>
                         <div class="card-body">
                             @if($mcq->is_verified)
-                            <div class="alert alert-success">
+                            <x-alert variant="success" :dismissible="false" :icon="false">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-check-circle fa-2x me-3"></i>
                                     <div>
@@ -382,15 +379,15 @@
                                         <p class="mb-0">This MCQ has been verified and approved.</p>
                                     </div>
                                 </div>
-                            </div>
+                            </x-alert>
                             <form action="{{ route('mcqs.unverify', $mcq) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-warning w-100">
+                                <x-button type="submit" variant="outline-warning" class="w-100">
                                     <i class="fas fa-times me-2"></i> Remove Verification
-                                </button>
+                                </x-button>
                             </form>
                             @else
-                            <div class="alert alert-warning">
+                            <x-alert variant="warning" :dismissible="false" :icon="false">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-exclamation-circle fa-2x me-3"></i>
                                     <div>
@@ -398,16 +395,16 @@
                                         <p class="mb-0">This MCQ needs verification before publishing.</p>
                                     </div>
                                 </div>
-                            </div>
+                            </x-alert>
                             <form action="{{ route('mcqs.verify', $mcq) }}" method="POST">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-success w-100">
+                                <x-button type="submit" variant="outline-success" class="w-100">
                                     <i class="fas fa-check me-2"></i> Verify MCQ
-                                </button>
+                                </x-button>
                             </form>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

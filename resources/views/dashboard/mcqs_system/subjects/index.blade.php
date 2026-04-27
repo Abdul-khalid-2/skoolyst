@@ -1,47 +1,31 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid px-0 px-md-3">
-            <!-- Page Header -->
-            <div class="page-header mb-4 px-3 px-md-0">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="mb-3 mb-md-0">
-                        <h1 class="h3 mb-1 mb-md-2">Subjects</h1>
-                        <p class="text-muted mb-0 d-none d-md-block">Manage subjects for different test types</p>
-                        <p class="text-muted mb-0 d-block d-md-none">Manage subjects</p>
-                    </div>
-                    <div class="w-100 w-md-auto">
-                        <a href="{{ route('subjects.create') }}" class="btn btn-primary w-100 w-md-auto d-flex align-items-center justify-content-center">
-                            <i class="fas fa-plus me-2"></i> 
-                            <span class="d-none d-sm-inline">Add Subject</span>
-                            <span class="d-inline d-sm-none">Add</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header class="px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-1 mb-md-2">Subjects</h1>
+                    <p class="text-muted mb-0 d-none d-md-block">Manage subjects for different test types</p>
+                    <p class="text-muted mb-0 d-block d-md-none">Manage subjects</p>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('subjects.create') }}" variant="primary" class="w-100 w-md-auto d-flex align-items-center justify-content-center">
+                        <i class="fas fa-plus me-2"></i>
+                        <span class="d-none d-sm-inline">Add Subject</span>
+                        <span class="d-inline d-sm-none">Add</span>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <!-- Success/Error Messages -->
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('success') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('error') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="danger">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Filters - Collapsible on Mobile -->
-            <div class="card mb-4 mx-3 mx-md-0">
+            <x-card class="mb-4 mx-3 mx-md-0">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3 d-md-none" 
                      data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false">
                     <div class="d-flex align-items-center">
@@ -84,28 +68,28 @@
                                     <input type="text" name="search" class="form-control" 
                                            placeholder="Search by name or description..." 
                                            value="{{ request('search') }}">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="this.closest('form').reset()">
+                                    <x-button variant="outline-secondary" type="button" onclick="this.closest('form').reset()">
                                         <i class="fas fa-times"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                             </div>
                             
                             <div class="col-12 col-md-6 col-lg-1">
                                 <label class="form-label small fw-bold d-md-none">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center">
+                                <x-button type="submit" variant="primary" class="btn-sm w-100 d-flex align-items-center justify-content-center">
                                     <i class="fas fa-filter me-1 me-md-0"></i>
                                     <span class="ms-1 d-md-none">Filter</span>
-                                </button>
+                                </x-button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Stats Cards - Mobile Optimized -->
             <div class="row mb-4 g-3 px-3 px-md-0">
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -117,11 +101,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -133,11 +117,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -149,11 +133,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -165,12 +149,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Bulk Actions - Responsive -->
-            <div class="card mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
                 <div class="card-body p-3">
                     <div class="d-flex flex-column flex-md-row align-items-center gap-3">
                         <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 subjects selected</span>
@@ -182,22 +166,22 @@
                                 <option value="delete">Delete</option>
                             </select>
                             <div class="d-flex gap-2 mt-2 mt-md-0">
-                                <button class="btn btn-sm btn-primary flex-grow-1" id="applyBulkAction">
+                                <x-button type="button" variant="primary" class="btn-sm flex-grow-1" id="applyBulkAction">
                                     <span class="d-none d-md-inline">Apply</span>
                                     <i class="fas fa-check d-inline d-md-none"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="clearSelection">
+                                </x-button>
+                                <x-button type="button" variant="outline-secondary" class="btn-sm" id="clearSelection">
                                     <span class="d-none d-md-inline">Clear</span>
                                     <i class="fas fa-times d-inline d-md-none"></i>
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Subjects Table - Responsive -->
-            <div class="card mx-3 mx-md-0">
+            <x-card class="mx-3 mx-md-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover mb-0" id="subjectsTable">
@@ -243,24 +227,23 @@
                                             <div class="d-flex align-items-center">
                                                 <!-- Show first 3 test types as badges -->
                                                 @foreach($subject->testTypes->take(3) as $testType)
-                                                    <span class="badge bg-light text-dark small me-1">
+                                                    <x-badge variant="light" class="small me-1">
                                                         @if($testType->icon)
                                                             <i class="{{ $testType->icon }}"></i>
                                                         @else
                                                             {{ Str::limit($testType->name, 8) }}
                                                         @endif
-                                                    </span>
+                                                    </x-badge>
                                                 @endforeach
                                                 
                                                 <!-- Show dropdown button if more than 3 test types -->
                                                 @if($subject->testTypes->count() > 3)
                                                     <div class="dropdown">
-                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-1" 
-                                                                type="button" 
+                                                        <x-button type="button" variant="outline-secondary" class="btn-sm dropdown-toggle py-0 px-1"
                                                                 data-bs-toggle="dropdown" 
                                                                 aria-expanded="false">
                                                             +{{ $subject->testTypes->count() - 3 }}
-                                                        </button>
+                                                        </x-button>
                                                         <ul class="dropdown-menu">
                                                             @foreach($subject->testTypes->skip(3) as $testType)
                                                                 <li>
@@ -281,21 +264,19 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" 
-                                           class="badge bg-info text-decoration-none">
-                                            {{ $subject->topics_count }}
+                                        <a href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" class="text-decoration-none">
+                                            <x-badge variant="info">{{ $subject->topics_count }}</x-badge>
                                         </a>
                                     </td>
                                     <td>
-                                        <a href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" 
-                                           class="badge bg-warning text-decoration-none">
-                                            {{ $subject->mcqs_count }}
+                                        <a href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" class="text-decoration-none">
+                                            <x-badge variant="warning">{{ $subject->mcqs_count }}</x-badge>
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                        <x-badge :variant="$subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                             {{ ucfirst($subject->status->value) }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         <input type="number" 
@@ -307,39 +288,39 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('subjects.edit', $subject) }}" 
-                                               class="btn btn-sm btn-outline-primary"
+                                            <x-button href="{{ route('subjects.edit', $subject) }}"
+                                               variant="outline-primary" class="btn-sm"
                                                data-bs-toggle="tooltip" title="Edit">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{{ route('subjects.show', $subject) }}" 
-                                               class="btn btn-sm btn-outline-info"
+                                            </x-button>
+                                            <x-button href="{{ route('subjects.show', $subject) }}"
+                                               variant="outline-info" class="btn-sm"
                                                data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
-                                            </a>
+                                            </x-button>
                                             @if($subject->topics_count == 0 && $subject->mcqs_count == 0)
                                             <form action="{{ route('subjects.destroy', $subject) }}" 
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Delete">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm" 
                                                         onclick="return confirm('Delete this subject?')">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                            <x-button type="button" variant="outline-secondary" class="btn-sm" 
                                                     data-bs-toggle="tooltip" 
                                                     title="Cannot delete (has topics/MCQs)">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                                 
                                 <!-- Mobile View Card -->
-                                <div class="card mb-3 d-block d-md-none mx-3">
+                                <x-card class="mb-3 d-block d-md-none mx-3">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="d-flex align-items-center">
@@ -348,16 +329,16 @@
                                                 @if($subject->icon)
                                                 <i class="{{ $subject->icon }} me-2 text-primary"></i>
                                                 @endif
-                                                <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                <x-badge :variant="$subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                                     {{ ucfirst($subject->status->value) }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             @if($subject->testTypes->count() > 0)
                                             <div class="text-end">
-                                                <span class="badge bg-light text-dark small">
+                                                <x-badge variant="light" class="small">
                                                     <i class="{{ $subject->testTypes->first()->icon ?? 'fas fa-list' }}"></i>
                                                     {{ $subject->testTypes->count() }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             @endif
                                         </div>
@@ -375,21 +356,20 @@
                                                 <div class="mt-2">
                                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                                         @foreach($subject->testTypes->take(2) as $testType)
-                                                            <span class="badge bg-light text-dark small">
+                                                            <x-badge variant="light" class="small">
                                                                 @if($testType->icon)
                                                                     <i class="{{ $testType->icon }} me-1"></i>
                                                                 @endif
                                                                 {{ Str::limit($testType->name, 10) }}
-                                                            </span>
+                                                            </x-badge>
                                                         @endforeach
                                                         @if($subject->testTypes->count() > 2)
                                                             <div class="dropdown">
-                                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle py-0 px-1" 
-                                                                        type="button" 
+                                                                <x-button type="button" variant="outline-secondary" class="btn-sm dropdown-toggle py-0 px-1" 
                                                                         data-bs-toggle="dropdown" 
                                                                         aria-expanded="false">
                                                                     +{{ $subject->testTypes->count() - 2 }}
-                                                                </button>
+                                                                </x-button>
                                                                 <ul class="dropdown-menu">
                                                                     @foreach($subject->testTypes->skip(2) as $testType)
                                                                         <li>
@@ -412,12 +392,12 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex gap-2">
                                                 <a href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" 
-                                                   class="badge bg-info text-decoration-none d-flex align-items-center">
-                                                    <i class="fas fa-folder me-1"></i> {{ $subject->topics_count }}
+                                                   class="text-decoration-none d-flex align-items-center">
+                                                    <x-badge variant="info"><i class="fas fa-folder me-1"></i> {{ $subject->topics_count }}</x-badge>
                                                 </a>
                                                 <a href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" 
-                                                   class="badge bg-warning text-decoration-none d-flex align-items-center">
-                                                    <i class="fas fa-question me-1"></i> {{ $subject->mcqs_count }}
+                                                   class="text-decoration-none d-flex align-items-center">
+                                                    <x-badge variant="warning"><i class="fas fa-question me-1"></i> {{ $subject->mcqs_count }}</x-badge>
                                                 </a>
                                             </div>
                                             <div class="d-flex align-items-center">
@@ -433,51 +413,55 @@
                                         
                                         <div class="d-flex justify-content-between">
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('subjects.edit', $subject) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
+                                                <x-button href="{{ route('subjects.edit', $subject) }}"
+                                                   variant="outline-primary" class="btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Edit</span>
-                                                </a>
-                                                <a href="{{ route('subjects.show', $subject) }}" 
-                                                   class="btn btn-sm btn-outline-info">
+                                                </x-button>
+                                                <x-button href="{{ route('subjects.show', $subject) }}"
+                                                   variant="outline-info" class="btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                     <span class="ms-1 d-none d-sm-inline">View</span>
-                                                </a>
+                                                </x-button>
                                             </div>
                                             @if($subject->topics_count == 0 && $subject->mcqs_count == 0)
                                             <form action="{{ route('subjects.destroy', $subject) }}" 
                                                   method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm" 
                                                         onclick="return confirm('Delete this subject?')">
                                                     <i class="fas fa-trash"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
+                                            <x-button type="button" variant="outline-secondary" class="btn-sm" 
                                                     data-bs-toggle="tooltip" 
                                                     title="Cannot delete (has topics/MCQs)">
                                                 <i class="fas fa-trash"></i>
                                                 <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                                 @endforeach
                             </tbody>
                         </table>
                         
                         @if($subjects->count() == 0)
-                        <div class="text-center py-5">
-                            <i class="fas fa-book fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No subjects found</h5>
-                            <p class="text-muted">Create your first subject to get started</p>
-                            <a href="{{ route('subjects.create') }}" class="btn btn-primary mt-2">
-                                <i class="fas fa-plus me-2"></i> Add Subject
-                            </a>
-                        </div>
+                        <x-empty-state
+                            class="text-center py-5"
+                            title="No subjects found"
+                            description="Create your first subject to get started"
+                            icon="fa-book"
+                        >
+                            <x-slot name="actions">
+                                <x-button href="{{ route('subjects.create') }}" variant="primary" class="mt-2">
+                                    <i class="fas fa-plus me-2"></i> Add Subject
+                                </x-button>
+                            </x-slot>
+                        </x-empty-state>
                         @endif
                     </div>
                     
@@ -493,7 +477,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </div>
     </main>
 

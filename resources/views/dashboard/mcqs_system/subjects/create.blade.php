@@ -1,30 +1,27 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Create Subject</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
-                                <li class="breadcrumb-item active">Create</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Create Subject</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
+                            <li class="breadcrumb-item active">Create</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Subject Details</h5>
                         </div>
@@ -141,26 +138,26 @@
                                 </div>
                                 
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Create Subject
-                                    </button>
-                                    <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-info">
+                            <x-alert variant="info" :dismissible="false" :icon="false">
                                 <h6><i class="fas fa-lightbulb me-2"></i>Tips</h6>
                                 <ul class="mb-0 ps-3">
                                     <li>Subjects can be linked to multiple test types</li>
@@ -168,7 +165,7 @@
                                     <li>Use colors for visual identification</li>
                                     <li>Icons help users recognize subjects quickly</li>
                                 </ul>
-                            </div>
+                            </x-alert>
                             
                             <div class="mt-3">
                                 <h6 class="mb-2">Example Subjects:</h6>
@@ -192,10 +189,10 @@
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Color Preview -->
-                    <div class="card mt-4">
+                    <x-card class="mt-4">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Color Preview</h5>
                         </div>
@@ -210,7 +207,7 @@
                             </div>
                             <small class="text-muted">This color will be used for subject cards and indicators.</small>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

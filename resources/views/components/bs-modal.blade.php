@@ -5,6 +5,7 @@
     'size' => null,
     'staticBackdrop' => false,
     'labelledBy' => null,
+    'scrollable' => false,
 ])
 
 @php
@@ -22,10 +23,16 @@
     ]) }}
     @if ($staticBackdrop) data-bs-backdrop="static" data-bs-keyboard="false" @endif
 >
-    <div @class(['modal-dialog', $sizeClass, 'modal-dialog-centered' => $centered])>
+    <div @class(['modal-dialog', $sizeClass, 'modal-dialog-centered' => $centered, 'modal-dialog-scrollable' => $scrollable])>
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="{{ $labelledBy }}">{{ $title }}</h5>
+                <h5 class="modal-title" id="{{ $labelledBy }}">
+                    @isset($modalTitle)
+                        {{ $modalTitle }}
+                    @else
+                        {{ $title }}
+                    @endisset
+                </h5>
                 <button
                     type="button"
                     class="btn-close"

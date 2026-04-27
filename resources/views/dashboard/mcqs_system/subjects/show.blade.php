@@ -1,34 +1,33 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Subject Details</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
-                                <li class="breadcrumb-item active">{{ $subject->name }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('subjects.edit', $subject) }}" class="btn btn-primary me-2">
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Subject Details</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
+                            <li class="breadcrumb-item active">{{ $subject->name }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                        <x-button href="{{ route('subjects.edit', $subject) }}" variant="primary" class="me-md-2">
                             <i class="fas fa-edit me-2"></i> Edit
-                        </a>
-                        <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
+                        </x-button>
+                        <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
+                        </x-button>
                     </div>
-                </div>
-            </div>
+                </x-slot>
+            </x-page-header>
 
             <!-- Details & Stats -->
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Subject Details -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header">
                             <h5 class="mb-0">{{ $subject->name }}</h5>
                         </div>
@@ -53,10 +52,10 @@
                                         <label class="form-label text-muted">Test Type</label>
                                         <div>
                                             @if($subject->testType)
-                                            <span class="badge bg-light text-dark">
+                                            <x-badge variant="light">
                                                 <i class="{{ $subject->testType->icon ?? 'fas fa-list' }} me-1"></i>
                                                 {{ $subject->testType->name }}
-                                            </span>
+                                            </x-badge>
                                             @else
                                             <span class="text-muted">No test type assigned</span>
                                             @endif
@@ -93,9 +92,9 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Status</label>
                                         <div>
-                                            <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            <x-badge :variant="$subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                                 {{ ucfirst($subject->status->value) }}
-                                            </span>
+                                            </x-badge>
                                         </div>
                                     </div>
                                 </div>
@@ -126,15 +125,15 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Recent Topics -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="fas fa-folder me-2"></i>Recent Topics</h5>
-                            <a href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" class="btn btn-sm btn-outline-primary">
+                            <x-button href="{{ route('topics.index', ['subject_id' => $subject->id]) }}" variant="outline-primary" class="btn-sm">
                                 View All
-                            </a>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             @if($subject->topics->count() > 0)
@@ -159,20 +158,20 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $topic->difficulty_badge_variant }}">
+                                                <x-badge :variant="$topic->difficulty_badge_variant">
                                                     {{ $topic->formatted_difficulty }}
-                                                </span>
+                                                </x-badge>
                                             </td>
                                             <td>{{ $topic->estimated_time_minutes }} mins</td>
                                             <td>
-                                                <span class="badge bg-{{ $topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                <x-badge :variant="$topic->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                                     {{ ucfirst($topic->status->value) }}
-                                                </span>
+                                                </x-badge>
                                             </td>
                                             <td>
-                                                <a href="{{ route('topics.edit', $topic) }}" class="btn btn-sm btn-outline-primary">
+                                                <x-button href="{{ route('topics.edit', $topic) }}" variant="outline-primary" class="btn-sm">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
+                                                </x-button>
                                             </td>
                                         </tr>
                                         @endforeach
@@ -180,22 +179,22 @@
                                 </table>
                             </div>
                             @else
-                            <div class="text-center py-4">
-                                <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No topics created yet</p>
-                                <a href="{{ route('topics.create', ['subject_id' => $subject->id]) }}" class="btn btn-primary">
-                                    <i class="fas fa-plus me-2"></i> Create First Topic
-                                </a>
-                            </div>
+                            <x-empty-state title="No topics created yet" icon="fa-folder-open">
+                                <x-slot name="actions">
+                                    <x-button href="{{ route('topics.create', ['subject_id' => $subject->id]) }}" variant="primary">
+                                        <i class="fas fa-plus me-2"></i> Create First Topic
+                                    </x-button>
+                                </x-slot>
+                            </x-empty-state>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <!-- Stats Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Statistics</h5>
                         </div>
@@ -215,35 +214,35 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Quick Actions -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <a href="{{ route('topics.create', ['subject_id' => $subject->id]) }}" class="btn btn-outline-primary">
+                                <x-button href="{{ route('topics.create', ['subject_id' => $subject->id]) }}" variant="outline-primary">
                                     <i class="fas fa-plus me-2"></i> Add Topic
-                                </a>
-                                <a href="{{ route('mcqs.create', ['subject_id' => $subject->id]) }}" class="btn btn-outline-success">
+                                </x-button>
+                                <x-button href="{{ route('mcqs.create', ['subject_id' => $subject->id]) }}" variant="outline-success">
                                     <i class="fas fa-question me-2"></i> Add MCQ
-                                </a>
-                                <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
+                                </x-button>
+                                <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
                                     <i class="fas fa-list me-2"></i> View All Subjects
-                                </a>
+                                </x-button>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Recent MCQs -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Recent MCQs</h5>
-                            <a href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" class="btn btn-sm btn-outline-warning">
+                            <x-button href="{{ route('mcqs.index', ['subject_id' => $subject->id]) }}" variant="outline-primary" class="btn-sm">
                                 View All
-                            </a>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             @if($subject->mcqs->count() > 0)
@@ -257,21 +256,19 @@
                                                 {{ $mcq->question_type == 'single' ? 'Single' : 'Multiple' }} Choice
                                             </div>
                                         </div>
-                                        <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                        <x-badge :variant="$mcq->difficulty_badge_variant">
                                             {{ $mcq->difficulty_label }}
-                                        </span>
+                                        </x-badge>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                             @else
-                            <div class="text-center py-3">
-                                <i class="fas fa-question fa-2x text-muted mb-2"></i>
-                                <p class="text-muted">No MCQs created yet</p>
-                            </div>
+                            <x-empty-state title="No MCQs created yet" icon="fa-question" class="py-3">
+                            </x-empty-state>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

@@ -1,35 +1,34 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid px-0 px-md-3">
-            <!-- Page Header -->
-            <div class="page-header mb-4 px-3 px-md-0">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="mb-3 mb-md-0">
-                        <h1 class="h3 mb-1 mb-md-2">Mock Test Details</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
-                                <li class="breadcrumb-item active">{{ Str::limit($mockTest->title, 20) }}</li>
-                            </ol>
-                        </nav>
-                    </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-1 mb-md-2">Mock Test Details</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mock-tests.index') }}">Mock Tests</a></li>
+                            <li class="breadcrumb-item active">{{ Str::limit($mockTest->title, 20) }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
                     <div class="d-flex flex-wrap gap-2">
-                        <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-primary d-flex align-items-center">
-                            <i class="fas fa-edit me-1 me-md-2"></i> 
+                        <x-button href="{{ route('mock-tests.edit', $mockTest) }}" variant="primary" class="d-flex align-items-center">
+                            <i class="fas fa-edit me-1 me-md-2"></i>
                             <span class="d-none d-md-inline">Edit</span>
-                        </a>
-                        <a href="{{ route('mock-tests.index') }}" class="btn btn-outline-secondary d-flex align-items-center">
-                            <i class="fas fa-arrow-left me-1 me-md-2"></i> 
+                        </x-button>
+                        <x-button href="{{ route('mock-tests.index') }}" variant="outline-secondary" class="d-flex align-items-center">
+                            <i class="fas fa-arrow-left me-1 me-md-2"></i>
                             <span class="d-none d-md-inline">Back</span>
-                        </a>
+                        </x-button>
                     </div>
-                </div>
-            </div>
+                </x-slot>
+            </x-page-header>
 
             <!-- Test Stats - Mobile Optimized -->
             <div class="row mb-4 g-3 px-3 px-md-0">
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -42,11 +41,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -59,11 +58,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -78,11 +77,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -97,7 +96,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
@@ -105,7 +104,7 @@
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Test Information -->
-                    <div class="card mb-4 mx-3 mx-md-0">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">{{ Str::limit($mockTest->title, 30) }}</h5>
                         </div>
@@ -123,10 +122,10 @@
                                         <label class="form-label text-muted small">Test Type</label>
                                         <p>
                                             @if($mockTest->testType)
-                                            <span class="badge bg-light text-dark">
+                                            <x-badge variant="light" class="text-dark">
                                                 <i class="{{ $mockTest->testType->icon ?? 'fas fa-tag' }} me-1"></i>
                                                 {{ $mockTest->testType->name }}
-                                            </span>
+                                            </x-badge>
                                             @else
                                             <span class="text-muted small">No type assigned</span>
                                             @endif
@@ -155,9 +154,9 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted small">Test Mode</label>
                                         <p>
-                                            <span class="badge bg-{{ $mockTest->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($mockTest->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                            <x-badge :variant="$mockTest->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($mockTest->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary')">
                                                 {{ ucfirst($mockTest->test_mode->value) }}
-                                            </span>
+                                            </x-badge>
                                         </p>
                                     </div>
                                 </div>
@@ -167,13 +166,13 @@
                                         <label class="form-label text-muted small">Access</label>
                                         <p>
                                             @if($mockTest->is_free)
-                                            <span class="badge bg-success">
+                                            <x-badge variant="success">
                                                 <i class="fas fa-unlock me-1"></i> Free
-                                            </span>
+                                            </x-badge>
                                             @else
-                                            <span class="badge bg-warning">
+                                            <x-badge variant="warning">
                                                 <i class="fas fa-lock me-1"></i> Premium
-                                            </span>
+                                            </x-badge>
                                             @endif
                                         </p>
                                     </div>
@@ -183,9 +182,9 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted small">Status</label>
                                         <p>
-                                            <span class="badge bg-{{ $mockTest->status === \App\Enums\ContentStatus::Published ? 'success' : ($mockTest->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                            <x-badge :variant="$mockTest->status === \App\Enums\ContentStatus::Published ? 'success' : ($mockTest->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary')">
                                                 {{ ucfirst($mockTest->status->value) }}
-                                            </span>
+                                            </x-badge>
                                         </p>
                                     </div>
                                 </div>
@@ -253,17 +252,21 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Questions List -->
-                    <div class="card mx-3 mx-md-0">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                             <h5 class="mb-2 mb-md-0">Test Questions ({{ $mockTest->questions->count() }})</h5>
-                            <a href="{{ route('mock-tests.add-questions', $mockTest) }}" class="btn btn-sm btn-success d-flex align-items-center">
-                                <i class="fas fa-plus me-1"></i> 
+                            <x-button
+                                href="{{ route('mock-tests.add-questions', $mockTest) }}"
+                                variant="success"
+                                class="btn-sm d-flex align-items-center"
+                            >
+                                <i class="fas fa-plus me-1"></i>
                                 <span class="d-none d-sm-inline">Add Questions</span>
                                 <span class="d-inline d-sm-none">Add</span>
-                            </a>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             @if($mockTest->questions->count() > 0)
@@ -282,23 +285,23 @@
                                         @foreach($mockTest->questions->sortBy('question_number') as $question)
                                         <tr>
                                             <td>
-                                                <span class="badge bg-light text-dark">
+                                                <x-badge variant="light" class="text-dark">
                                                     {{ $question->question_number }}
-                                                </span>
+                                                </x-badge>
                                             </td>
                                             <td>
                                                 <div class="question-preview">
                                                     {!! Str::limit(strip_tags($question->mcq->question), 50) !!}
                                                 </div>
                                                 <div class="small text-muted mt-1">
-                                                    <span class="badge bg-{{ $question->mcq->question_type == 'single' ? 'primary' : 'info' }}">
+                                                    <x-badge :variant="$question->mcq->question_type == 'single' ? 'primary' : 'info'">
                                                         {{ $question->mcq->question_type == 'single' ? 'Single' : 'Multiple' }}
-                                                    </span>
+                                                    </x-badge>
                                                     @if($question->mcq->is_premium)
-                                                    <span class="badge bg-warning ms-1">Premium</span>
+                                                    <x-badge variant="warning" class="ms-1">Premium</x-badge>
                                                     @endif
                                                     @if($question->mcq->is_verified)
-                                                    <span class="badge bg-success ms-1">✓</span>
+                                                    <x-badge variant="success" class="ms-1">✓</x-badge>
                                                     @endif
                                                 </div>
                                             </td>
@@ -309,9 +312,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                <x-badge :variant="$question->mcq->difficulty_badge_variant">
                                                     {{ $question->mcq->difficulty_label }}
-                                                </span>
+                                                </x-badge>
                                             </td>
                                             <td>
                                                 <span class="fw-bold">{{ $question->marks }}</span>
@@ -332,25 +335,25 @@
                                     <div class="list-group-item mb-3 border rounded">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="d-flex align-items-center">
-                                                <span class="badge bg-light text-dark me-2">
+                                                <x-badge variant="light" class="text-dark me-2">
                                                     #{{ $question->question_number }}
-                                                </span>
+                                                </x-badge>
                                                 <div>
-                                                    <span class="badge bg-{{ $question->mcq->question_type == 'single' ? 'primary' : 'info' }} me-1">
+                                                    <x-badge :variant="$question->mcq->question_type == 'single' ? 'primary' : 'info'" class="me-1">
                                                         {{ $question->mcq->question_type == 'single' ? 'S' : 'M' }}
-                                                    </span>
+                                                    </x-badge>
                                                     @if($question->mcq->is_premium)
-                                                    <span class="badge bg-warning me-1">Premium</span>
+                                                    <x-badge variant="warning" class="me-1">Premium</x-badge>
                                                     @endif
                                                     @if($question->mcq->is_verified)
-                                                    <span class="badge bg-success">✓</span>
+                                                    <x-badge variant="success">✓</x-badge>
                                                     @endif
                                                 </div>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $question->mcq->difficulty_badge_variant }}">
+                                                <x-badge :variant="$question->mcq->difficulty_badge_variant">
                                                     {{ $question->mcq->difficulty_label }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                         </div>
                                         
@@ -382,22 +385,31 @@
                                 </div>
                             </div>
                             @else
-                            <div class="text-center py-4">
-                                <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                                <p class="text-muted">No questions added yet</p>
-                                <a href="{{ route('mock-tests.add-questions', $mockTest) }}" class="btn btn-primary d-flex align-items-center justify-content-center mx-auto" style="max-width: 200px;">
-                                    <i class="fas fa-plus me-2"></i> Add Questions
-                                </a>
-                            </div>
+                            <x-empty-state
+                                class="py-4"
+                                icon="fa-question-circle"
+                                title="No questions added yet"
+                            >
+                                <x-slot name="actions">
+                                    <x-button
+                                        href="{{ route('mock-tests.add-questions', $mockTest) }}"
+                                        variant="primary"
+                                        class="d-flex align-items-center justify-content-center mx-auto"
+                                        style="max-width: 200px;"
+                                    >
+                                        <i class="fas fa-plus me-2"></i> Add Questions
+                                    </x-button>
+                                </x-slot>
+                            </x-empty-state>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4 mt-4 mt-lg-0">
                     <!-- Test Actions -->
-                    <div class="card mb-4 mx-3 mx-md-0">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0 d-flex align-items-center">
                                 <i class="fas fa-cogs me-2"></i>Test Actions
@@ -405,26 +417,26 @@
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <a href="{{ route('mock-tests.edit', $mockTest) }}" class="btn btn-primary d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-edit me-2"></i> 
+                                <x-button href="{{ route('mock-tests.edit', $mockTest) }}" variant="primary" class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-edit me-2"></i>
                                     <span>Edit Test</span>
-                                </a>
-                                <a href="{{ route('mock-tests.add-questions', $mockTest) }}" class="btn btn-success d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-plus me-2"></i> 
+                                </x-button>
+                                <x-button href="{{ route('mock-tests.add-questions', $mockTest) }}" variant="success" class="d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-plus me-2"></i>
                                     <span>Manage Questions</span>
-                                </a>
+                                </x-button>
                                 @if($mockTest->is_free)
-                                <a href="{{ route('mock-test.preview', $mockTest) }}" class="btn btn-info d-flex align-items-center justify-content-center" target="_blank">
-                                    <i class="fas fa-eye me-2"></i> 
+                                <x-button href="{{ route('mock-test.preview', $mockTest) }}" variant="info" class="d-flex align-items-center justify-content-center" target="_blank">
+                                    <i class="fas fa-eye me-2"></i>
                                     <span>Preview Test</span>
-                                </a>
+                                </x-button>
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Subject Distribution -->
-                    <div class="card mb-4 mx-3 mx-md-0">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0 d-flex align-items-center">
                                 <i class="fas fa-chart-pie me-2"></i>Subject Distribution
@@ -450,31 +462,35 @@
                                 @foreach($subjectDistribution as $subject => $count)
                                 <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                     <span class="small">{{ Str::limit($subject, 20) }}</span>
-                                    <span class="badge bg-primary small">{{ $count }} Qs</span>
+                                    <x-badge variant="primary" class="small">{{ $count }} Qs</x-badge>
                                 </div>
                                 @endforeach
                             </div>
                             @else
-                            <div class="text-center py-3">
-                                <i class="fas fa-chart-pie fa-2x text-muted mb-2"></i>
-                                <p class="text-muted small">No subject data</p>
-                            </div>
+                            <x-empty-state
+                                class="py-3"
+                                icon="fa-chart-pie"
+                                title="No subject data"
+                            />
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Recent Attempts -->
-                    <div class="card mx-3 mx-md-0">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
                             <h5 class="mb-2 mb-md-0 d-flex align-items-center">
                                 <i class="fas fa-history me-2"></i>Recent Attempts
                             </h5>
                             @if($mockTest->attempts_count > 0)
-                            <a href="{{ route('user-test-attempts.index', ['mock_test_id' => $mockTest->id]) }}" 
-                               class="btn btn-sm btn-outline-primary d-flex align-items-center">
+                            <x-button
+                                href="{{ route('user-test-attempts.index', ['mock_test_id' => $mockTest->id]) }}"
+                                variant="outline-primary"
+                                class="btn-sm d-flex align-items-center"
+                            >
                                 <span class="d-none d-md-inline">View All</span>
                                 <i class="fas fa-external-link-alt ms-1"></i>
-                            </a>
+                            </x-button>
                             @endif
                         </div>
                         <div class="card-body">
@@ -499,22 +515,23 @@
                                         </div>
                                         <div class="text-end">
                                             <div class="fw-bold small">{{ $attempt->percentage }}%</div>
-                                            <span class="badge bg-{{ $attempt->result_status === \App\Enums\UserTestResultStatus::Passed ? 'success' : ($attempt->result_status === \App\Enums\UserTestResultStatus::Failed ? 'danger' : 'secondary') }}">
+                                            <x-badge :variant="$attempt->result_status === \App\Enums\UserTestResultStatus::Passed ? 'success' : ($attempt->result_status === \App\Enums\UserTestResultStatus::Failed ? 'danger' : 'secondary')">
                                                 {{ ucfirst($attempt->result_status->value) }}
-                                            </span>
+                                            </x-badge>
                                         </div>
                                     </div>
                                 </div>
                                 @endforeach
                             </div>
                             @else
-                            <div class="text-center py-3">
-                                <i class="fas fa-history fa-2x text-muted mb-2"></i>
-                                <p class="text-muted small">No attempts yet</p>
-                            </div>
+                            <x-empty-state
+                                class="py-3"
+                                icon="fa-history"
+                                title="No attempts yet"
+                            />
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

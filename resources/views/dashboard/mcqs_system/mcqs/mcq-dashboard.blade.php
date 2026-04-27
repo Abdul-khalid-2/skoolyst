@@ -1,16 +1,15 @@
 <x-app-layout>
     <main class="main-content">
-        <!-- Page Header -->
-        <div class="page-header mb-4">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1 class="h3 mb-2">MCQ & Educational Content Management</h1>
-                    <p class="text-muted mb-0">Manage test types, subjects, MCQs, mock tests, and study materials</p>
-                </div>
+        <x-page-header class="mb-4">
+            <x-slot name="heading">
+                <h1 class="h3 mb-2">MCQ & Educational Content Management</h1>
+                <p class="text-muted mb-0">Manage test types, subjects, MCQs, mock tests, and study materials</p>
+            </x-slot>
+            <x-slot name="actions">
                 <div class="dropdown">
-                    <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                    <x-button variant="primary" class="dropdown-toggle" type="button" data-bs-toggle="dropdown">
                         <i class="fas fa-plus me-2"></i> Add New
-                    </button>
+                    </x-button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('test-types.create') }}">Test Type</a></li>
                         <li><a class="dropdown-item" href="{{ route('subjects.create') }}">Subject</a></li>
@@ -22,20 +21,17 @@
                         <li><a class="dropdown-item" href="{{ route('study-materials.create') }}">Study Material</a></li>
                     </ul>
                 </div>
-            </div>
-        </div>
+            </x-slot>
+        </x-page-header>
 
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
+            <x-alert variant="success">{{ session('success') }}</x-alert>
         @endif
 
         <!-- Stats Overview -->
         <div class="row mb-4">
             <div class="col-md-3">
-                <div class="card card-hover">
+                <x-card class="card-hover">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -51,11 +47,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
             
             <div class="col-md-3">
-                <div class="card card-hover">
+                <x-card class="card-hover">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -70,11 +66,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
             
             <div class="col-md-3">
-                <div class="card card-hover">
+                <x-card class="card-hover">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -89,11 +85,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
             
             <div class="col-md-3">
-                <div class="card card-hover">
+                <x-card class="card-hover">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -108,14 +104,14 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
         </div>
 
         <!-- Quick Access Tabs -->
         <div class="row">
             <div class="col-lg-8">
-                <div class="card">
+                <x-card>
                     <div class="card-header">
                         <ul class="nav nav-tabs card-header-tabs" id="mcqTabs" role="tablist">
                             <li class="nav-item" role="presentation">
@@ -167,24 +163,29 @@
                                                 <td>{{ $mcq->subject->name ?? 'N/A' }}</td>
                                                 <td>{{ $mcq->topic->title ?? 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                    <x-badge :variant="$mcq->difficulty_badge_variant">
                                                         {{ $mcq->difficulty_label }}
-                                                    </span>
+                                                    </x-badge>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'secondary' : 'dark') }}">
+                                                    <x-badge :variant="$mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'secondary' : 'dark')">
                                                         {{ $mcq->status_label }}
-                                                    </span>
+                                                    </x-badge>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
-                                                        <a href="{{ route('mcqs.edit', $mcq) }}" class="btn btn-outline-primary">
+                                                        <x-button href="{{ route('mcqs.edit', $mcq) }}" variant="outline-primary" class="btn-sm">
                                                             <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <button type="button" class="btn btn-outline-info" data-bs-toggle="modal" 
-                                                                data-bs-target="#previewMcqModal{{ $mcq->id }}">
+                                                        </x-button>
+                                                        <x-button
+                                                            type="button"
+                                                            variant="outline-info"
+                                                            class="btn-sm"
+                                                            data-bs-toggle="modal"
+                                                            data-bs-target="#previewMcqModal{{ $mcq->id }}"
+                                                        >
                                                             <i class="fas fa-eye"></i>
-                                                        </button>
+                                                        </x-button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -193,7 +194,7 @@
                                     </table>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-primary">View All MCQs</a>
+                                    <x-button href="{{ route('mcqs.index') }}" variant="outline-primary">View All MCQs</x-button>
                                 </div>
                             </div>
 
@@ -224,18 +225,18 @@
                                                 <td>{{ $test->total_questions }}</td>
                                                 <td>{{ $test->total_time_minutes }} mins</td>
                                                 <td>
-                                                    <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'secondary' : 'dark') }}">
+                                                    <x-badge :variant="$test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'secondary' : 'dark')">
                                                         {{ ucfirst($test->status->value) }}
-                                                    </span>
+                                                    </x-badge>
                                                 </td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
-                                                        <a href="{{ route('mock-tests.edit', $test) }}" class="btn btn-outline-primary">
+                                                        <x-button href="{{ route('mock-tests.edit', $test) }}" variant="outline-primary" class="btn-sm">
                                                             <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="{{ route('mock-tests.show', $test) }}" class="btn btn-outline-info">
+                                                        </x-button>
+                                                        <x-button href="{{ route('mock-tests.show', $test) }}" variant="outline-info" class="btn-sm">
                                                             <i class="fas fa-eye"></i>
-                                                        </a>
+                                                        </x-button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -244,7 +245,7 @@
                                     </table>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="{{ route('mock-tests.index') }}" class="btn btn-outline-primary">View All Tests</a>
+                                    <x-button href="{{ route('mock-tests.index') }}" variant="outline-primary">View All Tests</x-button>
                                 </div>
                             </div>
 
@@ -272,23 +273,22 @@
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <span class="badge bg-info">{{ ucfirst($material->material_type) }}</span>
+                                                    <x-badge variant="info">{{ ucfirst($material->material_type) }}</x-badge>
                                                 </td>
                                                 <td>{{ $material->subject->name ?? 'N/A' }}</td>
                                                 <td>
-                                                    <span class="badge bg-secondary">{{ strtoupper($material->file_type) }}</span>
+                                                    <x-badge variant="secondary">{{ strtoupper($material->file_type) }}</x-badge>
                                                 </td>
                                                 <td>{{ $material->download_count }}</td>
                                                 <td>
                                                     <div class="btn-group btn-group-sm">
-                                                        <a href="{{ route('study-materials.edit', $material) }}" class="btn btn-outline-primary">
+                                                        <x-button href="{{ route('study-materials.edit', $material) }}" variant="outline-primary" class="btn-sm">
                                                             <i class="fas fa-edit"></i>
-                                                        </a>
+                                                        </x-button>
                                                         @if($material->file_path)
-                                                        <a href="{{ asset('storage/' . $material->file_path) }}" target="_blank" 
-                                                           class="btn btn-outline-success">
+                                                        <x-button href="{{ asset('storage/' . $material->file_path) }}" variant="outline-success" class="btn-sm" target="_blank">
                                                             <i class="fas fa-download"></i>
-                                                        </a>
+                                                        </x-button>
                                                         @endif
                                                     </div>
                                                 </td>
@@ -298,18 +298,18 @@
                                     </table>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="{{ route('study-materials.index') }}" class="btn btn-outline-primary">View All Materials</a>
+                                    <x-button href="{{ route('study-materials.index') }}" variant="outline-primary">View All Materials</x-button>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
 
             <!-- Right Sidebar -->
             <div class="col-lg-4">
                 <!-- Quick Stats -->
-                <div class="card mb-4">
+                <x-card class="mb-4">
                     <div class="card-header">
                         <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Quick Stats</h6>
                     </div>
@@ -317,61 +317,61 @@
                         <div class="list-group list-group-flush">
                             <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>Published MCQs</span>
-                                <span class="badge bg-primary">{{ \App\Models\Mcq::where('status', 'published')->count() }}</span>
+                                <x-badge variant="primary">{{ \App\Models\Mcq::where('status', 'published')->count() }}</x-badge>
                             </div>
                             <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>Active Topics</span>
-                                <span class="badge bg-success">{{ \App\Models\Topic::where('status', 'active')->count() }}</span>
+                                <x-badge variant="success">{{ \App\Models\Topic::where('status', 'active')->count() }}</x-badge>
                             </div>
                             <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>Premium MCQs</span>
-                                <span class="badge bg-warning">{{ \App\Models\Mcq::where('is_premium', true)->count() }}</span>
+                                <x-badge variant="warning">{{ \App\Models\Mcq::where('is_premium', true)->count() }}</x-badge>
                             </div>
                             <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>Free Study Materials</span>
-                                <span class="badge bg-info">{{ \App\Models\StudyMaterial::where('is_free', true)->count() }}</span>
+                                <x-badge variant="info">{{ \App\Models\StudyMaterial::where('is_free', true)->count() }}</x-badge>
                             </div>
                             <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>Pending Reviews</span>
-                                <span class="badge bg-danger">{{ \App\Models\Mcq::where('is_verified', false)->count() }}</span>
+                                <x-badge variant="danger">{{ \App\Models\Mcq::where('is_verified', false)->count() }}</x-badge>
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
 
                 <!-- Quick Actions -->
-                <div class="card">
+                <x-card>
                     <div class="card-header">
                         <h6 class="mb-0"><i class="fas fa-bolt me-2"></i>Quick Actions</h6>
                     </div>
                     <div class="card-body">
                         <div class="row g-2">
                             <div class="col-6">
-                                <a href="{{ route('mcqs.create') }}" class="btn btn-outline-primary w-100 mb-2">
+                                <x-button href="{{ route('mcqs.create') }}" variant="outline-primary" class="w-100 mb-2">
                                     <i class="fas fa-plus me-1"></i> Add MCQ
-                                </a>
+                                </x-button>
                             </div>
                             <div class="col-6">
-                                <a href="{{ route('mock-tests.create') }}" class="btn btn-outline-success w-100 mb-2">
+                                <x-button href="{{ route('mock-tests.create') }}" variant="outline-success" class="w-100 mb-2">
                                     <i class="fas fa-plus me-1"></i> Create Test
-                                </a>
+                                </x-button>
                             </div>
                             <div class="col-6">
-                                <a href="{{ route('mcqs.index', ['status' => 'draft']) }}" class="btn btn-outline-warning w-100 mb-2">
+                                <x-button href="{{ route('mcqs.index', ['status' => 'draft']) }}" variant="outline-warning" class="w-100 mb-2">
                                     <i class="fas fa-pen me-1"></i> Review Drafts
-                                </a>
+                                </x-button>
                             </div>
                             <div class="col-6">
-                                <a href="{{ route('study-materials.create') }}" class="btn btn-outline-info w-100 mb-2">
+                                <x-button href="{{ route('study-materials.create') }}" variant="outline-info" class="w-100 mb-2">
                                     <i class="fas fa-upload me-1"></i> Upload Material
-                                </a>
+                                </x-button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
 
                 <!-- Recent Activity -->
-                <div class="card mt-4">
+                <x-card class="mt-4">
                     <div class="card-header">
                         <h6 class="mb-0"><i class="fas fa-history me-2"></i>Recent Activity</h6>
                     </div>
@@ -437,17 +437,17 @@
                             @endforeach
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
         </div>
 
         <!-- Category Overview -->
         <div class="row mt-4">
             <div class="col-md-6">
-                <div class="card">
+                <x-card>
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h6 class="mb-0"><i class="fas fa-list me-2"></i>Test Types</h6>
-                        <a href="{{ route('test-types.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        <x-button href="{{ route('test-types.index') }}" variant="outline-primary" class="btn-sm">View All</x-button>
                     </div>
                     <div class="card-body">
                         <div class="row g-3">
@@ -470,14 +470,14 @@
                             @endforeach
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
             
             <div class="col-md-6">
-                <div class="card">
+                <x-card>
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h6 class="mb-0"><i class="fas fa-book me-2"></i>Popular Subjects</h6>
-                        <a href="{{ route('subjects.index') }}" class="btn btn-sm btn-outline-primary">View All</a>
+                        <x-button href="{{ route('subjects.index') }}" variant="outline-primary" class="btn-sm">View All</x-button>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -504,9 +504,9 @@
                                         <td>{{ $subject->mcqs_count }}</td>
                                         <td>{{ $subject->topics_count }}</td>
                                         <td>
-                                            <span class="badge bg-{{ $subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            <x-badge :variant="$subject->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                                 {{ ucfirst($subject->status->value) }}
-                                            </span>
+                                            </x-badge>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -514,7 +514,7 @@
                             </table>
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
         </div>
     </main>

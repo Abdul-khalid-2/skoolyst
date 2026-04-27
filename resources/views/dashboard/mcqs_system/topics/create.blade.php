@@ -22,30 +22,27 @@
     <main class="main-content">
         <!-- Your existing HTML content remains the same until the form -->
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Create Topic</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('topics.index') }}">Topics</a></li>
-                                <li class="breadcrumb-item active">Create</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('topics.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Create Topic</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('topics.index') }}">Topics</a></li>
+                            <li class="breadcrumb-item active">Create</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('topics.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Topic Details</h5>
                         </div>
@@ -155,26 +152,26 @@
                                 </div>
                                 
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Create Topic
-                                    </button>
-                                    <a href="{{ route('topics.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('topics.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-info">
+                            <x-alert variant="info" :dismissible="false" :icon="false">
                                 <h6><i class="fas fa-lightbulb me-2"></i>Tips</h6>
                                 <ul class="mb-0 ps-3">
                                     <li>Topics organize learning material within subjects</li>
@@ -183,22 +180,22 @@
                                     <li>Add estimated time for better planning</li>
                                     <li>Full content supports HTML formatting</li>
                                 </ul>
-                            </div>
+                            </x-alert>
                             
                             <div class="mt-3">
                                 <h6 class="mb-2">Difficulty Levels:</h6>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Beginner</span>
-                                        <span class="badge bg-success">Basic concepts</span>
+                                        <x-badge variant="success">Basic concepts</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Intermediate</span>
-                                        <span class="badge bg-warning">Moderate difficulty</span>
+                                        <x-badge variant="warning">Moderate difficulty</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Advanced</span>
-                                        <span class="badge bg-danger">Complex topics</span>
+                                        <x-badge variant="danger">Complex topics</x-badge>
                                     </li>
                                 </ul>
                             </div>
@@ -208,20 +205,20 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Algebra Basics</span>
-                                        <span class="badge bg-success">Beginner</span>
+                                        <x-badge variant="success">Beginner</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Trigonometry</span>
-                                        <span class="badge bg-warning">Intermediate</span>
+                                        <x-badge variant="warning">Intermediate</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Calculus</span>
-                                        <span class="badge bg-danger">Advanced</span>
+                                        <x-badge variant="danger">Advanced</x-badge>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

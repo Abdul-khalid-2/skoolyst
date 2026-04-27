@@ -1,62 +1,59 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid px-0 px-md-3">
-            <!-- Page Header -->
-            <div class="page-header mb-4 px-3 px-md-0">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="mb-3 mb-md-0">
-                        <h1 class="h3 mb-1 mb-md-2">MCQs Management</h1>
-                        <p class="text-muted mb-0 d-none d-md-block">Create and manage multiple choice questions</p>
-                        <p class="text-muted mb-0 d-block d-md-none">Manage questions</p>
-                    </div>  
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-1 mb-md-2">MCQs Management</h1>
+                    <p class="text-muted mb-0 d-none d-md-block">Create and manage multiple choice questions</p>
+                    <p class="text-muted mb-0 d-block d-md-none">Manage questions</p>
+                </x-slot>
+                <x-slot name="actions">
                     <div class="w-100 w-md-auto d-flex flex-column flex-sm-row gap-2">
-                        <button type="button"
-                                class="btn btn-outline-secondary w-100 w-md-auto d-flex align-items-center justify-content-center"
-                                data-bs-toggle="modal"
-                                data-bs-target="#exportTemplateModal">
+                        <x-button
+                            type="button"
+                            variant="outline-secondary"
+                            class="w-100 w-md-auto d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exportTemplateModal"
+                        >
                             <i class="fas fa-file-download me-2"></i>
                             <span class="d-none d-sm-inline">Download Template</span>
                             <span class="d-inline d-sm-none">Template</span>
-                        </button>
-                        <button type="button"
-                                class="btn btn-outline-primary w-100 w-md-auto d-flex align-items-center justify-content-center"
-                                data-bs-toggle="modal"
-                                data-bs-target="#bulkImportMcqModal">
+                        </x-button>
+                        <x-button
+                            type="button"
+                            variant="outline-primary"
+                            class="w-100 w-md-auto d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal"
+                            data-bs-target="#bulkImportMcqModal"
+                        >
                             <i class="fas fa-file-import me-2"></i>
                             <span class="d-none d-sm-inline">Import MCQs</span>
                             <span class="d-inline d-sm-none">Import</span>
-                        </button>
-                        <a href="{{ route('mcqs.create') }}" class="btn btn-primary w-100 w-md-auto d-flex align-items-center justify-content-center">
+                        </x-button>
+                        <x-button
+                            href="{{ route('mcqs.create') }}"
+                            variant="primary"
+                            class="w-100 w-md-auto d-flex align-items-center justify-content-center"
+                        >
                             <i class="fas fa-plus me-2"></i>
                             <span class="d-none d-sm-inline">Add MCQ</span>
                             <span class="d-inline d-sm-none">Add</span>
-                        </a>
+                        </x-button>
                     </div>
-                </div>
-            </div>
+                </x-slot>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('success') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('error') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="error">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Live search (always visible, outside filter collapse) -->
-            <div class="card mb-4 mx-3 mx-md-0 border-0 shadow-sm" id="mcq-live-search-card">
+            <x-card class="mb-4 mx-3 mx-md-0 border-0 shadow-sm" id="mcq-live-search-card">
                 <div class="card-body py-3">
                     <label for="mcqLiveSearchInput" class="form-label small fw-bold mb-2 text-uppercase text-muted d-flex align-items-center">
                         <i class="fas fa-search me-2"></i> Find MCQ
@@ -93,10 +90,10 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Filters - Collapsible on Mobile -->
-            <div class="card mb-4 mx-3 mx-md-0">
+            <x-card class="mb-4 mx-3 mx-md-0">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3 d-md-none" 
                      data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false">
                     <div class="d-flex align-items-center">
@@ -222,25 +219,25 @@
                             
                             <div class="col-12 d-flex align-items-end">
                                 <div class="d-flex w-100 flex-wrap gap-2">
-                                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
-                                        <i class="fas fa-filter me-2"></i> 
+                                    <x-button type="submit" variant="primary" class="btn-sm flex-grow-1 d-flex align-items-center justify-content-center">
+                                        <i class="fas fa-filter me-2"></i>
                                         <span class="d-none d-md-inline">Apply Filters</span>
                                         <span class="d-inline d-md-none">Filter</span>
-                                    </button>
-                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center" style="min-width: 45px;">
+                                    </x-button>
+                                    <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary" class="btn-sm d-flex align-items-center justify-content-center" style="min-width: 45px;">
                                         <i class="fas fa-redo"></i>
-                                    </a>
+                                    </x-button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Stats Cards - Mobile Optimized -->
             <div class="row mb-4 g-3 px-3 px-md-0">
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -258,11 +255,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -280,11 +277,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -302,11 +299,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -324,12 +321,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Bulk Actions - Responsive -->
-            <div class="card mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
                 <div class="card-body p-3">
                     <div class="d-flex flex-column flex-md-row align-items-center gap-3">
                         <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 MCQs selected</span>
@@ -344,19 +341,19 @@
                                 <option value="delete">Delete</option>
                             </select>
                             <div class="d-flex gap-2 mt-2 mt-md-0">
-                                <button class="btn btn-sm btn-primary flex-grow-1" id="applyBulkAction">
+                                <x-button variant="primary" type="button" class="btn-sm flex-grow-1" id="applyBulkAction">
                                     <span class="d-none d-md-inline">Apply</span>
                                     <i class="fas fa-check d-inline d-md-none"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="clearSelection">
+                                </x-button>
+                                <x-button variant="outline-secondary" type="button" class="btn-sm" id="clearSelection">
                                     <span class="d-none d-md-inline">Clear</span>
                                     <i class="fas fa-times d-inline d-md-none"></i>
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Smart Export Template Modal -->
             @include('dashboard.mcqs_system.mcqs._export_template_modal')
@@ -541,7 +538,7 @@
             </div>
 
             <!-- MCQs Table - Responsive -->
-            <div class="card mx-3 mx-md-0">
+            <x-card class="mx-3 mx-md-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover mb-0" id="mcqsTable">
@@ -572,14 +569,14 @@
                                                 {!! Str::limit(strip_tags($mcq->question), 60) !!}
                                             </div>
                                             <div class="small text-muted">
-                                                <span class="badge bg-{{ $mcq->question_type == 'single' ? 'primary' : 'info' }}">
+                                                <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
                                                     {{ $mcq->question_type == 'single' ? 'Single' : 'Multiple' }}
-                                                </span>
+                                                </x-badge>
                                                 @if($mcq->is_premium)
-                                                <span class="badge bg-warning ms-1">Premium</span>
+                                                <x-badge variant="warning" class="ms-1">Premium</x-badge>
                                                 @endif
                                                 @if($mcq->is_verified)
-                                                <span class="badge bg-success ms-1">✓</span>
+                                                <x-badge variant="success" class="ms-1">✓</x-badge>
                                                 @endif
                                             </div>
                                         </div>
@@ -598,9 +595,9 @@
                                     <td>
                                         <div class="small">
                                             <div>
-                                                <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                                <x-badge :variant="$mcq->difficulty_badge_variant">
                                                     {{ $mcq->difficulty_label }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             @if($mcq->time_limit_seconds)
                                             <div class="text-muted mt-1">
@@ -618,39 +615,47 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
+                                        <x-badge :variant="$mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary')">
                                             {{ $mcq->status_label }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('mcqs.show', $mcq) }}" 
-                                               class="btn btn-sm btn-outline-info"
-                                               data-bs-toggle="tooltip" title="View">
+                                            <x-button
+                                                href="{{ route('mcqs.show', $mcq) }}"
+                                                variant="outline-info"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="View"
+                                            >
                                                 <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('mcqs.edit', $mcq) }}" 
-                                               class="btn btn-sm btn-outline-primary"
-                                               data-bs-toggle="tooltip" title="Edit">
+                                            </x-button>
+                                            <x-button
+                                                href="{{ route('mcqs.edit', $mcq) }}"
+                                                variant="outline-primary"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Edit"
+                                            >
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </x-button>
                                             @if(!$mcq->is_verified)
                                             <form action="{{ route('mcqs.verify', $mcq) }}" 
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Verify">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-success">
+                                                <x-button type="submit" variant="outline-success" class="btn-sm">
                                                     <i class="fas fa-check"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
                                             <form action="{{ route('mcqs.unverify', $mcq) }}" 
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Unverify">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                <x-button type="submit" variant="outline-warning" class="btn-sm">
                                                     <i class="fas fa-times"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @endif
                                             @if($mcq->mock_tests_count == 0)
@@ -658,40 +663,48 @@
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Delete">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                        onclick="return confirm('Are you sure you want to delete this MCQ?')">
+                                                <x-button
+                                                    type="submit"
+                                                    variant="outline-danger"
+                                                    class="btn-sm"
+                                                    onclick="return confirm('Are you sure you want to delete this MCQ?')"
+                                                >
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Cannot delete MCQ used in mock tests">
+                                            <x-button
+                                                type="button"
+                                                variant="outline-secondary"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Cannot delete MCQ used in mock tests"
+                                            >
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </td>
                                 </tr>
                                 
                                 <!-- Mobile View Card -->
-                                <div class="card mb-3 d-block d-md-none mx-3 {{ $mcq->status == 'draft' ? 'border-warning' : ($mcq->status == 'archived' ? 'border-secondary' : '') }}">
+                                <x-card class="mb-3 d-block d-md-none mx-3 {{ $mcq->status == 'draft' ? 'border-warning' : ($mcq->status == 'archived' ? 'border-secondary' : '') }}">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="d-flex align-items-center">
                                                 <input type="checkbox" class="form-check-input me-2 mcq-checkbox" value="{{ $mcq->id }}">
                                                 <strong class="me-2">#{{ ($mcqs->currentPage() - 1) * $mcqs->perPage() + $loop->iteration }}</strong>
-                                                <span class="badge bg-{{ $mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary') }}">
+                                                <x-badge :variant="$mcq->status == 'published' ? 'success' : ($mcq->status == 'draft' ? 'warning' : 'secondary')">
                                                     {{ $mcq->status_label }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $mcq->difficulty_badge_variant }} me-1">
+                                                <x-badge :variant="$mcq->difficulty_badge_variant" class="me-1">
                                                     {{ $mcq->difficulty_label }}
-                                                </span>
-                                                <span class="badge bg-{{ $mcq->question_type == 'single' ? 'primary' : 'info' }}">
+                                                </x-badge>
+                                                <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
                                                     {{ $mcq->question_type == 'single' ? 'S' : 'M' }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                         </div>
                                         
@@ -716,15 +729,15 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div class="d-flex flex-wrap gap-1">
                                                 @if($mcq->is_premium)
-                                                <span class="badge bg-warning">Premium</span>
+                                                <x-badge variant="warning">Premium</x-badge>
                                                 @endif
                                                 @if($mcq->is_verified)
-                                                <span class="badge bg-success">Verified</span>
+                                                <x-badge variant="success">Verified</x-badge>
                                                 @endif
                                                 @if($mcq->time_limit_seconds)
-                                                <span class="badge bg-info">
+                                                <x-badge variant="info">
                                                     <i class="fas fa-clock me-1"></i>{{ $mcq->time_limit_seconds }}s
-                                                </span>
+                                                </x-badge>
                                                 @endif
                                             </div>
                                             <div class="text-end">
@@ -737,63 +750,73 @@
                                         
                                         <div class="d-flex justify-content-between">
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('mcqs.show', $mcq) }}" 
-                                                   class="btn btn-sm btn-outline-info">
+                                                <x-button href="{{ route('mcqs.show', $mcq) }}" variant="outline-info" class="btn-sm">
                                                     <i class="fas fa-eye"></i>
-                                                </a>
-                                                <a href="{{ route('mcqs.edit', $mcq) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
+                                                </x-button>
+                                                <x-button href="{{ route('mcqs.edit', $mcq) }}" variant="outline-primary" class="btn-sm">
                                                     <i class="fas fa-edit"></i>
-                                                </a>
+                                                </x-button>
                                             </div>
                                             <div class="btn-group" role="group">
                                                 @if(!$mcq->is_verified)
                                                 <form action="{{ route('mcqs.verify', $mcq) }}" method="POST" class="d-inline">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-success">
+                                                    <x-button type="submit" variant="outline-success" class="btn-sm">
                                                         <i class="fas fa-check"></i>
-                                                    </button>
+                                                    </x-button>
                                                 </form>
                                                 @else
                                                 <form action="{{ route('mcqs.unverify', $mcq) }}" method="POST" class="d-inline">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                    <x-button type="submit" variant="outline-warning" class="btn-sm">
                                                         <i class="fas fa-times"></i>
-                                                    </button>
+                                                    </x-button>
                                                 </form>
                                                 @endif
                                                 @if($mcq->mock_tests_count == 0)
                                                 <form action="{{ route('mcqs.destroy', $mcq) }}" method="POST" class="d-inline">
                                                     @csrf @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                            onclick="return confirm('Delete this MCQ?')">
+                                                    <x-button
+                                                        type="submit"
+                                                        variant="outline-danger"
+                                                        class="btn-sm"
+                                                        onclick="return confirm('Delete this MCQ?')"
+                                                    >
                                                         <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    </x-button>
                                                 </form>
                                                 @else
-                                                <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                        data-bs-toggle="tooltip" 
-                                                        title="Cannot delete">
+                                                <x-button
+                                                    type="button"
+                                                    variant="outline-secondary"
+                                                    class="btn-sm"
+                                                    data-bs-toggle="tooltip"
+                                                    title="Cannot delete"
+                                                >
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                                 @endif
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                                 @endforeach
                             </tbody>
                         </table>
                         
                         @if($mcqs->count() == 0)
-                        <div class="text-center py-5">
-                            <i class="fas fa-question-circle fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No MCQs found</h5>
-                            <p class="text-muted">Try adjusting your filters or add a new MCQ</p>
-                            <a href="{{ route('mcqs.create') }}" class="btn btn-primary mt-2">
-                                <i class="fas fa-plus me-2"></i> Add MCQ
-                            </a>
-                        </div>
+                        <x-empty-state
+                            class="py-5"
+                            icon="fa-question-circle"
+                            title="No MCQs found"
+                            description="Try adjusting your filters or add a new MCQ"
+                        >
+                            <x-slot name="actions">
+                                <x-button href="{{ route('mcqs.create') }}" variant="primary" class="mt-2">
+                                    <i class="fas fa-plus me-2"></i> Add MCQ
+                                </x-button>
+                            </x-slot>
+                        </x-empty-state>
                         @endif
                     </div>
                     
@@ -809,7 +832,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </div>
     </main>
 

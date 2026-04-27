@@ -1,24 +1,24 @@
 <x-app-layout>
     <main class="main-content">
         <section id="branches-edit" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Edit Branch: {{ $branch->name }}</h2>
                     <p class="mb-0 text-muted">Update branch information</p>
-                </div>
-                <div>
-                    <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-info me-2">
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="info" class="me-2">
                         <i class="fas fa-images me-2"></i>Manage Images
-                    </a>
-                    <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-secondary">
+                    </x-button>
+                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Branches
-                    </a>
-                </div>
-            </div>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <form method="POST" action="{{ route('schools.branches.update', [$school, $branch]) }}" id="branchForm">
                                 @csrf
@@ -28,7 +28,7 @@
                                     <!-- Basic Information -->
                                     <div class="col-lg-8">
                                         <h5 class="mb-4">Basic Information</h5>
-                                        
+
                                         <div class="mb-3">
                                             <label for="name" class="form-label">Branch Name *</label>
                                             <input type="text" class="form-control" id="name" name="name"
@@ -85,7 +85,7 @@
                                         </div>
 
                                         <h5 class="mb-4 mt-5">Academic Information</h5>
-                                        
+
                                         <div class="mb-3">
                                             <label for="school_type" class="form-label">School Type</label>
                                             <select class="form-select" id="school_type" name="school_type">
@@ -132,8 +132,8 @@
                                     <!-- Sidebar -->
                                     <div class="col-lg-4">
                                         <h5 class="mb-4">Settings & Features</h5>
-                                        
-                                        <div class="card mb-4">
+
+                                        <x-card class="mb-4">
                                             <div class="card-body">
                                                 <div class="mb-3">
                                                     <label for="features" class="form-label">Features</label>
@@ -143,8 +143,8 @@
                                                         @endphp
                                                         @foreach($features as $feature)
                                                         <div class="form-check mb-2">
-                                                            <input class="form-check-input" type="checkbox" 
-                                                                name="features[]" 
+                                                            <input class="form-check-input" type="checkbox"
+                                                                name="features[]"
                                                                 value="{{ $feature->id }}"
                                                                 id="feature_{{ $feature->id }}"
                                                                 {{ in_array($feature->id, old('features', $selectedFeatures)) ? 'checked' : '' }}>
@@ -185,12 +185,12 @@
                                                     @enderror
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
 
-                                        <div class="card mb-4">
+                                        <x-card class="mb-4">
                                             <div class="card-body">
                                                 <h6 class="mb-3">Location</h6>
-                                                
+
                                                 <div class="mb-3">
                                                     <label for="latitude" class="form-label">Latitude</label>
                                                     <input type="number" step="any" class="form-control" id="latitude" name="latitude"
@@ -210,34 +210,34 @@
                                                 </div>
 
                                                 <div class="mt-3">
-                                                    <button type="button" class="btn btn-outline-primary btn-sm w-100" id="getLocation">
+                                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100" id="getLocation">
                                                         <i class="fas fa-map-marker-alt me-2"></i>Get Current Location
-                                                    </button>
+                                                    </x-button>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
 
-                                        <div class="card">
+                                        <x-card>
                                             <div class="card-body">
                                                 <h6 class="mb-3">Actions</h6>
                                                 <div class="d-grid gap-2">
-                                                    <button type="submit" class="btn btn-primary">
+                                                    <x-button type="submit" variant="primary">
                                                         <i class="fas fa-save me-2"></i>Update Branch
-                                                    </button>
-                                                    <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                                    </x-button>
+                                                    <x-button type="button" variant="outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
                                                         <i class="fas fa-trash me-2"></i>Delete Branch
-                                                    </button>
-                                                    <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-outline-secondary">
+                                                    </x-button>
+                                                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="outline-secondary">
                                                         Cancel
-                                                    </a>
+                                                    </x-button>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </x-card>
                                     </div>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
@@ -245,7 +245,7 @@
             @if($branch->images->count() > 0)
             <div class="row mt-4">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Image Gallery ({{ $branch->images->count() }} images)</h5>
                         </div>
@@ -254,15 +254,15 @@
                                 @foreach($branch->images->take(6) as $image)
                                 <div class="col-md-2 col-sm-4 mb-3">
                                     <div class="image-preview">
-                                        <img src="{{ asset('website/'. $image->image_path) }}" 
-                                             alt="{{ $image->title }}" 
+                                        <img src="{{ asset('website/'. $image->image_path) }}"
+                                             alt="{{ $image->title }}"
                                              class="img-fluid rounded"
                                              style="height: 120px; width: 100%; object-fit: cover;">
                                         @if($image->is_featured)
-                                        <span class="badge bg-success position-absolute top-0 start-0 m-2">Featured</span>
+                                        <x-badge variant="success" class="position-absolute top-0 start-0 m-2">Featured</x-badge>
                                         @endif
                                         @if($image->is_main_banner)
-                                        <span class="badge bg-primary position-absolute top-0 end-0 m-2">Banner</span>
+                                        <x-badge variant="primary" class="position-absolute top-0 end-0 m-2">Banner</x-badge>
                                         @endif
                                     </div>
                                 </div>
@@ -276,41 +276,30 @@
                                 @endif
                             </div>
                             <div class="mt-3">
-                                <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-outline-primary btn-sm">
+                                <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="outline-primary" class="btn-sm">
                                     <i class="fas fa-images me-2"></i>Manage All Images
-                                </a>
+                                </x-button>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
             @endif
         </section>
     </main>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this branch? This action cannot be undone.</p>
-                    <p class="text-danger"><strong>Warning:</strong> All associated images, events, and reviews will also be deleted.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form method="POST" action="{{ route('schools.branches.destroy', [$school, $branch]) }}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete Branch</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-bs-modal id="deleteModal" title="Confirm Delete">
+        <p>Are you sure you want to delete this branch? This action cannot be undone.</p>
+        <p class="text-danger"><strong>Warning:</strong> All associated images, events, and reviews will also be deleted.</p>
+        <x-slot name="footer">
+            <x-button type="button" variant="secondary" data-bs-dismiss="modal">Cancel</x-button>
+            <form method="POST" action="{{ route('schools.branches.destroy', [$school, $branch]) }}">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="danger">Delete Branch</x-button>
+            </form>
+        </x-slot>
+    </x-bs-modal>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

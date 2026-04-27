@@ -1,47 +1,35 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid px-0 px-md-3">
-            <!-- Page Header -->
-            <div class="page-header mb-4 px-3 px-md-0">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="mb-3 mb-md-0">
-                        <h1 class="h3 mb-1 mb-md-2">Mock Tests</h1>
-                        <p class="text-muted mb-0 d-none d-md-block">Create and manage mock tests for practice and exams</p>
-                        <p class="text-muted mb-0 d-block d-md-none">Manage mock tests</p>
-                    </div>
-                    <div class="w-100 w-md-auto">
-                        <a href="{{ route('mock-tests.create') }}" class="btn btn-primary w-100 w-md-auto d-flex align-items-center justify-content-center">
-                            <i class="fas fa-plus me-2"></i> 
-                            <span class="d-none d-sm-inline">Create Test</span>
-                            <span class="d-inline d-sm-none">Create</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-1 mb-md-2">Mock Tests</h1>
+                    <p class="text-muted mb-0 d-none d-md-block">Create and manage mock tests for practice and exams</p>
+                    <p class="text-muted mb-0 d-block d-md-none">Manage mock tests</p>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button
+                        href="{{ route('mock-tests.create') }}"
+                        variant="primary"
+                        class="w-100 w-md-auto d-flex align-items-center justify-content-center"
+                    >
+                        <i class="fas fa-plus me-2"></i>
+                        <span class="d-none d-sm-inline">Create Test</span>
+                        <span class="d-inline d-sm-none">Create</span>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <!-- Success/Error Messages -->
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('success') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('error') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="error">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Filters - Collapsible on Mobile -->
-            <div class="card mb-4 mx-3 mx-md-0">
+            <x-card class="mb-4 mx-3 mx-md-0">
                 <div class="card-header bg-transparent d-flex justify-content-between align-items-center py-3 d-md-none" 
                      data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="false">
                     <div class="d-flex align-items-center">
@@ -94,27 +82,27 @@
                                     <input type="text" name="search" class="form-control" 
                                            placeholder="Search tests..." 
                                            value="{{ request('search') }}">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="this.closest('form').reset()">
+                                    <x-button variant="outline-secondary" type="button" class="btn-sm" onclick="this.closest('form').reset()">
                                         <i class="fas fa-times"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                             </div>
                             
                             <div class="col-12 col-md-6 col-lg-4 col-xl-1 d-flex align-items-end">
-                                <button type="submit" class="btn btn-primary btn-sm w-100 d-flex align-items-center justify-content-center">
-                                    <i class="fas fa-filter me-2"></i> 
+                                <x-button type="submit" variant="primary" class="btn-sm w-100 d-flex align-items-center justify-content-center">
+                                    <i class="fas fa-filter me-2"></i>
                                     <span class="d-none d-md-inline">Filter</span>
-                                </button>
+                                </x-button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Stats Cards - Mobile Optimized -->
             <div class="row mb-4 g-3 px-3 px-md-0">
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -126,11 +114,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -142,11 +130,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -158,11 +146,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -174,12 +162,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Bulk Actions - Responsive -->
-            <div class="card mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
                 <div class="card-body p-3">
                     <div class="d-flex flex-column flex-md-row align-items-center gap-3">
                         <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 tests selected</span>
@@ -192,22 +180,22 @@
                                 <option value="delete">Delete</option>
                             </select>
                             <div class="d-flex gap-2 mt-2 mt-md-0">
-                                <button class="btn btn-sm btn-primary flex-grow-1" id="applyBulkAction">
+                                <x-button variant="primary" type="button" class="btn-sm flex-grow-1" id="applyBulkAction">
                                     <span class="d-none d-md-inline">Apply</span>
                                     <i class="fas fa-check d-inline d-md-none"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="clearSelection">
+                                </x-button>
+                                <x-button variant="outline-secondary" type="button" class="btn-sm" id="clearSelection">
                                     <span class="d-none d-md-inline">Clear</span>
                                     <i class="fas fa-times d-inline d-md-none"></i>
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Mock Tests Table - Responsive -->
-            <div class="card mx-3 mx-md-0">
+            <x-card class="mx-3 mx-md-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover mb-0" id="mockTestsTable">
@@ -247,11 +235,11 @@
                                     </td>
                                     <td>
                                         <div class="small">
-                                            <span class="badge bg-{{ $test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                            <x-badge :variant="$test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary')">
                                                 {{ ucfirst($test->test_mode->value) }}
-                                            </span>
+                                            </x-badge>
                                             @if($test->shuffle_questions)
-                                            <span class="badge bg-info mt-1">Shuffle</span>
+                                            <x-badge variant="info" class="mt-1 small d-inline-block">Shuffle</x-badge>
                                             @endif
                                         </div>
                                     </td>
@@ -278,13 +266,13 @@
                                     </td>
                                     <td>
                                         @if($test->is_free)
-                                        <span class="badge bg-success small">
+                                        <x-badge variant="success" class="small">
                                             <i class="fas fa-unlock me-1"></i> Free
-                                        </span>
+                                        </x-badge>
                                         @else
-                                        <span class="badge bg-warning small">
+                                        <x-badge variant="warning" class="small">
                                             <i class="fas fa-lock me-1"></i> Premium
-                                        </span>
+                                        </x-badge>
                                         <div class="small text-muted">
                                             {{ config('app.currency') }}{{ number_format($test->price, 0) }}
                                         </div>
@@ -297,43 +285,63 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                        <x-badge :variant="$test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary')">
                                             {{ ucfirst($test->status->value) }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('mock-tests.show', $test) }}" 
-                                               class="btn btn-sm btn-outline-info"
-                                               data-bs-toggle="tooltip" title="View">
+                                            <x-button
+                                                href="{{ route('mock-tests.show', $test) }}"
+                                                variant="outline-info"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="View"
+                                            >
                                                 <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('mock-tests.edit', $test) }}" 
-                                               class="btn btn-sm btn-outline-primary"
-                                               data-bs-toggle="tooltip" title="Edit">
+                                            </x-button>
+                                            <x-button
+                                                href="{{ route('mock-tests.edit', $test) }}"
+                                                variant="outline-primary"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Edit"
+                                            >
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{{ route('mock-tests.add-questions', $test) }}" 
-                                               class="btn btn-sm btn-outline-success"
-                                               data-bs-toggle="tooltip" title="Add Questions">
+                                            </x-button>
+                                            <x-button
+                                                href="{{ route('mock-tests.add-questions', $test) }}"
+                                                variant="outline-success"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Add Questions"
+                                            >
                                                 <i class="fas fa-question"></i>
-                                            </a>
+                                            </x-button>
                                             @if($test->attempts_count == 0)
                                             <form action="{{ route('mock-tests.destroy', $test) }}" 
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Delete">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                        onclick="return confirm('Delete this mock test?')">
+                                                <x-button
+                                                    type="submit"
+                                                    variant="outline-danger"
+                                                    class="btn-sm"
+                                                    onclick="return confirm('Delete this mock test?')"
+                                                >
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Cannot delete (has attempts)">
+                                            <x-button
+                                                type="button"
+                                                variant="outline-secondary"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Cannot delete (has attempts)"
+                                            >
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </td>
@@ -346,14 +354,14 @@
                                             <div class="d-flex align-items-center">
                                                 <input type="checkbox" class="form-check-input me-2 test-checkbox" value="{{ $test->id }}">
                                                 <strong class="me-2">#{{ ($mockTests->currentPage() - 1) * $mockTests->perPage() + $loop->iteration }}</strong>
-                                                <span class="badge bg-{{ $test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary') }}">
+                                                <x-badge :variant="$test->status === \App\Enums\ContentStatus::Published ? 'success' : ($test->status === \App\Enums\ContentStatus::Draft ? 'warning' : 'secondary')">
                                                     {{ ucfirst($test->status->value) }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             <div class="text-end">
-                                                <span class="badge bg-{{ $test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary') }}">
+                                                <x-badge :variant="$test->test_mode === \App\Enums\MockTestMode::Exam ? 'danger' : ($test->test_mode === \App\Enums\MockTestMode::Timed ? 'warning' : 'primary')">
                                                     {{ ucfirst($test->test_mode->value) }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                         </div>
                                         
@@ -366,9 +374,9 @@
                                             </div>
                                             
                                             @if($test->shuffle_questions)
-                                            <span class="badge bg-info small mb-2">
+                                            <x-badge variant="info" class="small mb-2 d-inline-block">
                                                 <i class="fas fa-random me-1"></i> Shuffle
-                                            </span>
+                                            </x-badge>
                                             @endif
                                         </div>
                                         
@@ -402,13 +410,13 @@
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div>
                                                 @if($test->is_free)
-                                                <span class="badge bg-success">
+                                                <x-badge variant="success">
                                                     <i class="fas fa-unlock me-1"></i> Free
-                                                </span>
+                                                </x-badge>
                                                 @else
-                                                <span class="badge bg-warning">
+                                                <x-badge variant="warning">
                                                     <i class="fas fa-lock me-1"></i> Premium
-                                                </span>
+                                                </x-badge>
                                                 @endif
                                             </div>
                                             <div class="small">
@@ -419,39 +427,56 @@
                                         
                                         <div class="d-flex justify-content-between">
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('mock-tests.show', $test) }}" 
-                                                   class="btn btn-sm btn-outline-info">
+                                                <x-button
+                                                    href="{{ route('mock-tests.show', $test) }}"
+                                                    variant="outline-info"
+                                                    class="btn-sm"
+                                                >
                                                     <i class="fas fa-eye"></i>
                                                     <span class="ms-1 d-none d-sm-inline">View</span>
-                                                </a>
-                                                <a href="{{ route('mock-tests.edit', $test) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
+                                                </x-button>
+                                                <x-button
+                                                    href="{{ route('mock-tests.edit', $test) }}"
+                                                    variant="outline-primary"
+                                                    class="btn-sm"
+                                                >
                                                     <i class="fas fa-edit"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Edit</span>
-                                                </a>
-                                                <a href="{{ route('mock-tests.add-questions', $test) }}" 
-                                                   class="btn btn-sm btn-outline-success">
+                                                </x-button>
+                                                <x-button
+                                                    href="{{ route('mock-tests.add-questions', $test) }}"
+                                                    variant="outline-success"
+                                                    class="btn-sm"
+                                                >
                                                     <i class="fas fa-question"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Add Qs</span>
-                                                </a>
+                                                </x-button>
                                             </div>
                                             @if($test->attempts_count == 0)
                                             <form action="{{ route('mock-tests.destroy', $test) }}" 
                                                   method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                        onclick="return confirm('Delete this test?')">
+                                                <x-button
+                                                    type="submit"
+                                                    variant="outline-danger"
+                                                    class="btn-sm"
+                                                    onclick="return confirm('Delete this test?')"
+                                                >
                                                     <i class="fas fa-trash"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Cannot delete (has attempts)">
+                                            <x-button
+                                                type="button"
+                                                variant="outline-secondary"
+                                                class="btn-sm"
+                                                data-bs-toggle="tooltip"
+                                                title="Cannot delete (has attempts)"
+                                            >
                                                 <i class="fas fa-trash"></i>
                                                 <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </div>
@@ -461,14 +486,18 @@
                         </table>
                         
                         @if($mockTests->count() == 0)
-                        <div class="text-center py-5">
-                            <i class="fas fa-file-alt fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No mock tests found</h5>
-                            <p class="text-muted">Create your first mock test to get started</p>
-                            <a href="{{ route('mock-tests.create') }}" class="btn btn-primary mt-2">
-                                <i class="fas fa-plus me-2"></i> Create Test
-                            </a>
-                        </div>
+                        <x-empty-state
+                            class="py-5"
+                            icon="fa-file-alt"
+                            title="No mock tests found"
+                            description="Create your first mock test to get started"
+                        >
+                            <x-slot name="actions">
+                                <x-button href="{{ route('mock-tests.create') }}" variant="primary" class="mt-2">
+                                    <i class="fas fa-plus me-2"></i> Create Test
+                                </x-button>
+                            </x-slot>
+                        </x-empty-state>
                         @endif
                     </div>
                     
@@ -484,7 +513,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </div>
     </main>
 

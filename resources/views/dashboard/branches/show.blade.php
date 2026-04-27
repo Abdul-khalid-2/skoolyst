@@ -1,45 +1,45 @@
 <x-app-layout>
     <main class="main-content">
         <section id="branch-show" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Branch Details: {{ $branch->name }}</h2>
                     <p class="mb-0 text-muted">View complete information about this branch</p>
-                </div>
-                <div>
-                    <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-info me-2">
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="info" class="me-2">
                         <i class="fas fa-images me-2"></i> Manage Images
-                    </a>
-                    <a href="{{ route('schools.branches.edit', [$school, $branch]) }}" class="btn btn-primary me-2">
+                    </x-button>
+                    <x-button href="{{ route('schools.branches.edit', [$school, $branch]) }}" variant="primary" class="me-2">
                         <i class="fas fa-edit me-2"></i> Edit Branch
-                    </a>
-                    <a href="{{ route('schools.branches.index', $school) }}" class="btn btn-secondary">
+                    </x-button>
+                    <x-button href="{{ route('schools.branches.index', $school) }}" variant="secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Branches
-                    </a>
-                </div>
-            </div>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Branch Banner/Featured Image -->
             @if($branch->mainBanner())
-            <div class="card mb-4">
+            <x-card class="mb-4">
                 <div class="card-body p-0">
-                    <img src="{{ asset('website/'.$branch->mainBanner()->image_path) }}" 
-                         alt="{{ $branch->mainBanner()->title }}" 
-                         class="img-fluid rounded-top" 
+                    <img src="{{ asset('website/'.$branch->mainBanner()->image_path) }}"
+                         alt="{{ $branch->mainBanner()->title }}"
+                         class="img-fluid rounded-top"
                          style="max-height: 300px; width: 100%; object-fit: cover;">
                 </div>
-            </div>
+            </x-card>
             @endif
 
             <div class="row">
                 <!-- Left Column -->
                 <div class="col-lg-8">
                     <!-- Branch Information Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Branch Information</h5>
                             @if($branch->is_main_branch)
-                            <span class="badge bg-primary">Main Branch</span>
+                            <x-badge variant="primary">Main Branch</x-badge>
                             @endif
                         </div>
                         <div class="card-body">
@@ -63,9 +63,9 @@
                                     <div class="mb-3">
                                         <strong class="d-block text-muted mb-1">Status</strong>
                                         @if($branch->status === 'active')
-                                        <span class="badge bg-success">Active</span>
+                                        <x-badge variant="success">Active</x-badge>
                                         @else
-                                        <span class="badge bg-secondary">Inactive</span>
+                                        <x-badge variant="secondary">Inactive</x-badge>
                                         @endif
                                     </div>
                                 </div>
@@ -195,16 +195,16 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Image Gallery Preview -->
                     @if($branch->images->count() > 0)
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Image Gallery</h5>
-                            <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-sm btn-outline-primary">
+                            <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="outline-primary" class="btn-sm">
                                 <i class="fas fa-images me-1"></i> Manage All Images
-                            </a>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             <div class="row">
@@ -218,20 +218,20 @@
                                              onclick="openImageModal('{{ asset('website/'.$image->image_path) }}', '{{ $image->title }}')">
                                         
                                         @if($image->is_featured)
-                                        <span class="badge bg-success position-absolute top-0 start-0 m-2">
+                                        <x-badge variant="success" class="position-absolute top-0 start-0 m-2">
                                             <i class="fas fa-star"></i>
-                                        </span>
+                                        </x-badge>
                                         @endif
-                                        
+
                                         @if($image->is_main_banner)
-                                        <span class="badge bg-primary position-absolute top-0 end-0 m-2">
+                                        <x-badge variant="primary" class="position-absolute top-0 end-0 m-2">
                                             <i class="fas fa-image"></i>
-                                        </span>
+                                        </x-badge>
                                         @endif
-                                        
-                                        <span class="badge bg-info position-absolute bottom-0 start-0 m-2">
+
+                                        <x-badge variant="info" class="position-absolute bottom-0 start-0 m-2">
                                             {{ ucfirst($image->type) }}
-                                        </span>
+                                        </x-badge>
                                     </div>
                                     <p class="mt-2 mb-0 small text-truncate">{{ $image->title }}</p>
                                 </div>
@@ -240,18 +240,18 @@
                             
                             @if($branch->images->count() > 12)
                             <div class="text-center mt-3">
-                                <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-outline-primary">
+                                <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="outline-primary">
                                     View All {{ $branch->images->count() }} Images
-                                </a>
+                                </x-button>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
 
                     <!-- Events Section -->
                     @if($branch->events->count() > 0)
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Upcoming Events</h5>
                         </div>
@@ -270,16 +270,16 @@
                             </div>
                             @if($branch->events->where('event_date', '>=', now())->count() > 5)
                             <div class="text-center mt-3">
-                                <a href="#" class="btn btn-sm btn-outline-secondary">View All Events</a>
+                                <x-button href="#" variant="outline-secondary" class="btn-sm">View All Events</x-button>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
 
                     <!-- Reviews Section -->
                     @if($branch->reviews->count() > 0)
-                    <div class="card">
+                    <x-card>
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Recent Reviews</h5>
                         </div>
@@ -303,48 +303,48 @@
                             
                             @if($branch->reviews->count() > 3)
                             <div class="text-center">
-                                <a href="#" class="btn btn-sm btn-outline-secondary">View All {{ $branch->reviews->count() }} Reviews</a>
+                                <x-button href="#" variant="outline-secondary" class="btn-sm">View All {{ $branch->reviews->count() }} Reviews</x-button>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
                 </div>
 
                 <!-- Right Column -->
                 <div class="col-lg-4">
                     <!-- Quick Actions Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Quick Actions</h5>
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <a href="{{ route('schools.branches.edit', [$school, $branch]) }}" class="btn btn-primary">
+                                <x-button href="{{ route('schools.branches.edit', [$school, $branch]) }}" variant="primary">
                                     <i class="fas fa-edit me-2"></i> Edit Branch Details
-                                </a>
-                                
-                                <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-info">
+                                </x-button>
+
+                                <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="info">
                                     <i class="fas fa-images me-2"></i> Manage Images
-                                </a>
-                                
-                                <a href="#" class="btn btn-outline-primary">
+                                </x-button>
+
+                                <x-button href="#" variant="outline-primary">
                                     <i class="fas fa-calendar-plus me-2"></i> Add Event
-                                </a>
-                                
-                                <a href="#" class="btn btn-outline-secondary">
+                                </x-button>
+
+                                <x-button href="#" variant="outline-secondary">
                                     <i class="fas fa-map-marked-alt me-2"></i> View on Map
-                                </a>
-                                
-                                <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteBranchModal">
+                                </x-button>
+
+                                <x-button type="button" variant="outline-danger" data-bs-toggle="modal" data-bs-target="#deleteBranchModal">
                                     <i class="fas fa-trash me-2"></i> Delete Branch
-                                </button>
+                                </x-button>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Statistics Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Branch Statistics</h5>
                         </div>
@@ -380,18 +380,18 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted">Status</span>
                                     @if($branch->status === 'active')
-                                    <span class="badge bg-success">Active</span>
+                                    <x-badge variant="success">Active</x-badge>
                                     @else
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <x-badge variant="secondary">Inactive</x-badge>
                                     @endif
                                 </div>
-                                
+
                                 <div class="d-flex justify-content-between align-items-center mt-2">
                                     <span class="text-muted">Main Branch</span>
                                     @if($branch->is_main_branch)
-                                    <span class="badge bg-primary">Yes</span>
+                                    <x-badge variant="primary">Yes</x-badge>
                                     @else
-                                    <span class="badge bg-secondary">No</span>
+                                    <x-badge variant="secondary">No</x-badge>
                                     @endif
                                 </div>
                                 
@@ -401,11 +401,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Image Types Summary -->
                     @if($branch->images->count() > 0)
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Image Summary</h5>
                         </div>
@@ -417,7 +417,7 @@
                             @foreach($imageTypes as $type => $images)
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="text-capitalize">{{ $type }}</span>
-                                <span class="badge bg-primary">{{ $images->count() }}</span>
+                                <x-badge variant="primary">{{ $images->count() }}</x-badge>
                             </div>
                             @endforeach
                             
@@ -427,17 +427,17 @@
                             </div>
                             
                             @if($branch->mainBanner())
-                            <div class="alert alert-info mt-3 mb-0 py-2">
+                            <x-alert variant="info" :icon="false" :dismissible="false" class="mt-3 mb-0 py-2">
                                 <i class="fas fa-image me-2"></i>
                                 <small>Main banner image is set</small>
-                            </div>
+                            </x-alert>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
 
                     <!-- Contact Information Card -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Contact Information</h5>
                         </div>
@@ -478,65 +478,45 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Image Modal -->
-    <div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="imageModalTitle"></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <img id="modalImage" src="" alt="" class="img-fluid rounded">
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <a href="{{ route('schools.branches.images.index', [$school, $branch]) }}" class="btn btn-primary">
-                        <i class="fas fa-images me-2"></i> Manage Images
-                    </a>
-                </div>
-            </div>
+    <x-bs-modal id="imageModal" :title="''" labelledBy="imageModalTitle" size="lg">
+        <div class="text-center">
+            <img id="modalImage" src="" alt="" class="img-fluid rounded">
         </div>
-    </div>
+        <x-slot name="footer">
+            <x-button type="button" variant="secondary" data-bs-dismiss="modal">Close</x-button>
+            <x-button href="{{ route('schools.branches.images.index', [$school, $branch]) }}" variant="primary">
+                <i class="fas fa-images me-2"></i> Manage Images
+            </x-button>
+        </x-slot>
+    </x-bs-modal>
 
-    <!-- Delete Branch Modal -->
-    <div class="modal fade" id="deleteBranchModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Confirm Delete</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        <strong>Warning:</strong> This action cannot be undone.
-                    </div>
-                    <p>Are you sure you want to delete the branch <strong>"{{ $branch->name }}"</strong>?</p>
-                    <p class="text-danger mb-0">This will also delete:</p>
-                    <ul class="text-danger">
-                        <li>All branch images ({{ $branch->images->count() }} files)</li>
-                        <li>All associated events ({{ $branch->events_count }})</li>
-                        <li>All associated reviews ({{ $branch->reviews_count }})</li>
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="{{ route('schools.branches.destroy', [$school, $branch]) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn btn-danger">Delete Branch</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+    <x-bs-modal id="deleteBranchModal" title="Confirm Delete">
+        <x-alert variant="error" :icon="false" :dismissible="false" class="mb-3">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <strong>Warning:</strong> This action cannot be undone.
+        </x-alert>
+        <p>Are you sure you want to delete the branch <strong>"{{ $branch->name }}"</strong>?</p>
+        <p class="text-danger mb-0">This will also delete:</p>
+        <ul class="text-danger">
+            <li>All branch images ({{ $branch->images->count() }} files)</li>
+            <li>All associated events ({{ $branch->events_count }})</li>
+            <li>All associated reviews ({{ $branch->reviews_count }})</li>
+        </ul>
+        <x-slot name="footer">
+            <x-button type="button" variant="secondary" data-bs-dismiss="modal">Cancel</x-button>
+            <form action="{{ route('schools.branches.destroy', [$school, $branch]) }}" method="POST" class="d-inline">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="danger">Delete Branch</x-button>
+            </form>
+        </x-slot>
+    </x-bs-modal>
 
   
     <style>

@@ -1,25 +1,25 @@
 <x-app-layout>
     <main class="main-content">
         <section id="blog-categories" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Blog Categories</h2>
                     <p class="mb-0 text-muted">Manage your blog categories</p>
-                </div>
-                <a href="{{ route('admin.blog-categories.create') }}" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i> Create Category
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('admin.blog-categories.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i> Create Category
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
+                <x-alert variant="success" class="mb-4">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                </x-alert>
             @endif
 
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
                         <table class="table table-hover align-middle mb-0 text-nowrap">
@@ -59,31 +59,31 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }}">
+                                        <x-badge :variant="$category->is_active ? 'success' : 'secondary'">
                                             {{ $category->is_active ? 'Active' : 'Inactive' }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">
+                                        <x-badge variant="info">
                                             {{ $category->blog_posts_count ?? 0 }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         <small class="text-muted">{{ $category->created_at->format('M j, Y') }}</small>
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="{{ route('admin.blog-categories.edit', $category) }}" 
-                                               class="btn btn-sm btn-outline-secondary">
+                                            <x-button href="{{ route('admin.blog-categories.edit', $category) }}"
+                                               variant="outline-secondary" class="btn-sm">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <form action="{{ route('admin.blog-categories.destroy', $category) }}" method="POST" 
+                                            </x-button>
+                                            <form action="{{ route('admin.blog-categories.destroy', $category) }}" method="POST"
                                                   class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category?')">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                         </div>
                                     </td>
@@ -91,23 +91,27 @@
                                 @empty
                                 <tr>
                                     <td colspan="7" class="text-center py-4">
-                                        <div class="text-muted">
-                                            <i class="fas fa-folder-open fa-2x mb-3"></i>
-                                            <p>No categories found. Create your first category to get started.</p>
-                                            <a href="{{ route('admin.blog-categories.create') }}" class="btn btn-primary">
-                                                <i class="fas fa-plus me-2"></i>Create Category
-                                            </a>
-                                        </div>
+                                        <x-empty-state
+                                            title="No categories found"
+                                            description="Create your first category to get started."
+                                            icon="fa-folder-open"
+                                        >
+                                            <x-slot name="actions">
+                                                <x-button href="{{ route('admin.blog-categories.create') }}" variant="primary">
+                                                    <i class="fas fa-plus me-2"></i>Create Category
+                                                </x-button>
+                                            </x-slot>
+                                        </x-empty-state>
                                     </td>
                                 </tr>
                                 @endforelse
                             </tbody>
                         </table>
                     </div>
-                    
+
                     {{ $categories->links() }}
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

@@ -1,22 +1,22 @@
 <x-app-layout>
     <main class="main-content">
         <section id="branches" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="mb-0">Branches of {{ $school->name }}</h2>
                     <p class="text-muted">Manage school branches</p>
-                </div>
-                <div>
-                    <a href="{{ route('schools.show', $school) }}" class="btn btn-secondary me-2">
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.show', $school) }}" variant="secondary" class="me-2">
                         <i class="fas fa-arrow-left me-2"></i>Back to School
-                    </a>
-                    <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-primary">
+                    </x-button>
+                    <x-button href="{{ route('schools.branches.create', $school) }}" variant="primary">
                         <i class="fas fa-plus me-2"></i>Add Branch
-                    </a>
-                </div>
-            </div>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <div class="card">
+            <x-card>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -37,7 +37,7 @@
                                 <td>
                                     {{ $branch->name }}
                                     @if($branch->is_main_branch)
-                                    <span class="badge bg-primary ms-1">Main</span>
+                                    <x-badge variant="primary" class="ms-1">Main</x-badge>
                                     @endif
                                 </td>
                                 <td>{{ $branch->address }}</td>
@@ -45,32 +45,34 @@
                                 <td>{{ $branch->contact_number ?? '-' }}</td>
                                 <td>
                                     @if($branch->status === 'active')
-                                    <span class="badge bg-success">Active</span>
+                                    <x-badge variant="success">Active</x-badge>
                                     @else
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <x-badge variant="secondary">Inactive</x-badge>
                                     @endif
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('schools.branches.edit', [$school, $branch]) }}" class="btn btn-sm btn-outline-primary">
+                                        <x-button href="{{ route('schools.branches.edit', [$school, $branch]) }}" variant="outline-primary" class="btn-sm">
                                             <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="{{ route('schools.branches.show', [$school, $branch]) }}" class="btn btn-sm btn-outline-info">
+                                        </x-button>
+                                        <x-button href="{{ route('schools.branches.show', [$school, $branch]) }}" variant="outline-info" class="btn-sm">
                                             <i class="fas fa-eye"></i>
-                                        </a>
+                                        </x-button>
                                         <form action="{{ route('schools.branches.destroy', [$school, $branch]) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure? This will also delete all events and reviews associated with this branch.')">
+                                            <x-button type="submit" variant="outline-danger" class="btn-sm" onclick="return confirm('Are you sure? This will also delete all events and reviews associated with this branch.')">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">No branches found</td>
+                                <td colspan="7" class="text-center">
+                                    <x-empty-state title="No branches found" class="py-3" />
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -81,7 +83,7 @@
                     {{ $branches->links() }}
                 </div>
                 @endif
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

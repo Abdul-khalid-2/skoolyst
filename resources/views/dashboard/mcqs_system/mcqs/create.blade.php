@@ -1,30 +1,27 @@
 <x-app-layout>
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Create MCQ</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
-                                <li class="breadcrumb-item active">Create</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+        <div class="container-fluid px-0 px-md-3">
+            <x-page-header class="mb-4 px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Create MCQ</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
+                            <li class="breadcrumb-item active">Create</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">MCQ Details</h5>
                         </div>
@@ -318,31 +315,31 @@
                                 
                                 <!-- Submit -->
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Create MCQ
-                                    </button>
-                                    <button type="button" class="btn btn-outline-info" id="preview-btn">
+                                    </x-button>
+                                    <x-button type="button" variant="outline-info" id="preview-btn">
                                         <i class="fas fa-eye me-2"></i> Preview
-                                    </button>
-                                    <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <!-- Information Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Information</h5>
                         </div>
                         <div class="card-body">
-                            <div class="alert alert-info">
-                                <h6><i class="fas fa-lightbulb me-2"></i>Tips for creating MCQs</h6>
+                            <x-alert variant="info" :dismissible="false">
+                                <h6 class="mb-2"><i class="fas fa-lightbulb me-2"></i>Tips for creating MCQs</h6>
                                 <ul class="mb-0 ps-3">
                                     <li>Questions should be clear and unambiguous</li>
                                     <li>Options should be plausible but distinct</li>
@@ -350,18 +347,18 @@
                                     <li>Set appropriate difficulty levels</li>
                                     <li>Use tags for better organization</li>
                                 </ul>
-                            </div>
+                            </x-alert>
                             
                             <div class="mt-3">
                                 <h6 class="mb-2">Question Types:</h6>
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Single Choice</span>
-                                        <span class="badge bg-primary">One correct answer</span>
+                                        <x-badge variant="primary">One correct answer</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Multiple Choice</span>
-                                        <span class="badge bg-info">Multiple correct answers</span>
+                                        <x-badge variant="info">Multiple correct answers</x-badge>
                                     </li>
                                 </ul>
                             </div>
@@ -371,23 +368,23 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Easy</span>
-                                        <span class="badge bg-success">Basic concepts</span>
+                                        <x-badge variant="success">Basic concepts</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Medium</span>
-                                        <span class="badge bg-warning">Application level</span>
+                                        <x-badge variant="warning">Application level</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                         <span>Hard</span>
-                                        <span class="badge bg-danger">Analytical skills</span>
+                                        <x-badge variant="danger">Analytical skills</x-badge>
                                     </li>
                                 </ul>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Preview Card -->
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-eye me-2"></i>Preview</h5>
                         </div>
@@ -399,26 +396,17 @@
                                 <!-- Options preview -->
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">MCQ Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body" id="previewModalContent">
-                    <!-- Preview content will be inserted here -->
-                </div>
-            </div>
+    <x-bs-modal id="previewModal" title="MCQ Preview" size="lg" labelledBy="previewModalLabel">
+        <div id="previewModalContent">
+            {{-- Preview content will be inserted here --}}
         </div>
-    </div>
+    </x-bs-modal>
 
     @push('js')
     <script>

@@ -1,34 +1,33 @@
 <x-app-layout>
     <main class="main-content">
-        <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">MCQ Details</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
-                                <li class="breadcrumb-item active">MCQ #{{ $mcq->id }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('mcqs.edit', $mcq) }}" class="btn btn-primary me-2">
+        <div class="container-fluid px-0 px-md-3">
+            <x-page-header class="mb-4 px-3 px-md-0">
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">MCQ Details</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('mcqs.index') }}">MCQs</a></li>
+                            <li class="breadcrumb-item active">MCQ #{{ $mcq->id }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <div class="d-flex flex-wrap gap-2">
+                        <x-button href="{{ route('mcqs.edit', $mcq) }}" variant="primary" class="me-0 me-sm-2">
                             <i class="fas fa-edit me-2"></i> Edit
-                        </a>
-                        <a href="{{ route('mcqs.index') }}" class="btn btn-outline-secondary">
+                        </x-button>
+                        <x-button href="{{ route('mcqs.index') }}" variant="outline-secondary">
                             <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
+                        </x-button>
                     </div>
-                </div>
-            </div>
+                </x-slot>
+            </x-page-header>
 
             <!-- MCQ Details -->
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Question Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Question</h5>
                         </div>
@@ -49,16 +48,16 @@
                                 <div class="list-group-item {{ in_array($index, $correctAnswers) ? 'list-group-item-success' : '' }}">
                                     <div class="d-flex align-items-center">
                                         <div class="me-3">
-                                            <span class="badge bg-light text-dark fs-6">{{ chr(65 + $index) }}</span>
+                                            <x-badge variant="light" class="text-dark fs-6">{{ chr(65 + $index) }}</x-badge>
                                         </div>
                                         <div class="flex-grow-1">
                                             {{ $option }}
                                         </div>
                                         @if(in_array($index, $correctAnswers))
                                         <div class="ms-3">
-                                            <span class="badge bg-success">
+                                            <x-badge variant="success">
                                                 <i class="fas fa-check me-1"></i> Correct
-                                            </span>
+                                            </x-badge>
                                         </div>
                                         @endif
                                     </div>
@@ -72,9 +71,9 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Question Type</label>
                                         <p>
-                                            <span class="badge bg-{{ $mcq->question_type == 'single' ? 'primary' : 'info' }}">
+                                            <x-badge :variant="$mcq->question_type == 'single' ? 'primary' : 'info'">
                                                 {{ $mcq->question_type == 'single' ? 'Single Choice' : 'Multiple Choice' }}
-                                            </span>
+                                            </x-badge>
                                         </p>
                                     </div>
                                 </div>
@@ -82,9 +81,9 @@
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Difficulty Level</label>
                                         <p>
-                                            <span class="badge bg-{{ $mcq->difficulty_badge_variant }}">
+                                            <x-badge :variant="$mcq->difficulty_badge_variant">
                                                 {{ $mcq->difficulty_label }}
-                                            </span>
+                                            </x-badge>
                                         </p>
                                     </div>
                                 </div>
@@ -110,11 +109,11 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Explanation & Hint -->
                     @if($mcq->explanation || $mcq->hint)
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0">Additional Information</h5>
                         </div>
@@ -131,20 +130,20 @@
                             @if($mcq->hint)
                             <div>
                                 <h6 class="text-muted mb-2">Hint:</h6>
-                                <div class="alert alert-info">
+                                <x-alert variant="info" :dismissible="false" :icon="false">
                                     <i class="fas fa-lightbulb me-2"></i>{{ $mcq->hint }}
-                                </div>
+                                </x-alert>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
                     <!-- MCQ Info -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>MCQ Information</h5>
                         </div>
@@ -152,9 +151,9 @@
                             <div class="mb-3">
                                 <label class="form-label text-muted">Status</label>
                                 <p>
-                                    <span class="badge bg-{{ $mcq->status->value === 'published' ? 'success' : ($mcq->status->value === 'draft' ? 'warning' : 'secondary') }}">
+                                    <x-badge :variant="$mcq->status->value === 'published' ? 'success' : ($mcq->status->value === 'draft' ? 'warning' : 'secondary')">
                                         {{ ucfirst($mcq->status->value) }}
-                                    </span>
+                                    </x-badge>
                                 </p>
                             </div>
                             
@@ -162,13 +161,13 @@
                                 <label class="form-label text-muted">Verification</label>
                                 <p>
                                     @if($mcq->is_verified)
-                                    <span class="badge bg-success">
+                                    <x-badge variant="success">
                                         <i class="fas fa-check me-1"></i> Verified
-                                    </span>
+                                    </x-badge>
                                     @else
-                                    <span class="badge bg-warning">
+                                    <x-badge variant="warning">
                                         <i class="fas fa-exclamation me-1"></i> Unverified
-                                    </span>
+                                    </x-badge>
                                     @endif
                                 </p>
                             </div>
@@ -177,11 +176,11 @@
                                 <label class="form-label text-muted">Premium</label>
                                 <p>
                                     @if($mcq->is_premium)
-                                    <span class="badge bg-warning">
+                                    <x-badge variant="warning">
                                         <i class="fas fa-crown me-1"></i> Premium
-                                    </span>
+                                    </x-badge>
                                     @else
-                                    <span class="badge bg-secondary">Free</span>
+                                    <x-badge variant="secondary">Free</x-badge>
                                     @endif
                                 </p>
                             </div>
@@ -210,10 +209,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Subject & Topic -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4 mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-book me-2"></i>Subject & Topic</h5>
                         </div>
@@ -242,9 +241,9 @@
                                     @if($mcq->topic)
                                     <strong>{{ $mcq->topic->title }}</strong>
                                     <div class="small text-muted">
-                                        <span class="badge bg-{{ $mcq->topic->difficulty_badge_variant }}">
+                                        <x-badge :variant="$mcq->topic->difficulty_badge_variant">
                                             {{ $mcq->topic->formatted_difficulty }}
-                                        </span>
+                                        </x-badge>
                                     </div>
                                     @else
                                     <span class="text-muted">No topic assigned</span>
@@ -256,21 +255,21 @@
                                 <label class="form-label text-muted">Test Type</label>
                                 <p>
                                     @if($mcq->testType)
-                                    <span class="badge bg-light text-dark">
+                                    <x-badge variant="light" class="text-dark">
                                         <i class="{{ $mcq->testType->icon ?? 'fas fa-tag' }} me-1"></i>
                                         {{ $mcq->testType->name }}
-                                    </span>
+                                    </x-badge>
                                     @else
                                     <span class="text-muted">No test type</span>
                                     @endif
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Reference -->
                     @if($mcq->reference_book || $mcq->reference_page || $mcq->tags)
-                    <div class="card">
+                    <x-card class="mx-3 mx-md-0">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-link me-2"></i>Reference</h5>
                         </div>
@@ -294,13 +293,13 @@
                                 <label class="form-label text-muted">Tags</label>
                                 <div class="d-flex flex-wrap gap-1">
                                     @foreach(json_decode($mcq->tags, true) as $tag)
-                                    <span class="badge bg-secondary">{{ $tag }}</span>
+                                    <x-badge variant="secondary">{{ $tag }}</x-badge>
                                     @endforeach
                                 </div>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                     @endif
                 </div>
             </div>

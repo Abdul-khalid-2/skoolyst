@@ -1,31 +1,28 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid">
-            <!-- Page Header -->
-            <div class="page-header mb-4">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h1 class="h3 mb-2">Edit Subject</h1>
-                        <nav aria-label="breadcrumb">
-                            <ol class="breadcrumb mb-0">
-                                <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('subjects.show', $subject) }}">{{ $subject->name }}</a></li>
-                                <li class="breadcrumb-item active">Edit {{ $subject->name }}</li>
-                            </ol>
-                        </nav>
-                    </div>
-                    <div>
-                        <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-2">Edit Subject</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb mb-0">
+                            <li class="breadcrumb-item"><a href="{{ route('subjects.index') }}">Subjects</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('subjects.show', $subject) }}">{{ $subject->name }}</a></li>
+                            <li class="breadcrumb-item active">Edit {{ $subject->name }}</li>
+                        </ol>
+                    </nav>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- Form -->
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0">Edit Subject: {{ $subject->name }}</h5>
                         </div>
@@ -109,10 +106,10 @@
                                         <!-- Icon Preview -->
                                         @if(old('icon', $subject->icon))
                                         <div class="mt-2">
-                                            <span class="badge bg-light text-dark">
+                                            <x-badge variant="light">
                                                 Preview: <i class="{{ old('icon', $subject->icon) }} me-2"></i>
                                                 {{ old('icon', $subject->icon) }}
-                                            </span>
+                                            </x-badge>
                                         </div>
                                         @endif
                                     </div>
@@ -162,21 +159,21 @@
                                 </div>
                                 
                                 <div class="mt-4">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i> Update Subject
-                                    </button>
-                                    <a href="{{ route('subjects.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('subjects.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <!-- Sidebar -->
                 <div class="col-lg-4">
-                    <div class="card">
+                    <x-card>
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Subject Information</h5>
                         </div>
@@ -186,12 +183,12 @@
                                 @if($subject->testTypes->count() > 0)
                                     <div class="d-flex flex-wrap gap-1">
                                         @foreach($subject->testTypes as $testType)
-                                            <span class="badge bg-light text-dark">
+                                            <x-badge variant="light">
                                                 @if($testType->icon)
                                                     <i class="{{ $testType->icon }} me-1"></i>
                                                 @endif
                                                 {{ $testType->name }}
-                                            </span>
+                                            </x-badge>
                                         @endforeach
                                     </div>
                                 @else
@@ -204,11 +201,11 @@
                                 <ul class="list-group list-group-flush">
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
                                         <span>Topics</span>
-                                        <span class="badge bg-primary">{{ $subject->topics_count ?? 0 }}</span>
+                                        <x-badge variant="primary">{{ $subject->topics_count ?? 0 }}</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
                                         <span>MCQs</span>
-                                        <span class="badge bg-success">{{ $subject->mcqs_count ?? 0 }}</span>
+                                        <x-badge variant="success">{{ $subject->mcqs_count ?? 0 }}</x-badge>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1">
                                         <span>Created</span>
@@ -221,7 +218,7 @@
                                 </ul>
                             </div>
                             
-                            <div class="alert alert-info">
+                            <x-alert variant="info" :dismissible="false" :icon="false">
                                 <h6><i class="fas fa-lightbulb me-2"></i>Editing Tips</h6>
                                 <ul class="mb-0 ps-3 small">
                                     <li>Changing test types will update all related MCQs</li>
@@ -229,12 +226,12 @@
                                     <li>Color changes will reflect on the subject cards</li>
                                     <li>Sort order affects display sequence</li>
                                 </ul>
-                            </div>
+                            </x-alert>
                         </div>
-                    </div>
+                    </x-card>
                     
                     <!-- Color Preview -->
-                    <div class="card mt-4">
+                    <x-card class="mt-4">
                         <div class="card-header">
                             <h5 class="mb-0"><i class="fas fa-palette me-2"></i>Color Preview</h5>
                         </div>
@@ -249,7 +246,7 @@
                             </div>
                             <small class="text-muted">This color will be used for subject cards and indicators.</small>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </div>

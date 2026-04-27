@@ -178,15 +178,15 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('subjects.index', ['test_type_id' => $testType->id]) }}" 
-                                           class="badge bg-primary text-decoration-none">
-                                            {{ $testType->subjects_count ?? 0 }}
+                                        <a href="{{ route('subjects.index', ['test_type_id' => $testType->id]) }}"
+                                           class="text-decoration-none">
+                                            <x-badge variant="primary">{{ $testType->subjects_count ?? 0 }}</x-badge>
                                         </a>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                        <x-badge :variant="$testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                             {{ ucfirst($testType->status->value) }}
-                                        </span>
+                                        </x-badge>
                                     </td>
                                     <td>
                                         <input type="number" 
@@ -198,32 +198,32 @@
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group" role="group">
-                                            <a href="{{ route('test-types.edit', $testType) }}" 
-                                               class="btn btn-sm btn-outline-primary"
+                                            <x-button href="{{ route('test-types.edit', $testType) }}"
+                                               variant="outline-primary" class="btn-sm"
                                                data-bs-toggle="tooltip" title="Edit">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
-                                            <a href="{{ route('test-types.show', $testType) }}" 
-                                               class="btn btn-sm btn-outline-info"
+                                            </x-button>
+                                            <x-button href="{{ route('test-types.show', $testType) }}"
+                                               variant="outline-info" class="btn-sm"
                                                data-bs-toggle="tooltip" title="View">
                                                 <i class="fas fa-eye"></i>
-                                            </a>
+                                            </x-button>
                                             @if($testType->subjects_count == 0)
-                                            <form action="{{ route('test-types.destroy', $testType) }}" 
+                                            <form action="{{ route('test-types.destroy', $testType) }}"
                                                   method="POST" class="d-inline"
                                                   data-bs-toggle="tooltip" title="Delete">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm"
                                                         onclick="return confirm('Delete this test type?')">
                                                     <i class="fas fa-trash"></i>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" 
+                                            <x-button type="button" variant="outline-secondary" class="btn-sm"
+                                                    data-bs-toggle="tooltip"
                                                     title="Cannot delete (has subjects)">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </td>
@@ -236,9 +236,9 @@
                                             <div class="d-flex align-items-center">
                                                 <input type="checkbox" class="form-check-input me-2 test-type-checkbox" value="{{ $testType->id }}">
                                                 <strong class="me-2">#{{ ($testTypes->currentPage() - 1) * $testTypes->perPage() + $loop->iteration }}</strong>
-                                                <span class="badge bg-{{ $testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                                <x-badge :variant="$testType->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary'">
                                                     {{ ucfirst($testType->status->value) }}
-                                                </span>
+                                                </x-badge>
                                             </div>
                                             @if($testType->icon)
                                             <div>
@@ -260,9 +260,9 @@
                                         
                                         <div class="d-flex justify-content-between align-items-center mb-3">
                                             <div>
-                                                <a href="{{ route('subjects.index', ['test_type_id' => $testType->id]) }}" 
-                                                   class="badge bg-primary text-decoration-none">
-                                                    <i class="fas fa-book me-1"></i> {{ $testType->subjects_count ?? 0 }} subjects
+                                                <a href="{{ route('subjects.index', ['test_type_id' => $testType->id]) }}"
+                                                   class="text-decoration-none">
+                                                    <x-badge variant="primary"><i class="fas fa-book me-1"></i> {{ $testType->subjects_count ?? 0 }} subjects</x-badge>
                                                 </a>
                                             </div>
                                             <div class="d-flex align-items-center">
@@ -278,34 +278,34 @@
                                         
                                         <div class="d-flex justify-content-between">
                                             <div class="btn-group" role="group">
-                                                <a href="{{ route('test-types.edit', $testType) }}" 
-                                                   class="btn btn-sm btn-outline-primary">
+                                                <x-button href="{{ route('test-types.edit', $testType) }}"
+                                                   variant="outline-primary" class="btn-sm">
                                                     <i class="fas fa-edit"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Edit</span>
-                                                </a>
-                                                <a href="{{ route('test-types.show', $testType) }}" 
-                                                   class="btn btn-sm btn-outline-info">
+                                                </x-button>
+                                                <x-button href="{{ route('test-types.show', $testType) }}"
+                                                   variant="outline-info" class="btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                     <span class="ms-1 d-none d-sm-inline">View</span>
-                                                </a>
+                                                </x-button>
                                             </div>
                                             @if($testType->subjects_count == 0)
-                                            <form action="{{ route('test-types.destroy', $testType) }}" 
+                                            <form action="{{ route('test-types.destroy', $testType) }}"
                                                   method="POST" class="d-inline">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                <x-button type="submit" variant="outline-danger" class="btn-sm"
                                                         onclick="return confirm('Delete this test type?')">
                                                     <i class="fas fa-trash"></i>
                                                     <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                                </button>
+                                                </x-button>
                                             </form>
                                             @else
-                                            <button type="button" class="btn btn-sm btn-outline-secondary" 
-                                                    data-bs-toggle="tooltip" 
+                                            <x-button type="button" variant="outline-secondary" class="btn-sm"
+                                                    data-bs-toggle="tooltip"
                                                     title="Cannot delete (has subjects)">
                                                 <i class="fas fa-trash"></i>
                                                 <span class="ms-1 d-none d-sm-inline">Delete</span>
-                                            </button>
+                                            </x-button>
                                             @endif
                                         </div>
                                     </div>

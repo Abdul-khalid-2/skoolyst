@@ -20,6 +20,7 @@
         'outline-secondary' => 'btn-outline-secondary',
         'outline-danger' => 'btn-outline-danger',
         'outline-info' => 'btn-outline-info',
+        'outline-success' => 'btn-outline-success',
         default => 'btn-primary',
     };
     $classList = trim($base . ' ' . $variantClass);

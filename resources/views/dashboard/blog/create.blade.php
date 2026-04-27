@@ -1,27 +1,29 @@
 <x-app-layout>
     <main class="main-content">
         <section id="blog-category-create" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Create Blog Category</h2>
                     <p class="mb-0 text-muted">Add a new blog category</p>
-                </div>
-                <a href="{{ route('admin.blog-categories.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Categories
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('admin.blog-categories.index') }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Categories
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <form method="POST" action="{{ route('admin.blog-categories.store') }}">
                                 @csrf
 
                                 <div class="mb-3">
                                     <label for="name" class="form-label">Category Name <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                           id="name" name="name" placeholder="Enter category name" 
+                                    <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                           id="name" name="name" placeholder="Enter category name"
                                            value="{{ old('name') }}" required>
                                     @error('name')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -30,8 +32,8 @@
 
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Description</label>
-                                    <textarea class="form-control @error('description') is-invalid @enderror" 
-                                              id="description" name="description" rows="4" 
+                                    <textarea class="form-control @error('description') is-invalid @enderror"
+                                              id="description" name="description" rows="4"
                                               placeholder="Enter category description">{{ old('description') }}</textarea>
                                     @error('description')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -46,7 +48,7 @@
                                                 <span class="input-group-text">
                                                     <i class="fas fa-icons"></i>
                                                 </span>
-                                                <input type="text" class="form-control @error('icon') is-invalid @enderror" 
+                                                <input type="text" class="form-control @error('icon') is-invalid @enderror"
                                                        id="icon" name="icon" placeholder="e.g., book, graduation-cap, pencil-alt"
                                                        value="{{ old('icon') }}">
                                                 @error('icon')
@@ -54,7 +56,7 @@
                                                 @enderror
                                             </div>
                                             <div class="form-text">
-                                                Enter Font Awesome icon name (without the "fa-" prefix). 
+                                                Enter Font Awesome icon name (without the "fa-" prefix).
                                                 <a href="https://fontawesome.com/icons" target="_blank" class="text-decoration-none">
                                                     Browse icons
                                                 </a>
@@ -64,7 +66,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="is_active" class="form-label">Status</label>
-                                            <select class="form-select @error('is_active') is-invalid @enderror" 
+                                            <select class="form-select @error('is_active') is-invalid @enderror"
                                                     id="is_active" name="is_active">
                                                 <option value="1" {{ old('is_active', true) ? 'selected' : '' }}>Active</option>
                                                 <option value="0" {{ !old('is_active', true) ? 'selected' : '' }}>Inactive</option>
@@ -89,21 +91,21 @@
 
                                 <!-- Form Actions -->
                                 <div class="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i>Create Category
-                                    </button>
-                                    <a href="{{ route('admin.blog-categories.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('admin.blog-categories.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
 
                 <div class="col-lg-4">
                     <!-- Quick Tips -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header bg-white border-0">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-lightbulb text-warning me-2"></i>Tips
@@ -127,10 +129,10 @@
                                 <p class="small mb-0">Inactive categories won't be available when creating new blog posts.</p>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Popular Icons -->
-                    <div class="card mt-4">
+                    <x-card class="mt-4">
                         <div class="card-header bg-white border-0">
                             <h5 class="card-title mb-0">
                                 <i class="fas fa-star text-warning me-2"></i>Popular Icons
@@ -139,48 +141,48 @@
                         <div class="card-body">
                             <div class="row g-2 text-center">
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="book">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="book">
                                         <i class="fas fa-book"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="graduation-cap">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="graduation-cap">
                                         <i class="fas fa-graduation-cap"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="pencil-alt">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="pencil-alt">
                                         <i class="fas fa-pencil-alt"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="laptop">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="laptop">
                                         <i class="fas fa-laptop"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="science">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="science">
                                         <i class="fas fa-flask"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="music">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="music">
                                         <i class="fas fa-music"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="paint-brush">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="paint-brush">
                                         <i class="fas fa-paint-brush"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                                 <div class="col-3">
-                                    <button type="button" class="btn btn-sm btn-outline-primary w-100 icon-suggestion" data-icon="running">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 icon-suggestion" data-icon="running">
                                         <i class="fas fa-running"></i>
-                                    </button>
+                                    </x-button>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>
@@ -209,7 +211,7 @@
                 button.addEventListener('click', function() {
                     const icon = this.getAttribute('data-icon');
                     iconInput.value = icon;
-                    
+
                     // Trigger the input event to update preview
                     const event = new Event('input');
                     iconInput.dispatchEvent(event);
@@ -228,11 +230,11 @@
         .icon-suggestion {
             transition: all 0.2s;
         }
-        
+
         .icon-suggestion:hover {
             transform: scale(1.05);
         }
-        
+
         #iconPreview i {
             transition: all 0.3s;
         }
