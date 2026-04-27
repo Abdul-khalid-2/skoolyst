@@ -13,7 +13,7 @@
     $ur = old('translations.ur', $urDefaults);
 @endphp
 
-<div class="card border-0 bg-light mt-4">
+<x-card class="border-0 bg-light mt-4">
     <div class="card-body">
         <h5 class="mb-1">Urdu (اردو) <span class="text-muted small fw-normal">— optional</span></h5>
         <p class="text-muted small mb-3">Visitors on the Urdu version of the site see these when provided; empty fields fall back to English above.</p>
@@ -81,4 +81,4 @@
             </div>
         </div>
     </div>
-</div>
+</x-card>

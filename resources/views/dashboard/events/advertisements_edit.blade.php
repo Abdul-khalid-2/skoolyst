@@ -12,201 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- CKEditor 4 -->
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
-    <style>
-        .builder-container {
-            background: #f8f9fa;
-            min-height: 100vh;
-        }
-        
-        .sidebar {
-            background: white;
-            border-right: 1px solid #dee2e6;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        .widget-card {
-            cursor: grab;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
-        .widget-card-gallery {
-            cursor:pointer;
-            border: 2px dashed #dee2e6;
-            transition: all 0.3s;
-            margin-bottom: 10px;
-        }
-        
-        .widget-card:hover {
-            border-color: #0d6efd;
-            transform: translateY(-2px);
-        }
-        
-        .canvas-area {
-            background: white;
-            min-height: 80vh;
-            border: 2px dashed #ced4da;
-            padding: 20px;
-        }
-        
-        .canvas-element {
-            background: #fff;
-            border: 1px solid #dee2e6;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-            position: relative;
-        }
-        
-        .canvas-element:hover {
-            border-color: #0d6efd;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-        
-        .element-header {
-            background: #f8f9fa;
-            padding: 8px 15px;
-            margin: -15px -15px 15px -15px;
-            border-radius: 8px 8px 0 0;
-            border-bottom: 1px solid #dee2e6;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .empty-canvas {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6c757d;
-        }
-        
-        .position-controls {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .position-btn {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #dee2e6;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .position-btn:hover {
-            background: #f8f9fa;
-            border-color: #6c757d;
-        }
-        
-        .position-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .position-btn:disabled:hover {
-            background: white;
-            border-color: #dee2e6;
-        }
-        
-        .element-type-badge {
-            font-size: 0.75rem;
-            background: #6c757d;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-left: 10px;
-        }
-        
-        .html-preview {
-            border: 1px solid #e9ecef;
-            border-radius: 6px;
-            padding: 15px;
-            background: #f8f9fa;
-            min-height: 100px;
-            margin-top: 10px;
-            overflow: auto;
-            max-height: 300px;
-        }
-        
-        .html-editor {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-        }
-        
-        .preview-container {
-            border: 1px solid #dee2e6;
-            border-radius: 6px;
-            padding: 10px;
-            background: white;
-            min-height: 100px;
-            margin-top: 10px;
-        }
-        
-        .code-tabs {
-            margin-bottom: 10px;
-        }
-        
-        .code-tab {
-            padding: 5px 15px;
-            border: 1px solid #dee2e6;
-            background: #f8f9fa;
-            border-radius: 4px 4px 0 0;
-            cursor: pointer;
-            margin-right: 5px;
-        }
-        
-        .code-tab.active {
-            background: #0d6efd;
-            color: white;
-            border-color: #0d6efd;
-        }
-        .position-btn.remove-btn {
-            color: #dc3545;
-            border-color: #dc3545;
-        }
-
-        .position-btn.remove-btn:hover {
-            background: #dc3545;
-            color: white;
-        }
-
-        .image-card {
-            transition: transform 0.2s;
-            cursor: pointer;
-        }
-
-        .image-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-
-        .image-card .btn {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        /* CKEditor Styles */
-        .ckeditor-container {
-            margin-top: 10px;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-        }
-        
-        .ckeditor-column {
-            margin-bottom: 15px;
-        }
-        .cke_notification_warning{
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/dashboard/events/page-builder.css') }}">
 </head>
 
 <body>
@@ -270,12 +76,12 @@
                 <hr>
                 
                 <div class="mt-3">
-                    <button class="btn btn-outline-primary btn-sm w-100 mb-2" onclick="previewPage()">
+                    <x-button type="button" variant="outline-primary" class="btn-sm w-100 mb-2" onclick="previewPage()">
                         <i class="fas fa-eye me-1"></i>Preview
-                    </button>
-                    <button class="btn btn-outline-danger btn-sm w-100" onclick="clearCanvas()">
+                    </x-button>
+                    <x-button type="button" variant="outline-danger" class="btn-sm w-100" onclick="clearCanvas()">
                         <i class="fas fa-trash me-1"></i>Clear All
-                    </button>
+                    </x-button>
                 </div>
             </div>
 
@@ -284,10 +90,10 @@
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4>Edit Page: {{ $page->name }}</h4>
                     <div>
-                        <span class="badge bg-secondary" id="elementCount">0 elements</span>
-                        <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-outline-primary btn-sm ms-2" target="_blank">
+                        <x-badge variant="secondary" class="ms-0" id="elementCount">0 elements</x-badge>
+                        <x-button href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" variant="outline-primary" class="btn-sm ms-2" target="_blank">
                             <i class="fas fa-eye me-1"></i>View Live Page
-                        </a>
+                        </x-button>
                     </div>
                 </div>
 
@@ -299,8 +105,7 @@
                     </div>
                 </div>
 
-                <!-- Update Form -->
-                <div class="card mt-4">
+                <x-card class="mt-4">
                     <div class="card-header bg-warning text-white">
                         <h6 class="mb-0"><i class="fas fa-edit me-1"></i>Update Page</h6>
                     </div>
@@ -341,141 +146,106 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="d-grid">
-                                        <button type="submit" class="btn btn-warning" id="updateBtn">
+                                        <x-button type="submit" variant="warning" id="updateBtn">
                                             <i class="fas fa-save me-1"></i>Update Page
-                                        </button>
+                                        </x-button>
                                     </div>
                                 </div>
                             </div>
                         </form>
                         <div id="updateResult" class="mt-3"></div>
                     </div>
-                </div>
+                </x-card>
             </div>
         </div>
     </div>
 
-    <!-- Preview Modal -->
-    <div class="modal fade" id="previewModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Page Preview</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="previewContent"></div>
-                </div>
+    <x-bs-modal id="previewModal" title="Page Preview" size="xl" :centered="false">
+        <div id="previewContent"></div>
+    </x-bs-modal>
+
+    <x-bs-modal id="imageGalleryModal" title="Image Gallery" size="xl" :centered="false">
+        <x-card class="mb-4">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="fas fa-upload me-1"></i>Upload New Image</h6>
             </div>
-        </div>
-    </div>
-
-    <!-- Image Gallery Modal -->
-    <div class="modal fade" id="imageGalleryModal" tabindex="-1">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Image Gallery</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Upload Form -->
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0"><i class="fas fa-upload me-1"></i>Upload New Image</h6>
-                        </div>
-                        <div class="card-body">
-                            <form id="uploadImageForm" enctype="multipart/form-data">
-                                @csrf
-                                <input type="hidden" id="gallerySchoolId" value="{{ $page->school_id }}">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="imageName" class="form-label">Image Name *</label>
-                                            <input type="text" class="form-control" id="imageName" name="image_name" required>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="imageFile" class="form-label">Image File *</label>
-                                            <input type="file" class="form-control" id="imageFile" name="image_file" accept="image/*" required>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="uploadBtn">
-                                    <i class="fas fa-upload me-1"></i>Upload Image
-                                </button>
-                            </form>
-                            <div id="uploadResult" class="mt-2"></div>
-                        </div>
-                    </div>
-
-                    <!-- Images Grid -->
-                    <div class="card">
-                        <div class="card-header bg-secondary text-white">
-                            <h6 class="mb-0"><i class="fas fa-images me-1"></i>Gallery Images</h6>
-                        </div>
-                        <div class="card-body">
-                            <div id="galleryLoading" class="text-center py-4">
-                                <div class="spinner-border text-primary" role="status">
-                                    <span class="visually-hidden">Loading...</span>
-                                </div>
-                                <p class="mt-2">Loading images...</p>
+            <div class="card-body">
+                <form id="uploadImageForm" enctype="multipart/form-data">
+                    @csrf
+                    <input type="hidden" id="gallerySchoolId" value="{{ $page->school_id }}">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="imageName" class="form-label">Image Name *</label>
+                                <input type="text" class="form-control" id="imageName" name="image_name" required>
                             </div>
-                            <div id="galleryImages" class="row g-3" style="display: none;"></div>
-                            <div id="galleryEmpty" class="text-center py-4" style="display: none;">
-                                <i class="fas fa-images fa-3x text-muted mb-3"></i>
-                                <h5>No images found</h5>
-                                <p class="text-muted">Upload your first image to get started</p>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="imageFile" class="form-label">Image File *</label>
+                                <input type="file" class="form-control" id="imageFile" name="image_file" accept="image/*" required>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <x-button type="submit" variant="primary" id="uploadBtn">
+                        <i class="fas fa-upload me-1"></i>Upload Image
+                    </x-button>
+                </form>
+                <div id="uploadResult" class="mt-2"></div>
             </div>
-        </div>
-    </div>
+        </x-card>
 
-    <!-- Edit Image Modal -->
-    <div class="modal fade" id="editImageModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Edit Image</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <x-card>
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0"><i class="fas fa-images me-1"></i>Gallery Images</h6>
+            </div>
+            <div class="card-body">
+                <div id="galleryLoading" class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading images...</p>
                 </div>
-                <div class="modal-body">
-                    <form id="editImageForm">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" id="editImageId">
-                        <div class="mb-3">
-                            <label for="editImageName" class="form-label">Image Name</label>
-                            <input type="text" class="form-control" id="editImageName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editImageStatus" class="form-label">Status</label>
-                            <select class="form-select" id="editImageStatus" required>
-                                <option value="active">Active</option>
-                                <option value="inactive">Inactive</option>
-                            </select>
-                        </div>
-                        <div class="text-center">
-                            <img id="editImagePreview" src="" class="img-fluid rounded mb-3" style="max-height: 200px;">
-                        </div>
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-fill">
-                                <i class="fas fa-save me-1"></i>Update
-                            </button>
-                            <button type="button" class="btn btn-danger" id="deleteImageBtn">
-                                <i class="fas fa-trash me-1"></i>Delete
-                            </button>
-                        </div>
-                    </form>
-                    <div id="editResult" class="mt-2"></div>
+                <div id="galleryImages" class="row g-3" style="display: none;"></div>
+                <div id="galleryEmpty" class="text-center py-4" style="display: none;">
+                    <i class="fas fa-images fa-3x text-muted mb-3"></i>
+                    <h5>No images found</h5>
+                    <p class="text-muted">Upload your first image to get started</p>
                 </div>
             </div>
-        </div>
-    </div>
+        </x-card>
+    </x-bs-modal>
+
+    <x-bs-modal id="editImageModal" title="Edit Image" :centered="false">
+        <form id="editImageForm">
+            @csrf
+            @method('PUT')
+            <input type="hidden" id="editImageId">
+            <div class="mb-3">
+                <label for="editImageName" class="form-label">Image Name</label>
+                <input type="text" class="form-control" id="editImageName" required>
+            </div>
+            <div class="mb-3">
+                <label for="editImageStatus" class="form-label">Status</label>
+                <select class="form-select" id="editImageStatus" required>
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                </select>
+            </div>
+            <div class="text-center">
+                <img id="editImagePreview" src="" class="img-fluid rounded mb-3" style="max-height: 200px;">
+            </div>
+            <div class="d-flex gap-2">
+                <x-button type="submit" variant="primary" class="flex-fill">
+                    <i class="fas fa-save me-1"></i>Update
+                </x-button>
+                <x-button type="button" variant="danger" id="deleteImageBtn">
+                    <i class="fas fa-trash me-1"></i>Delete
+                </x-button>
+            </div>
+        </form>
+        <div id="editResult" class="mt-2"></div>
+    </x-bs-modal>
 
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

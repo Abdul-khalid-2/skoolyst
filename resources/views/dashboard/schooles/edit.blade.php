@@ -1,23 +1,28 @@
 <x-app-layout>
+    @push('css')
+        <link rel="stylesheet" href="{{ asset('css/dashboard/schooles/schools-forms.css') }}">
+    @endpush
     <!-- Main Content -->
     <main class="main-content">
         <!-- School Edit Page -->
         <section id="school-edit" class="page-section active">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Edit School</h2>
                     <p class="mb-0 text-muted">Update information for {{ $school->name }}</p>
-                </div>
-                <a href="{{ route('schools.show', $school->id) }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to School
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.show', $school->id) }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to School
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <form class="row" method="POST" action="{{ route('schools.update', $school->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
                 <div class="col-lg-8">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <!-- Admin Information -->
                             <h5 class="mb-3">Admin Information</h5>
@@ -199,9 +204,9 @@
                                                                placeholder="Fact value (e.g., CBSE Affiliated)" value="{{ $value }}">
                                                     </div>
                                                     <div class="col-md-2">
-                                                        <button type="button" class="btn btn-danger btn-sm remove-quick-fact">
+                                                        <x-button type="button" variant="danger" class="btn-sm remove-quick-fact">
                                                             <i class="fas fa-times"></i>
-                                                        </button>
+                                                        </x-button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -219,16 +224,16 @@
                                                 <input type="text" class="form-control" name="quick_fact_values[]" placeholder="Fact value (e.g., CBSE Affiliated)">
                                             </div>
                                             <div class="col-md-2">
-                                                <button type="button" class="btn btn-danger btn-sm remove-quick-fact" style="display: none;">
+                                                <x-button type="button" variant="danger" class="btn-sm remove-quick-fact" style="display: none;">
                                                     <i class="fas fa-times"></i>
-                                                </button>
+                                                </x-button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add-quick-fact">
+                                <x-button type="button" variant="outline-primary" class="btn-sm mt-2" id="add-quick-fact">
                                     <i class="fas fa-plus me-1"></i> Add Quick Fact
-                                </button>
+                                </x-button>
                             </div>
 
                            <!-- Social Media Links -->
@@ -329,7 +334,7 @@
                                 </div> -->
 
                                 @foreach($features->groupBy('category') as $category => $categoryFeatures)
-                                <div class="card mb-3 feature-category" data-category="{{ Str::slug($category) }}">
+                                <x-card class="mb-3 feature-category" data-category="{{ Str::slug($category) }}">
                                     <div class="card-header bg-light">
                                         <h6 class="mb-0 text-capitalize">{{ $category }} Features</h6>
                                     </div>
@@ -355,7 +360,7 @@
                                             @endforeach
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                                 @endforeach
                             </div>
 
@@ -463,9 +468,9 @@
                                 <div class="mb-3">
                                     <label class="form-label">Class-wise Fees <span class="text-danger">*</span></label>
                                     <div id="class_wise_fees_container_edit"></div>
-                                    <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="add_class_wise_fee_row_edit">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm mt-2" id="add_class_wise_fee_row_edit">
                                         <i class="fas fa-plus me-1"></i> Add Fee Entry
-                                    </button>
+                                    </x-button>
                                     <small class="text-muted d-block mt-2">Maximum 5 fee entries allowed. Class Range max 25 characters. Fees max 8 characters.</small>
                                     @error('class_wise_fees')
                                     <div class="text-danger small mt-1">{{ $message }}</div>
@@ -516,21 +521,21 @@
 
                             <!-- Form Actions -->
                             <div class="d-flex gap-2 pt-3 border-top">
-                                <button type="submit" class="btn btn-primary">
+                                <x-button type="submit" variant="primary">
                                     <i class="fas fa-save me-2"></i>Update School
-                                </button>
-                                <a href="{{ route('schools.show', $school->id) }}" class="btn btn-outline-secondary">
+                                </x-button>
+                                <x-button href="{{ route('schools.show', $school->id) }}" variant="outline-secondary">
                                     Cancel
-                                </a>
+                                </x-button>
                             </div>
 
                         </div>
-                    </div>
+                    </x-card>
                 </div>
 
                 <div class="col-lg-4">
                     <!-- School Logo -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white border-0">
                             <h5 class="card-title mb-0">School Logo</h5>
                         </div>
@@ -559,10 +564,10 @@
                                 <img id="logo-preview-img" class="img-fluid rounded" style="max-height: 150px;">
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Banner Image -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white border-0">
                             <h5 class="card-title mb-0">Banner Image</h5>
                         </div>
@@ -603,15 +608,15 @@
                                 <img id="banner-preview-img" class="img-fluid rounded" style="max-height: 150px;">
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- School Images -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">School Images</h5>
-                            <button type="button" class="btn btn-sm btn-primary" id="add-image-btn">
+                            <x-button type="button" variant="primary" class="btn-sm" id="add-image-btn">
                                 <i class="fas fa-plus me-1"></i> Add Image
-                            </button>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             <!-- Existing Images -->
@@ -619,7 +624,7 @@
                             <div class="mb-4">
                                 <h6 class="text-muted mb-3">Current Images</h6>
                                 @foreach($school->images as $image)
-                                <div class="card mb-3">
+                                <x-card class="mb-3">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-center mb-2">
                                             <h6 class="card-title mb-0">Image {{ $loop->iteration }}</h6>
@@ -640,7 +645,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                                 @endforeach
                             </div>
                             @endif
@@ -651,9 +656,9 @@
                                     <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
                                     <p class="text-muted mb-2">Drag & drop images here or click to browse</p>
                                     <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="document.getElementById('image-upload-input').click()">
+                                    <x-button type="button" variant="outline-primary" class="btn-sm" onclick="document.getElementById('image-upload-input').click()">
                                         Select Images
-                                    </button>
+                                    </x-button>
                                 </div>
 
                                 <div id="image-fields-container">
@@ -662,10 +667,10 @@
                             </div>
                             <p class="text-muted small mb-0">Upload up to 10 images with title. Max file size: 2MB each.</p>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- School Information -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">School Information</h5>
                         </div>
@@ -687,20 +692,20 @@
                                 <p class="mb-0">{{ $school->events->where('event_date', '>=', now())->count() }}</p>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Delete School Card -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0 text-danger">Danger Zone</h5>
                         </div>
                         <div class="card-body">
                             <p class="small text-muted">Once you delete a school, there is no going back. Please be certain.</p>
-                            <button type="button" class="btn btn-danger w-100" id="delete-school-btn">
+                            <x-button type="button" variant="danger" class="w-100" id="delete-school-btn">
                                 <i class="fas fa-trash me-2"></i> Delete School
-                            </button>
+                            </x-button>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </form>
 
@@ -714,13 +719,13 @@
 
     <!-- Template for image fields -->
     <template id="image-field-template">
-        <div class="image-field card mb-3">
+        <x-card class="image-field mb-3">
             <div class="card-body">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <h6 class="card-title mb-0">New Image <span class="image-number">1</span></h6>
-                    <button type="button" class="btn btn-sm btn-danger remove-image-btn">
+                    <x-button type="button" variant="danger" class="btn-sm remove-image-btn">
                         <i class="fas fa-times"></i>
-                    </button>
+                    </x-button>
                 </div>
 
                 <div class="row">
@@ -742,7 +747,7 @@
                     <img class="img-thumbnail preview-img" style="max-height: 100px;">
                 </div>
             </div>
-        </div>
+        </x-card>
     </template>
 
     <!-- Template for quick facts -->
@@ -756,9 +761,9 @@
                     <input type="text" class="form-control" name="quick_fact_values[]" placeholder="Fact value (e.g., CBSE Affiliated)">
                 </div>
                 <div class="col-md-2">
-                    <button type="button" class="btn btn-danger btn-sm remove-quick-fact">
+                    <x-button type="button" variant="danger" class="btn-sm remove-quick-fact">
                         <i class="fas fa-times"></i>
-                    </button>
+                    </x-button>
                 </div>
             </div>
         </div>
@@ -1251,36 +1256,4 @@
             }
         });
     </script>
-
-    <style>
-        .image-upload-area {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .image-upload-area:hover {
-            border-color: #4e73df !important;
-            background-color: rgba(78, 115, 223, 0.05);
-        }
-
-        .image-field {
-            border-left: 3px solid #4e73df;
-        }
-
-        .remove-image-btn,
-        .remove-quick-fact {
-            padding: 0.25rem 0.5rem;
-        }
-
-        .border-dashed {
-            border-style: dashed !important;
-        }
-
-        .quick-fact-item {
-            padding: 0.5rem;
-            border: 1px solid #e9ecef;
-            border-radius: 0.375rem;
-            background-color: #f8f9fa;
-        }
-    </style>
 </x-app-layout>

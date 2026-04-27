@@ -1,17 +1,19 @@
 <x-app-layout>
     <main class="main-content">
         <section id="advertisements" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="mb-0">Advertisement Pages</h2>
                     <p class="text-muted">Manage dynamic advertisement pages</p>
-                </div>
-                <a href="{{ route('pages.create', [$school_uuid, $id]) }}" class="btn btn-primary me-2">
-                    <i class="fas fa-edit me-2"></i> Create Banner
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('pages.create', [$school_uuid, $id]) }}" variant="primary" class="me-2">
+                        <i class="fas fa-edit me-2"></i> Create Banner
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <div class="card">
+            <x-card>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
                         <thead>
@@ -49,26 +51,28 @@
                                 </td>
                                 <td>{{ $page->created_at->format('M d, Y') }}</td>
                                 <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" class="btn btn-sm btn-outline-info" target="_blank">
+                                    <div class="btn-group events-table-actions" role="group">
+                                        <x-button href="{{ route('pages.show', [$page->slug, $page->uuid]) }}" variant="outline-info" class="btn-sm" target="_blank" title="View">
                                             <i class="fas fa-eye"></i>
-                                        </a>
-                                        <a href="{{ route('pages.edit', $page->id) }}" class="btn btn-sm btn-outline-primary">
+                                        </x-button>
+                                        <x-button href="{{ route('pages.edit', $page->id) }}" variant="outline-primary" class="btn-sm" title="Edit">
                                             <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="{{ route('pages.destroy', $page->id) }}" method="POST" style="display:inline;">
+                                        </x-button>
+                                        <form action="{{ route('pages.destroy', $page->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this page?')">
+                                            <x-button type="submit" variant="outline-danger" class="btn-sm" onclick="return confirm('Delete this page?')">
                                                 <i class="fas fa-trash"></i>
-                                            </button>
+                                            </x-button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="7" class="text-center">No advertisement pages found</td>
+                                <td colspan="7" class="p-0 border-0">
+                                    <x-empty-state title="No advertisement pages found" />
+                                </td>
                             </tr>
                             @endforelse
                         </tbody>
@@ -79,7 +83,7 @@
                     {{ $pages->links() }}
                 </div>
                 @endif
-            </div>
+            </x-card>
         </section>
     </main>
 </x-app-layout>

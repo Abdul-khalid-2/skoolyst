@@ -1,19 +1,21 @@
 <x-app-layout>
     <main class="main-content">
         <section id="events-edit" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Edit Event</h2>
                     <p class="mb-0 text-muted">Update event information</p>
-                </div>
-                <a href="{{ route('events.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Events
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('events.index') }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Events
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <form method="POST" action="{{ route('events.update', $event->id) }}">
                                 @csrf
@@ -83,16 +85,16 @@
                                 </div>
 
                                 <div class="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i>Update Event
-                                    </button>
-                                    <a href="{{ route('events.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('events.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>

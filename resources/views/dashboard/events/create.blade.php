@@ -1,19 +1,24 @@
 <x-app-layout>
+    @push('css')
+        <link rel="stylesheet" href="{{ asset('css/dashboard/events/forms.css') }}">
+    @endpush
     <main class="main-content">
         <section id="events-create" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Create New Event</h2>
                     <p class="mb-0 text-muted">Add a new event to the system</p>
-                </div>
-                <a href="{{ route('events.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i> Back to Events
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('events.index') }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to Events
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card">
+                    <x-card>
                         <div class="card-body">
                             <form method="POST" action="{{ route('events.store') }}">
                                 @csrf
@@ -82,23 +87,22 @@
                                 </div>
 
                                 <div class="d-flex gap-2 pt-3 border-top">
-                                    <button type="submit" class="btn btn-primary">
+                                    <x-button type="submit" variant="primary">
                                         <i class="fas fa-save me-2"></i>Create Event
-                                    </button>
-                                    <a href="{{ route('events.index') }}" class="btn btn-outline-secondary">
+                                    </x-button>
+                                    <x-button href="{{ route('events.index') }}" variant="outline-secondary">
                                         Cancel
-                                    </a>
+                                    </x-button>
                                 </div>
                             </form>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Add this hidden div to store branches data -->
-    <div id="branches-data" style="display: none;">
+    <div id="branches-data">
         @foreach($schools as $school)
         <div class="school-branches" data-school-id="{{ $school->id }}">
             @foreach($school->branches as $branch)

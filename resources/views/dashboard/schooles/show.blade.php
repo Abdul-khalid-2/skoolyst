@@ -3,23 +3,23 @@
     <main class="main-content">
         <!-- School Show Page -->
         <section id="school-show" class="page-section active">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header>
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">School Details</h2>
                     <p class="mb-0 text-muted">View complete information about {{ $school->name ?? 'School' }}</p>
-                </div>
-                <div>
-                    <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-primary me-2">
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('schools.edit', $school->id) }}" variant="primary" class="me-2">
                         <i class="fas fa-edit me-2"></i> Edit School
-                    </a>
-                    <a href="{{ route('schools.index') }}" class="btn btn-secondary">
+                    </x-button>
+                    <x-button href="{{ route('schools.index') }}" variant="secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Schools
-                    </a>
-                </div>
-            </div>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             <!-- School Header Section -->
-            <div class="card mb-4 overflow-hidden">
+            <x-card class="mb-4 overflow-hidden">
                 <div class="school-header-card {{ $school->banner_image ? 'has-banner-image' : '' }}"
                     @if($school->banner_image)
                         style="background-image: url('{{ asset('website/' . $school->banner_image) }}'); height: 200px; background-size: cover; background-position: center;"
@@ -51,12 +51,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <div class="row">
                 <div class="col-lg-8">
                     <!-- Basic Information Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Basic Information</h5>
                         </div>
@@ -113,20 +113,20 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- About School Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">About Our School</h5>
                         </div>
                         <div class="card-body">
                             <p class="mb-0">{{ $school->description ?? 'No description available for this school.' }}</p>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Quick Facts Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Quick Facts</h5>
                         </div>
@@ -200,10 +200,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Gallery Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">School Gallery</h5>
                         </div>
@@ -212,7 +212,7 @@
                             <div class="row">
                                 @foreach($school->images as $image)
                                 <div class="col-md-4 mb-4">
-                                    <div class="card">
+                                    <x-card>
                                         <img src="{{ asset('website/' . $image->image_path) }}"
                                             class="card-img-top"
                                             alt="{{ $image->title ?? 'School Image' }}"
@@ -223,7 +223,7 @@
                                             <p class="mb-0">{{ $image->title }}</p>
                                         </div>
                                         @endif
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endforeach
                             </div>
@@ -234,10 +234,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Curriculum Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Curriculum & Programs</h5>
                         </div>
@@ -246,12 +246,12 @@
                             <div class="row">
                                 @foreach($school->curriculums as $curriculum)
                                 <div class="col-md-6 mb-4">
-                                    <div class="card h-100">
+                                    <x-card class="h-100">
                                         <div class="card-body">
                                             <h5 class="card-title">{{ $curriculum->name ?? 'Unnamed Curriculum' }}</h5>
                                             <p class="card-text">{{ $curriculum->description ?? 'No description available.' }}</p>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endforeach
                             </div>
@@ -262,10 +262,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Facilities Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Facilities & Features</h5>
                         </div>
@@ -295,10 +295,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Mission & Vision Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Mission & Vision</h5>
                         </div>
@@ -306,7 +306,7 @@
                             <div class="row">
                                 @if($school->profile && $school->profile->mission)
                                 <div class="col-md-4 mb-4">
-                                    <div class="card h-100 text-center">
+                                    <x-card class="h-100 text-center">
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <i class="fas fa-bullseye fa-2x text-primary"></i>
@@ -314,13 +314,13 @@
                                             <h5>Our Mission</h5>
                                             <p class="card-text">{{ $school->profile->mission }}</p>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endif
 
                                 @if($school->profile && $school->profile->vision)
                                 <div class="col-md-4 mb-4">
-                                    <div class="card h-100 text-center">
+                                    <x-card class="h-100 text-center">
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <i class="fas fa-eye fa-2x text-primary"></i>
@@ -328,13 +328,13 @@
                                             <h5>Our Vision</h5>
                                             <p class="card-text">{{ $school->profile->vision }}</p>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endif
 
                                 @if($school->profile && $school->profile->school_motto)
                                 <div class="col-md-4 mb-4">
-                                    <div class="card h-100 text-center">
+                                    <x-card class="h-100 text-center">
                                         <div class="card-body">
                                             <div class="mb-3">
                                                 <i class="fas fa-quote-left fa-2x text-primary"></i>
@@ -342,7 +342,7 @@
                                             <h5>Our Motto</h5>
                                             <p class="card-text">"{{ $school->profile->school_motto }}"</p>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endif
                             </div>
@@ -354,10 +354,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Reviews Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Parent & Student Reviews</h5>
                         </div>
@@ -366,14 +366,14 @@
                             <div class="row">
                                 @foreach($school->reviews as $review)
                                 <div class="col-12 mb-4">
-                                    <div class="card">
+                                    <x-card>
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-3">
                                                 <div>
                                                     <h6 class="mb-1">
                                                         {{ $review->user_id ? ($review->user->name ?? 'Unknown User') : ($review->reviewer_name ?? 'Anonymous') }}
                                                         @if($review->user_id)
-                                                        <span class="badge bg-success ms-1">Verified</span>
+                                                        <x-badge variant="success" class="ms-1">Verified</x-badge>
                                                         @endif
                                                     </h6>
                                                     <div class="text-warning">
@@ -390,7 +390,7 @@
                                             </div>
                                             <p class="mb-0">{{ $review->review ?? 'No review content' }}</p>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endforeach
                             </div>
@@ -401,10 +401,10 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Events Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Upcoming Events</h5>
                         </div>
@@ -413,7 +413,7 @@
                             <div class="row">
                                 @foreach($school->events as $event)
                                 <div class="col-md-6 mb-4">
-                                    <div class="card h-100">
+                                    <x-card class="h-100">
                                         <div class="card-body">
                                             <div class="d-flex align-items-start">
                                                 <div class="bg-primary text-white text-center rounded me-3" style="width: 60px;">
@@ -432,7 +432,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endforeach
                             </div>
@@ -443,27 +443,27 @@
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Branches Section -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="card-title mb-0">Our Branches</h5>
-                            <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-sm btn-primary">
+                            <x-button href="{{ route('schools.branches.create', $school) }}" variant="primary" class="btn-sm">
                                 <i class="fas fa-plus me-1"></i> Add Branch
-                            </a>
+                            </x-button>
                         </div>
                         <div class="card-body">
                             @if($school->branches && $school->branches->count() > 0)
                             <div class="row">
                                 @foreach($school->branches as $branch)
                                 <div class="col-md-6 mb-4">
-                                    <div class="card h-100">
+                                    <x-card class="h-100">
                                         <div class="card-body">
                                             <div class="d-flex justify-content-between align-items-start mb-2">
                                                 <h5 class="card-title mb-0">{{ $branch->name ?? 'Unnamed Branch' }}</h5>
                                                 @if($branch->is_main_branch)
-                                                <span class="badge bg-primary">Main Branch</span>
+                                                <x-badge variant="primary">Main Branch</x-badge>
                                                 @endif
                                             </div>
                                             <div class="mb-3">
@@ -491,15 +491,15 @@
                                                 @endif
                                             </div>
                                             <div class="btn-group">
-                                                <a href="{{ route('schools.branches.show', [$school, $branch]) }}" class="btn btn-sm btn-outline-primary">
+                                                <x-button href="{{ route('schools.branches.show', [$school, $branch]) }}" variant="outline-primary" class="btn-sm">
                                                     <i class="fas fa-eye me-1"></i> View
-                                                </a>
-                                                <a href="{{ route('schools.branches.edit', [$school, $branch]) }}" class="btn btn-sm btn-outline-secondary">
+                                                </x-button>
+                                                <x-button href="{{ route('schools.branches.edit', [$school, $branch]) }}" variant="outline-secondary" class="btn-sm">
                                                     <i class="fas fa-edit me-1"></i> Edit
-                                                </a>
+                                                </x-button>
                                             </div>
                                         </div>
-                                    </div>
+                                    </x-card>
                                 </div>
                                 @endforeach
                             </div>
@@ -507,43 +507,43 @@
                             <div class="text-center py-5">
                                 <i class="fas fa-code-branch fa-3x text-muted mb-3"></i>
                                 <p class="text-muted">No branches information available.</p>
-                                <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-primary">
+                                <x-button href="{{ route('schools.branches.create', $school) }}" variant="primary">
                                     <i class="fas fa-plus me-1"></i> Add First Branch
-                                </a>
+                                </x-button>
                             </div>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
 
                 <div class="col-lg-4">
                     <!-- Actions Card -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Quick Actions</h5>
                         </div>
                         <div class="card-body">
                             <div class="d-grid gap-2">
-                                <a href="{{ route('schools.edit', $school->id) }}" class="btn btn-primary">
+                                <x-button href="{{ route('schools.edit', $school->id) }}" variant="primary">
                                     <i class="fas fa-edit me-2"></i> Edit School
-                                </a>
-                                <a href="{{ route('schools.branches.create', $school) }}" class="btn btn-success">
+                                </x-button>
+                                <x-button href="{{ route('schools.branches.create', $school) }}" variant="success">
                                     <i class="fas fa-plus me-2"></i> Add Branch
-                                </a>
+                                </x-button>
                                 <form action="{{ route('schools.destroy', $school->id) }}" method="POST" class="d-grid">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger"
+                                    <x-button type="submit" variant="danger"
                                         onclick="return confirm('Are you sure you want to delete this school?')">
                                         <i class="fas fa-trash me-2"></i> Delete School
-                                    </button>
+                                    </x-button>
                                 </form>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- School Statistics -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">School Statistics</h5>
                         </div>
@@ -583,25 +583,25 @@
 
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Total Reviews</span>
-                                <span class="badge bg-primary">{{ $school->reviews ? $school->reviews->count() : 0 }}</span>
+                                <x-badge variant="primary">{{ $school->reviews ? $school->reviews->count() : 0 }}</x-badge>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Upcoming Events</span>
-                                <span class="badge bg-success">{{ $school->events ? $school->events->where('event_date', '>=', now())->count() : 0 }}</span>
+                                <x-badge variant="success">{{ $school->events ? $school->events->where('event_date', '>=', now())->count() : 0 }}</x-badge>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <span>Total Branches</span>
-                                <span class="badge bg-info">{{ $school->branches ? $school->branches->count() : 0 }}</span>
+                                <x-badge variant="info">{{ $school->branches ? $school->branches->count() : 0 }}</x-badge>
                             </div>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span>Active Since</span>
-                                <span class="badge bg-info">{{ $school->created_at ? $school->created_at->diffForHumans() : 'N/A' }}</span>
+                                <x-badge variant="info">{{ $school->created_at ? $school->created_at->diffForHumans() : 'N/A' }}</x-badge>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Contact Information -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Contact Information</h5>
                         </div>
@@ -635,10 +635,10 @@
                                 </span>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Fee Structure -->
-                    <div class="card mb-4">
+                    <x-card class="mb-4">
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Fee Structure</h5>
                         </div>
@@ -717,10 +717,10 @@
                                 <p class="text-muted text-center mb-0">Fee structure not defined.</p>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
 
                     <!-- Social Media -->
-                    <div class="card">
+                    <x-card>
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Social Media</h5>
                         </div>
@@ -734,9 +734,9 @@
                             <div class="d-flex flex-wrap gap-2">
                                 @foreach($socialMedia as $platform => $url)
                                 @if($url && is_string($url))
-                                <a href="{{ $url }}" target="_blank" class="btn btn-outline-primary btn-sm" title="{{ ucfirst($platform) }}">
+                                <x-button href="{{ $url }}" variant="outline-primary" class="btn-sm" target="_blank" title="{{ ucfirst($platform) }}">
                                     <i class="fab fa-{{ $platform }} me-1"></i> {{ ucfirst($platform) }}
-                                </a>
+                                </x-button>
                                 @endif
                                 @endforeach
                             </div>
@@ -747,8 +747,8 @@
                             <p class="text-muted text-center mb-0">No social media links available.</p>
                             @endif
                         </div>
-                    </div>
-                    <div class="card">
+                    </x-card>
+                    <x-card>
                         <div class="card-header bg-white">
                             <h5 class="card-title mb-0">Profile Visitors</h5>
                         </div>
@@ -780,7 +780,7 @@
                             <p class="text-muted text-center mb-0">No visitor data available.</p>
                             @endif
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
         </section>

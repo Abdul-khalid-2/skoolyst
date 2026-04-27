@@ -1,0 +1,30 @@
+/* dashboard/schooles create & edit — image drop zone, quick facts, fee UI helpers */
+.image-upload-area {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.image-upload-area:hover {
+    border-color: #4e73df !important;
+    background-color: rgba(78, 115, 223, 0.05);
+}
+
+.image-field {
+    border-left: 3px solid #4e73df;
+}
+
+.remove-image-btn,
+.remove-quick-fact {
+    padding: 0.25rem 0.5rem;
+}
+
+.border-dashed {
+    border-style: dashed !important;
+}
+
+.quick-fact-item {
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    background-color: #f8f9fa;
+}

@@ -1,4 +1,7 @@
 <x-app-layout>
+    @push('css')
+        <link rel="stylesheet" href="{{ asset('css/dashboard/schooles/index.css') }}">
+    @endpush
     <main class="main-content">
         <section id="schools" class="page-section">
             <x-page-header class="mb-4 flex-wrap gap-2">
@@ -16,8 +19,8 @@
             </x-page-header>
 
             <x-card>
-                <div class="table-responsive" style="overflow-x:auto; -webkit-overflow-scrolling: touch;">
-                    <table class="table table-hover align-middle mb-0 text-nowrap">
+                <div class="table-responsive schools-table-wrap">
+                    <table class="table table-hover align-middle mb-0 text-nowrap schools-table">
                         <thead class="table-light">
                             <tr>
                                 <th>#</th>
@@ -34,9 +37,9 @@
                             <tr>
                                 <td>{{ ($schools->currentPage() - 1) * $schools->perPage() + $loop->iteration }}</td>
                                 <td>{{ $school->name }}</td>
-                                <td class="text-truncate" style="max-width:150px;">{{ $school->email ?? '-' }}</td>
+                                <td class="text-truncate school-email-col">{{ $school->email ?? '-' }}</td>
                                 <td>{{ $school->contact_number ?? '-' }}</td>
-                                <td class="text-truncate" style="max-width:180px;">{{ $school->address ?? '-' }}</td>
+                                <td class="text-truncate school-address-col">{{ $school->address ?? '-' }}</td>
                                 <td>
                                     @if($school->status === 'active')
                                     <x-badge variant="success">Active</x-badge>
@@ -45,7 +48,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="btn-group" role="group">
+                                    <div class="btn-group schools-table-actions" role="group">
                                         <x-button href="{{ route('schools.edit', $school->id) }}" variant="outline-primary" class="btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </x-button>
@@ -53,7 +56,7 @@
                                             <i class="fas fa-eye"></i>
                                         </x-button>
                                         @role('super-admin')
-                                        <form action="{{ route('schools.destroy', $school->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('schools.destroy', $school->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
                                             <x-button type="submit" variant="outline-danger" class="btn-sm" onclick="return confirm('Are you sure?')">
