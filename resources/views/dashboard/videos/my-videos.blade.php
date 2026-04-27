@@ -179,8 +179,8 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-{{ $video->status == 'published' ? 'success' : ($video->status == 'draft' ? 'warning' : 'secondary') }}">
-                                                {{ ucfirst($video->status) }}
+                                            <span class="badge bg-{{ $video->status === \App\Enums\VideoPublishStatus::Published ? 'success' : ($video->status === \App\Enums\VideoPublishStatus::Draft ? 'warning' : 'secondary') }}">
+                                                {{ ucfirst($video->status->value) }}
                                             </span>
                                         </td>
                                         <td>

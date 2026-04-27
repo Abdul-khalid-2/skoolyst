@@ -7,6 +7,7 @@ use App\Enums\ActiveStatus;
 use App\Enums\SchoolVisibility;
 use App\Models\Curriculum;
 use App\Models\School;
+use App\Support\CacheKeys;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Cache;
 
@@ -72,21 +73,39 @@ class SchoolService
         return $query;
     }
 
+    protected function directoryFiltersEmpty(array $filters): bool
+    {
+        return empty($filters['search']) && empty($filters['location'])
+            && empty($filters['type']) && empty($filters['curriculum']);
+    }
+
     /**
      * Search schools with pagination
      */
     public function searchSchools(array $filters, int $perPage = 12): LengthAwarePaginator
     {
+        $page = (int) request()->input('page', 1);
+        if ($this->directoryFiltersEmpty($filters) && $page === 1) {
+            $key = CacheKeys::schoolDirectoryPage(1, $perPage, 'browse');
+
+            return Cache::remember($key, CacheKeys::TTL_DIRECTORY, function () use ($filters, $perPage) {
+                return $this->runSearchSchoolsQuery($filters, $perPage);
+            });
+        }
+
+        return $this->runSearchSchoolsQuery($filters, $perPage);
+    }
+
+    private function runSearchSchoolsQuery(array $filters, int $perPage): LengthAwarePaginator
+    {
         $query = $this->getBaseQuery();
         $query = $this->applyFilters($query, $filters);
-        
+
         $schools = $query->orderBy('created_at', 'desc')->paginate($perPage);
-        
-        // Transform the collection
         $schools->getCollection()->transform(function ($school) {
             return $this->formatSchoolData($school);
         });
-        
+
         return $schools;
     }
 
@@ -96,7 +115,20 @@ class SchoolService
     public function getAllSchools(array $filters, int $perPage = 20): LengthAwarePaginator
     {
         $perPage = max(1, min($perPage, 100));
+        $page = (int) request()->input('page', 1);
+        if ($this->directoryFiltersEmpty($filters) && $page === 1) {
+            $key = CacheKeys::schoolDirectoryPage(1, $perPage, 'directory');
 
+            return Cache::remember($key, CacheKeys::TTL_DIRECTORY, function () use ($filters, $perPage) {
+                return $this->runGetAllSchoolsQuery($filters, $perPage);
+            });
+        }
+
+        return $this->runGetAllSchoolsQuery($filters, $perPage);
+    }
+
+    private function runGetAllSchoolsQuery(array $filters, int $perPage): LengthAwarePaginator
+    {
         $query = $this->getBaseQuery();
         $query = $this->applyFilters($query, $filters);
 
@@ -113,22 +145,32 @@ class SchoolService
      */
     public function getSchoolByUuid(string $uuid)
     {
-        $school = School::with([
-            'profile',
-            'translations',
-            'curriculums',
-            'features',
-            'reviews',
-            'images',
-            'branches',
-            'events'
-        ])
-            ->where('status', ActiveStatus::Active)
-            ->where('visibility', SchoolVisibility::Public)
-            ->where('uuid', $uuid)
-            ->firstOrFail();
+        $key = CacheKeys::schoolPublicShowByUuid($uuid);
+        $school = Cache::remember(
+            $key,
+            CacheKeys::TTL_SCHOOL_PUBLIC_SHOW,
+            function () use ($uuid) {
+                return School::with([
+                    'profile',
+                    'translations',
+                    'curriculums',
+                    'features',
+                    'reviews',
+                    'images',
+                    'branches',
+                    'events',
+                ])
+                    ->where('status', ActiveStatus::Active)
+                    ->where('visibility', SchoolVisibility::Public)
+                    ->where('uuid', $uuid)
+                    ->firstOrFail();
+            }
+        );
 
         $this->recordSchoolProfileVisit->execute($school);
+        if ($school->profile) {
+            $school->profile->refresh();
+        }
 
         return $school;
     }
@@ -150,9 +192,13 @@ class SchoolService
      */
     public function getCurriculums()
     {
-        return Cache::remember('curriculums_list', 3600, function () {
-            return Curriculum::orderBy('name')->get();
-        });
+        return Cache::remember(
+            CacheKeys::curriculumList(),
+            CacheKeys::TTL_REFERENCE_LISTS,
+            function () {
+                return Curriculum::orderBy('name')->get();
+            }
+        );
     }
 
     /**
@@ -160,15 +206,19 @@ class SchoolService
      */
     public function getCities()
     {
-        return Cache::remember('cities_list', 3600, function () {
-            return School::where('status', ActiveStatus::Active)
-                ->where('visibility', SchoolVisibility::Public)
-                ->whereNotNull('city')
-                ->distinct()
-                ->pluck('city')
-                ->sort()
-                ->values();
-        });
+        return Cache::remember(
+            CacheKeys::schoolCitiesList(),
+            CacheKeys::TTL_REFERENCE_LISTS,
+            function () {
+                return School::where('status', ActiveStatus::Active)
+                    ->where('visibility', SchoolVisibility::Public)
+                    ->whereNotNull('city')
+                    ->distinct()
+                    ->pluck('city')
+                    ->sort()
+                    ->values();
+            }
+        );
     }
 
     /**

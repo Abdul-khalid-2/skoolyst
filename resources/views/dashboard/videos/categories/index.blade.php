@@ -83,8 +83,8 @@
                                         <span class="badge bg-primary">{{ $category->videos_count }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ $category->status == 'active' ? 'success' : 'secondary' }}">
-                                            {{ ucfirst($category->status) }}
+                                        <span class="badge bg-{{ $category->status === \App\Enums\ActiveStatus::Active ? 'success' : 'secondary' }}">
+                                            {{ ucfirst($category->status->value) }}
                                         </span>
                                     </td>
                                     <td>

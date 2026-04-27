@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
 use App\Models\School;
+use App\Support\CacheKeys;
 use App\Models\SchoolImage;
 use App\Models\SchoolProfile;
 use App\Models\User;
@@ -142,7 +143,7 @@ class AdminSchoolService
             SchoolTranslationService::syncFromRequest($school, $request->input('translations', []));
 
             DB::commit();
-            $this->clearSchoolListingCaches();
+            $this->clearSchoolListingCaches($school);
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -319,18 +320,20 @@ class AdminSchoolService
             SchoolTranslationService::syncFromRequest($school, $request->input('translations', []));
 
             DB::commit();
-            $this->clearSchoolListingCaches();
+            $this->clearSchoolListingCaches($school);
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
         }
     }
 
-    private function clearSchoolListingCaches(): void
+    private function clearSchoolListingCaches(School $school): void
     {
-        foreach (['en', 'ur'] as $loc) {
-            Cache::forget('homepage_data_' . $loc);
+        foreach (CacheKeys::homeLocales() as $loc) {
+            Cache::forget(CacheKeys::homePageData($loc));
         }
-        Cache::forget('cities_list');
+        Cache::forget(CacheKeys::schoolCitiesList());
+        CacheKeys::forgetDirectoryFirstPageCaches();
+        Cache::forget(CacheKeys::schoolPublicShowByUuid($school->uuid));
     }
 }

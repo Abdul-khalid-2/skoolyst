@@ -288,8 +288,8 @@
                                 <li class="mb-2">
                                     <i class="fas fa-globe text-primary me-2"></i>
                                     <span class="text-muted">Status:</span>
-                                    <span class="float-end badge bg-{{ $video->status == 'published' ? 'success' : 'secondary' }}">
-                                        {{ ucfirst($video->status) }}
+                                    <span class="float-end badge bg-{{ $video->status === \App\Enums\VideoPublishStatus::Published ? 'success' : 'secondary' }}">
+                                        {{ ucfirst($video->status->value) }}
                                     </span>
                                 </li>
                                 @if($video->meta_title)

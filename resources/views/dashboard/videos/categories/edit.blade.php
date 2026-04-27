@@ -87,8 +87,8 @@
                                                     id="status" 
                                                     name="status" 
                                                     required>
-                                                <option value="active" {{ old('status', $videoCategory->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                                <option value="inactive" {{ old('status', $videoCategory->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                <option value="active" {{ old('status', $videoCategory->status->value) == 'active' ? 'selected' : '' }}>Active</option>
+                                                <option value="inactive" {{ old('status', $videoCategory->status->value) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>

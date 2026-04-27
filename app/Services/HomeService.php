@@ -4,9 +4,10 @@ namespace App\Services;
 
 use App\Enums\ActiveStatus;
 use App\Enums\SchoolVisibility;
-use App\Models\School;
 use App\Models\Curriculum;
+use App\Models\School;
 use App\Models\Testimonial;
+use App\Support\CacheKeys;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
@@ -19,9 +20,9 @@ class HomeService
     public function getHomePage(): array
     {
         // Cache homepage data for 5 minutes to improve performance
-        $cacheKey = 'homepage_data_'.app()->getLocale();
+        $cacheKey = CacheKeys::homePageData(app()->getLocale());
 
-        return Cache::remember($cacheKey, 300, function () {
+        return Cache::remember($cacheKey, CacheKeys::TTL_HOME_PAGE, function () {
             return [
                 'schools' => $this->getFeaturedSchools(),
                 'curriculums' => $this->getCurriculums(),
@@ -255,9 +256,13 @@ class HomeService
      */
     public function getCurriculums()
     {
-        return Cache::remember('curriculums_list', 3600, function () {
-            return Curriculum::orderBy('name')->get();
-        });
+        return Cache::remember(
+            CacheKeys::curriculumList(),
+            CacheKeys::TTL_REFERENCE_LISTS,
+            function () {
+                return Curriculum::orderBy('name')->get();
+            }
+        );
     }
 
     /**
@@ -265,15 +270,19 @@ class HomeService
      */
     public function getCities()
     {
-        return Cache::remember('cities_list', 3600, function () {
-            return School::where('status', ActiveStatus::Active)
-                ->where('visibility', SchoolVisibility::Public)
-                ->whereNotNull('city')
-                ->distinct()
-                ->pluck('city')
-                ->sort()
-                ->values();
-        });
+        return Cache::remember(
+            CacheKeys::schoolCitiesList(),
+            CacheKeys::TTL_REFERENCE_LISTS,
+            function () {
+                return School::where('status', ActiveStatus::Active)
+                    ->where('visibility', SchoolVisibility::Public)
+                    ->whereNotNull('city')
+                    ->distinct()
+                    ->pluck('city')
+                    ->sort()
+                    ->values();
+            }
+        );
     }
 
     /**
@@ -289,12 +298,18 @@ class HomeService
      */
     public function getTestimonials(int $limit = 6)
     {
-        return Cache::remember('testimonials_list', 300, function () use ($limit) {
-            return Testimonial::approved()
-                ->orderBy('created_at', 'desc')
-                ->take($limit)
-                ->get();
-        });
+        $key = CacheKeys::testimonialApprovedList($limit);
+
+        return Cache::remember(
+            $key,
+            CacheKeys::TTL_TESTIMONIALS,
+            function () use ($limit) {
+                return Testimonial::approved()
+                    ->orderBy('created_at', 'desc')
+                    ->take($limit)
+                    ->get();
+            }
+        );
     }
 
     /**
