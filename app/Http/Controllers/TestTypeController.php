@@ -9,9 +9,42 @@ use Illuminate\Validation\Rule;
 
 class TestTypeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $testTypes = TestType::orderBy('sort_order')->paginate(20);
+        $query = TestType::withCount('subjects');
+
+        if ($request->filled('status')) {
+            $status = (string) $request->status;
+            if (in_array($status, ['active', 'inactive'], true)) {
+                $query->where('status', $status);
+            }
+        }
+
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['name', 'description', 'slug', 'uuid'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
+            });
+        }
+
+        $sortBy = $request->get('sort_by', 'sort_order');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $allowedSort = [
+            'id', 'name', 'slug', 'description', 'sort_order', 'status', 'created_at', 'subjects_count',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'sort_order';
+            $sortDir = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDir);
+
+        $testTypes = $query->paginate(10)->withQueryString();
+
         return view('dashboard.mcqs_system.test-types.index', compact('testTypes'));
     }
 
@@ -126,7 +159,7 @@ class TestTypeController extends Controller
                 if ($hasDependencies) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Cannot delete test types with associated subjects.'
+                        'message' => 'Cannot delete test types with associated subjects.',
                     ]);
                 }
 
@@ -149,7 +182,7 @@ class TestTypeController extends Controller
 
         foreach ($request->categories as $item) {
             TestType::where('id', $item['id'])->update([
-                'sort_order' => $item['sort_order']
+                'sort_order' => $item['sort_order'],
             ]);
         }
 

@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Topic;
 use App\Models\Subject;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class TopicController extends Controller
 {
@@ -15,31 +14,57 @@ class TopicController extends Controller
         $query = Topic::with(['subject'])
             ->withCount(['mcqs']);
 
-        // Filter by subject
         if ($request->filled('subject_id')) {
             $query->where('subject_id', $request->subject_id);
         }
 
-        // Filter by difficulty
         if ($request->filled('difficulty_level')) {
-            $query->where('difficulty_level', $request->difficulty_level);
+            $level = (string) $request->difficulty_level;
+            if (in_array($level, ['beginner', 'intermediate', 'advanced'], true)) {
+                $query->where('difficulty_level', $level);
+            }
         }
 
-        // Filter by status
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $status = (string) $request->status;
+            if (in_array($status, ['active', 'inactive'], true)) {
+                $query->where('status', $status);
+            }
         }
 
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['title', 'description', 'slug', 'uuid'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
             });
         }
 
-        $topics = $query->orderBy('sort_order')->paginate(20);
+        $sortBy = $request->get('sort_by', 'sort_order');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $allowedSort = [
+            'id', 'title', 'slug', 'subject_id', 'difficulty_level', 'estimated_time_minutes',
+            'mcqs_count', 'status', 'sort_order', 'created_at', 'subject',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'sort_order';
+            $sortDir = 'asc';
+        }
+
+        if ($sortBy === 'subject') {
+            $query->select('topics.*')
+                ->leftJoin('subjects', 'topics.subject_id', '=', 'subjects.id')
+                ->orderBy('subjects.name', $sortDir);
+        } elseif ($sortBy === 'mcqs_count') {
+            $query->orderBy('mcqs_count', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
+
+        $topics = $query->paginate(10)->withQueryString();
         $subjects = Subject::active()->get();
 
         return view('dashboard.mcqs_system.topics.index', compact('topics', 'subjects'));
@@ -73,7 +98,7 @@ class TopicController extends Controller
             ->count();
 
         if ($count > 0) {
-            $slug = $slug . '-' . ($count + 1);
+            $slug = $slug.'-'.($count + 1);
         }
 
         Topic::create([
@@ -105,6 +130,7 @@ class TopicController extends Controller
     public function edit(Topic $topic)
     {
         $subjects = Subject::active()->get();
+
         return view('dashboard.mcqs_system.topics.edit', compact('topic', 'subjects'));
     }
 
@@ -131,7 +157,7 @@ class TopicController extends Controller
                 ->count();
 
             if ($count > 0) {
-                $slug = $slug . '-' . ($count + 1);
+                $slug = $slug.'-'.($count + 1);
             }
         }
 
@@ -195,7 +221,7 @@ class TopicController extends Controller
                 if ($hasDependencies) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Cannot delete topics with associated MCQs.'
+                        'message' => 'Cannot delete topics with associated MCQs.',
                     ]);
                 }
 
@@ -218,7 +244,7 @@ class TopicController extends Controller
 
         foreach ($request->categories as $item) {
             Topic::where('id', $item['id'])->update([
-                'sort_order' => $item['sort_order']
+                'sort_order' => $item['sort_order'],
             ]);
         }
 

@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MockTest;
-use App\Models\TestType;
-use App\Models\Subject;
-use App\Models\Topic;
 use App\Models\Mcq;
+use App\Models\MockTest;
 use App\Models\MockTestQuestion;
+use App\Models\Subject;
+use App\Models\TestType;
+use App\Models\Topic;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -19,28 +19,57 @@ class MockTestController extends Controller
         $query = MockTest::with(['testType', 'createdBy'])
             ->withCount(['questions', 'attempts']);
 
-        // Filters
         if ($request->filled('test_type_id')) {
             $query->where('test_type_id', $request->test_type_id);
         }
 
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $status = (string) $request->status;
+            if (in_array($status, ['draft', 'published', 'archived'], true)) {
+                $query->where('status', $status);
+            }
         }
 
         if ($request->filled('is_free')) {
-            $query->where('is_free', $request->is_free);
+            $free = $request->input('is_free');
+            if ($free === '1' || $free === 1 || $free === true || $free === 'true') {
+                $query->where('is_free', true);
+            } elseif ($free === '0' || $free === 0 || $free === false || $free === 'false') {
+                $query->where('is_free', false);
+            }
         }
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['title', 'description', 'slug', 'uuid', 'instructions'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
             });
         }
 
-        $mockTests = $query->latest()->paginate(20);
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'id', 'title', 'slug', 'test_type_id', 'total_questions', 'total_marks', 'total_time_minutes',
+            'passing_marks', 'status', 'test_mode', 'is_free', 'created_at', 'questions_count', 'attempts_count', 'test_type',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+            $sortDir = 'desc';
+        }
+
+        if ($sortBy === 'test_type') {
+            $query->select('mock_tests.*')
+                ->leftJoin('test_types', 'mock_tests.test_type_id', '=', 'test_types.id')
+                ->orderBy('test_types.name', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
+
+        $mockTests = $query->paginate(10)->withQueryString();
         $testTypes = TestType::active()->get();
 
         return view('dashboard.mcqs_system.mock-tests.index', compact('mockTests', 'testTypes'));
@@ -113,7 +142,7 @@ class MockTestController extends Controller
             'questions' => function ($q) {
                 $q->with('mcq.subject', 'mcq.topic')
                     ->orderBy('question_number');
-            }
+            },
         ]);
 
         return view('dashboard.mcqs_system.mock-tests.show', compact('mockTest'));
@@ -235,7 +264,7 @@ class MockTestController extends Controller
         if ($mockTest->questions()->where('mcq_id', $request->mcq_id)->exists()) {
             return response()->json([
                 'success' => false,
-                'message' => 'This question is already in the test.'
+                'message' => 'This question is already in the test.',
             ]);
         }
 
@@ -259,7 +288,7 @@ class MockTestController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Question added to test successfully.'
+            'message' => 'Question added to test successfully.',
         ]);
     }
 
@@ -334,7 +363,7 @@ class MockTestController extends Controller
         if (empty($newMcqIds)) {
             return response()->json([
                 'success' => false,
-                'message' => 'No new questions to add.'
+                'message' => 'No new questions to add.',
             ]);
         }
 
@@ -358,7 +387,7 @@ class MockTestController extends Controller
 
         return response()->json(array_merge([
             'success' => true,
-            'message' => count($newMcqIds) . ' questions added successfully.',
+            'message' => count($newMcqIds).' questions added successfully.',
         ], $this->addQuestionsStatePayload($mockTest)));
     }
 
@@ -434,8 +463,8 @@ class MockTestController extends Controller
             'pagination' => [
                 'current_page' => $mcqs->currentPage(),
                 'last_page' => $mcqs->lastPage(),
-                'total' => $mcqs->total()
-            ]
+                'total' => $mcqs->total(),
+            ],
         ]);
     }
 
@@ -474,7 +503,7 @@ class MockTestController extends Controller
                 if ($hasDependencies) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Cannot delete mock tests that have user attempts.'
+                        'message' => 'Cannot delete mock tests that have user attempts.',
                     ]);
                 }
 
@@ -498,7 +527,7 @@ class MockTestController extends Controller
             $decoded = json_decode($raw, true);
             $raw = is_array($decoded) ? $decoded : [];
         }
-        if (!is_array($raw) || $raw === []) {
+        if (! is_array($raw) || $raw === []) {
             return [];
         }
         if (array_is_list($raw)) {
@@ -532,7 +561,7 @@ class MockTestController extends Controller
         sort($intKeys);
         $out = [];
         foreach ($intKeys as $k) {
-            if (!array_key_exists($k, $raw) && !array_key_exists((string) $k, $raw)) {
+            if (! array_key_exists($k, $raw) && ! array_key_exists((string) $k, $raw)) {
                 continue;
             }
             $val = $raw[$k] ?? $raw[(string) $k];
@@ -561,7 +590,7 @@ class MockTestController extends Controller
             $decoded = json_decode($raw, true);
             $raw = is_array($decoded) ? $decoded : [];
         }
-        if (!is_array($raw)) {
+        if (! is_array($raw)) {
             return [];
         }
         $out = [];
@@ -611,7 +640,7 @@ class MockTestController extends Controller
     public function preview(MockTest $mockTest)
     {
         // Check if test is published or user has access
-        if ($mockTest->status !== 'published' && !auth()->user()->is_admin) {
+        if ($mockTest->status !== 'published' && ! auth()->user()->is_admin) {
             abort(403, 'This test is not available for preview.');
         }
 
@@ -620,7 +649,7 @@ class MockTestController extends Controller
             'questions' => function ($q) {
                 $q->with('mcq')
                     ->orderBy('question_number');
-            }
+            },
         ]);
 
         return view('dashboard.mcqs_system.mock-tests.preview', compact('mockTest'));

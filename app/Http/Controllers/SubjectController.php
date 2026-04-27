@@ -12,31 +12,46 @@ class SubjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Subject::with(['testTypes']) // Changed from testType to testTypes
+        $query = Subject::with(['testTypes'])
             ->withCount(['topics', 'mcqs']);
 
-        // Filter by test type
         if ($request->filled('test_type_id')) {
             $query->whereHas('testTypes', function ($q) use ($request) {
                 $q->where('test_type_id', $request->test_type_id);
             });
         }
 
-        // Filter by status
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            $status = (string) $request->status;
+            if (in_array($status, ['active', 'inactive'], true)) {
+                $query->where('status', $status);
+            }
         }
 
-        // Search
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['name', 'description', 'slug', 'uuid'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
             });
         }
 
-        $subjects = $query->orderBy('sort_order')->paginate(20);
+        $sortBy = $request->get('sort_by', 'sort_order');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+        $allowedSort = [
+            'id', 'name', 'slug', 'status', 'sort_order', 'created_at', 'topics_count', 'mcqs_count',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'sort_order';
+            $sortDir = 'asc';
+        }
+
+        $query->orderBy($sortBy, $sortDir);
+
+        $subjects = $query->paginate(10)->withQueryString();
         $testTypes = TestType::active()->get();
 
         return view('dashboard.mcqs_system.subjects.index', compact('subjects', 'testTypes'));
@@ -45,6 +60,7 @@ class SubjectController extends Controller
     public function create()
     {
         $testTypes = TestType::active()->get();
+
         return view('dashboard.mcqs_system.subjects.create', compact('testTypes'));
     }
 
@@ -99,6 +115,7 @@ class SubjectController extends Controller
     {
         $testTypes = TestType::active()->get();
         $subject->load('testTypes');
+
         return view('dashboard.mcqs_system.subjects.edit', compact('subject', 'testTypes'));
     }
 
@@ -193,7 +210,7 @@ class SubjectController extends Controller
                 if ($hasDependencies) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Cannot delete subjects with associated topics or MCQs.'
+                        'message' => 'Cannot delete subjects with associated topics or MCQs.',
                     ]);
                 }
 
@@ -216,7 +233,7 @@ class SubjectController extends Controller
 
         foreach ($request->categories as $item) {
             Subject::where('id', $item['id'])->update([
-                'sort_order' => $item['sort_order']
+                'sort_order' => $item['sort_order'],
             ]);
         }
 

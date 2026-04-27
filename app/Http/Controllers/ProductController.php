@@ -3,14 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\Shop;
-use App\Models\School;
 use App\Models\ProductCategory;
+use App\Models\School;
+use App\Models\Shop;
 use App\Models\ShopSchoolAssociation;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,46 +24,79 @@ class ProductController extends Controller
     {
         $query = Product::with(['shop', 'category', 'school', 'association', 'attributes']);
 
+        $shopIds = collect();
         if (Auth::user()->hasRole('shop-owner')) {
-            // Get shops owned by the user
             $shopIds = Shop::where('user_id', Auth::id())->pluck('id');
             if ($shopIds->isNotEmpty()) {
                 $query->whereIn('shop_id', $shopIds);
             } else {
-                // If user has no shops, return empty results
                 $query->where('shop_id', 0);
             }
         } elseif (Auth::user()->hasRole('school-admin')) {
-            // Get the school ID from user's school_id
             $schoolId = Auth::user()->school_id;
             if ($schoolId) {
                 $query->where('school_id', $schoolId);
             } else {
-                // If user has no school, return empty results
                 $query->where('school_id', 0);
             }
         }
 
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%")
-                    ->orWhere('sku', 'LIKE', "%{$search}%");
-            });
+        if ($request->filled('shop_id')) {
+            $shopId = (int) $request->shop_id;
+            if ($shopId > 0) {
+                if (Auth::user()->hasRole('shop-owner')) {
+                    if ($shopIds->contains($shopId)) {
+                        $query->where('shop_id', $shopId);
+                    }
+                } else {
+                    $query->where('shop_id', $shopId);
+                }
+            }
         }
 
-        if ($request->has('shop_id')) {
-            $query->where('shop_id', $request->shop_id);
-        }
-
-        if ($request->has('category_id')) {
+        if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);
         }
 
-        $products = $query->latest()->paginate(20);
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $searchableColumns = ['name', 'description', 'sku', 'slug', 'uuid', 'short_description', 'brand'];
+            $query->where(function ($q) use ($search, $searchableColumns) {
+                $q->where($searchableColumns[0], 'like', '%'.$search.'%');
+                foreach (array_slice($searchableColumns, 1) as $column) {
+                    $q->orWhere($column, 'like', '%'.$search.'%');
+                }
+            });
+        }
 
-        return view('dashboard.products.index', compact('products'));
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = [
+            'id', 'name', 'sku', 'shop_id', 'category_id', 'base_price', 'sale_price', 'stock_quantity',
+            'is_active', 'is_approved', 'created_at', 'shop', 'category',
+        ];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'created_at';
+            $sortDir = 'desc';
+        }
+
+        if ($sortBy === 'shop') {
+            $query->select('products.*')
+                ->leftJoin('shops', 'products.shop_id', '=', 'shops.id')
+                ->orderBy('shops.name', $sortDir);
+        } elseif ($sortBy === 'category') {
+            $query->select('products.*')
+                ->leftJoin('product_categories', 'products.category_id', '=', 'product_categories.id')
+                ->orderBy('product_categories.name', $sortDir);
+        } else {
+            $query->orderBy($sortBy, $sortDir);
+        }
+
+        $products = $query->paginate(10)->withQueryString();
+        $shops = Shop::where('user_id', Auth::id())->get();
+        $categories = ProductCategory::where('is_active', true)->get();
+
+        return view('dashboard.products.index', compact('products', 'shops', 'categories'));
     }
 
     public function create()
@@ -113,7 +145,7 @@ class ProductController extends Controller
         // Check if user owns the shop they're trying to add product to
         if (Auth::user()->hasRole('shop-owner')) {
             $userShopIds = Shop::where('user_id', Auth::id())->pluck('id');
-            if (!$userShopIds->contains($validated['shop_id'])) {
+            if (! $userShopIds->contains($validated['shop_id'])) {
                 return back()->with('error', 'You can only add products to your own shops.');
             }
         }
@@ -133,7 +165,7 @@ class ProductController extends Controller
                 ->where('is_active', true)
                 ->first();
 
-            if (!$association) {
+            if (! $association) {
                 return back()->with('error', 'Invalid school association.');
             }
         }
@@ -185,7 +217,8 @@ class ProductController extends Controller
             return redirect()->route('products.show', $product)->with('success', 'Product created successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to create product: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to create product: '.$e->getMessage());
         }
     }
 
@@ -195,6 +228,7 @@ class ProductController extends Controller
         $this->authorizeProductAccess($product);
 
         $product->load(['shop', 'category', 'school', 'association', 'attributes']);
+
         return view('dashboard.products.show', compact('product'));
     }
 
@@ -205,6 +239,7 @@ class ProductController extends Controller
 
         $shops = Shop::where('user_id', Auth::id())->get();
         $categories = ProductCategory::where('is_active', true)->get();
+
         return view('dashboard.products.edit', compact('product', 'shops', 'categories'));
     }
 
@@ -372,7 +407,8 @@ class ProductController extends Controller
             return redirect()->route('products.show', $product)->with('success', 'Product updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update product: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to update product: '.$e->getMessage());
         }
     }
 
@@ -415,7 +451,8 @@ class ProductController extends Controller
             return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to delete product: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to delete product: '.$e->getMessage());
         }
     }
 
@@ -449,7 +486,7 @@ class ProductController extends Controller
 
             $product->update([
                 'stock_quantity' => $newStock,
-                'is_in_stock' => $newStock > 0
+                'is_in_stock' => $newStock > 0,
             ]);
 
             DB::commit();
@@ -457,7 +494,8 @@ class ProductController extends Controller
             return back()->with('success', 'Stock updated successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', 'Failed to update stock: ' . $e->getMessage());
+
+            return back()->with('error', 'Failed to update stock: '.$e->getMessage());
         }
     }
 
@@ -468,7 +506,7 @@ class ProductController extends Controller
     {
         if (Auth::user()->hasRole('shop-owner')) {
             $userShopIds = Shop::where('user_id', Auth::id())->pluck('id');
-            if (!$userShopIds->contains($product->shop_id)) {
+            if (! $userShopIds->contains($product->shop_id)) {
                 abort(403, 'Unauthorized action.');
             }
         } elseif (Auth::user()->hasRole('school-admin')) {
@@ -486,11 +524,12 @@ class ProductController extends Controller
         $count = Product::where('shop_id', $shopId)
             ->where('slug', 'LIKE', "{$slug}%")
             ->count();
+
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
     private function generateSKU()
     {
-        return 'SKU-' . strtoupper(uniqid());
+        return 'SKU-'.strtoupper(uniqid());
     }
 }
