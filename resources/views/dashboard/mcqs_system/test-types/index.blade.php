@@ -1,49 +1,37 @@
 <x-app-layout>
     <main class="main-content">
         <div class="container-fluid px-0 px-md-3">
-            <!-- Page Header -->
-            <div class="page-header mb-4 px-3 px-md-0">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center">
-                    <div class="mb-3 mb-md-0">
-                        <h1 class="h3 mb-1 mb-md-2">Test Types</h1>
-                        <p class="text-muted mb-0 d-none d-md-block">Manage different types of tests (Entry Test, Job Test, University Test, etc.)</p>
-                        <p class="text-muted mb-0 d-block d-md-none">Manage test types</p>
-                    </div>
-                    <div class="w-100 w-md-auto">
-                        <a href="{{ route('test-types.create') }}" class="btn btn-primary w-100 w-md-auto d-flex align-items-center justify-content-center">
-                            <i class="fas fa-plus me-2"></i> 
-                            <span class="d-none d-sm-inline">Add Test Type</span>
-                            <span class="d-inline d-sm-none">Add</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
+            <x-page-header>
+                <x-slot name="heading">
+                    <h1 class="h3 mb-1 mb-md-2">Test Types</h1>
+                    <p class="text-muted mb-0 d-none d-md-block">Manage different types of tests (Entry Test, Job Test, University Test, etc.)</p>
+                    <p class="text-muted mb-0 d-block d-md-none">Manage test types</p>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button
+                        href="{{ route('test-types.create') }}"
+                        variant="primary"
+                        class="w-100 w-md-auto d-flex align-items-center justify-content-center"
+                    >
+                        <i class="fas fa-plus me-2"></i>
+                        <span class="d-none d-sm-inline">Add Test Type</span>
+                        <span class="d-inline d-sm-none">Add</span>
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-            <!-- Success/Error Messages -->
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-check-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('success') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show mx-3 mx-md-0 mb-4" role="alert">
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-exclamation-circle me-2"></i>
-                        <div class="flex-grow-1">{{ session('error') }}</div>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="error">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Stats Cards - Mobile Optimized -->
             <div class="row mb-4 g-3 px-3 px-md-0">
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -56,11 +44,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -74,11 +62,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -91,11 +79,11 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
                 
                 <div class="col-6 col-md-3">
-                    <div class="card card-hover h-100">
+                    <x-card class="card-hover h-100">
                         <div class="card-body p-3">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -108,12 +96,12 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </x-card>
                 </div>
             </div>
 
             <!-- Bulk Actions - Responsive -->
-            <div class="card mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 mx-3 mx-md-0 d-none" id="bulkActionsCard">
                 <div class="card-body p-3">
                     <div class="d-flex flex-column flex-md-row align-items-center gap-3">
                         <span class="me-md-3 mb-2 mb-md-0 text-center text-md-start" id="selectedCount">0 types selected</span>
@@ -125,22 +113,22 @@
                                 <option value="delete">Delete</option>
                             </select>
                             <div class="d-flex gap-2 mt-2 mt-md-0">
-                                <button class="btn btn-sm btn-primary flex-grow-1" id="applyBulkAction">
+                                <x-button variant="primary" type="button" class="btn-sm flex-grow-1" id="applyBulkAction">
                                     <span class="d-none d-md-inline">Apply</span>
                                     <i class="fas fa-check d-inline d-md-none"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-secondary" id="clearSelection">
+                                </x-button>
+                                <x-button variant="outline-secondary" type="button" class="btn-sm" id="clearSelection">
                                     <span class="d-none d-md-inline">Clear</span>
                                     <i class="fas fa-times d-inline d-md-none"></i>
-                                </button>
+                                </x-button>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Test Types Table - Responsive -->
-            <div class="card mx-3 mx-md-0">
+            <x-card class="mx-3 mx-md-0">
                 <div class="card-body p-0">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover mb-0" id="testTypesTable">
@@ -242,7 +230,7 @@
                                 </tr>
                                 
                                 <!-- Mobile View Card -->
-                                <div class="card mb-3 d-block d-md-none mx-3">
+                                <x-card class="mb-3 d-block d-md-none mx-3">
                                     <div class="card-body">
                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                             <div class="d-flex align-items-center">
@@ -321,20 +309,27 @@
                                             @endif
                                         </div>
                                     </div>
-                                </div>
+                                </x-card>
                                 @endforeach
                             </tbody>
                         </table>
                         
                         @if($testTypes->count() == 0)
-                        <div class="text-center py-5">
-                            <i class="fas fa-list fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">No test types found</h5>
-                            <p class="text-muted">Create your first test type to get started</p>
-                            <a href="{{ route('test-types.create') }}" class="btn btn-primary mt-2">
-                                <i class="fas fa-plus me-2"></i> Add Test Type
-                            </a>
-                        </div>
+                        <x-empty-state
+                            title="No test types found"
+                            description="Create your first test type to get started"
+                            icon="fa-list"
+                        >
+                            <x-slot name="actions">
+                                <x-button
+                                    href="{{ route('test-types.create') }}"
+                                    variant="primary"
+                                    class="mt-2"
+                                >
+                                    <i class="fas fa-plus me-2"></i> Add Test Type
+                                </x-button>
+                            </x-slot>
+                        </x-empty-state>
                         @endif
                     </div>
                     
@@ -350,7 +345,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </div>
     </main>
 

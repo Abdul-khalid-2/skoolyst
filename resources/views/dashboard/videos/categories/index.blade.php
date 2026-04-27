@@ -1,32 +1,33 @@
 <x-app-layout>
     <main class="main-content">
         <section id="video-categories" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Video Categories</h2>
                     <p class="mb-0 text-muted">Manage video categories and organization</p>
-                </div>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCategoryModal">
-                    <i class="fas fa-plus me-2"></i> Add Category
-                </button>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button
+                        type="button"
+                        variant="primary"
+                        data-bs-toggle="modal"
+                        data-bs-target="#addCategoryModal"
+                    >
+                        <i class="fas fa-plus me-2"></i> Add Category
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="success" class="mb-3">{{ session('success') }}</x-alert>
             @endif
 
             @if(session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
+                <x-alert variant="error" class="mb-3">{{ session('error') }}</x-alert>
             @endif
 
             <!-- Bulk Actions -->
-            <div class="card mb-3 d-none" id="bulkActionsCard">
+            <x-card class="mb-3 d-none" id="bulkActionsCard">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
                         <span class="me-3" id="selectedCount">0 categories selected</span>
@@ -36,14 +37,14 @@
                             <option value="deactivate">Deactivate</option>
                             <option value="delete">Delete</option>
                         </select>
-                        <button class="btn btn-sm btn-primary" id="applyBulkAction">Apply</button>
-                        <button class="btn btn-sm btn-outline-secondary ms-2" id="clearSelection">Clear</button>
+                        <x-button variant="primary" type="button" class="btn-sm" id="applyBulkAction">Apply</x-button>
+                        <x-button variant="outline-secondary" type="button" class="btn-sm ms-2" id="clearSelection">Clear</x-button>
                     </div>
                 </div>
-            </div>
+            </x-card>
 
             <!-- Categories Table -->
-            <div class="card">
+            <x-card>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped table-hover" id="categoriesTable">
@@ -136,7 +137,7 @@
                     </div>
                     @endif
                 </div>
-            </div>
+            </x-card>
         </section>
     </main>
 
