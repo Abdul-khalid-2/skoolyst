@@ -8,6 +8,11 @@
 @endpush
 
 @section('content')
+<div id="video-watch-config"
+    data-endpoint="{{ route('website.videos.watch-time', $video) }}"
+    data-csrf="{{ csrf_token() }}"
+    hidden></div>
+
 <!-- Video Detail Section -->
 <section class="py-5">
     <div class="container">
@@ -86,6 +91,12 @@
                                 <small class="text-muted d-block mb-1">
                                     <i class="far fa-clock me-1"></i> 
                                     Published: {{ $video->created_at->format('F j, Y') }}
+                                </small>
+                                <small class="text-muted d-block mb-1 {{ (float) ($video->total_tracked_watch_minutes ?? 0) > 0.0001 ? '' : 'd-none' }}"
+                                    data-video-watch-time-wrapper>
+                                    <i class="fas fa-hourglass-half me-1" aria-hidden="true"></i>
+                                    Total watch time:
+                                    <span data-video-watch-time-display>{{ $video->formatted_tracked_watch_time }}</span>
                                 </small>
                             </div>
                         </div>
@@ -597,6 +608,7 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('assets/js/video-watch-tracker.js') }}?v={{ filemtime(public_path('assets/js/video-watch-tracker.js')) }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Like functionality

@@ -75,21 +75,28 @@
                 </div>
 
                 <div class="row mt-3 text-center">
-                    <div class="col-4">
+                    <div class="col-3">
                         <small class="text-muted d-block">
                             <i class="fas fa-eye"></i>
                             {{ number_format($video->views) }}
                         </small>
                         <small class="text-muted">views</small>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
+                        <small class="text-muted d-block">
+                            <i class="fas fa-hourglass-half"></i>
+                            {{ $video->formatted_tracked_watch_time ?: '0.00 min' }}
+                        </small>
+                        <small class="text-muted">watch</small>
+                    </div>
+                    <div class="col-3">
                         <small class="text-muted d-block">
                             <i class="fas fa-heart"></i>
                             {{ number_format($video->likes_count) }}
                         </small>
                         <small class="text-muted">likes</small>
                     </div>
-                    <div class="col-4">
+                    <div class="col-3">
                         <small class="text-muted d-block">
                             <i class="fas fa-comment"></i>
                             {{ number_format($video->comments_count) }}

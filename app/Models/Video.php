@@ -26,6 +26,7 @@ class Video extends Model
         'thumbnail',
         'video_id',
         'views',
+        'total_tracked_watch_minutes',
         'likes_count',
         'comments_count',
         'is_featured',
@@ -42,6 +43,7 @@ class Video extends Model
         'is_approved' => 'boolean',
         'published_at' => 'datetime',
         'views' => 'integer',
+        'total_tracked_watch_minutes' => 'decimal:5',
         'likes_count' => 'integer',
         'comments_count' => 'integer',
         'status' => VideoPublishStatus::class,
@@ -150,5 +152,23 @@ class Video extends Model
     public function scopeByCategory($query, $categoryId)
     {
         return $query->where('category_id', $categoryId);
+    }
+
+    public function getFormattedTrackedWatchTimeAttribute(): string
+    {
+        $minutes = (float) ($this->total_tracked_watch_minutes ?? 0);
+
+        if ($minutes < 0.0001) {
+            return '';
+        }
+
+        if ($minutes >= 60) {
+            $hours = (int) floor($minutes / 60);
+            $remainingMinutes = fmod($minutes, 60.0);
+
+            return $hours.'h '.number_format(round($remainingMinutes, 2), 2, '.', '').' min';
+        }
+
+        return number_format(round($minutes, 2), 2, '.', '').' min';
     }
 }

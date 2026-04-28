@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Website;
 
+use App\Enums\VideoPublishStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Video;
 use App\Models\VideoCategory;
 use App\Models\School;
 use App\Models\Shop;
 use App\Models\VideoComment;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -148,6 +150,30 @@ class VideoWebsiteController extends Controller
             'popularVideos',
             'featuredVideos'
         ));
+    }
+
+    public function trackWatchTime(Request $request, Video $video): JsonResponse
+    {
+        if (! $video->is_approved || $video->status !== VideoPublishStatus::Published) {
+            abort(404);
+        }
+
+        $data = $request->validate([
+            'seconds' => 'required|integer|min:1|max:120',
+        ]);
+
+        $video->increment('total_tracked_watch_minutes', $data['seconds'] / 60.0);
+
+        $freshVideo = $video->fresh();
+        $minutes = round((float) $freshVideo->total_tracked_watch_minutes, 4);
+        $freshVideo->total_tracked_watch_minutes = $minutes;
+        $freshVideo->saveQuietly();
+
+        return response()->json([
+            'ok' => true,
+            'total_tracked_watch_minutes' => $minutes,
+            'formatted_tracked_watch_time' => $freshVideo->formatted_tracked_watch_time,
+        ]);
     }
 
     public function category(Request $request, string $slug)

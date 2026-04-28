@@ -454,6 +454,9 @@ Route::group([
     Route::get('videos/', [VideoWebsiteController::class, 'index'])->name('website.videos.index');
     Route::get('videos/category/{slug}', [VideoWebsiteController::class, 'category'])->name('website.videos.category');
     Route::get('videos/{slug}', [VideoWebsiteController::class, 'show'])->name('website.videos.show');
+    Route::post('videos/{video}/watch-time', [VideoWebsiteController::class, 'trackWatchTime'])
+        ->middleware('throttle:120,1')
+        ->name('website.videos.watch-time');
 
     // Comments
     Route::post('videos/{video}/comments', [VideoWebsiteController::class, 'storeComment'])->name('website.videos.comments.store');
