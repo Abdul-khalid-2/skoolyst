@@ -10,6 +10,31 @@ use Illuminate\Http\Request;
 
 class WebsiteBlogPostController extends Controller
 {
+    private function sidebarCategories()
+    {
+        return BlogCategory::where('is_active', true)
+            ->whereHas('blogPosts', function ($query) {
+                $query->published();
+            })
+            ->withCount(['blogPosts as posts_count' => function ($query) {
+                $query->published();
+            }])
+            ->orderBy('name')
+            ->get();
+    }
+
+    private function popularTags()
+    {
+        return BlogPost::published()
+            ->whereNotNull('tags')
+            ->pluck('tags')
+            ->flatten()
+            ->filter(fn ($tag) => is_string($tag) && trim($tag) !== '')
+            ->unique()
+            ->take(15)
+            ->values();
+    }
+
     /**
      * Display a listing of the blog posts.
      */
@@ -46,11 +71,8 @@ class WebsiteBlogPostController extends Controller
 
         $posts = $query->paginate(12);
 
-        // Get categories with post counts
-        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
-            $query->where('status', 'published')
-                ->where('published_at', '<=', now());
-        }])->get();
+        // Get only active categories that have published posts.
+        $categories = $this->sidebarCategories();
 
         // Get popular posts
         $popularPosts = BlogPost::with(['user', 'category'])
@@ -60,13 +82,7 @@ class WebsiteBlogPostController extends Controller
             ->limit(5)
             ->get();
 
-        // Get tags (you might need to adjust this based on your tags implementation)
-        $tags = BlogPost::where('status', 'published')
-            ->whereNotNull('tags')
-            ->pluck('tags')
-            ->flatten()
-            ->unique()
-            ->take(15);
+        $tags = $this->popularTags();
 
         return view('website.blog.index', array_merge(
             compact('posts', 'categories', 'popularPosts', 'tags'),
@@ -115,19 +131,9 @@ class WebsiteBlogPostController extends Controller
             ->limit(5)
             ->get();
 
-        // Get categories
-        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
-            $query->where('status', 'published')
-                ->where('published_at', '<=', now());
-        }])->get();
+        $categories = $this->sidebarCategories();
 
-        // Get tags
-        $tags = BlogPost::where('status', 'published')
-            ->whereNotNull('tags')
-            ->pluck('tags')
-            ->flatten()
-            ->unique()
-            ->take(15);
+        $tags = $this->popularTags();
 
         return view('website.blog.show', compact('post', 'relatedPosts', 'popularPosts', 'categories', 'tags'));
     }
@@ -164,7 +170,12 @@ class WebsiteBlogPostController extends Controller
      */
     public function category($slug)
     {
-        $category = BlogCategory::where('slug', $slug)->firstOrFail();
+        $category = BlogCategory::where('slug', $slug)
+            ->where('is_active', true)
+            ->whereHas('blogPosts', function ($query) {
+                $query->published();
+            })
+            ->firstOrFail();
 
         $posts = BlogPost::with(['user', 'category'])
             ->where('blog_category_id', $category->id)
@@ -173,11 +184,7 @@ class WebsiteBlogPostController extends Controller
             ->orderBy('published_at', 'desc')
             ->paginate(12);
 
-        // Get categories with post counts
-        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
-            $query->where('status', 'published')
-                ->where('published_at', '<=', now());
-        }])->get();
+        $categories = $this->sidebarCategories();
 
         // Get popular posts
         $popularPosts = BlogPost::with(['user', 'category'])
@@ -187,13 +194,7 @@ class WebsiteBlogPostController extends Controller
             ->limit(5)
             ->get();
 
-        // Get tags
-        $tags = BlogPost::where('status', 'published')
-            ->whereNotNull('tags')
-            ->pluck('tags')
-            ->flatten()
-            ->unique()
-            ->take(15);
+        $tags = $this->popularTags();
 
         return view('website.blog.category', compact('category', 'posts', 'categories', 'popularPosts', 'tags'));
     }
@@ -210,11 +211,7 @@ class WebsiteBlogPostController extends Controller
             ->orderBy('published_at', 'desc')
             ->paginate(12);
 
-        // Get categories with post counts
-        $categories = BlogCategory::withCount(['blogPosts' => function ($query) {
-            $query->where('status', 'published')
-                ->where('published_at', '<=', now());
-        }])->get();
+        $categories = $this->sidebarCategories();
 
         // Get popular posts
         $popularPosts = BlogPost::with(['user', 'category'])
@@ -224,13 +221,7 @@ class WebsiteBlogPostController extends Controller
             ->limit(5)
             ->get();
 
-        // Get tags
-        $tags = BlogPost::where('status', 'published')
-            ->whereNotNull('tags')
-            ->pluck('tags')
-            ->flatten()
-            ->unique()
-            ->take(15);
+        $tags = $this->popularTags();
 
         return view('website.blog.tag', compact('tag', 'posts', 'categories', 'popularPosts', 'tags'));
     }
