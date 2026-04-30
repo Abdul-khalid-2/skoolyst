@@ -61,7 +61,15 @@ class VideoWebsiteController extends Controller
 
         // Get data
         $videos = $query->paginate(12);
-        $categories = VideoCategory::where('status', 'active')->orderBy('name')->get();
+        $categories = VideoCategory::where('status', 'active')
+            ->whereHas('videos', function ($query) {
+                $query->published()->approved();
+            })
+            ->withCount(['videos as published_videos_count' => function ($query) {
+                $query->published()->approved();
+            }])
+            ->orderBy('name')
+            ->get();
         // Cap filter lists (sidebar) — not full table scans; main listing is $videos (paginated)
         $schools = School::where('status', 'active')
             ->with('translations')

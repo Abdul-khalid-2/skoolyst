@@ -11,7 +11,7 @@
             <a href="{{ route('website.videos.category', $category->slug) }}"
             class="videos-category-item">
                 <span>{{ $category->name }}</span>
-                <span class="videos-category-count">{{ $category->videos->count() ?? 0 }}</span>
+                <span class="videos-category-count">{{ $category->published_videos_count ?? 0 }}</span>
             </a>
             @endforeach
         </div>
