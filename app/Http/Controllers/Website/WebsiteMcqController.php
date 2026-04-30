@@ -31,9 +31,20 @@ class WebsiteMcqController extends Controller
     {
         $stats = [
             'totalMcqs' => Mcq::where('status', 'published')->count(),
-            'subjectsCount' => Subject::where('status', 'active')->count(),
+            'subjectsCount' => Subject::where('status', 'active')
+                ->whereHas('topics', function ($query) {
+                    $query->where('status', 'active')
+                        ->whereHas('mcqs', function ($mcqQuery) {
+                            $mcqQuery->where('status', 'published');
+                        });
+                })
+                ->count(),
             'testTypesCount' => TestType::where('status', 'active')->count(),
-            'topicsCount' => Topic::where('status', 'active')->count(),
+            'topicsCount' => Topic::where('status', 'active')
+                ->whereHas('mcqs', function ($query) {
+                    $query->where('status', 'published');
+                })
+                ->count(),
         ];
 
         $testTypes = TestType::withCount(['subjects', 'mcqs'])
@@ -41,10 +52,26 @@ class WebsiteMcqController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Get all active subjects with their test types and counts
+        // Get only active subjects that have active topics with published MCQs.
         $subjects = Subject::with(['testTypes'])
-            ->withCount(['mcqs', 'topics'])
+            ->withCount([
+                'mcqs' => function ($query) {
+                    $query->where('status', 'published');
+                },
+                'topics' => function ($query) {
+                    $query->where('status', 'active')
+                        ->whereHas('mcqs', function ($mcqQuery) {
+                            $mcqQuery->where('status', 'published');
+                        });
+                },
+            ])
             ->where('status', 'active')
+            ->whereHas('topics', function ($query) {
+                $query->where('status', 'active')
+                    ->whereHas('mcqs', function ($mcqQuery) {
+                        $mcqQuery->where('status', 'published');
+                    });
+            })
             ->orderBy('sort_order')
             ->get();
 
@@ -115,6 +142,15 @@ class WebsiteMcqController extends Controller
         // Get subjects associated with this test type through pivot
         $subjects = $testType->subjects()
             ->where('status', 'active')
+            ->whereHas('topics', function ($query) use ($testType) {
+                $query->where('status', 'active')
+                    ->whereHas('mcqs', function ($mcqQuery) use ($testType) {
+                        $mcqQuery->where('status', 'published')
+                            ->whereHas('testTypes', function ($testTypeQuery) use ($testType) {
+                                $testTypeQuery->where('test_types.id', $testType->id);
+                            });
+                    });
+            })
             ->withCount(['mcqs' => function($query) use ($testType) {
                 $query->whereHas('testTypes', function($q) use ($testType) {
                     $q->where('test_types.id', $testType->id);
@@ -152,21 +188,32 @@ class WebsiteMcqController extends Controller
     // Subject page - Shows test types and topics
     public function subject(Subject $subject, Request $request)
     {
+        $subject->loadCount([
+            'mcqs' => function ($query) {
+                $query->where('status', 'published');
+            },
+        ]);
+
         // Get test types associated with this subject
         $testTypes = $subject->testTypes()
             ->where('status', 'active')
             ->withCount(['mcqs' => function($query) use ($subject) {
-                $query->where('subject_id', $subject->id);
+                $query->where('subject_id', $subject->id)
+                    ->where('status', 'published');
             }])
+            ->having('mcqs_count', '>', 0)
             ->orderByPivot('sort_order')
             ->get();
 
-        // Get topics for this subject
+        // Get only active topics for this subject that have published MCQs.
         $topics = Topic::where('subject_id', $subject->id)
             ->where('status', 'active')
             ->withCount(['mcqs' => function($query) {
                 $query->where('status', 'published');
             }])
+            ->whereHas('mcqs', function ($query) {
+                $query->where('status', 'published');
+            })
             ->orderBy('sort_order')
             ->get();
 
@@ -259,6 +306,7 @@ class WebsiteMcqController extends Controller
                     })
                     ->where('status', 'published');
             }])
+            ->having('mcqs_count', '>', 0)
             ->orderBy('sort_order')
             ->get();
 
@@ -277,11 +325,15 @@ class WebsiteMcqController extends Controller
         ));
     }
     // Topic page - Shows all MCQs for that topic
-    public function topic(Subject $subject, Topic $topic, Request $request)
+    public function topic(Subject $subject, string $topic, Request $request)
     {
-        if ($topic->subject_id !== $subject->id) {
-            abort(404);
-        }
+        $topic = Topic::where('subject_id', $subject->id)
+            ->where('slug', $topic)
+            ->where('status', 'active')
+            ->whereHas('mcqs', function ($query) {
+                $query->where('status', 'published');
+            })
+            ->firstOrFail();
 
         // Get MCQs for this topic (from any test type)
         $mcqs = Mcq::where('topic_id', $topic->id)
@@ -296,7 +348,12 @@ class WebsiteMcqController extends Controller
         $relatedTopics = Topic::where('subject_id', $subject->id)
             ->where('id', '!=', $topic->id)
             ->where('status', 'active')
-            ->withCount('mcqs')
+            ->whereHas('mcqs', function ($query) {
+                $query->where('status', 'published');
+            })
+            ->withCount(['mcqs' => function ($query) {
+                $query->where('status', 'published');
+            }])
             ->orderBy('sort_order')
             ->limit(5)
             ->get();
