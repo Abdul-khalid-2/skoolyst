@@ -145,7 +145,7 @@ Route::group([
         Route::post('shop-school-associations/{association}/approve', [ShopSchoolAssociationController::class, 'approve'])->name('shop-school-associations.approve');
         Route::post('shop-school-associations/{association}/reject', [ShopSchoolAssociationController::class, 'reject'])->name('shop-school-associations.reject');
 
-        Route::resource('announcements', AnnouncementController::class);
+        Route::resource('dashboard/announcements', AnnouncementController::class);
 
         Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
             // Blog Categories

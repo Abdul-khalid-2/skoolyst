@@ -38,7 +38,7 @@
                                                     $anVariant = $announcement->status === 'published' ? 'success' : ($announcement->status === 'draft' ? 'warning' : 'secondary');
                                                 @endphp
                                                 <x-badge :variant="$anVariant" class="text-dark">
-                                                    {{ ucfirst($announcement->status) }}
+                                                    {{ ucfirst($announcement->status->value) }}
                                                 </x-badge>
                                             </td>
                                             <td>{{ $announcement->view_count }}</td>

@@ -147,9 +147,9 @@ class AnnouncementController extends Controller
     {
         $announcement = Announcement::where('uuid', $uuid)->firstOrFail();
 
-        // Delete feature image
-        if ($announcement->feature_image) {
-            Storage::disk('public')->delete($announcement->feature_image);
+        // Was using 'public' disk but image was stored on 'website' disk
+        if ($announcement->feature_image && Storage::disk('website')->exists($announcement->feature_image)) {
+            Storage::disk('website')->delete($announcement->feature_image);
         }
 
         $announcement->delete();

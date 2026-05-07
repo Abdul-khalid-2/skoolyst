@@ -117,7 +117,7 @@
                                     <td><strong>Status:</strong></td>
                                     <td>
                                         <span class="badge badge-{{ $announcement->status === 'published' ? 'success' : ($announcement->status === 'draft' ? 'warning' : 'secondary') }}">
-                                            {{ ucfirst($announcement->status) }}
+                                            {{ ucfirst($announcement->status->value) }}
                                         </span>
                                     </td>
                                 </tr>
