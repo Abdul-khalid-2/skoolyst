@@ -1,8 +1,12 @@
 User-agent: *
 Allow: /
 Disallow: /*/mcq/practice/*/check
+Disallow: /*/videos/*/comments
+Disallow: /*/dashboard/videos/*/reactions
 Disallow: /admin/
+Disallow: /*/admin/
 Disallow: /dashboard/
+Disallow: /*/dashboard/
 Disallow: /storage/
 Disallow: /vendor/
 Disallow: /nova/

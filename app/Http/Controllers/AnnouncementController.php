@@ -12,14 +12,33 @@ use Illuminate\Support\Str;
 
 class AnnouncementController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $schoolId = auth()->user()->school_id;
 
-        $announcements = Announcement::with(['school', 'branch'])
-            ->forSchool($schoolId)
-            ->latest()
-            ->paginate(10);
+        $query = Announcement::with(['school', 'branch'])
+            ->forSchool($schoolId);
+
+        $search = $request->string('search')->trim()->toString();
+        if ($search !== '') {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', '%'.$search.'%')
+                    ->orWhereHas('branch', function ($bq) use ($search) {
+                        $bq->where('name', 'like', '%'.$search.'%');
+                    });
+            });
+        }
+
+        $sortBy = $request->get('sort_by', 'publish_at');
+        $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
+        $allowedSort = ['id', 'title', 'branch_id', 'status', 'view_count', 'publish_at', 'created_at'];
+        if (! in_array($sortBy, $allowedSort, true)) {
+            $sortBy = 'publish_at';
+        }
+
+        $query->orderBy($sortBy, $sortDir);
+
+        $announcements = $query->paginate(10)->withQueryString();
 
         return view('dashboard.announcements.index', compact('announcements'));
     }

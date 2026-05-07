@@ -1,81 +1,61 @@
 <x-app-layout>
+    @push('css')
+        <link rel="stylesheet" href="{{ asset('css/dashboard/announcements/index.css') }}">
+    @endpush
     <main class="main-content">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-md-12">
-                    <x-page-header class="mb-3">
-                        <x-slot name="heading">
-                            <h3 class="h5 mb-0">Announcements</h3>
-                        </x-slot>
-                        <x-slot name="actions">
-                            <x-button href="{{ route('announcements.create') }}" variant="primary">
-                                <i class="fas fa-plus"></i> Create Announcement
-                            </x-button>
-                        </x-slot>
-                    </x-page-header>
+        <section id="announcements" class="page-section">
+            <x-page-header class="mb-4 flex-wrap gap-2">
+                <x-slot name="heading">
+                    <h2 class="mb-0">{{ __('Announcements') }}</h2>
+                    <p class="text-muted">{{ __('Create and manage school announcements') }}</p>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('announcements.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i>{{ __('Create Announcement') }}
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
-                    <x-card>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Title</th>
-                                            <th>Branch</th>
-                                            <th>Status</th>
-                                            <th>Views</th>
-                                            <th>Publish Date</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($announcements as $announcement)
-                                        <tr>
-                                            <td>{{ $announcement->title }}</td>
-                                            <td>{{ $announcement->branch ? $announcement->branch->name : 'All Branches' }}</td>
-                                            <td>
-                                                @php
-                                                    $anVariant = $announcement->status === 'published' ? 'success' : ($announcement->status === 'draft' ? 'warning' : 'secondary');
-                                                @endphp
-                                                <x-badge :variant="$anVariant" class="text-dark">
-                                                    {{ ucfirst($announcement->status->value) }}
-                                                </x-badge>
-                                            </td>
-                                            <td>{{ $announcement->view_count }}</td>
-                                            <td>{{ $announcement->publish_at ? $announcement->publish_at->format('M d, Y') : 'Not set' }}</td>
-                                            <td>
-                                                <x-button href="{{ route('announcements.show', $announcement->uuid) }}" variant="info" class="btn-sm">
-                                                    <i class="fas fa-eye"></i>
-                                                </x-button>
-                                                <x-button href="{{ route('announcements.edit', $announcement->uuid) }}" variant="primary" class="btn-sm">
-                                                    <i class="fas fa-edit"></i>
-                                                </x-button>
-                                                <form action="{{ route('announcements.destroy', $announcement->uuid) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <x-button type="submit" variant="danger" class="btn-sm" onclick="return confirm('Are you sure?')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </x-button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="6" class="border-0 text-center">
-                                                <x-empty-state title="No announcements found." class="py-3" />
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="d-flex justify-content-center">
-                                {{ $announcements->links() }}
-                            </div>
-                        </div>
-                    </x-card>
-                </div>
-            </div>
-        </div>
+            @if (session('success'))
+                <x-alert variant="success" class="mb-4">
+                    {{ session('success') }}
+                </x-alert>
+            @endif
+
+            @if (session('error'))
+                <x-alert variant="danger" class="mb-4">
+                    {{ session('error') }}
+                </x-alert>
+            @endif
+
+            <x-data-table
+                class="mb-0"
+                :headers="[
+                    ['label' => '#', 'key' => 'id', 'sortable' => true],
+                    ['label' => __('Title'), 'key' => 'title', 'sortable' => true],
+                    ['label' => __('Branch'), 'key' => 'branch_id', 'sortable' => true],
+                    ['label' => __('Status'), 'key' => 'status', 'sortable' => true],
+                    ['label' => __('Views'), 'key' => 'view_count', 'sortable' => true],
+                    ['label' => __('Publish date'), 'key' => 'publish_at', 'sortable' => true],
+                    ['label' => __('Actions'), 'key' => 'actions', 'sortable' => false],
+                ]"
+                :records="$announcements"
+                :sortBy="request('sort_by')"
+                :sortDir="request('sort_dir', 'desc')"
+                :searchValue="request('search')"
+                :emptyTitle="__('No announcements found')"
+                :emptyDescription="__('Create an announcement to get started.')"
+                emptyIcon="fa-bullhorn"
+            >
+                <x-slot name="emptyActions">
+                    <x-button href="{{ route('announcements.create') }}" variant="primary">
+                        <i class="fas fa-plus me-2"></i>{{ __('Create Announcement') }}
+                    </x-button>
+                </x-slot>
+                <x-slot name="rows">
+                    @include('dashboard.announcements.partials.table-rows', ['announcements' => $announcements])
+                </x-slot>
+            </x-data-table>
+        </section>
     </main>
 </x-app-layout>
