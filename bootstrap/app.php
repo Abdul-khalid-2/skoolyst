@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
             \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
             \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
+            \App\Http\Middleware\SetNoindexRobotsForMcqPracticeCheck::class,
         ]);
 
         $middleware->alias([
@@ -35,7 +36,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'localeSessionRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             'localeCookieRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
             'localeViewPath' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
-            'noindex_robots' => \App\Http\Middleware\SetNoindexRobotsForMcqPracticeCheck::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -16,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
+use App\Enums\ContentStatus;
 
 class WebsiteMcqController extends Controller
 {
@@ -372,24 +373,26 @@ class WebsiteMcqController extends Controller
     // Practice individual MCQ
     public function practice(Mcq $mcq)
     {
-        if ($mcq->status !== 'published') {
+        if ($mcq->status !== ContentStatus::Published) {
             abort(404);
         }
 
-        // Ensure options and correct_answers are arrays
-        $mcq->options = is_string($mcq->options) ? 
-            json_decode($mcq->options, true) : $mcq->options;
-        $mcq->correct_answers = is_string($mcq->correct_answers) ? 
-            json_decode($mcq->correct_answers, true) : $mcq->correct_answers;
+        // Fix double-encoded JSON from database
+        $mcq->options = is_string($mcq->options) 
+            ? json_decode($mcq->options, true) 
+            : $mcq->options;
+
+        $mcq->correct_answers = is_string($mcq->correct_answers) 
+            ? json_decode($mcq->correct_answers, true) 
+            : $mcq->correct_answers;
 
         // Load relationships
         $mcq->load(['subject', 'topic', 'testTypes']);
 
-        // Get similar questions from the same topic and subject
         $similarMcqs = Mcq::where('subject_id', $mcq->subject_id)
             ->where('topic_id', $mcq->topic_id)
             ->where('id', '!=', $mcq->id)
-            ->where('status', 'published')
+            ->where('status', ContentStatus::Published)
             ->with(['subject', 'topic'])
             ->inRandomOrder()
             ->limit(5)

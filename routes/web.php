@@ -527,7 +527,6 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     // Practice routes
     Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
     Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])
-        ->middleware('noindex_robots')
         ->name('check-answer');
 });
 
