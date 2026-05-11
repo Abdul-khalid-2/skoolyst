@@ -1,8 +1,8 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ LaravelLocalization::localizeUrl('/') }}">
-            <img src="{{ asset('assets/assets/skoolyst-header-logo1.png') }}" width="50" height="50" alt="Skoolyst logo">
-            <span class="ms-2 d-none d-lg-inline">Skoolyst</span>
+            <img src="{{ asset('assets/assets/skoolyst_web_logo_3.png') }}" width="150" height="50" alt="Skoolyst logo">
+            <!-- <span class="ms-2 d-none d-lg-inline">Skoolyst</span> -->
         </a>
 
         @php
