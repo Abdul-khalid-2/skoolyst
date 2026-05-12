@@ -18,6 +18,35 @@
                 </x-slot>
             </x-page-header>
 
+              @if (session('success'))
+                <x-alert variant="success">{{ session('success') }}</x-alert>
+            @endif
+
+            @if (session('error'))
+                <x-alert variant="danger" class="border-danger" id="school-form-session-error" :icon="false" :dismissible="false">
+                    <div class="d-flex align-items-start gap-2">
+                        <i class="fas fa-exclamation-triangle fa-lg mt-1"></i>
+                        <div>
+                            <strong class="d-block">Something went wrong</strong>
+                            <span class="d-block small">{{ session('error') }}</span>
+                        </div>
+                    </div>
+                </x-alert>
+            @endif
+
+            @if ($errors->any())
+                <x-alert variant="warning" class="border border-warning" id="school-form-validation-summary" :icon="false" :dismissible="false">
+                    <h3 class="h6 text-dark mb-2">
+                        <i class="fas fa-clipboard-list me-1 text-warning"></i> Please correct the following
+                    </h3>
+                    <ul class="mb-0 ps-3 small text-dark">
+                        @foreach ($errors->all() as $message)
+                            <li>{{ $message }}</li>
+                        @endforeach
+                    </ul>
+                </x-alert>
+            @endif
+
             <form class="row" method="POST" action="{{ route('schools.update', $school->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
