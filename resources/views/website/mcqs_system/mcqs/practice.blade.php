@@ -252,7 +252,7 @@
                             value="{{ $index }}"
                             class="option-input">
                         <label for="option{{ $index }}" class="option-label">
-                            <span class="option-marker">{{ chr(65 + $index) }}</span>
+                            <span class="option-marker">{{ chr(65 + $loop->index) }}</span>
                             {{ $option }}
                         </label>
                     </div>

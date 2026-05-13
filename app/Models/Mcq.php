@@ -99,10 +99,12 @@ class Mcq extends Model
     {
         $options = $this->options ?? [];
         $formatted = [];
+        $position = 0;
 
         foreach ($options as $index => $option) {
-            $letter = chr(65 + $index);
+            $letter = chr(65 + $position);
             $formatted[$letter] = $option;
+            $position++;
         }
 
         return $formatted;
@@ -111,11 +113,26 @@ class Mcq extends Model
     public function getCorrectAnswersFormattedAttribute()
     {
         $answers = $this->correct_answers ?? [];
+        $options = $this->options ?? [];
+        $optionKeys = is_array($options) ? array_keys($options) : [];
         $formatted = [];
 
-        foreach ($answers as $index) {
-            $letter = chr(65 + $index);
-            $formatted[] = $letter;
+        foreach ($answers as $answerKey) {
+            $pos = false;
+            foreach ($optionKeys as $i => $k) {
+                if ($k == $answerKey) {
+                    $pos = (int) $i;
+                    break;
+                }
+            }
+            if ($pos !== false) {
+                $formatted[] = chr(65 + $pos);
+
+                continue;
+            }
+            if (is_string($answerKey) && strlen($answerKey) === 1 && ctype_alpha($answerKey)) {
+                $formatted[] = strtoupper($answerKey);
+            }
         }
 
         return $formatted;

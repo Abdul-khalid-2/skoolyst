@@ -454,14 +454,14 @@
                                 <div class="fee-structure-toggle bg-light p-3 rounded mb-3">
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_fixed_edit" value="fixed" 
-                                            {{ old('fee_structure_type', $school->fee_structure_type) == 'fixed' ? 'checked' : '' }}>
+                                            {{ old('fee_structure_type', $school->fee_structure_type->value) == 'fixed' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="fee_fixed_edit">
                                             Fixed Structure (Regular/Discounted Fees)
                                         </label>
                                     </div>
                                     <div class="form-check form-check-inline">
                                         <input class="form-check-input" type="radio" name="fee_structure_type" id="fee_class_wise_edit" value="class_wise" 
-                                            {{ old('fee_structure_type', $school->fee_structure_type) == 'class_wise' ? 'checked' : '' }}>
+                                            {{ old('fee_structure_type', $school->fee_structure_type->value) == 'class_wise' ? 'checked' : '' }}>
                                         <label class="form-check-label" for="fee_class_wise_edit">
                                             Class-wise Structure
                                         </label>

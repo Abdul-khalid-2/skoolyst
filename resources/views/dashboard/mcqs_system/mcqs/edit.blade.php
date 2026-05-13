@@ -156,11 +156,11 @@
                                         @foreach($options as $index => $option)
                                         <div class="option-item mb-2">
                                             <div class="input-group">
-                                                <span class="input-group-text">{{ chr(65 + (int) $index) }}</span>
+                                                <span class="input-group-text">{{ chr(65 + $loop->index) }}</span>
                                                 <input type="text" class="form-control" name="options[{{ $index }}]" 
                                                        value="{{ old('options.' . $index, $option) }}" required>
                                                 <button type="button" class="btn btn-outline-danger remove-option" 
-                                                        {{ $index < 2 ? 'disabled' : '' }}>
+                                                        {{ $loop->index < 2 ? 'disabled' : '' }}>
                                                     <i class="fas fa-times"></i>
                                                 </button>
                                             </div>
@@ -189,7 +189,7 @@
                                                    value="{{ $index}}"
                                                    {{ in_array($index , $correctAnswers) ? 'checked' : '' }}>
                                             <label class="form-check-label" for="correct_{{ $index }}">
-                                                <span class="badge bg-light text-dark">{{ chr(65 + $index) }}</span>
+                                                <span class="badge bg-light text-dark">{{ chr(65 + $loop->index) }}</span>
                                             </label>
                                         </div>
                                         @endforeach
@@ -413,8 +413,6 @@
     @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            let optionCounter = {{ count($options) }};
-            
             // Get DOM elements
             const optionsContainer = document.getElementById('options-container');
             const correctAnswersContainer = document.getElementById('correct-answers-container');
@@ -427,20 +425,38 @@
             // Initialize correct answers from existing data
             let selectedCorrectAnswers = @json($correctAnswers).map(String);
             
+            function parseOptionKeyFromName(name) {
+                const m = String(name || '').match(/^options\[(.+)\]$/);
+                return m ? m[1] : '';
+            }
+
+            function nextNumericOptionKey() {
+                let maxKey = -1;
+                optionsContainer.querySelectorAll('input[name^="options"]').forEach(function (inp) {
+                    const k = parseOptionKeyFromName(inp.name);
+                    if (k !== '' && !isNaN(parseInt(k, 10))) {
+                        maxKey = Math.max(maxKey, parseInt(k, 10));
+                    }
+                });
+                return maxKey + 1;
+            }
+            
             // Add option
             document.getElementById('add-option').addEventListener('click', function() {
-                if (optionCounter >= 10) {
+                if (optionsContainer.children.length >= 10) {
                     alert('Maximum 10 options allowed');
                     return;
                 }
                 
-                const optionLetter = String.fromCharCode(65 + optionCounter);
+                const pos = optionsContainer.querySelectorAll('.option-item').length;
+                const optionLetter = String.fromCharCode(65 + pos);
+                const newKey = nextNumericOptionKey();
                 const optionItem = document.createElement('div');
                 optionItem.className = 'option-item mb-2';
                 optionItem.innerHTML = `
                     <div class="input-group">
                         <span class="input-group-text">${optionLetter}</span>
-                        <input type="text" class="form-control" name="options[${optionCounter}]" 
+                        <input type="text" class="form-control" name="options[${newKey}]" 
                                placeholder="Option ${optionLetter}" required>
                         <button type="button" class="btn btn-outline-danger remove-option">
                             <i class="fas fa-times"></i>
@@ -450,7 +466,6 @@
                 
                 optionsContainer.appendChild(optionItem);
                 updateCorrectAnswers();
-                optionCounter++;
             });
             
             // Remove option
@@ -462,10 +477,9 @@
                         return;
                     }
                     
-                    // Check if this option is selected as correct answer
-                    const optionIndex = Array.from(optionsContainer.children).indexOf(optionItem);
-                    const optionNumber = optionIndex; // 1-based index
-                    const isCorrect = selectedCorrectAnswers.includes(optionNumber.toString());
+                    const input = optionItem.querySelector('input[name^="options"]');
+                    const optionKey = parseOptionKeyFromName(input ? input.name : '');
+                    const isCorrect = optionKey !== '' && selectedCorrectAnswers.map(String).includes(String(optionKey));
                     
                     if (isCorrect) {
                         alert('Cannot remove an option that is marked as correct answer');
@@ -475,40 +489,40 @@
                     optionItem.remove();
                     updateOptionIndexes();
                     updateCorrectAnswers();
-                    optionCounter--;
                 }
             });
             
-            // Update option indexes after removal
+            // Refresh A,B,C,… labels by row order; keep each input's options[key] name unchanged
             function updateOptionIndexes() {
                 const optionItems = optionsContainer.querySelectorAll('.option-item');
-                optionItems.forEach((item, index) => {
+                optionItems.forEach(function (item, index) {
                     const input = item.querySelector('input');
                     const span = item.querySelector('.input-group-text');
+                    if (!input || !span) {
+                        return;
+                    }
                     const optionLetter = String.fromCharCode(65 + index);
-                    
                     span.textContent = optionLetter;
-                    input.name = `options[${index}]`;
-                    input.placeholder = `Option ${optionLetter}`;
+                    input.placeholder = 'Option ' + optionLetter;
                 });
             }
             
             // Update correct answers checkboxes
             function updateCorrectAnswers() {
-                const optionInputs = optionsContainer.querySelectorAll('input[name^="options"]');
+                const optionInputs = optionsContainer.querySelectorAll('.option-item input[name^="options"]');
                 correctAnswersContainer.innerHTML = '';
                 
-                optionInputs.forEach((input, index) => {
+                optionInputs.forEach(function (input, index) {
+                    const optionKey = parseOptionKeyFromName(input.name);
                     const optionLetter = String.fromCharCode(65 + index);
-                    const optionNumber = index; 
-                    const checkboxId = `correct_${optionNumber}`;
-                    const isSelected = selectedCorrectAnswers.includes(optionNumber.toString());
+                    const checkboxId = 'correct_' + String(optionKey).replace(/[^\w-]/g, '_');
+                    const isSelected = optionKey !== '' && selectedCorrectAnswers.map(String).includes(String(optionKey));
                     
                     const div = document.createElement('div');
                     div.className = 'form-check form-check-inline';
                     div.innerHTML = `
                         <input class="form-check-input" type="${questionTypeSelect.value === 'single' ? 'radio' : 'checkbox'}" 
-                            name="correct_answers[]" id="${checkboxId}" value="${optionNumber}"
+                            name="correct_answers[]" id="${checkboxId}" value="${optionKey}"
                             ${isSelected ? 'checked' : ''}>
                         <label class="form-check-label" for="${checkboxId}">
                             <span class="badge bg-light text-dark">${optionLetter}</span>
@@ -517,25 +531,22 @@
                     
                     correctAnswersContainer.appendChild(div);
                     
-                    // Add event listener to the checkbox/radio
                     const checkbox = div.querySelector('input');
-                    checkbox.addEventListener('change', function() {
+                    checkbox.addEventListener('change', function () {
+                        const v = this.value;
                         if (questionTypeSelect.value === 'single') {
-                            // For single choice, clear and add selected one
-                            selectedCorrectAnswers = [this.value];
-                            // Uncheck others
-                            correctAnswersContainer.querySelectorAll('input[name="correct_answers[]"]').forEach(cb => {
-                                if (cb !== this) cb.checked = false;
+                            selectedCorrectAnswers = [v];
+                            correctAnswersContainer.querySelectorAll('input[name="correct_answers[]"]').forEach(function (cb) {
+                                cb.checked = (cb.value === v);
                             });
-                        } else {
-                            // For multiple choice
-                            if (this.checked) {
-                                if (!selectedCorrectAnswers.includes(this.value)) {
-                                    selectedCorrectAnswers.push(this.value);
-                                }
-                            } else {
-                                selectedCorrectAnswers = selectedCorrectAnswers.filter(val => val !== this.value);
+                        } else if (this.checked) {
+                            if (!selectedCorrectAnswers.map(String).includes(String(v))) {
+                                selectedCorrectAnswers.push(v);
                             }
+                        } else {
+                            selectedCorrectAnswers = selectedCorrectAnswers.filter(function (val) {
+                                return String(val) !== String(v);
+                            });
                         }
                     });
                 });

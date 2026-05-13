@@ -48,7 +48,7 @@
                                 <div class="list-group-item {{ in_array($index, $correctAnswers) ? 'list-group-item-success' : '' }}">
                                     <div class="d-flex align-items-center">
                                         <div class="me-3">
-                                            <x-badge variant="light" class="text-dark fs-6">{{ chr(65 + $index) }}</x-badge>
+                                            <x-badge variant="light" class="text-dark fs-6">{{ chr(65 + $loop->index) }}</x-badge>
                                         </div>
                                         <div class="flex-grow-1">
                                             {{ $option }}
