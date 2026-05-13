@@ -1165,14 +1165,25 @@
                         value="{{ $search }}">
                 </div>
 
-                <!-- School Type Filter -->
+                <!-- Associated school — gender & ownership -->
                 <div class="filter-group">
-                    <label class="filter-label">School Type</label>
-                    <select name="school_type" class="filter-select">
-                        <option value="">All School Types</option>
-                        @foreach($schoolTypes as $type)
-                        <option value="{{ $type }}" {{ $schoolType == $type ? 'selected' : '' }}>
-                            {{ $type }}
+                    <label class="filter-label">School gender type</label>
+                    <select name="school_gender_type" class="filter-select">
+                        <option value="">All gender types</option>
+                        @foreach($schoolGenderTypes as $value => $label)
+                        <option value="{{ $value }}" {{ ($schoolGenderType ?? '') == $value ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">School ownership</label>
+                    <select name="school_ownership_type" class="filter-select">
+                        <option value="">All ownership types</option>
+                        @foreach($schoolOwnershipTypes as $value => $label)
+                        <option value="{{ $value }}" {{ ($schoolOwnershipType ?? '') == $value ? 'selected' : '' }}>
+                            {{ $label }}
                         </option>
                         @endforeach
                     </select>

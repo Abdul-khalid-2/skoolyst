@@ -28,6 +28,7 @@ class HomeApiController extends Controller
             'search' => $request->search,
             'location' => $request->location,
             'type' => $request->type,
+            'ownership' => $request->ownership,
             'curriculum' => $request->curriculum,
         ];
 
@@ -58,7 +59,8 @@ class HomeApiController extends Controller
     public function getSchoolTypes()
     {
         return response()->json([
-            'school_types' => $this->homeService->getSchoolTypes(),
+            'school_gender_types' => $this->homeService->getSchoolGenderTypes(),
+            'school_ownership_types' => $this->homeService->getSchoolOwnershipTypes(),
         ]);
     }
 }

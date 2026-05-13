@@ -23,7 +23,8 @@ class HomeController extends Controller
             'schools' => $data['schools'],
             'curriculums' => $data['curriculums'],
             'cities' => $data['cities'],
-            'schoolTypes' => $data['schoolTypes'],
+            'schoolGenderTypes' => $data['schoolGenderTypes'],
+            'schoolOwnershipTypes' => $data['schoolOwnershipTypes'],
             'testimonials' => $data['testimonials'],
         ]);
     }
@@ -34,6 +35,7 @@ class HomeController extends Controller
             'search' => ['nullable', 'string', 'max:200'],
             'location' => ['nullable', 'string', 'max:120'],
             'type' => ['nullable', 'string', 'max:50'],
+            'ownership' => ['nullable', 'string', 'max:50'],
             'curriculum' => ['nullable', 'string', 'max:50'],
         ]);
 
@@ -41,6 +43,7 @@ class HomeController extends Controller
             'search' => $validated['search'] ?? null,
             'location' => $validated['location'] ?? null,
             'type' => $validated['type'] ?? null,
+            'ownership' => $validated['ownership'] ?? null,
             'curriculum' => $validated['curriculum'] ?? null,
         ];
 
@@ -56,12 +59,14 @@ class HomeController extends Controller
             'q' => ['required', 'string', 'min:2', 'max:100'],
             'location' => ['nullable', 'string', 'max:120'],
             'type' => ['nullable', 'string', 'max:50'],
+            'ownership' => ['nullable', 'string', 'max:50'],
             'curriculum' => ['nullable', 'string', 'max:50'],
         ]);
 
         $filters = [
             'location' => $validated['location'] ?? null,
             'type' => $validated['type'] ?? null,
+            'ownership' => $validated['ownership'] ?? null,
             'curriculum' => $validated['curriculum'] ?? null,
         ];
 

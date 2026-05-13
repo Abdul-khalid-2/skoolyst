@@ -1,9 +1,9 @@
 @php
     $heroTitle = $locBannerTitle !== '' && $locBannerTitle !== null ? $locBannerTitle : $locName;
     $showOfficialName = ($locBannerTitle !== '' && $locBannerTitle !== null) && trim((string) $locBannerTitle) !== trim((string) $locName);
-    $schoolTypeLabel = $school->school_type instanceof \BackedEnum
-        ? $school->school_type->value
-        : ($school->school_type !== null ? (string) $school->school_type : '');
+    $genderLabel = $school->school_gender_type?->label() ?? '';
+    $ownershipLabel = $school->school_ownership_type?->label() ?? '';
+    $schoolTypeLabel = trim($genderLabel.(($genderLabel !== '' && $ownershipLabel !== '') ? ' · ' : '').$ownershipLabel);
     $hasLocationMeta = filled(trim((string) ($school->city ?? '')));
 @endphp
 <section

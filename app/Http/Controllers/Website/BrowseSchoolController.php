@@ -21,6 +21,7 @@ class BrowseSchoolController extends Controller
             'search' => $request->get('search'),
             'location' => $request->get('location'),
             'type' => $request->get('type'),
+            'ownership' => $request->get('ownership'),
             'curriculum' => $request->get('curriculum'),
         ];
 
@@ -34,6 +35,7 @@ class BrowseSchoolController extends Controller
                 'search' => $filters['search'],
                 'location' => $filters['location'],
                 'type' => $filters['type'],
+                'ownership' => $filters['ownership'],
                 'curriculum' => $filters['curriculum'],
                 'pageSetsOwnCanonical' => true,
             ]
@@ -46,6 +48,7 @@ class BrowseSchoolController extends Controller
             'search' => $request->search,
             'location' => $request->location,
             'type' => $request->type,
+            'ownership' => $request->ownership,
             'curriculum' => $request->curriculum,
         ];
 

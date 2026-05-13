@@ -27,8 +27,9 @@ function getHomeSuggestUrl() {
 function getDirectoryFilterParams() {
     const locationFilter = document.getElementById('locationFilter') ? document.getElementById('locationFilter').value : '';
     const typeFilter = document.getElementById('typeFilter') ? document.getElementById('typeFilter').value : '';
+    const ownershipFilter = document.getElementById('ownershipFilter') ? document.getElementById('ownershipFilter').value : '';
     const curriculumFilter = document.getElementById('curriculumFilter') ? document.getElementById('curriculumFilter').value : '';
-    return { location: locationFilter, type: typeFilter, curriculum: curriculumFilter };
+    return { location: locationFilter, type: typeFilter, ownership: ownershipFilter, curriculum: curriculumFilter };
 }
 
 // ==================== RENDER SCHOOLS (directory grid) ==================== //
@@ -178,6 +179,9 @@ function applyFilters() {
     if (f.type) {
         params.set('type', f.type);
     }
+    if (f.ownership) {
+        params.set('ownership', f.ownership);
+    }
     if (f.curriculum) {
         params.set('curriculum', f.curriculum);
     }
@@ -223,6 +227,10 @@ function clearFilters() {
     const typ = document.getElementById('typeFilter');
     if (typ) {
         typ.value = '';
+    }
+    const own = document.getElementById('ownershipFilter');
+    if (own) {
+        own.value = '';
     }
     const cur = document.getElementById('curriculumFilter');
     if (cur) {
@@ -336,6 +344,9 @@ function initHomeLiveSearch() {
         }
         if (f.type) {
             params.set('type', f.type);
+        }
+        if (f.ownership) {
+            params.set('ownership', f.ownership);
         }
         if (f.curriculum) {
             params.set('curriculum', f.curriculum);
@@ -460,7 +471,7 @@ function initHomeLiveSearch() {
         }
     });
 
-    ['locationFilter', 'typeFilter', 'curriculumFilter'].forEach(function (id) {
+    ['locationFilter', 'typeFilter', 'ownershipFilter', 'curriculumFilter'].forEach(function (id) {
         const el = document.getElementById(id);
         if (el) {
             el.addEventListener('change', function () {

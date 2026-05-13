@@ -23,7 +23,7 @@
                 @if($school->profile?->faculty_count)
                 <div class="fact-item">
                     <i class="fas fa-chalkboard-teacher"></i>
-                    <span>Faculty: {{ $school->profile->faculty_count }} teachers</span>
+                    <span>Faculty: {{ $school->profile->faculty_count }}</span>
                 </div>
                 @endif
                 @if($school->profile?->campus_size)

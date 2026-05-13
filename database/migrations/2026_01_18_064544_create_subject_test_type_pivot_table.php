@@ -21,8 +21,9 @@ return new class extends Migration
 
         // Migrate existing relationships
         // If you have data in the subjects.test_type_id column
+        // Use CURRENT_TIMESTAMP so SQLite (PHPUnit) and MySQL both accept this during migrate.
         DB::statement('INSERT INTO subject_test_type (subject_id, test_type_id, created_at, updated_at)
-                      SELECT id, test_type_id, NOW(), NOW() FROM subjects WHERE test_type_id IS NOT NULL');
+                      SELECT id, test_type_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP FROM subjects WHERE test_type_id IS NOT NULL');
     }
 
     public function down()

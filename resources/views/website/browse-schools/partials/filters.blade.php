@@ -45,14 +45,31 @@
                 <div class="filter-group">
                     <label class="filter-label" for="typeFilter">
                         <i class="fas fa-venus-mars" aria-hidden="true"></i>
-                        School type
+                        Gender type
                     </label>
                     <div class="filter-select-wrap">
                         <select class="filter-select" id="typeFilter">
-                            <option value="">All types</option>
-                            @foreach($schoolTypes as $type)
-                            <option value="{{ $type }}" {{ request('type') == $type ? 'selected' : '' }}>
-                                {{ $type === 'Separate' ? 'Girls and boys (separate campuses)' : $type }}
+                            <option value="">All gender types</option>
+                            @foreach($schoolGenderTypes as $value => $label)
+                            <option value="{{ $value }}" {{ request('type') == $value ? 'selected' : '' }}>
+                                {{ $label }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="ownershipFilter">
+                        <i class="fas fa-building-columns" aria-hidden="true"></i>
+                        Ownership
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="ownershipFilter">
+                            <option value="">All ownership types</option>
+                            @foreach($schoolOwnershipTypes as $value => $label)
+                            <option value="{{ $value }}" {{ request('ownership') == $value ? 'selected' : '' }}>
+                                {{ $label }}
                             </option>
                             @endforeach
                         </select>

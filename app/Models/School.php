@@ -5,7 +5,8 @@ namespace App\Models;
 use App\Enums\ActiveStatus;
 use App\Enums\ContentStatus;
 use App\Enums\FeeStructureType;
-use App\Enums\SchoolType;
+use App\Enums\SchoolGenderType;
+use App\Enums\SchoolOwnershipType;
 use App\Enums\SchoolVisibility;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -29,7 +30,8 @@ class School extends Model
         'email',
         'website',
         'facilities',
-        'school_type',
+        'school_gender_type',
+        'school_ownership_type',
         'fee_structure_type',
         'regular_fees',
         'discounted_fees',
@@ -57,7 +59,8 @@ class School extends Model
 
     protected $casts = [
         'publish_date' => 'datetime',
-        'school_type' => SchoolType::class,
+        'school_gender_type' => SchoolGenderType::class,
+        'school_ownership_type' => SchoolOwnershipType::class,
         'fee_structure_type' => FeeStructureType::class,
         'status' => ActiveStatus::class,
         'visibility' => SchoolVisibility::class,

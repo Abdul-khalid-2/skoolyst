@@ -9,12 +9,14 @@ function applyFilters() {
     const search = document.getElementById("searchInput")?.value || "";
     const location = document.getElementById("locationFilter")?.value || "";
     const type = document.getElementById("typeFilter")?.value || "";
+    const ownership = document.getElementById("ownershipFilter")?.value || "";
     const curriculum = document.getElementById("curriculumFilter")?.value || "";
 
     const params = new URLSearchParams();
     if (search) params.append("search", search);
     if (location) params.append("location", location);
     if (type) params.append("type", type);
+    if (ownership) params.append("ownership", ownership);
     if (curriculum) params.append("curriculum", curriculum);
 
     const targetUrl = params.toString()
@@ -58,11 +60,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const locationFilter = document.getElementById("locationFilter");
     const typeFilter = document.getElementById("typeFilter");
+    const ownershipFilter = document.getElementById("ownershipFilter");
     const curriculumFilter = document.getElementById("curriculumFilter");
     const clearFiltersBtn = document.getElementById("clearFiltersBtn");
 
     if (locationFilter) locationFilter.addEventListener("change", applyFilters);
     if (typeFilter) typeFilter.addEventListener("change", applyFilters);
+    if (ownershipFilter) ownershipFilter.addEventListener("change", applyFilters);
     if (curriculumFilter) curriculumFilter.addEventListener("change", applyFilters);
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener("click", function (event) {

@@ -67,19 +67,26 @@
                                     <p>{{ $school->name ?? 'Not available' }}</p>
                                 </div>
                                 <div class="col-md-6">
-                                    <strong>School Type:</strong>
-                                    <p>{{ $school->school_type ?? 'Not specified' }}</p>
+                                    <strong>Gender type:</strong>
+                                    <p>{{ $school->school_gender_type?->label() ?? 'Not specified' }}</p>
                                 </div>
                             </div>
 
                             <div class="row mb-3">
                                 <div class="col-md-6">
+                                    <strong>Ownership:</strong>
+                                    <p>{{ $school->school_ownership_type?->label() ?? 'Not specified' }}</p>
+                                </div>
+                                <div class="col-md-6">
                                     <strong>Email:</strong>
                                     <p>{{ $school->email ?? 'Not provided' }}</p>
                                 </div>
-                                <div class="col-md-6">
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
                                     <strong>Contact Number:</strong>
-                                    <p>{{ $school->contact_number ?? 'Not provided' }}</p>
+                                    <p class="mb-0" style="white-space: pre-line;">{{ $school->contact_number ?? 'Not provided' }}</p>
                                 </div>
                             </div>
 
@@ -155,7 +162,7 @@
                                         <i class="fas fa-chalkboard-teacher text-primary me-3"></i>
                                         <div>
                                             <strong>Faculty</strong>
-                                            <p class="mb-0">{{ optional($school->profile)->faculty_count ?? 'N/A' }} teachers</p>
+                                            <p class="mb-0">{{ optional($school->profile)->faculty_count ?? 'N/A' }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -609,7 +616,7 @@
                             @if($school->contact_number)
                             <div class="d-flex align-items-center mb-3">
                                 <i class="fas fa-phone text-muted me-2"></i>
-                                <span>{{ $school->contact_number }}</span>
+                                <span style="white-space: pre-line;">{{ $school->contact_number }}</span>
                             </div>
                             @endif
                             @if($school->email)

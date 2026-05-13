@@ -36,7 +36,7 @@
                                         <span itemprop="addressLocality">{{ $school['location'] ?? ($school->city ?? 'Location not specified') }}</span>
                                     </div>
                                 </div>
-                                <span class="school-type-badge">{{ $school['type'] ?? $school->school_type }}</span>
+                                <span class="school-type-badge">{{ $school['type'] ?? $school->school_gender_type?->label() }}</span>
                             </div>
                             <div class="school-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
                                 @php

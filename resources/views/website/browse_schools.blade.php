@@ -14,6 +14,7 @@
         request('search'),
         request('location'),
         request('type'),
+        request('ownership'),
         request('curriculum'),
     ]);
 
@@ -117,7 +118,7 @@
 
 @section('content')
 @include('website.browse-schools.partials.page-header', ['schools' => $schools])
-@include('website.browse-schools.partials.filters', ['cities' => $cities, 'schoolTypes' => $schoolTypes, 'curriculums' => $curriculums])
+@include('website.browse-schools.partials.filters', ['cities' => $cities, 'schoolGenderTypes' => $schoolGenderTypes, 'schoolOwnershipTypes' => $schoolOwnershipTypes, 'curriculums' => $curriculums])
 @include('website.browse-schools.partials.school-grid', ['schools' => $schools])
 @include('website.browse-schools.partials.pagination', ['schools' => $schools])
 

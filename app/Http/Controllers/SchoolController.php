@@ -32,7 +32,8 @@ class SchoolController extends Controller
                     'city',
                     'address',
                     'status',
-                    'school_type',
+                    'school_gender_type',
+                    'school_ownership_type',
                     'created_at',
                 ]);
             } elseif ($user->hasRole('school-admin')) {
@@ -47,7 +48,8 @@ class SchoolController extends Controller
                         'city',
                         'status',
                         'address',
-                        'school_type',
+                        'school_gender_type',
+                        'school_ownership_type',
                         'created_at',
                     ]);
             } else {
@@ -69,7 +71,7 @@ class SchoolController extends Controller
             $sortDir = strtolower((string) $request->get('sort_dir', 'desc')) === 'asc' ? 'asc' : 'desc';
             $allowedSort = [
                 'id', 'name', 'email', 'contact_number', 'address', 'city',
-                'status', 'school_type', 'created_at',
+                'status', 'school_gender_type', 'school_ownership_type', 'created_at',
             ];
             if (! in_array($sortBy, $allowedSort, true)) {
                 $sortBy = 'created_at';
@@ -220,10 +222,11 @@ class SchoolController extends Controller
             'school_email' => 'required|email|unique:schools,email',
             'school_address' => 'required|string',
             'school_city' => 'required|string',
-            'school_contact' => 'nullable|string',
+            'school_contact' => 'nullable|string|max:500',
             'school_description' => 'nullable|string',
             'school_facilities' => 'nullable|string',
-            'school_type' => 'required|in:Co-Ed,Boys,Girls,Separate',
+            'school_gender_type' => 'required|in:girls,boys,co-education',
+            'school_ownership_type' => 'required|in:private,government,semi-government,ngo',
             'school_website' => 'nullable|url',
             'admin_name' => 'required|string|max:255',
             'admin_email' => 'required|email|unique:users,email',
@@ -271,7 +274,8 @@ class SchoolController extends Controller
                 'website' => $validated['school_website'],
                 'description' => $validated['school_description'],
                 'facilities' => $validated['school_facilities'],
-                'school_type' => $validated['school_type'],
+                'school_gender_type' => $validated['school_gender_type'],
+                'school_ownership_type' => $validated['school_ownership_type'],
                 'fee_structure_type' => $validated['fee_structure_type'],
                 'regular_fees' => $regularFees,
                 'discounted_fees' => $discountedFees,

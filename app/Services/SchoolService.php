@@ -58,9 +58,13 @@ class SchoolService
             $query->where('city', $filters['location']);
         }
 
-        // Apply school type filter
-        if (!empty($filters['type'])) {
-            $query->where('school_type', $filters['type']);
+        // Apply school gender / ownership filters
+        if (! empty($filters['type'])) {
+            $query->where('school_gender_type', $filters['type']);
+        }
+
+        if (! empty($filters['ownership'])) {
+            $query->where('school_ownership_type', $filters['ownership']);
         }
 
         // Apply curriculum filter
@@ -76,7 +80,7 @@ class SchoolService
     protected function directoryFiltersEmpty(array $filters): bool
     {
         return empty($filters['search']) && empty($filters['location'])
-            && empty($filters['type']) && empty($filters['curriculum']);
+            && empty($filters['type']) && empty($filters['ownership']) && empty($filters['curriculum']);
     }
 
     /**
@@ -183,7 +187,8 @@ class SchoolService
         return [
             'curriculums' => $this->getCurriculums(),
             'cities' => $this->getCities(),
-            'schoolTypes' => $this->getSchoolTypes(),
+            'schoolGenderTypes' => $this->getSchoolGenderTypes(),
+            'schoolOwnershipTypes' => $this->getSchoolOwnershipTypes(),
         ];
     }
 
@@ -222,11 +227,28 @@ class SchoolService
     }
 
     /**
-     * Get available school types
+     * Gender-based school types for directory filters (value => label).
      */
-    public function getSchoolTypes(): array
+    public function getSchoolGenderTypes(): array
     {
-        return ['Co-Ed', 'Boys', 'Girls', 'Separate'];
+        return [
+            'girls' => 'Girls',
+            'boys' => 'Boys',
+            'co-education' => 'Co-Education',
+        ];
+    }
+
+    /**
+     * Ownership types for directory filters (value => label).
+     */
+    public function getSchoolOwnershipTypes(): array
+    {
+        return [
+            'private' => 'Private',
+            'government' => 'Government',
+            'semi-government' => 'Semi-Government',
+            'ngo' => 'NGO',
+        ];
     }
 
     /**
@@ -254,7 +276,7 @@ class SchoolService
             'id' => $school->id,
             'uuid' => $school->uuid ?? $school->id,
             'name' => $school->localized('name'),
-            'type' => $school->school_type->value,
+            'type' => $school->school_gender_type?->label() ?? '',
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),

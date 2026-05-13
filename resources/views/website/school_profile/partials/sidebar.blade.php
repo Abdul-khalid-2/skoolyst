@@ -5,7 +5,7 @@
             @if($school->contact_number)
                 <div class="contact-item">
                     <i class="fas fa-phone"></i>
-                    <span>{{ $school->contact_number }}</span>
+                    <span style="white-space: pre-line;">{{ $school->contact_number }}</span>
                 </div>
             @endif
             @if($school->email)

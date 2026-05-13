@@ -74,7 +74,7 @@
                                         <strong class="d-block text-muted mb-1">School Type</strong>
                                         <p class="mb-0">
                                             @if($branch->school_type)
-                                            {{ $branch->school_type }}
+                                            {{ $branch->school_type->label() }}
                                             @else
                                             <span class="text-muted">Not specified</span>
                                             @endif

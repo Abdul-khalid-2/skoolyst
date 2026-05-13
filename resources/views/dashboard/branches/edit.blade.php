@@ -90,9 +90,9 @@
                                             <label for="school_type" class="form-label">School Type</label>
                                             <select class="form-select" id="school_type" name="school_type">
                                                 <option value="">Select Type</option>
-                                                <option value="Co-Ed" {{ old('school_type', $branch->school_type) == 'Co-Ed' ? 'selected' : '' }}>Co-Educational</option>
-                                                <option value="Boys" {{ old('school_type', $branch->school_type) == 'Boys' ? 'selected' : '' }}>Boys Only</option>
-                                                <option value="Girls" {{ old('school_type', $branch->school_type) == 'Girls' ? 'selected' : '' }}>Girls Only</option>
+                                                <option value="co-education" {{ old('school_type', $branch->school_type?->value) == 'co-education' ? 'selected' : '' }}>Co-Educational</option>
+                                                <option value="boys" {{ old('school_type', $branch->school_type?->value) == 'boys' ? 'selected' : '' }}>Boys Only</option>
+                                                <option value="girls" {{ old('school_type', $branch->school_type?->value) == 'girls' ? 'selected' : '' }}>Girls Only</option>
                                             </select>
                                             @error('school_type')
                                             <div class="text-danger">{{ $message }}</div>

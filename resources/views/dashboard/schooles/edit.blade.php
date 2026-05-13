@@ -117,8 +117,10 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="contact_number" class="form-label">Contact Number</label>
-                                    <input type="text" class="form-control @error('contact_number') is-invalid @enderror"
-                                        id="contact_number" name="contact_number" value="{{ old('contact_number', $school->contact_number) }}">
+                                    <textarea class="form-control @error('contact_number') is-invalid @enderror"
+                                        id="contact_number" name="contact_number" rows="3"
+                                        placeholder="Phone #1: 0333-1234567&#10;Phone #2: 0349-7654321">{{ old('contact_number', $school->contact_number) }}</textarea>
+                                    <small class="text-muted">Enter each number on a new line.</small>
                                     @error('contact_number')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -147,9 +149,9 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="student_strength" class="form-label">Student Strength</label>
-                                    <input type="number" class="form-control @error('student_strength') is-invalid @enderror"
+                                    <input type="text" class="form-control @error('student_strength') is-invalid @enderror"
                                         id="student_strength" name="student_strength"
-                                        value="{{ old('student_strength', $school->profile->student_strength ?? '') }}" placeholder="e.g., 1000">
+                                        value="{{ old('student_strength', $school->profile->student_strength ?? '') }}" placeholder="e.g., 200 to 500">
                                     @error('student_strength')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -159,9 +161,9 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="faculty_count" class="form-label">Faculty Count</label>
-                                    <input type="number" class="form-control @error('faculty_count') is-invalid @enderror"
+                                    <input type="text" class="form-control @error('faculty_count') is-invalid @enderror"
                                         id="faculty_count" name="faculty_count"
-                                        value="{{ old('faculty_count', $school->profile->faculty_count ?? '') }}" placeholder="e.g., 50">
+                                        value="{{ old('faculty_count', $school->profile->faculty_count ?? '') }}" placeholder="e.g., 10 to 15">
                                     @error('faculty_count')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -339,18 +341,31 @@
 
                             @include('dashboard.schooles.partials.urdu-translation-fields', ['school' => $school])
 
-                            <div class="mb-3">
-                                <label for="school_type" class="form-label">School Type <span class="text-danger">*</span></label>
-                                <select class="form-control @error('school_type') is-invalid @enderror" id="school_type" name="school_type" required>
-                                    <option value="">Select School Type</option>
-                                    <option value="Co-Ed" {{ old('school_type', $school->school_type) == 'Co-Ed' ? 'selected' : '' }}>Co-Ed</option>
-                                    <option value="Boys" {{ old('school_type', $school->school_type) == 'Boys' ? 'selected' : '' }}>Boys</option>
-                                    <option value="Girls" {{ old('school_type', $school->school_type) == 'Girls' ? 'selected' : '' }}>Girls</option>
-                                    <option value="Separate" {{ old('school_type', $school->school_type) == 'Separate' ? 'selected' : '' }}>Separate Girls And Boys Campuses</option>
-                                </select>
-                                @error('school_type')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
+                            <div class="row">
+                                <!-- School Gender Type -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="school_gender_type" class="form-label">School Type (Gender) <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('school_gender_type') is-invalid @enderror" id="school_gender_type" name="school_gender_type" required>
+                                        <option value="">Select Gender Type</option>
+                                        <option value="girls" {{ old('school_gender_type', $school->school_gender_type?->value) == 'girls' ? 'selected' : '' }}>Girls</option>
+                                        <option value="boys" {{ old('school_gender_type', $school->school_gender_type?->value) == 'boys' ? 'selected' : '' }}>Boys</option>
+                                        <option value="co-education" {{ old('school_gender_type', $school->school_gender_type?->value) == 'co-education' ? 'selected' : '' }}>Co-Education</option>
+                                    </select>
+                                    @error('school_gender_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
+
+                                <!-- School Ownership Type -->
+                                <div class="col-md-6 mb-3">
+                                    <label for="school_ownership_type" class="form-label">School Type (Ownership) <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('school_ownership_type') is-invalid @enderror" id="school_ownership_type" name="school_ownership_type" required>
+                                        <option value="">Select Ownership Type</option>
+                                        <option value="private" {{ old('school_ownership_type', $school->school_ownership_type?->value) == 'private' ? 'selected' : '' }}>Private</option>
+                                        <option value="government" {{ old('school_ownership_type', $school->school_ownership_type?->value) == 'government' ? 'selected' : '' }}>Government</option>
+                                        <option value="semi-government" {{ old('school_ownership_type', $school->school_ownership_type?->value) == 'semi-government' ? 'selected' : '' }}>Semi-Government</option>
+                                        <option value="ngo" {{ old('school_ownership_type', $school->school_ownership_type?->value) == 'ngo' ? 'selected' : '' }}>NGO</option>
+                                    </select>
+                                    @error('school_ownership_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                </div>
                             </div>
 
                             <!-- Features Section - Grouped by Category -->

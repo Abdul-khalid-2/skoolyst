@@ -238,21 +238,39 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="school_type" class="form-label">School Type *</label>
-                                        <select id="school_type" class="form-control" name="school_type" required>
-                                            <option value="">Select Type</option>
-                                            <option value="Co-Ed" {{ old('school_type') == 'Co-Ed' ? 'selected' : '' }}>Co-Educational</option>
-                                            <option value="Boys" {{ old('school_type') == 'Boys' ? 'selected' : '' }}>Boys Only</option>
-                                            <option value="Girls" {{ old('school_type') == 'Girls' ? 'selected' : '' }}>Girls Only</option>
-                                            <option value="Separate" {{ old('school_type') == 'Separate' ? 'selected' : '' }}>Separate Boys & Girls Campuses</option>
+                                        <label for="school_gender_type" class="form-label">School type (gender) *</label>
+                                        <select id="school_gender_type" class="form-control" name="school_gender_type" required>
+                                            <option value="">Select gender type</option>
+                                            <option value="girls" {{ old('school_gender_type') == 'girls' ? 'selected' : '' }}>Girls</option>
+                                            <option value="boys" {{ old('school_gender_type') == 'boys' ? 'selected' : '' }}>Boys</option>
+                                            <option value="co-education" {{ old('school_gender_type') == 'co-education' ? 'selected' : '' }}>Co-Education</option>
                                         </select>
-                                        @if ($errors->has('school_type'))
+                                        @if ($errors->has('school_gender_type'))
                                         <div class="input-error">
-                                            {{ $errors->first('school_type') }}
+                                            {{ $errors->first('school_gender_type') }}
                                         </div>
                                         @endif
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="school_ownership_type" class="form-label">School type (ownership) *</label>
+                                        <select id="school_ownership_type" class="form-control" name="school_ownership_type" required>
+                                            <option value="">Select ownership type</option>
+                                            <option value="private" {{ old('school_ownership_type') == 'private' ? 'selected' : '' }}>Private</option>
+                                            <option value="government" {{ old('school_ownership_type') == 'government' ? 'selected' : '' }}>Government</option>
+                                            <option value="semi-government" {{ old('school_ownership_type') == 'semi-government' ? 'selected' : '' }}>Semi-Government</option>
+                                            <option value="ngo" {{ old('school_ownership_type') == 'ngo' ? 'selected' : '' }}>NGO</option>
+                                        </select>
+                                        @if ($errors->has('school_ownership_type'))
+                                        <div class="input-error">
+                                            {{ $errors->first('school_ownership_type') }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="school_website" class="form-label">Website</label>

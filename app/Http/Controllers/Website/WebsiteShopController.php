@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Shop;
 use App\Models\Product;
 use App\Models\ProductCategory;
-use App\Models\School;
+use App\Enums\SchoolGenderType;
+use App\Enums\SchoolOwnershipType;
 use App\Models\ShopSchoolAssociation;
 
 class WebsiteShopController extends Controller
@@ -20,7 +21,8 @@ class WebsiteShopController extends Controller
     {
         // Get filter parameters
         $search = $request->input('search');
-        $schoolType = $request->input('school_type');
+        $schoolGenderType = $request->input('school_gender_type');
+        $schoolOwnershipType = $request->input('school_ownership_type');
         $city = $request->input('city');
         $shopType = $request->input('shop_type');
 
@@ -48,10 +50,16 @@ class WebsiteShopController extends Controller
             });
         }
 
-        // Apply school type filter
-        if ($schoolType) {
-            $shopsQuery->whereHas('schoolAssociations.school', function ($q) use ($schoolType) {
-                $q->where('school_type', $schoolType);
+        // Apply school gender / ownership filters (associated schools)
+        if ($schoolGenderType) {
+            $shopsQuery->whereHas('schoolAssociations.school', function ($q) use ($schoolGenderType) {
+                $q->where('school_gender_type', $schoolGenderType);
+            });
+        }
+
+        if ($schoolOwnershipType) {
+            $shopsQuery->whereHas('schoolAssociations.school', function ($q) use ($schoolOwnershipType) {
+                $q->where('school_ownership_type', $schoolOwnershipType);
             });
         }
 
@@ -68,11 +76,13 @@ class WebsiteShopController extends Controller
         // Get shops with pagination
         $shops = $shopsQuery->paginate(12);
 
-        // Get unique school types from associated schools for filter
-        $schoolTypes = School::whereHas('shopAssociations', function ($query) {
-            $query->where('is_active', true)
-                ->where('status', ModerationStatus::Approved);
-        })->distinct()->pluck('school_type');
+        $schoolGenderTypes = collect(SchoolGenderType::cases())->mapWithKeys(function ($case) {
+            return [$case->value => $case->label()];
+        });
+
+        $schoolOwnershipTypes = collect(SchoolOwnershipType::cases())->mapWithKeys(function ($case) {
+            return [$case->value => $case->label()];
+        });
 
         // Get unique cities for filter
         $cities = Shop::where('is_active', true)
@@ -120,10 +130,12 @@ class WebsiteShopController extends Controller
             'shops',
             'featuredProducts',
             'categories',
-            'schoolTypes',
+            'schoolGenderTypes',
+            'schoolOwnershipTypes',
             'cities',
             'search',
-            'schoolType',
+            'schoolGenderType',
+            'schoolOwnershipType',
             'city',
             'shopType'
         ));

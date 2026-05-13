@@ -1191,7 +1191,7 @@
                 @if($association->school)
                     <div class="school-card">
                         <h3 class="school-name">{{ $association->school->name }}</h3>
-                        <span class="school-type">{{ $association->school->school_type }}</span>
+                        <span class="school-type">{{ $association->school->school_gender_type?->label() }} · {{ $association->school->school_ownership_type?->label() }}</span>
                         <div class="school-location">
                             <i class="fas fa-map-marker-alt"></i>
                             {{ $association->school->city }}, {{ $association->school->state ?? '' }}

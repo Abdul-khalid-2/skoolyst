@@ -26,15 +26,28 @@
                 <div class="filter-group">
                     <label class="filter-label" for="typeFilter">
                         <i class="fas fa-venus-mars" aria-hidden="true"></i>
-                        School type
+                        Gender type
                     </label>
                     <div class="filter-select-wrap">
                         <select class="filter-select" id="typeFilter" onchange="applyFilters()">
-                            <option value="">All types</option>
-                            @foreach($schoolTypes as $type)
-                            <option value="{{ $type }}">
-                                {{ $type === 'Separate' ? 'Girls and boys (separate campuses)' : $type }}
-                            </option>
+                            <option value="">All gender types</option>
+                            @foreach($schoolGenderTypes as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="ownershipFilter">
+                        <i class="fas fa-building-columns" aria-hidden="true"></i>
+                        Ownership
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="ownershipFilter" onchange="applyFilters()">
+                            <option value="">All ownership types</option>
+                            @foreach($schoolOwnershipTypes as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>

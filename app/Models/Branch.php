@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\ActiveStatus;
 use App\Enums\BranchImageType;
-use App\Enums\SchoolType;
+use App\Enums\SchoolGenderType;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,7 +37,7 @@ class Branch extends Model
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'features' => 'array',
-        'school_type' => SchoolType::class,
+        'school_type' => SchoolGenderType::class,
         'status' => ActiveStatus::class,
     ];
 
@@ -84,9 +84,9 @@ class Branch extends Model
     public static function getSchoolTypeOptions(): array
     {
         return [
-            'Co-Ed' => 'Co-Educational',
-            'Boys' => 'Boys Only',
-            'Girls' => 'Girls Only',
+            'co-education' => 'Co-Educational',
+            'boys' => 'Boys Only',
+            'girls' => 'Girls Only',
         ];
     }
 

@@ -27,7 +27,8 @@ class HomeService
                 'schools' => $this->getFeaturedSchools(),
                 'curriculums' => $this->getCurriculums(),
                 'cities' => $this->getCities(),
-                'schoolTypes' => $this->getSchoolTypes(),
+                'schoolGenderTypes' => $this->getSchoolGenderTypes(),
+                'schoolOwnershipTypes' => $this->getSchoolOwnershipTypes(),
                 'testimonials' => $this->getTestimonials(),
             ];
         });
@@ -119,7 +120,7 @@ class HomeService
     }
 
     /**
-     * @param  array{search?:?string,location?:?string,type?:?string,curriculum?:?string}  $filters
+     * @param  array{search?:?string,location?:?string,type?:?string,ownership?:?string,curriculum?:?string}  $filters
      */
     private function applyDirectoryFilters(Builder $query, array $filters): void
     {
@@ -128,7 +129,11 @@ class HomeService
         }
 
         if (! empty($filters['type'])) {
-            $query->where('school_type', $filters['type']);
+            $query->where('school_gender_type', $filters['type']);
+        }
+
+        if (! empty($filters['ownership'])) {
+            $query->where('school_ownership_type', $filters['ownership']);
         }
 
         if (! empty($filters['curriculum'])) {
@@ -207,7 +212,7 @@ class HomeService
             'id' => $school->id,
             'name' => $name,
             'city' => $school->city ?? '',
-            'type' => $school->school_type->value,
+            'type' => $school->school_gender_type?->label() ?? '',
             'curriculum' => $primaryCurriculum,
             'excerpt' => $excerpt,
             'highlight' => $this->highlightQueryInText($excerpt, $query),
@@ -286,11 +291,28 @@ class HomeService
     }
 
     /**
-     * Get available school types
+     * Gender-based school types for directory filters (value => label).
      */
-    public function getSchoolTypes(): array
+    public function getSchoolGenderTypes(): array
     {
-        return ['Co-Ed', 'Boys', 'Girls', 'Separate'];
+        return [
+            'girls' => 'Girls',
+            'boys' => 'Boys',
+            'co-education' => 'Co-Education',
+        ];
+    }
+
+    /**
+     * Ownership types for directory filters (value => label).
+     */
+    public function getSchoolOwnershipTypes(): array
+    {
+        return [
+            'private' => 'Private',
+            'government' => 'Government',
+            'semi-government' => 'Semi-Government',
+            'ngo' => 'NGO',
+        ];
     }
 
     /**
@@ -341,7 +363,7 @@ class HomeService
             'id' => $school->id,
             'uuid' => $uuid,
             'name' => $school->localized('name'),
-            'type' => $school->school_type->value,
+            'type' => $school->school_gender_type?->label() ?? '',
             'location' => $school->city,
             'curriculum' => $primaryCurriculum,
             'rating' => round($averageRating, 1),
