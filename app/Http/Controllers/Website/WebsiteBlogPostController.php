@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
+use App\Enums\ContentStatus;
 use App\Models\BlogPost;
 use App\Models\BlogCategory;
 use Illuminate\Http\JsonResponse;
@@ -143,7 +144,7 @@ class WebsiteBlogPostController extends Controller
      */
     public function trackReadingTime(Request $request, BlogPost $post): JsonResponse
     {
-        if ($post->status !== 'published' || ! $post->published_at || $post->published_at->isFuture()) {
+        if ($post->status !== ContentStatus::Published || ! $post->published_at || $post->published_at->isFuture()) {
             abort(404);
         }
 
