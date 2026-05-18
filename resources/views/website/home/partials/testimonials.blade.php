@@ -31,7 +31,7 @@
                                 <div class="author-name">{{ $testimonial->author_name }}</div>
                                 <div class="author-role">{{ $testimonial->author_role ?? '' }}, {{ $testimonial->author_location ?? '' }}</div>
                                 <div class="author-experience">
-                                    <small class="text-muted">{{ $testimonial->experience_rating ?? '' }} {{ isset($testimonial->created_at) ? '• ' . $testimonial->created_at->format('M Y') : '' }}</small>
+                                    <small class="text-muted">{{ ucfirst($testimonial->experience_rating?->value ?? '') }} {{ isset($testimonial->created_at) ? '• ' . $testimonial->created_at->format('M Y') : '' }}</small>
                                 </div>
                             </div>
                         </div>

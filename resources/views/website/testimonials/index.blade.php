@@ -99,8 +99,8 @@
                                     @endfor
                                     <span class="rating-text ms-2">{{ $testimonial->rating }}.0</span>
                             </div>
-                            <div class="experience-badge badge bg-{{ $testimonial->experience_rating == 'excellent' ? 'success' : ($testimonial->experience_rating == 'good' ? 'info' : ($testimonial->experience_rating == 'average' ? 'warning' : 'secondary')) }}">
-                                {{ ucfirst($testimonial->experience_rating) }}
+                            <div class="experience-badge badge bg-{{ $testimonial->experience_rating?->value == 'excellent' ? 'success' : ($testimonial->experience_rating?->value == 'good' ? 'info' : ($testimonial->experience_rating?->value == 'average' ? 'warning' : 'secondary')) }}">
+                                {{ ucfirst($testimonial->experience_rating?->value) }}
                             </div>
                         </div>
                     </div>
