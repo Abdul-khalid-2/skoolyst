@@ -13,16 +13,16 @@
             </nav>
 
             <div class="social-icons">
-                <a href="https://facebook.com/share/19bYmuDKL1/" aria-label="Facebook">
+                <a href="https://www.facebook.com/skoolyst/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
                     <i class="fab fa-facebook-f"></i>
                 </a>
-                <a href="#" aria-label="Twitter">
-                    <i class="fab fa-twitter"></i>
+                <a href="https://x.com/skoolyst" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+                    <i class="fab fa-x-twitter"></i>
                 </a>
-                <a href="#" aria-label="LinkedIn">
+                <a href="https://www.linkedin.com/in/skoolyst/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                     <i class="fab fa-linkedin-in"></i>
                 </a>
-                <a href="#" aria-label="Instagram">
+                <a href="https://www.instagram.com/skoolyst/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                     <i class="fab fa-instagram"></i>
                 </a>
             </div>
