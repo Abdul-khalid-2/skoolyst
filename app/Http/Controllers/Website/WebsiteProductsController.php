@@ -185,7 +185,9 @@ class WebsiteProductsController extends Controller
             })
             ->distinct()
             ->pluck('product_type')
-            ->filter();
+            ->filter()
+            ->map(fn ($t) => $t instanceof \BackedEnum ? $t->value : (string) $t)
+            ->values();
 
         // Get unique education boards
         $educationBoards = ProductAttribute::whereHas('product', function ($query) {

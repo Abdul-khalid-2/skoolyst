@@ -1134,6 +1134,7 @@
         }
     }
 </style>
+<link rel="stylesheet" href="{{ asset('assets/css/browse_schools.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
@@ -1151,76 +1152,103 @@
 </section>
 
 <!-- ==================== FILTERS SECTION ==================== -->
-<section class="filters-section">
+<section class="filter-section" aria-label="Filter shops">
     <div class="container">
-        <form action="{{ route('website.shop.index') }}" method="GET" id="shop-filters">
-            <div class="filters-container">
-                <!-- Search Filter -->
-                <div class="filter-group">
-                    <label class="filter-label">Search</label>
-                    <input type="text"
-                        name="search"
-                        class="filter-input"
-                        placeholder="Search shops or products..."
-                        value="{{ $search }}">
+        <header class="filter-section__header text-center">
+            <p class="filter-section__eyebrow">Refine your search</p>
+            <h2 class="filter-section__title h5 mb-0">Find the right shop</h2>
+        </header>
+
+        <div class="filter-bar filter-bar--browse">
+            <div class="filter-container" id="shopFiltersContainer" data-base-url="{{ route('website.shop.index') }}">
+
+                <div class="filter-group filter-group--search">
+                    <label class="filter-label" for="shopSearchInput">
+                        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                        Search
+                    </label>
+                    <div class="filter-input-wrap">
+                        <input type="search" class="filter-search" id="shopSearchInput" name="search"
+                            placeholder="Search shops or products..."
+                            value="{{ $search }}" autocomplete="off" inputmode="search">
+                    </div>
                 </div>
 
-                <!-- Associated school — gender & ownership -->
                 <div class="filter-group">
-                    <label class="filter-label">School gender type</label>
-                    <select name="school_gender_type" class="filter-select">
-                        <option value="">All gender types</option>
-                        @foreach($schoolGenderTypes as $value => $label)
-                        <option value="{{ $value }}" {{ ($schoolGenderType ?? '') == $value ? 'selected' : '' }}>
-                            {{ $label }}
-                        </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">School ownership</label>
-                    <select name="school_ownership_type" class="filter-select">
-                        <option value="">All ownership types</option>
-                        @foreach($schoolOwnershipTypes as $value => $label)
-                        <option value="{{ $value }}" {{ ($schoolOwnershipType ?? '') == $value ? 'selected' : '' }}>
-                            {{ $label }}
-                        </option>
-                        @endforeach
-                    </select>
+                    <label class="filter-label" for="genderTypeFilter">
+                        <i class="fas fa-venus-mars" aria-hidden="true"></i>
+                        Gender type
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="genderTypeFilter" name="school_gender_type">
+                            <option value="">All gender types</option>
+                            @foreach($schoolGenderTypes as $value => $label)
+                            <option value="{{ $value }}" {{ ($schoolGenderType ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <!-- City Filter -->
                 <div class="filter-group">
-                    <label class="filter-label">City</label>
-                    <select name="city" class="filter-select">
-                        <option value="">All Cities</option>
-                        @foreach($cities as $cityItem)
-                        <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>
-                            {{ $cityItem }}
-                        </option>
-                        @endforeach
-                    </select>
+                    <label class="filter-label" for="ownershipTypeFilter">
+                        <i class="fas fa-building-columns" aria-hidden="true"></i>
+                        Ownership
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="ownershipTypeFilter" name="school_ownership_type">
+                            <option value="">All ownership types</option>
+                            @foreach($schoolOwnershipTypes as $value => $label)
+                            <option value="{{ $value }}" {{ ($schoolOwnershipType ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Shop Type Filter -->
                 <div class="filter-group">
-                    <label class="filter-label">Shop Type</label>
-                    <select name="shop_type" class="filter-select">
-                        <option value="">All Shop Types</option>
-                        <option value="stationery" {{ $shopType == 'stationery' ? 'selected' : '' }}>Stationery</option>
-                        <option value="book_store" {{ $shopType == 'book_store' ? 'selected' : '' }}>Book Store</option>
-                        <option value="school_affiliated" {{ $shopType == 'school_affiliated' ? 'selected' : '' }}>School Affiliated</option>
-                        <option value="mixed" {{ $shopType == 'mixed' ? 'selected' : '' }}>Mixed</option>
-                    </select>
+                    <label class="filter-label" for="cityFilter">
+                        <i class="fas fa-location-dot" aria-hidden="true"></i>
+                        City
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="cityFilter" name="city">
+                            <option value="">All Cities</option>
+                            @foreach($cities as $cityItem)
+                            <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>{{ $cityItem }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
-                <!-- Filter Actions -->
-                <div class="filter-actions">
-                    <button type="submit" class="btn-filter btn-apply">Filter</button>
-                    <a href="{{ route('website.shop.index') }}" class="btn-filter btn-reset">Reset</a>
+                <div class="filter-group">
+                    <label class="filter-label" for="shopTypeFilter">
+                        <i class="fas fa-store" aria-hidden="true"></i>
+                        Shop type
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="shopTypeFilter" name="shop_type">
+                            <option value="">All Shop Types</option>
+                            <option value="stationery" {{ $shopType == 'stationery' ? 'selected' : '' }}>Stationery</option>
+                            <option value="book_store" {{ $shopType == 'book_store' ? 'selected' : '' }}>Book Store</option>
+                            <option value="school_affiliated" {{ $shopType == 'school_affiliated' ? 'selected' : '' }}>School Affiliated</option>
+                            <option value="mixed" {{ $shopType == 'mixed' ? 'selected' : '' }}>Mixed</option>
+                        </select>
+                    </div>
                 </div>
+
+                <div class="filter-group filter-group--action">
+                    <span class="filter-label filter-label--spacer" aria-hidden="true">
+                        <i class="fas fa-store" aria-hidden="true"></i>
+                        Shop type
+                    </span>
+                    <button type="button" class="clear-filters-btn" id="shopClearFilters"
+                        title="Reset all filters" aria-label="Reset all filters">
+                        <i class="fas fa-arrow-rotate-left" aria-hidden="true"></i>
+                        <span class="clear-filters-btn__text">Reset</span>
+                    </button>
+                </div>
+
             </div>
-        </form>
+        </div>
     </div>
 </section>
 
@@ -1475,24 +1503,54 @@
 
 @push('scripts')
 <script>
-    // Auto-submit form when filter values change
-    document.addEventListener('DOMContentLoaded', function() {
-        const filterSelects = document.querySelectorAll('.filter-select');
+    document.addEventListener('DOMContentLoaded', function () {
+        var fc      = document.getElementById('shopFiltersContainer');
+        var baseUrl = fc ? fc.getAttribute('data-base-url') : window.location.pathname;
 
-        filterSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                document.getElementById('shop-filters').submit();
+        function applyShopFilters() {
+            var params = new URLSearchParams();
+
+            var search = document.getElementById('shopSearchInput');
+            if (search && search.value.trim()) params.set('search', search.value.trim());
+
+            var gender = document.getElementById('genderTypeFilter');
+            if (gender && gender.value) params.set('school_gender_type', gender.value);
+
+            var ownership = document.getElementById('ownershipTypeFilter');
+            if (ownership && ownership.value) params.set('school_ownership_type', ownership.value);
+
+            var city = document.getElementById('cityFilter');
+            if (city && city.value) params.set('city', city.value);
+
+            var shopType = document.getElementById('shopTypeFilter');
+            if (shopType && shopType.value) params.set('shop_type', shopType.value);
+
+            window.location.href = baseUrl + (params.toString() ? '?' + params.toString() : '');
+        }
+
+        ['genderTypeFilter', 'ownershipTypeFilter', 'cityFilter', 'shopTypeFilter'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('change', applyShopFilters);
+        });
+
+        var searchInput = document.getElementById('shopSearchInput');
+        var searchTimer;
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(applyShopFilters, 500);
             });
-        });
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { clearTimeout(searchTimer); applyShopFilters(); }
+            });
+        }
 
-        // Add loading state to form submission
-        const form = document.getElementById('shop-filters');
-        form.addEventListener('submit', function() {
-            const applyBtn = form.querySelector('.btn-apply');
-            applyBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-            applyBtn.disabled = true;
-        });
-
+        var clearBtn = document.getElementById('shopClearFilters');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                window.location.href = baseUrl;
+            });
+        }
     });
 </script>
 <script src="{{ asset('assets/js/product-modal.js') }}"></script>

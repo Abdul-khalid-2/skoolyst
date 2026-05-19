@@ -884,6 +884,7 @@
         }
     }
 </style>
+<link rel="stylesheet" href="{{ asset('assets/css/browse_schools.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
@@ -900,100 +901,145 @@
 </section>
 
 <!-- ==================== SEARCH AND FILTER SECTION ==================== -->
-<section class="search-filter-section">
+<section class="filter-section" aria-label="Filter products">
     <div class="container">
-        <form action="{{ route('website.stationary.index') }}" method="GET" id="productsFilterForm">
-            <div class="search-container">
-                <input type="text" 
-                       name="search" 
-                       class="search-input" 
-                       placeholder="Search for products, books, stationery..." 
-                       value="{{ $search }}"
-                       id="searchInput">
-                <button type="submit" class="search-btn" id="searchButton">
-                    <i class="fas fa-search me-2"></i> Search
-                </button>
-            </div>
+        <header class="filter-section__header text-center">
+            <p class="filter-section__eyebrow">Refine your search</p>
+            <h2 class="filter-section__title h5 mb-0">Find what you need</h2>
+        </header>
 
-            <div class="filter-container">
-                <!-- Category Filter -->
-                <select class="filter-select" name="category" id="categoryFilter">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat->slug }}" {{ $category == $cat->slug ? 'selected' : '' }}>
-                            {{ $cat->name }}
-                        </option>
-                    @endforeach
-                </select>
+        <div class="filter-bar filter-bar--browse">
+            <div class="filter-container"
+                 id="productsFiltersContainer"
+                 data-base-url="{{ route('website.stationary.index') }}"
+                 style="grid-template-columns: 1.4fr repeat(5, 1fr) auto;">
 
-                <!-- Shop Filter -->
-                <select class="filter-select" name="shop" id="shopFilter">
-                    <option value="">All Shops</option>
-                    @foreach($shops as $shopItem)
-                        <option value="{{ $shopItem->uuid }}" {{ $shop == $shopItem->uuid ? 'selected' : '' }}>
-                            {{ $shopItem->name }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <!-- Product Type Filter -->
-                <select class="filter-select" name="product_type" id="productTypeFilter">
-                    <option value="">All Product Types</option>
-                    @foreach($productTypes as $type)
-                        <option value="{{ $type }}" {{ $productType == $type ? 'selected' : '' }}>
-                            {{ ucfirst($type) }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <!-- Education Board Filter -->
-                <select class="filter-select" name="education_board" id="educationBoardFilter">
-                    <option value="">All Education Boards</option>
-                    @foreach($educationBoards as $board)
-                        <option value="{{ $board }}" {{ $educationBoard == $board ? 'selected' : '' }}>
-                            {{ ucfirst($board) }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <!-- Class Level Filter -->
-                <select class="filter-select" name="class_level" id="classLevelFilter">
-                    <option value="">All Class Levels</option>
-                    @foreach($classLevels as $level)
-                        <option value="{{ $level }}" {{ $classLevel == $level ? 'selected' : '' }}>
-                            {{ $level }}
-                        </option>
-                    @endforeach
-                </select>
-
-                <!-- Sort Filter -->
-                <select class="filter-select" name="sort_by" id="sortFilter">
-                    <option value="created_at" {{ $sortBy == 'created_at' ? 'selected' : '' }}>Newest First</option>
-                    <option value="price_low" {{ $sortBy == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
-                    <option value="price_high" {{ $sortBy == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
-                    <option value="name" {{ $sortBy == 'name' ? 'selected' : '' }}>Name A-Z</option>
-                </select>
-
-                <!-- Price Range (Hidden inputs for now, can be enhanced with range sliders) -->
-                <input type="hidden" name="min_price" value="{{ $minPrice }}">
-                <input type="hidden" name="max_price" value="{{ $maxPrice }}">
-
-                <div class="results-count" id="resultsCount">
-                    {{ $products->total() }} products found
+                <div class="filter-group filter-group--search">
+                    <label class="filter-label" for="productSearchInput">
+                        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                        Search
+                    </label>
+                    <div class="filter-input-wrap">
+                        <input type="search" class="filter-search" id="productSearchInput" name="search"
+                            placeholder="Search for products, books, stationery..."
+                            value="{{ $search }}" autocomplete="off" inputmode="search">
+                    </div>
                 </div>
 
-                <div class="view-toggle">
-                    <button type="button" class="view-btn active" data-view="grid">
-                        <i class="fas fa-th"></i>
-                    </button>
-                    <button type="button" class="view-btn" data-view="list">
-                        <i class="fas fa-list"></i>
+                <div class="filter-group">
+                    <label class="filter-label" for="categoryFilter">
+                        <i class="fas fa-tag" aria-hidden="true"></i>
+                        Category
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="categoryFilter" name="category">
+                            <option value="">All Categories</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->slug }}" {{ $category == $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="shopFilter">
+                        <i class="fas fa-store" aria-hidden="true"></i>
+                        Shop
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="shopFilter" name="shop">
+                            <option value="">All Shops</option>
+                            @foreach($shops as $shopItem)
+                                <option value="{{ $shopItem->uuid }}" {{ $shop == $shopItem->uuid ? 'selected' : '' }}>{{ $shopItem->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="productTypeFilter">
+                        <i class="fas fa-boxes-stacked" aria-hidden="true"></i>
+                        Product type
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="productTypeFilter" name="product_type">
+                            <option value="">All Product Types</option>
+                            @foreach($productTypes as $type)
+                                <option value="{{ $type }}" {{ $productType == $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="educationBoardFilter">
+                        <i class="fas fa-graduation-cap" aria-hidden="true"></i>
+                        Board
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="educationBoardFilter" name="education_board">
+                            <option value="">All Education Boards</option>
+                            @foreach($educationBoards as $board)
+                                <option value="{{ $board }}" {{ $educationBoard == $board ? 'selected' : '' }}>{{ ucfirst($board) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label" for="classLevelFilter">
+                        <i class="fas fa-layer-group" aria-hidden="true"></i>
+                        Class level
+                    </label>
+                    <div class="filter-select-wrap">
+                        <select class="filter-select" id="classLevelFilter" name="class_level">
+                            <option value="">All Class Levels</option>
+                            @foreach($classLevels as $level)
+                                <option value="{{ $level }}" {{ $classLevel == $level ? 'selected' : '' }}>{{ $level }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filter-group filter-group--action">
+                    <span class="filter-label filter-label--spacer" aria-hidden="true">
+                        <i class="fas fa-layer-group" aria-hidden="true"></i>
+                        Class level
+                    </span>
+                    <button type="button" class="clear-filters-btn" id="productsClearFilters"
+                        title="Reset all filters" aria-label="Reset all filters">
+                        <i class="fas fa-arrow-rotate-left" aria-hidden="true"></i>
+                        <span class="clear-filters-btn__text">Reset</span>
                     </button>
                 </div>
+
             </div>
-        </form>
+        </div>
     </div>
 </section>
+
+<!-- Sort / Count / View row -->
+<div class="container py-2 border-bottom mb-1">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span class="text-muted small fw-medium">{{ $products->total() }} products found</span>
+        <div class="d-flex align-items-center gap-2">
+            <select id="sortFilter" class="form-select form-select-sm" style="width:auto;min-width:160px;">
+                <option value="created_at" {{ $sortBy == 'created_at' ? 'selected' : '' }}>Newest First</option>
+                <option value="price_low"  {{ $sortBy == 'price_low'  ? 'selected' : '' }}>Price: Low to High</option>
+                <option value="price_high" {{ $sortBy == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                <option value="name"       {{ $sortBy == 'name'       ? 'selected' : '' }}>Name A-Z</option>
+            </select>
+            <div class="btn-group btn-group-sm" role="group" id="viewToggle" aria-label="View toggle">
+                <button type="button" class="btn btn-outline-secondary active" data-view="grid" title="Grid view">
+                    <i class="fas fa-th"></i>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" data-view="list" title="List view">
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- ==================== PRODUCTS GRID SECTION ==================== -->
 <section class="products-section">
@@ -1042,7 +1088,7 @@
                             <div class="product-attributes">
                                 @if($product->attributes)
                                     @if($product->attributes->education_board)
-                                        <span class="attribute-tag">{{ ucfirst($product->attributes->education_board) }}</span>
+                                        <span class="attribute-tag">{{ ucfirst($product->attributes->education_board instanceof \BackedEnum ? $product->attributes->education_board->value : $product->attributes->education_board) }}</span>
                                     @endif
                                     @if($product->attributes->class_level)
                                         <span class="attribute-tag">{{ $product->attributes->class_level }}</span>
@@ -1123,44 +1169,97 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Auto-submit form when filters change
-        const filterSelects = document.querySelectorAll('.filter-select');
-        filterSelects.forEach(select => {
-            select.addEventListener('change', function() {
-                document.getElementById('productsFilterForm').submit();
-            });
+    document.addEventListener('DOMContentLoaded', function () {
+        var fc      = document.getElementById('productsFiltersContainer');
+        var baseUrl = fc ? fc.getAttribute('data-base-url') : window.location.pathname;
+
+        function getProductParams() {
+            var params   = new URLSearchParams();
+            var current  = new URLSearchParams(window.location.search);
+
+            var search = document.getElementById('productSearchInput');
+            if (search && search.value.trim()) params.set('search', search.value.trim());
+
+            var cat = document.getElementById('categoryFilter');
+            if (cat && cat.value) params.set('category', cat.value);
+
+            var shop = document.getElementById('shopFilter');
+            if (shop && shop.value) params.set('shop', shop.value);
+
+            var type = document.getElementById('productTypeFilter');
+            if (type && type.value) params.set('product_type', type.value);
+
+            var board = document.getElementById('educationBoardFilter');
+            if (board && board.value) params.set('education_board', board.value);
+
+            var level = document.getElementById('classLevelFilter');
+            if (level && level.value) params.set('class_level', level.value);
+
+            var sort = document.getElementById('sortFilter');
+            if (sort && sort.value && sort.value !== 'created_at') params.set('sort_by', sort.value);
+
+            // Preserve price range params if set in current URL
+            if (current.has('min_price')) params.set('min_price', current.get('min_price'));
+            if (current.has('max_price')) params.set('max_price', current.get('max_price'));
+
+            return params;
+        }
+
+        function applyProductsFilters() {
+            var params = getProductParams();
+            window.location.href = baseUrl + (params.toString() ? '?' + params.toString() : '');
+        }
+
+        // Filter selects — navigate on change
+        ['categoryFilter', 'shopFilter', 'productTypeFilter', 'educationBoardFilter', 'classLevelFilter'].forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) el.addEventListener('change', applyProductsFilters);
         });
 
-        // View Toggle
-        const viewButtons = document.querySelectorAll('.view-btn');
-        const productsContainer = document.getElementById('productsContainer');
-        
-        viewButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const view = this.getAttribute('data-view');
-                
-                // Update active button
-                viewButtons.forEach(btn => btn.classList.remove('active'));
+        // Sort — navigate on change (includes active filter params)
+        var sortFilter = document.getElementById('sortFilter');
+        if (sortFilter) sortFilter.addEventListener('change', applyProductsFilters);
+
+        // Search — debounced 500 ms, instant on Enter
+        var searchInput = document.getElementById('productSearchInput');
+        var searchTimer;
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(applyProductsFilters, 500);
+            });
+            searchInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { clearTimeout(searchTimer); applyProductsFilters(); }
+            });
+        }
+
+        // Reset button
+        var clearBtn = document.getElementById('productsClearFilters');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                window.location.href = baseUrl;
+            });
+        }
+
+        // View toggle — local class swap only, no navigation
+        var viewBtns          = document.querySelectorAll('#viewToggle .btn');
+        var productsContainer = document.getElementById('productsContainer');
+        viewBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var view = this.getAttribute('data-view');
+                viewBtns.forEach(function (b) { b.classList.remove('active'); });
                 this.classList.add('active');
-                
-                // Update view
-                if (view === 'list') {
-                    productsContainer.classList.remove('products-grid');
-                    productsContainer.classList.add('products-list');
-                    document.querySelectorAll('.product-card').forEach(card => {
-                        card.classList.add('list-view');
-                    });
-                } else {
-                    productsContainer.classList.remove('products-list');
-                    productsContainer.classList.add('products-grid');
-                    document.querySelectorAll('.product-card').forEach(card => {
-                        card.classList.remove('list-view');
-                    });
+                if (productsContainer) {
+                    if (view === 'list') {
+                        productsContainer.classList.replace('products-grid', 'products-list');
+                        productsContainer.querySelectorAll('.product-card').forEach(function (c) { c.classList.add('list-view'); });
+                    } else {
+                        productsContainer.classList.replace('products-list', 'products-grid');
+                        productsContainer.querySelectorAll('.product-card').forEach(function (c) { c.classList.remove('list-view'); });
+                    }
                 }
             });
         });
-
     });
 </script>
 <script src="{{ asset('assets/js/product-modal.js') }}"></script>
