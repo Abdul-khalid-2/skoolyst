@@ -274,6 +274,7 @@ Route::group([
             Route::get('/', [UserProfileController::class, 'show'])->name('user_profile.show');
             Route::get('/edit', [UserProfileController::class, 'edit'])->name('user_profile.edit');
             Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
+            Route::get('/certificate/{attempt:uuid}', [UserProfileController::class, 'downloadCertificate'])->name('user_profile.certificate');
         });
     });
     // advertisement pages

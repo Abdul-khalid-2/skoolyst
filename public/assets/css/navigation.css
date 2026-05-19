@@ -112,3 +112,145 @@
     display: block;
   }
 }
+
+/* ─── Contact Top Bar ─── */
+.contact-topbar {
+  background: linear-gradient(90deg, #0a5c2d 0%, #15a362 45%, #0f8048 55%, #0a5c2d 100%);
+  background-size: 250% 100%;
+  color: #fff;
+  padding: 0.42rem 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  position: relative;
+  overflow: hidden;
+  z-index: 1001;
+  animation: topbar-gradient 5s ease infinite;
+}
+
+@keyframes topbar-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* Shimmer sweep */
+.contact-topbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.14) 50%,
+    transparent 65%
+  );
+  animation: topbar-shimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes topbar-shimmer {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(220%); }
+}
+
+.contact-topbar__inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+/* Blinking amber dot — draws the eye first */
+.contact-topbar__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fbbf24;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px 2px rgba(251, 191, 36, 0.6);
+  animation: dot-pulse 1.3s ease-in-out infinite;
+}
+
+@keyframes dot-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    box-shadow: 0 0 6px 2px rgba(251,191,36,.6); }
+  50%       { opacity: 0.3; transform: scale(0.65); box-shadow: 0 0 2px 1px rgba(251,191,36,.2); }
+}
+
+/* "Get in Touch" label */
+.contact-topbar__lead {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
+.contact-topbar__sep {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.5rem;
+  line-height: 1;
+}
+
+/* Each contact link */
+.contact-topbar__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  color: #fff;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s, transform 0.15s;
+}
+.contact-topbar__item:hover {
+  color: #fef9c3;
+  transform: translateY(-1px);
+}
+
+/* Icon heartbeat — staggered per item */
+.contact-topbar__item i {
+  font-size: 0.95rem;
+  animation: icon-heartbeat 2.4s ease-in-out infinite;
+}
+.contact-topbar__item:nth-of-type(1) i { animation-delay: 0s; }
+.contact-topbar__item:nth-of-type(2) i { animation-delay: 1.2s; }
+
+@keyframes icon-heartbeat {
+  0%, 100% { transform: scale(1); }
+  12%       { transform: scale(1.35); }
+  24%       { transform: scale(1); }
+  36%       { transform: scale(1.2); }
+  60%, 100% { transform: scale(1); }
+}
+
+/* WhatsApp icon green tint */
+.contact-topbar__item .fa-whatsapp {
+  color: #4ade80;
+}
+
+/* Text label gentle fade blink */
+.contact-topbar__label {
+  animation: label-attention 3.5s ease-in-out infinite;
+}
+
+@keyframes label-attention {
+  0%, 80%, 100% { opacity: 1; }
+  40%            { opacity: 0.65; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 575px) {
+  .contact-topbar {
+    font-size: 0.72rem;
+    padding: 0.38rem 0;
+  }
+  .contact-topbar__inner {
+    gap: 0.85rem;
+  }
+  .contact-topbar__sep,
+  .contact-topbar__lead {
+    display: none;
+  }
+}

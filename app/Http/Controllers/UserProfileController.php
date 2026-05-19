@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserTestAttempt;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,46 @@ class UserProfileController extends Controller
     public function show()
     {
         $user = auth()->user()->load('school');
+
+        $attempts = UserTestAttempt::with(['mockTest', 'topic', 'subject'])
+            ->where('user_id', $user->id)
+            ->where('status', 'completed')
+            ->whereIn('result_status', ['passed', 'failed'])
+            ->latest('submitted_at')
+            ->get();
+
         $view = $user->hasDashboardAccess()
             ? 'dashboard.profile.show'
             : 'website.profile.show';
 
-        return view($view, compact('user'));
+        return view($view, compact('user', 'attempts'));
+    }
+
+    public function downloadCertificate(UserTestAttempt $attempt)
+    {
+        if ($attempt->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $statusValue = $attempt->status instanceof \BackedEnum ? $attempt->status->value : $attempt->status;
+        if ($statusValue !== 'completed') {
+            return back()->with('error', 'Certificate is only available for completed tests.');
+        }
+
+        $user = auth()->user();
+
+        $sourceValue = $attempt->test_source instanceof \BackedEnum ? $attempt->test_source->value : $attempt->test_source;
+        $testName = match ($sourceValue) {
+            'mock_test'    => optional($attempt->mockTest)->title ?? 'Mock Test',
+            'topic_test'   => optional($attempt->topic)->name  ?? 'Topic Test',
+            'subject_test' => optional($attempt->subject)->name ?? 'Subject Test',
+            default        => 'MCQ Test',
+        };
+
+        $seconds  = (int) $attempt->time_taken_seconds;
+        $timeTaken = sprintf('%02dh %02dm %02ds', intdiv($seconds, 3600), intdiv($seconds % 3600, 60), $seconds % 60);
+
+        return view('website.profile.certificate', compact('attempt', 'user', 'testName', 'timeTaken'));
     }
 
     /**

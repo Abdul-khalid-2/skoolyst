@@ -1,3 +1,23 @@
+{{-- Contact Top Bar --}}
+<div class="contact-topbar" role="complementary" aria-label="Contact information">
+    <div class="container">
+        <div class="contact-topbar__inner">
+            <span class="contact-topbar__dot" aria-hidden="true"></span>
+            <span class="contact-topbar__lead">Get in Touch</span>
+            <span class="contact-topbar__sep" aria-hidden="true">●</span>
+            <a href="mailto:skoolyst@gmail.com" class="contact-topbar__item">
+                <i class="fas fa-envelope" aria-hidden="true"></i>
+                <span class="contact-topbar__label">skoolyst@gmail.com</span>
+            </a>
+            <span class="contact-topbar__sep" aria-hidden="true">●</span>
+            <a href="https://wa.me/923340673401" class="contact-topbar__item" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-whatsapp" aria-hidden="true"></i>
+                <span class="contact-topbar__label">+92 334 0673401</span>
+            </a>
+        </div>
+    </div>
+</div>
+
 <nav class="navbar navbar-expand-lg">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ LaravelLocalization::localizeUrl('/') }}">
