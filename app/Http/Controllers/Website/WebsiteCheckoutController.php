@@ -41,14 +41,14 @@ class WebsiteCheckoutController extends Controller
     public function process(Request $request)
     {
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email',
-            'phone' => 'required|string|max:20',
-            'address' => 'required|string',
-            'city' => 'required|string|max:255',
-            'state' => 'required|string|max:255',
-            'zip_code' => 'required|string|max:20',
+            'first_name'     => 'required|string|max:255',
+            'last_name'      => 'required|string|max:255',
+            'email'          => 'required|email',
+            'phone'          => 'required|string|max:20',
+            'address'        => 'required|string',
+            'city'           => 'required|string|max:255',
+            'state'          => 'required|string|max:255',
+            'zip_code'       => 'required|string|max:20',
             'payment_method' => 'required|in:credit_card,cash_on_delivery,digital_wallet',
         ]);
 
@@ -58,35 +58,44 @@ class WebsiteCheckoutController extends Controller
             $cartItems = $this->getCartItems();
 
             if (empty($cartItems)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Your cart is empty'
-                ], 400);
+                return response()->json(['success' => false, 'message' => 'Your cart is empty'], 400);
             }
 
-            $cartData = $this->calculateCartTotals($cartItems);
+            // Group cart items by shop
+            $itemsByShop = [];
+            foreach ($cartItems as $item) {
+                $shopId = $this->getShopIdForProduct($item['id']);
+                if (!$shopId) continue;
+                $itemsByShop[$shopId][] = $item;
+            }
 
-            // Create order
-            $order = $this->createOrder($request, $cartData, $cartItems);
+            if (empty($itemsByShop)) {
+                return response()->json(['success' => false, 'message' => 'Could not determine shops for cart items'], 400);
+            }
 
-            // Clear cart
+            $createdOrders = [];
+            foreach ($itemsByShop as $shopId => $shopItems) {
+                $shopCartData = $this->calculateCartTotals($shopItems);
+                $createdOrders[] = $this->createSingleShopOrder($request, $shopCartData, $shopItems, $shopId);
+            }
+
             session()->forget('cart');
+            session()->forget('applied_coupon');
 
             DB::commit();
 
+            $firstOrder = $createdOrders[0];
+
             return response()->json([
-                'success' => true,
-                'order_id' => $order->id,
-                'order_number' => $order->order_number,
-                'redirect_url' => route('website.order.confirmation', $order->uuid)
+                'success'      => true,
+                'order_id'     => $firstOrder->id,
+                'order_number' => $firstOrder->order_number,
+                'total_orders' => count($createdOrders),
+                'redirect_url' => route('website.order.confirmation', $firstOrder->uuid),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process order: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Failed to process order: ' . $e->getMessage()], 500);
         }
     }
 
@@ -211,79 +220,53 @@ class WebsiteCheckoutController extends Controller
         ];
     }
 
-    private function createOrder($request, $cartData, $cartItems)
+    private function createSingleShopOrder($request, $cartData, $shopItems, $shopId)
     {
-        try {
-            // Handle user authentication/creation
-            // $userId = $this->getOrCreateUser($request);
+        $order = \App\Models\Order::create([
+            'uuid'                  => \Illuminate\Support\Str::uuid(),
+            'user_id'               => auth()->id(),
+            'shop_id'               => $shopId,
+            'order_number'          => $this->generateOrderNumber(),
+            'status'                => 'pending',
+            'subtotal'              => $cartData['subtotal'],
+            'shipping_cost'         => $cartData['shipping'],
+            'tax_amount'            => $cartData['tax'],
+            'discount_amount'       => $cartData['discount'],
+            'total_amount'          => $cartData['total'],
+            'payment_method'        => $request->payment_method,
+            'payment_status'        => 'pending',
+            'shipping_first_name'   => $request->first_name,
+            'shipping_last_name'    => $request->last_name,
+            'shipping_email'        => $request->email,
+            'shipping_phone'        => $request->phone,
+            'shipping_address'      => $request->address,
+            'shipping_city'         => $request->city,
+            'shipping_state'        => $request->state,
+            'shipping_zip_code'     => $request->zip_code,
+            'shipping_country'      => 'Pakistan',
+            'delivery_instructions' => $request->delivery_instructions,
+        ]);
 
-            // Get primary shop ID using smart algorithm
-            $primaryShopId = $this->getPrimaryShopId($cartItems, $request->city);
+        foreach ($shopItems as $item) {
+            $categoryId = $this->getCategoryIdForProduct($item['id']);
 
-            // If no primary shop found, fallback to first shop
-            if (!$primaryShopId) {
-                $firstItem = reset($cartItems);
-                $primaryShopId = $this->getShopIdForProduct($firstItem['id']);
-            }
-
-            // Create order
-            $order = \App\Models\Order::create([
-                'uuid' => \Illuminate\Support\Str::uuid(),
-                'name' => $request->first_name . ' ' . $request->last_name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'address' => $request->address,
-                'user_id' => null,
-                'shop_id' => $primaryShopId,
-                'order_number' => $this->generateOrderNumber(),
-                'status' => 'pending',
-                'subtotal' => $cartData['subtotal'],
-                'shipping_cost' => $cartData['shipping'],
-                'tax_amount' => $cartData['tax'],
-                'discount_amount' => $cartData['discount'],
-                'total_amount' => $cartData['total'],
-                'payment_method' => $request->payment_method,
-                'payment_status' => 'pending',
-                'shipping_first_name' => $request->first_name,
-                'shipping_last_name' => $request->last_name,
-                'shipping_email' => $request->email,
-                'shipping_phone' => $request->phone,
-                'shipping_address' => $request->address,
-                'shipping_city' => $request->city,
-                'shipping_state' => $request->state,
-                'shipping_zip_code' => $request->zip_code,
-                'shipping_country' => 'Pakistan',
-                'delivery_instructions' => $request->delivery_instructions,
+            $order->orderItems()->create([
+                'uuid'                => \Illuminate\Support\Str::uuid(),
+                'product_id'          => $item['product_id'],
+                'shop_id'             => $shopId,
+                'product_name'        => $item['name'],
+                'product_description' => $item['description'] ?? null,
+                'product_sku'         => $item['sku'] ?? null,
+                'product_image'       => $item['image'],
+                'unit_price'          => $item['price'],
+                'quantity'            => $item['quantity'],
+                'total_price'         => $item['price'] * $item['quantity'],
+                'category_id'         => $categoryId,
+                'category_name'       => $item['category'] ?? null,
             ]);
-
-            // Create order items
-            foreach ($cartItems as $item) {
-                $shopId = $this->getShopIdForProduct($item['id']);
-                $categoryId = $this->getCategoryIdForProduct($item['id']);
-
-                $order->orderItems()->create([
-                    'uuid' => \Illuminate\Support\Str::uuid(),
-                    'product_id' => $item['product_id'],
-                    'shop_id' => $shopId,
-                    'product_name' => $item['name'],
-                    'product_description' => $item['description'] ?? null,
-                    'product_sku' => $item['sku'] ?? null,
-                    'product_image' => $item['image'],
-                    'unit_price' => $item['price'],
-                    'quantity' => $item['quantity'],
-                    'total_price' => $item['price'] * $item['quantity'],
-                    'category_id' => $categoryId,
-                    'category_name' => $item['category'],
-                ]);
-            }
-
-            // Apply coupon if exists
-            // $this->applyCouponToOrder($order, $userId);
-
-            return $order;
-        } catch (\Exception $e) {
-            throw new \Exception('Failed to create order: ' . $e->getMessage());
         }
+
+        return $order;
     }
 
     // private function getOrCreateUser($request)
@@ -345,97 +328,6 @@ class WebsiteCheckoutController extends Controller
     //         session()->forget('applied_coupon');
     //     }
     // }
-
-    private function getPrimaryShopId($cartItems, $customerCity = null)
-    {
-        if (empty($cartItems)) {
-            return null;
-        }
-
-        // Get all unique shops from cart items
-        $shopIds = [];
-        $shopProducts = [];
-        foreach ($cartItems as $item) {
-            $shopId = $this->getShopIdForProduct($item['id']);
-
-            if ($shopId) {
-                $shopIds[] = $shopId;
-                if (!isset($shopProducts[$shopId])) {
-                    $shopProducts[$shopId] = [];
-                }
-                $shopProducts[$shopId][] = $item;
-            }
-        }
-
-        $uniqueShopIds = array_unique($shopIds);
-
-        if (empty($uniqueShopIds)) {
-            return null;
-        }
-
-        // Get shops with their details
-        $shops = \App\Models\Shop::withCount(['orders as total_orders'])
-            ->withSum(['orders as total_revenue' => function ($query) {
-                $query->where('payment_status', 'paid');
-            }], 'total_amount')
-            ->whereIn('id', $uniqueShopIds)
-            ->get()
-            ->keyBy('id');
-
-        // Algorithm to determine primary shop
-        return $this->determinePrimaryShop($shops, $shopProducts, $customerCity);
-    }
-
-    private function determinePrimaryShop($shops, $shopProducts, $customerCity)
-    {
-        $eligibleShops = [];
-
-        foreach ($shops as $shopId => $shop) {
-            $score = 0;
-
-            // 1. City Match (Highest Priority - 100 points)
-            if ($customerCity && $shop->city && strtolower($shop->city) === strtolower($customerCity)) {
-                $score += 100;
-            }
-
-            // 2. Admin Set Priority (High Priority - 50 points per priority level)
-            if ($shop->priority) {
-                $score += ($shop->priority * 50);
-            }
-
-            // 3. Total Revenue (Medium Priority - 1 point per 1000 Rs)
-            if ($shop->total_revenue) {
-                $score += ($shop->total_revenue / 1000);
-            }
-
-            // 4. Total Orders (Low Priority - 1 point per 10 orders)
-            if ($shop->total_orders) {
-                $score += ($shop->total_orders / 10);
-            }
-
-            // 5. Number of products in current cart (Bonus points)
-            $cartProductCount = count($shopProducts[$shopId] ?? []);
-            $score += ($cartProductCount * 5);
-
-            $eligibleShops[$shopId] = [
-                'shop' => $shop,
-                'score' => $score,
-                'city_match' => $customerCity && $shop->city && strtolower($shop->city) === strtolower($customerCity),
-                'priority' => $shop->priority ?? 0,
-                'revenue' => $shop->total_revenue ?? 0,
-                'orders' => $shop->total_orders ?? 0,
-                'cart_items' => $cartProductCount
-            ];
-        }
-
-        // Sort by score descending
-        uasort($eligibleShops, function ($a, $b) {
-            return $b['score'] <=> $a['score'];
-        });
-
-        // Return the shop with highest score
-        return !empty($eligibleShops) ? array_key_first($eligibleShops) : null;
-    }
 
     private function getShopIdForProduct($productUuid)
     {
