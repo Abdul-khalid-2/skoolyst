@@ -287,7 +287,7 @@ class ReviewController extends Controller
     /**
      * Update review status (approve/reject)
      */
-    public function updateStatus(Request $request, Review $review)
+    public function updateStatus(Request $request, Review $review): \Illuminate\Http\JsonResponse
     {
         // Check permissions
         if (auth()->user()->hasRole('school-admin') && $review->school_id != auth()->user()->school_id) {
@@ -296,20 +296,35 @@ class ReviewController extends Controller
 
         $request->validate([
             'status' => 'required|in:pending,approved,rejected',
-            'notes' => 'nullable|string|max:1000',
+            'notes'  => 'nullable|string|max:1000',
         ]);
 
-        $review->update([
-            'status' => $request->status,
-            'admin_notes' => $request->filled('notes') ? $request->notes : $review->admin_notes,
-        ]);
+        try {
+            $review->update([
+                'status'      => $request->status,
+                'admin_notes' => $request->filled('notes') ? $request->notes : $review->admin_notes,
+            ]);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Review status updated successfully.',
-            'status' => $review->status,
-            'status_badge' => $this->getStatusBadge($review->status)
-        ]);
+            $review->refresh();
+
+            return response()->json([
+                'success'      => true,
+                'message'      => 'Review status updated successfully.',
+                'status'       => $review->status instanceof \BackedEnum ? $review->status->value : $review->status,
+                'status_badge' => $this->getStatusBadge($review->status),
+            ]);
+
+        } catch (\Throwable $e) {
+            \Log::error('Review status update failed', [
+                'review_id' => $review->id,
+                'error'     => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update status. Please try again.',
+            ], 500);
+        }
     }
 
     /**
@@ -373,14 +388,15 @@ class ReviewController extends Controller
     /**
      * Helper function to get status badge
      */
-    private function getStatusBadge($status)
+    private function getStatusBadge(mixed $status): string
     {
-        $badges = [
-            'pending' => '<span class="badge bg-warning">Pending</span>',
+        $value = $status instanceof \UnitEnum ? $status->value : $status;
+
+        return match ($value) {
             'approved' => '<span class="badge bg-success">Approved</span>',
             'rejected' => '<span class="badge bg-danger">Rejected</span>',
-        ];
-
-        return $badges[$status] ?? '<span class="badge bg-secondary">Unknown</span>';
+            'pending'  => '<span class="badge bg-warning text-dark">Pending</span>',
+            default    => '<span class="badge bg-secondary">' . ucfirst((string) $value) . '</span>',
+        };
     }
 }
