@@ -32,7 +32,7 @@
             <div class="order-summary-card-custom">
                 <div class="summary-header-custom">
                     <h3>Order Details</h3>
-                    <span class="order-status badge-custom badge-success-custom">{{ ucfirst($order->status) }}</span>
+                    <span class="order-status badge-custom badge-success-custom">{{ ucfirst($order->status instanceof \BackedEnum ? $order->status->value : $order->status) }}</span>
                 </div>
                 
                 <div class="summary-body">
@@ -50,12 +50,12 @@
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Payment Method:</span>
-                        <span class="summary-value-custom">{{ ucfirst(str_replace('_', ' ', $order->payment_method)) }}</span>
+                        <span class="summary-value-custom">{{ ucfirst(str_replace('_', ' ', $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : $order->payment_method)) }}</span>
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Payment Status:</span>
-                        <span class="summary-value-custom badge-custom badge-{{ $order->payment_status === 'paid' ? 'success-custom' : 'warning-custom' }}">
-                            {{ ucfirst($order->payment_status) }}
+                        <span class="summary-value-custom badge-custom badge-{{ ($order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status) === 'paid' ? 'success-custom' : 'warning-custom' }}">
+                            {{ ucfirst($order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status) }}
                         </span>
                     </div>
                 </div>

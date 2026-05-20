@@ -49,8 +49,9 @@
             <div class="order-results-card-custom">
                 <div class="results-header-custom">
                     <h3>Order Found</h3>
-                    <span class="order-status badge-custom badge-{{ $order->status === 'delivered' ? 'success-custom' : ($order->status === 'cancelled' ? 'danger-custom' : 'primary-custom') }}">
-                        {{ ucfirst($order->status) }}
+                    @php $statusVal = $order->status instanceof \BackedEnum ? $order->status->value : $order->status; @endphp
+                    <span class="order-status badge-custom badge-{{ $statusVal === 'delivered' ? 'success-custom' : ($statusVal === 'cancelled' ? 'danger-custom' : 'primary-custom') }}">
+                        {{ ucfirst($statusVal) }}
                     </span>
                 </div>
 
@@ -70,8 +71,9 @@
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Payment Status:</span>
-                        <span class="summary-value-custom badge-custom badge-{{ $order->payment_status === 'paid' ? 'success-custom' : 'warning-custom' }}">
-                            {{ ucfirst($order->payment_status) }}
+                        @php $payStatusVal = $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status; @endphp
+                        <span class="summary-value-custom badge-custom badge-{{ $payStatusVal === 'paid' ? 'success-custom' : 'warning-custom' }}">
+                            {{ ucfirst($payStatusVal) }}
                         </span>
                     </div>
                 </div>
@@ -90,13 +92,13 @@
                         'cancelled' => ['icon' => 'fas fa-times', 'color' => 'danger-custom']
                         ];
 
-                        $currentStatusIndex = array_search($order->status, array_keys($statuses));
+                        $currentStatusIndex = array_search($order->status instanceof \BackedEnum ? $order->status->value : $order->status, array_keys($statuses));
                         @endphp
 
                         @foreach($statuses as $status => $info)
                         @php
                         $isCompleted = array_search($status, array_keys($statuses)) <= $currentStatusIndex;
-                            $isCurrent=$order->status === $status;
+                            $isCurrent = ($order->status instanceof \BackedEnum ? $order->status->value : $order->status) === $status;
                             @endphp
 
                             <div class="timeline-item-custom {{ $isCompleted ? 'completed' : '' }} {{ $isCurrent ? 'current' : '' }}">
@@ -104,7 +106,7 @@
                                     <i class="{{ $info['icon'] }}"></i>
                                 </div>
                                 <div class="timeline-content-custom">
-                                    <h5 class="timeline-title-custom">{{ ucfirst($status) }}</h5>
+                                    <h5 class="timeline-title-custom">{{ ucfirst($status instanceof \BackedEnum ? $status->value : $status) }}</h5>
                                     @if($isCompleted && $order->{"{$status}_at"})
                                     <p class="timeline-date-custom">
                                         {{ $order->{"{$status}_at"}->format('M d, Y h:i A') }}

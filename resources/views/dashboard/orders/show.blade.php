@@ -428,7 +428,7 @@
                             
                             <div class="d-flex justify-content-between mb-2">
                                 <span>Payment Method:</span>
-                                <span class="text-capitalize">{{ str_replace('_', ' ', $order->payment_method) }}</span>
+                                <span class="text-capitalize">{{ str_replace('_', ' ', $order->payment_method instanceof \BackedEnum ? $order->payment_method->value : $order->payment_method) }}</span>
                             </div>
                             
                             <div class="d-flex justify-content-between">

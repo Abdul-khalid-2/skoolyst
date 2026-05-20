@@ -765,9 +765,18 @@ document.addEventListener('DOMContentLoaded', function() {
             // Submit form via AJAX
             fetch(this.action, {
                 method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
                 body: new FormData(this)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok && response.status === 419) {
+                    throw new Error('Session expired. Please refresh the page and try again.');
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     showToast('Order placed successfully!', 'success');
@@ -783,7 +792,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Error:', error);
-                showToast('An error occurred while processing your order', 'error');
+                const msg = error.message.includes('Session expired')
+                    ? error.message
+                    : 'An error occurred while processing your order. Please try again.';
+                showToast(msg, 'error');
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             });
