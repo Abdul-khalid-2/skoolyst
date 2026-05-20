@@ -679,27 +679,20 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Update cart count in header
+    // Update cart count in header — targets both mobile and desktop badges
     function updateCartCount(count) {
-        const cartBadge = document.querySelector('.cart-badge, .cart-count');
-        const cartCountElement = document.getElementById('cart-count');
-
-        if (cartBadge) {
+        document.querySelectorAll('.cart-badge').forEach(function (badge) {
             if (count > 0) {
-                cartBadge.textContent = count > 99 ? '99+' : count;
-                cartBadge.style.display = 'flex';
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.removeProperty('display');
             } else {
-                cartBadge.style.display = 'none';
+                badge.style.display = 'none';
             }
-        }
+        });
 
-        if (cartCountElement) {
-            cartCountElement.textContent = count;
-        }
-
-        // Update global cart count variable
-        if (typeof window.updateCartCount === 'function') {
-            window.updateCartCount(count);
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+            cartCountEl.textContent = count;
         }
     }
 

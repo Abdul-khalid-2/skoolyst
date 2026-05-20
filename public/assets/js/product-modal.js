@@ -202,27 +202,20 @@ class ProductModal {
             });
     }
 
-    // Add this method to update cart count
     updateCartCount(count) {
-        const cartBadge = document.querySelector('.cart-badge, .cart-count');
-        const cartCountElement = document.getElementById('cart-count');
-
-        if (cartBadge) {
+        // Update every cart badge in the page (mobile + desktop navbar both have .cart-badge)
+        document.querySelectorAll('.cart-badge').forEach(function (badge) {
             if (count > 0) {
-                cartBadge.textContent = count > 99 ? '99+' : count;
-                cartBadge.style.display = 'flex';
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.removeProperty('display');
             } else {
-                cartBadge.style.display = 'none';
+                badge.style.display = 'none';
             }
-        }
+        });
 
-        if (cartCountElement) {
-            cartCountElement.textContent = count;
-        }
-
-        // Update global cart count variable
-        if (typeof window.updateCartCount === 'function') {
-            window.updateCartCount(count);
+        const cartCountEl = document.getElementById('cart-count');
+        if (cartCountEl) {
+            cartCountEl.textContent = count;
         }
     }
 
