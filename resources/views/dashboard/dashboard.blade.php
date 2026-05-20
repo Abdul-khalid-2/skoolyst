@@ -3,184 +3,114 @@
     <main class="main-content">
         <!-- Dashboard Page -->
         <section id="dashboard" class="page-section active">
-            <!-- Welcome Message -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="mb-1">
-                                @if(auth()->user()->hasRole('super-admin'))
-                                    Welcome back, Super Admin!
-                                @else
-                                    Welcome to {{ $school->name }} Dashboard!
-                                @endif
-                            </h4>
-                            <p class="mb-0 opacity-75">
-                                @if(auth()->user()->hasRole('super-admin'))
-                                    Here's an overview of all schools in the system.
-                                @else
-                                    Manage your school profile, events, and more.
-                                @endif
-                            </p>
-                        </div>
+            {{-- Welcome Banner --}}
+            <div class="welcome-banner">
+                <div class="welcome-banner__body">
+                    <div>
+                        <h2 class="welcome-banner__title">
+                            Good {{ now()->hour < 12 ? 'morning' : (now()->hour < 17 ? 'afternoon' : 'evening') }}, {{ auth()->user()->name }}!
+                        </h2>
+                        <p class="welcome-banner__sub">
+                            @if(auth()->user()->hasRole('super-admin'))
+                                Here's an overview of all schools in the system.
+                            @else
+                                Manage your school profile, events, and more from here.
+                            @endif
+                        </p>
+                    </div>
+                    <div class="text-white opacity-75 small d-none d-md-block">
+                        {{ now()->format('l, F j, Y') }}
                     </div>
                 </div>
             </div>
 
-            <!-- Stats Cards -->
+            {{-- Stats Cards --}}
             <div class="row mb-4">
                 @if(auth()->user()->hasRole('super-admin'))
-                    <!-- Super Admin Stats -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background:  #092d63">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Total Schools</h6>
-                                        <h2 class="mb-0">{{ $stats['total_schools'] }}</h2>
-                                        <small class="opacity-75">Registered institutions</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-school fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Total Schools"
+                            value="{{ $stats['total_schools'] }}"
+                            sub="Registered institutions"
+                            icon="fa-school"
+                            color="primary"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background:  #092d63">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Total Users</h6>
-                                        <h2 class="mb-0">{{ $stats['total_users'] }}</h2>
-                                        <small class="opacity-75">System users</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-users fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Total Users"
+                            value="{{ $stats['total_users'] }}"
+                            sub="System users"
+                            icon="fa-users"
+                            color="info"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background:  #092d63">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Total Reviews</h6>
-                                        <h2 class="mb-0">{{ $stats['total_reviews'] }}</h2>
-                                        <small class="opacity-75">Across all schools</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-star fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Total Reviews"
+                            value="{{ $stats['total_reviews'] }}"
+                            sub="Across all schools"
+                            icon="fa-star"
+                            color="warning"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background:  #092d63">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Avg Rating</h6>
-                                        <h2 class="mb-0">{{ number_format($stats['average_rating'], 1) }}/5</h2>
-                                        <small class="opacity-75">Overall satisfaction</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-chart-line fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Avg Rating"
+                            value="{{ number_format($stats['average_rating'], 1) }}/5"
+                            sub="Overall satisfaction"
+                            icon="fa-chart-line"
+                            color="success"
+                        />
                     </div>
-
                 @else
-                    <!-- School Admin Stats -->
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Profile Visits</h6>
-                                        <h2 class="mb-0">{{ $stats['profile_visits'] }}</h2>
-                                        <small class="opacity-75">Total visitors</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-eye fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Profile Visits"
+                            value="{{ $stats['profile_visits'] }}"
+                            sub="Total visitors"
+                            icon="fa-eye"
+                            color="primary"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Reviews</h6>
-                                        <h2 class="mb-0">{{ $stats['total_reviews'] }}</h2>
-                                        <small class="opacity-75">
-                                            Avg: {{ number_format($stats['average_rating'], 1) }}/5
-                                        </small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-star fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Reviews"
+                            value="{{ $stats['total_reviews'] }}"
+                            sub="Avg: {{ number_format($stats['average_rating'], 1) }}/5"
+                            icon="fa-star"
+                            color="success"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Upcoming Events</h6>
-                                        <h2 class="mb-0">{{ $stats['total_events'] }}</h2>
-                                        <small class="opacity-75">Scheduled activities</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-calendar-alt fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Upcoming Events"
+                            value="{{ $stats['total_events'] }}"
+                            sub="Scheduled activities"
+                            icon="fa-calendar-alt"
+                            color="warning"
+                        />
                     </div>
-
                     <div class="col-lg-3 col-md-6 mb-4">
-                        <div class="card stats-card text-white" style="background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%);">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h6 class="card-title opacity-75">Branches</h6>
-                                        <h2 class="mb-0">{{ $stats['total_branches'] }}</h2>
-                                        <small class="opacity-75">School locations</small>
-                                    </div>
-                                    <div class="bg-white bg-opacity-25 rounded-circle p-3">
-                                        <i class="fas fa-code-branch fa-2x"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <x-stat-card
+                            label="Branches"
+                            value="{{ $stats['total_branches'] }}"
+                            sub="School locations"
+                            icon="fa-code-branch"
+                            color="info"
+                        />
                     </div>
                 @endif
             </div>
 
-            <!-- Recent Activity & Upcoming Events -->
+            {{-- Recent Activity & Upcoming Events --}}
             @if(auth()->user()->hasRole('school-admin'))
             <div class="row">
                 <!-- Recent Reviews -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chart-card">
-                        <div class="card-header bg-white border-0">
-                            <h5 class="card-title">Recent Reviews</h5>
+                        <div class="card-header">
+                            <h6 class="mb-0 fw-semibold" style="color: var(--color-gray-700)">Recent Reviews</h6>
                         </div>
                         <div class="card-body p-0">
                             <div class="list-group list-group-flush">
@@ -216,8 +146,8 @@
                 <!-- Upcoming Events -->
                 <div class="col-lg-6 mb-4">
                     <div class="card chart-card">
-                        <div class="card-header bg-white border-0">
-                            <h5 class="card-title">Upcoming Events</h5>
+                        <div class="card-header">
+                            <h6 class="mb-0 fw-semibold" style="color: var(--color-gray-700)">Upcoming Events</h6>
                         </div>
                         <div class="card-body p-0">
                             <div class="list-group list-group-flush">

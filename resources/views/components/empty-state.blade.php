@@ -1,19 +1,19 @@
 @props([
-    'title' => 'No data',
+    'title'       => 'No data',
     'description' => null,
-    'icon' => 'fa-inbox',
+    'icon'        => 'fa-inbox',
 ])
 
-<div {{ $attributes->merge(['class' => 'text-center py-5 px-3 text-muted']) }}>
-    <i class="fas {{ $icon }} fa-3x mb-3 opacity-50" aria-hidden="true"></i>
-    <h3 class="h5 text-body">{{ $title }}</h3>
+<div {{ $attributes->merge(['class' => 'empty-state']) }}>
+    <div class="empty-state__icon-wrap">
+        <i class="fas {{ $icon }} empty-state__icon" aria-hidden="true"></i>
+    </div>
+    <h3 class="empty-state__title">{{ $title }}</h3>
     @if ($description)
-        <p class="mb-3">{{ $description }}</p>
+        <p class="empty-state__desc">{{ $description }}</p>
     @endif
     @isset($actions)
-        <div class="mt-3">
-            {{ $actions }}
-        </div>
+        <div class="empty-state__actions">{{ $actions }}</div>
     @endisset
     {{ $slot }}
 </div>

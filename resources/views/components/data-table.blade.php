@@ -46,6 +46,7 @@ USAGE EXAMPLE
     'emptyTitle' => 'No records found',
     'emptyDescription' => null,
     'emptyIcon' => 'fa-inbox',
+    'title' => null,
 ])
 
 @php
@@ -68,41 +69,40 @@ USAGE EXAMPLE
 @endphp
 
 <x-card {{ $attributes }}>
-    <div class="card-header bg-white py-3 border-bottom">
-        <div class="row align-items-center g-2">
-            <div class="col">
-                @if ($totalRecords !== null)
-                    <span class="text-muted small">{{ $totalRecords }} {{ Str::plural('record', $totalRecords) }}</span>
-                @endif
-            </div>
-            @if ($searchable)
-                <div class="col-auto">
-                    <form method="GET" action="{{ request()->url() }}" class="d-flex align-items-center gap-2">
-                        @foreach (request()->except(['search', 'page']) as $name => $value)
-                            @if (is_array($value))
-                                @foreach ($value as $subKey => $subVal)
-                                    <input type="hidden" name="{{ $name }}[{{ $subKey }}]" value="{{ $subVal }}">
-                                @endforeach
-                            @else
-                                <input type="hidden" name="{{ $name }}" value="{{ $value }}">
-                            @endif
-                        @endforeach
-                        <input type="hidden" name="page" value="1">
-                        <div class="input-group input-group-sm" style="min-width: 220px;">
-                            <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted" aria-hidden="true"></i></span>
-                            <input
-                                type="search"
-                                name="search"
-                                value="{{ $searchValue }}"
-                                class="form-control border-start-0"
-                                placeholder="{{ __('Search…') }}"
-                                aria-label="{{ __('Search') }}"
-                            >
-                        </div>
-                    </form>
-                </div>
+    <div class="card-header d-flex align-items-center justify-content-between gap-3 py-3 px-4">
+        <div class="d-flex align-items-center gap-3">
+            @if ($title)
+                <h6 class="mb-0 fw-semibold" style="color: var(--color-gray-700)">{{ $title }}</h6>
+            @endif
+            @if ($totalRecords !== null)
+                <span class="badge-custom badge-secondary-custom">{{ $totalRecords }} {{ Str::plural('record', $totalRecords) }}</span>
             @endif
         </div>
+        @if ($searchable)
+            <form method="GET" action="{{ request()->url() }}" class="d-flex align-items-center">
+                @foreach (request()->except(['search', 'page']) as $name => $value)
+                    @if (is_array($value))
+                        @foreach ($value as $subKey => $subVal)
+                            <input type="hidden" name="{{ $name }}[{{ $subKey }}]" value="{{ $subVal }}">
+                        @endforeach
+                    @else
+                        <input type="hidden" name="{{ $name }}" value="{{ $value }}">
+                    @endif
+                @endforeach
+                <input type="hidden" name="page" value="1">
+                <div class="input-group input-group-sm dt-search-group">
+                    <span class="input-group-text"><i class="fas fa-search" aria-hidden="true"></i></span>
+                    <input
+                        type="search"
+                        name="search"
+                        value="{{ $searchValue }}"
+                        class="form-control"
+                        placeholder="{{ __('Search…') }}"
+                        aria-label="{{ __('Search') }}"
+                    >
+                </div>
+            </form>
+        @endif
     </div>
 
     @if ($bulkActions && isset($bulkBar))

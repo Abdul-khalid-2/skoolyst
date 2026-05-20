@@ -1,20 +1,19 @@
 @props(['title' => ''])
 
-<header {{ $attributes->merge(['class' => 'page-header mb-4 px-3 px-md-0']) }}>
-    <div
-        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center"
-    >
-        <div class="mb-3 mb-md-0">
-            @isset($heading)
-                {{ $heading }}
-            @else
-                <h1 class="h3 mb-1 mb-md-2">{{ $title }}</h1>
-            @endisset
-        </div>
-        @isset($actions)
-            <div class="w-100 w-md-auto">
-                {{ $actions }}
-            </div>
+<header {{ $attributes->merge(['class' => 'page-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3']) }}>
+    <div>
+        @isset($heading)
+            {{ $heading }}
+        @else
+            <h1 class="page-title">{{ $title }}</h1>
+        @endisset
+        @isset($breadcrumb)
+            <nav aria-label="breadcrumb" class="mt-1">{{ $breadcrumb }}</nav>
         @endisset
     </div>
+    @isset($actions)
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            {{ $actions }}
+        </div>
+    @endisset
 </header>

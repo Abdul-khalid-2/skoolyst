@@ -1,10 +1,12 @@
     <!-- Sidebar -->
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-header d-flex justify-content-between align-items-center">
-            <h4 class="text-white mb-0">
-                <a class="navbar-brand text-white" href="{{ url('/') }}">SKOOLYST</a>
+            <h4 class="mb-0">
+                <a class="navbar-brand" href="{{ url('/') }}">
+                    <i class="fas fa-graduation-cap me-2" style="color: var(--color-accent); font-size: 1.1rem;"></i>SKOOLYST
+                </a>
             </h4>
-            <button class="btn btn-link d-md-none p-0 text-white">
+            <button class="btn btn-link d-md-none p-0 text-white" onclick="closeSidebar()" aria-label="Close sidebar">
                 <i class="fas fa-times"></i>
             </button>
         </div>
@@ -13,7 +15,7 @@
 
             {{-- ===================== COMMON ITEMS FOR ALL ROLES ===================== --}}
             <li class="nav-item">
-                <a href="{{ route('dashboard') }}" 
+                <a href="{{ route('dashboard') }}"
                 class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
@@ -22,6 +24,7 @@
 
             {{-- ===================== SUPER ADMIN MENU ===================== --}}
             @role('super-admin')
+            <li class="sidebar-section-label">Administration</li>
 
                 <li class="nav-item">
                     <a href="{{ route('schools.index') }}" 
@@ -287,6 +290,23 @@
             @endrole
 
         </ul>
+
+        {{-- Sidebar footer: logged-in user info --}}
+        <div class="sidebar-footer">
+            <div class="d-flex align-items-center gap-2">
+                <div class="sidebar-footer-avatar">
+                    @if(auth()->user()->profile_picture_url)
+                        <img src="{{ auth()->user()->profile_picture_url }}" alt="{{ auth()->user()->name }}">
+                    @else
+                        <i class="fas fa-user"></i>
+                    @endif
+                </div>
+                <div class="sidebar-footer-info">
+                    <div class="sidebar-footer-name">{{ auth()->user()->name }}</div>
+                    <div class="sidebar-footer-role">{{ auth()->user()->getRoleNames()->first() ?? 'User' }}</div>
+                </div>
+            </div>
+        </div>
     </nav>
 
 
@@ -296,10 +316,10 @@
     <!-- Header -->
     <header class="header d-flex align-items-center justify-content-between px-4">
         <div class="d-flex align-items-center">
-            <button class="btn btn-link me-3" onclick="toggleSidebar()" id="sidebarToggle">
-                <i class="fas fa-bars text-gray-600"></i>
+            <button class="btn btn-link me-3 p-1" onclick="toggleSidebar()" id="sidebarToggle" aria-label="Toggle sidebar">
+                <i class="fas fa-bars" style="color: var(--color-gray-600); font-size: 1.1rem;"></i>
             </button>
-            <h5 class="mb-0 text-gray-800" id="pageTitle">Dashboard</h5>
+            <h5 class="mb-0 fw-semibold" style="color: var(--color-gray-800);" id="pageTitle">Dashboard</h5>
         </div>
 
         <div class="d-flex align-items-center">
@@ -313,7 +333,7 @@
                     ->count();
                     @endphp
                     @if($newInquiriesCount > 0)
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger notification-pulse"
                         style="font-size: 0.6rem;" id="notificationBadge">
                         {{ $newInquiriesCount }}
                     </span>
