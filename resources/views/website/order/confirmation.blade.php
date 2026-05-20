@@ -46,7 +46,7 @@
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Total Amount:</span>
-                        <span class="summary-value-custom">Rs. {{ number_format($order->total_amount, 2) }}</span>
+                        <span class="summary-value-custom">Rs. {{ number_format($allOrders->sum('total_amount'), 2) }}</span>
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Payment Method:</span>
@@ -64,26 +64,44 @@
             <!-- Order Items -->
             <div class="order-items-card-custom">
                 <h3 class="card-title-custom">Order Items</h3>
-                <div class="order-items-list">
-                    @foreach($order->orderItems as $item)
-                        <div class="order-item-custom">
-                            <div class="item-image-custom">
-                                <img src="{{ $item->product_image }}" alt="{{ $item->product_name }}">
-                            </div>
-                            <div class="item-details-custom">
-                                <h4 class="item-name-custom">{{ $item->product_name }}</h4>
-                                <p class="item-shop-custom">{{ $item->shop->name ?? 'Unknown Shop' }}</p>
-                                <div class="item-meta-custom">
-                                    <span class="item-quantity">Qty: {{ $item->quantity }}</span>
-                                    <span class="item-price">Rs. {{ number_format($item->unit_price, 2) }} each</span>
+
+                @foreach($allOrders as $shopOrder)
+                    @if($allOrders->count() > 1)
+                        <p style="font-weight:600; margin:12px 0 6px; font-size:14px; color:#374151;">
+                            🏪 {{ $shopOrder->shop->name ?? 'Shop' }}
+                            <span style="font-weight:400; font-size:12px; color:#6b7280;">
+                                ({{ $shopOrder->order_number }})
+                            </span>
+                        </p>
+                    @endif
+
+                    <div class="order-items-list">
+                        @foreach($shopOrder->orderItems as $item)
+                            <div class="order-item-custom">
+                                <div class="item-image-custom">
+                                    <img src="{{ $item->product_image }}" alt="{{ $item->product_name }}">
+                                </div>
+                                <div class="item-details-custom">
+                                    <h4 class="item-name-custom">{{ $item->product_name }}</h4>
+                                    <p class="item-shop-custom">{{ $item->shop->name ?? 'Unknown Shop' }}</p>
+                                    <div class="item-meta-custom">
+                                        <span class="item-quantity">Qty: {{ $item->quantity }}</span>
+                                        <span class="item-price">Rs. {{ number_format($item->unit_price, 2) }} each</span>
+                                    </div>
+                                </div>
+                                <div class="item-total-custom">
+                                    Rs. {{ number_format($item->total_price, 2) }}
                                 </div>
                             </div>
-                            <div class="item-total-custom">
-                                Rs. {{ number_format($item->total_price, 2) }}
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+                        @endforeach
+                    </div>
+                @endforeach
+
+                @if($allOrders->count() > 1)
+                    <div style="margin-top:12px; padding:10px 14px; background:#eff6ff; border-radius:8px; font-size:13px; color:#1d4ed8;">
+                        ℹ️ Items from {{ $allOrders->count() }} shops — each shop will fulfill and deliver their order separately.
+                    </div>
+                @endif
             </div>
 
             <!-- Shipping Information -->

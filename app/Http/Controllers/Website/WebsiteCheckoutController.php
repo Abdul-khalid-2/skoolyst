@@ -73,10 +73,12 @@ class WebsiteCheckoutController extends Controller
                 return response()->json(['success' => false, 'message' => 'Could not determine shops for cart items'], 400);
             }
 
+            $checkoutSessionId = \Illuminate\Support\Str::uuid()->toString();
+
             $createdOrders = [];
             foreach ($itemsByShop as $shopId => $shopItems) {
-                $shopCartData = $this->calculateCartTotals($shopItems);
-                $createdOrders[] = $this->createSingleShopOrder($request, $shopCartData, $shopItems, $shopId);
+                $shopCartData  = $this->calculateCartTotals($shopItems);
+                $createdOrders[] = $this->createSingleShopOrder($request, $shopCartData, $shopItems, $shopId, $checkoutSessionId);
             }
 
             session()->forget('cart');
@@ -220,10 +222,11 @@ class WebsiteCheckoutController extends Controller
         ];
     }
 
-    private function createSingleShopOrder($request, $cartData, $shopItems, $shopId)
+    private function createSingleShopOrder($request, $cartData, $shopItems, $shopId, $checkoutSessionId)
     {
         $order = \App\Models\Order::create([
             'uuid'                  => \Illuminate\Support\Str::uuid(),
+            'checkout_session_id'   => $checkoutSessionId,
             'user_id'               => auth()->id(),
             'shop_id'               => $shopId,
             'order_number'          => $this->generateOrderNumber(),

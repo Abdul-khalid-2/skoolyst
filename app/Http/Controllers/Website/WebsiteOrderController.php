@@ -11,14 +11,25 @@ class WebsiteOrderController extends Controller
     public function confirmation($orderUuid)
     {
         try {
-            $order = Order::with(['orderItems', 'shop', 'user', 'coupon'])
+            $order = Order::with(['orderItems.shop', 'shop', 'user'])
                 ->where('uuid', $orderUuid)
                 ->firstOrFail();
 
-            return view('website.order.confirmation', compact('order'));
+            $allOrders = collect([$order]);
+
+            if ($order->checkout_session_id) {
+                $siblings = Order::with(['orderItems.shop', 'shop'])
+                    ->where('checkout_session_id', $order->checkout_session_id)
+                    ->where('uuid', '!=', $orderUuid)
+                    ->get();
+                $allOrders = $allOrders->merge($siblings);
+            }
+
+            return view('website.order.confirmation', compact('order', 'allOrders'));
+
         } catch (\Exception $e) {
             return redirect()->route('website.cart')
-                ->with('error', 'Order not found or you do not have permission to view this order.');
+                ->with('error', 'Order not found.');
         }
     }
 
