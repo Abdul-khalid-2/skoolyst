@@ -145,7 +145,7 @@
                 <p>If you have any questions about your order, please contact our customer support.</p>
                 <div class="contact-info-custom">
                     <p><i class="fas fa-phone me-2"></i> +92-334-0673401</p>
-                    <p><i class="fas fa-envelope me-2"></i> support@schoolmart.com</p>
+                    <p><i class="fas fa-envelope me-2"></i> skoolyst@gmail.com</p>
                 </div>
             </div>
         </div>
