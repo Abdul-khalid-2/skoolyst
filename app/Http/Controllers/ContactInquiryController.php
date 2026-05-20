@@ -65,7 +65,7 @@ class ContactInquiryController extends Controller
                 ]);
             }
         } else {
-            Log::info('School inquiry saved but school has no valid email', [
+            Log::warning('School inquiry saved but school has no valid email', [
                 'inquiry_id' => $inquiry->id,
                 'school_id' => $inquiry->school_id,
             ]);
