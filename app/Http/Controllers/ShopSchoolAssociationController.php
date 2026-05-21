@@ -39,7 +39,8 @@ class ShopSchoolAssociationController extends Controller
 
     public function edit(ShopSchoolAssociation $shopSchoolAssociation)
     {
-        return view('shop-school-associations.edit', compact('shopSchoolAssociation'));
+        $shopSchoolAssociation->load('shop', 'school');
+        return view('dashboard.shops.association-edit', compact('shopSchoolAssociation'));
     }
 
     public function update(Request $request, ShopSchoolAssociation $shopSchoolAssociation)
@@ -56,13 +57,18 @@ class ShopSchoolAssociationController extends Controller
 
         $shopSchoolAssociation->update($validated);
 
-        return redirect()->route('shop-school-associations.show', $shopSchoolAssociation)->with('success', 'Association updated successfully.');
+        return redirect()
+            ->route('shops.associations', $shopSchoolAssociation->shop_id)
+            ->with('success', 'Association updated successfully.');
     }
 
     public function destroy(ShopSchoolAssociation $shopSchoolAssociation)
     {
+        $shopId = $shopSchoolAssociation->shop_id;
         $shopSchoolAssociation->delete();
-        return redirect()->route('shop-school-associations.index')->with('success', 'Association deleted successfully.');
+        return redirect()
+            ->route('shops.associations', $shopId)
+            ->with('success', 'Association deleted successfully.');
     }
 
     public function approve(ShopSchoolAssociation $shopSchoolAssociation)

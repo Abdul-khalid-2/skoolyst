@@ -84,4 +84,21 @@ class RolePermissionSeeder extends Seeder
         ]);
         $user->assignRole('super-admin');
     }
+
+
+
+    // $schoolUser = Role::create(['name' => 'parent-role']);
+    // $schoolUser->givePermissionTo([
+    //     'branches.view',
+    //     'events.view',
+    //     'reviews.view',
+    //     'reviews.create',
+    // ]);
+    // $schoolUser = Role::create(['name' => 'student-role']);
+    // $schoolUser->givePermissionTo([
+    //     'branches.view',
+    //     'events.view',
+    //     'reviews.view',
+    //     'reviews.create',
+    // ]);
 }

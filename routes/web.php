@@ -386,9 +386,13 @@ Route::group([
         });
 
         // School Admin Routes
-        Route::prefix('school')->middleware(['auth', 'role:school-admin'])->group(function () {
-            Route::get('/mcqs', [SchoolMcqController::class, 'index'])->name('school.mcqs.index');
-            Route::get('/study-materials', [SchoolStudyMaterialController::class, 'index'])->name('school.study-materials.index');
+            Route::prefix('school')->name('school.')->middleware(['auth', 'role:school-admin'])->group(function () {
+            Route::get('/mcqs', [SchoolMcqController::class, 'index'])->name('mcqs.index');
+            Route::get('/study-materials', [SchoolStudyMaterialController::class, 'index'])->name('study-materials.index');
+
+            Route::get('shop-associations', [\App\Http\Controllers\SchoolShopAssociationController::class, 'index'])->name('shop-associations.index');
+            Route::post('shop-associations/{association}/approve', [\App\Http\Controllers\SchoolShopAssociationController::class, 'approve'])->name('shop-associations.approve');
+            Route::post('shop-associations/{association}/reject', [\App\Http\Controllers\SchoolShopAssociationController::class, 'reject'])->name('shop-associations.reject');
         });
     });
 

@@ -59,18 +59,19 @@
 
                             <div class="col-md-6">
                                 <label for="role" class="form-label">Role <span class="text-danger">*</span></label>
-                                <select class="form-select @error('role') is-invalid @enderror" 
-                                        id="role" 
-                                        name="role" 
+                                <select class="form-select @error('role') is-invalid @enderror"
+                                        id="role"
+                                        name="role"
                                         required>
                                     <option value="">Select Role</option>
-                                    @role('super-admin')
-                                    <option value="super-admin" {{ old('role') == 'super-admin' ? 'selected' : '' }}>Super Admin</option>
-                                    @endrole
-                                    <option value="school-admin" {{ old('role') == 'school-admin' ? 'selected' : '' }}>School Admin</option>
-                                    <option value="teacher" {{ old('role') == 'teacher' ? 'selected' : '' }}>Teacher</option>
-                                    <option value="student" {{ old('role') == 'student' ? 'selected' : '' }}>Student</option>
-                                    <option value="parent" {{ old('role') == 'parent' ? 'selected' : '' }}>Parent</option>
+                                    @foreach($roles as $role)
+                                        @if($role->name === 'super-admin' && !auth()->user()->hasRole('super-admin'))
+                                            @continue
+                                        @endif
+                                        <option value="{{ $role->name }}" {{ old('role') == $role->name ? 'selected' : '' }}>
+                                            {{ ucwords(str_replace('-', ' ', $role->name)) }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('role')
                                 <div class="invalid-feedback">{{ $message }}</div>

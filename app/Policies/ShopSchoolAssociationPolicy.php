@@ -4,63 +4,49 @@ namespace App\Policies;
 
 use App\Models\ShopSchoolAssociation;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ShopSchoolAssociationPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['super-admin', 'shop-owner']);
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, ShopSchoolAssociation $shopSchoolAssociation): bool
+    public function view(User $user, ShopSchoolAssociation $association): bool
     {
-        return false;
+        return $user->hasRole('super-admin')
+            || $user->id === $association->shop?->user_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
-        return false;
+        return $user->hasAnyRole(['super-admin', 'shop-owner']);
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, ShopSchoolAssociation $shopSchoolAssociation): bool
+    public function update(User $user, ShopSchoolAssociation $association): bool
     {
-        return false;
+        // Shop owner can edit their own pending associations; super-admin can edit any
+        return $user->hasRole('super-admin')
+            || ($user->id === $association->shop?->user_id
+                && ($association->status instanceof \BackedEnum
+                    ? $association->status->value
+                    : $association->status) === 'pending');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, ShopSchoolAssociation $shopSchoolAssociation): bool
+    public function delete(User $user, ShopSchoolAssociation $association): bool
     {
-        return false;
+        // Shop owner can delete their own associations; super-admin can delete any
+        return $user->hasRole('super-admin')
+            || $user->id === $association->shop?->user_id;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, ShopSchoolAssociation $shopSchoolAssociation): bool
+    public function restore(User $user, ShopSchoolAssociation $association): bool
     {
-        return false;
+        return $user->hasRole('super-admin');
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, ShopSchoolAssociation $shopSchoolAssociation): bool
+    public function forceDelete(User $user, ShopSchoolAssociation $association): bool
     {
-        return false;
+        return $user->hasRole('super-admin');
     }
 }

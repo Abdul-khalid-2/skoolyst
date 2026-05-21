@@ -236,6 +236,22 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a href="{{ route('school.shop-associations.index') }}"
+                    class="nav-link {{ request()->routeIs('school.shop-associations.*') ? 'active' : '' }}">
+                        <i class="fas fa-handshake"></i>
+                        <span>Shop Associations</span>
+                        @php
+                            $pendingAssocCount = \App\Models\ShopSchoolAssociation::where('school_id', auth()->user()->school_id)
+                                ->where('status', \App\Enums\ModerationStatus::Pending)
+                                ->count();
+                        @endphp
+                        @if($pendingAssocCount > 0)
+                            <span class="badge bg-danger ms-auto">{{ $pendingAssocCount }}</span>
+                        @endif
+                    </a>
+                </li>
+
                 {{-- <li class="nav-item">
                     <a href="{{ route('school.mcqs.index') }}" 
                     class="nav-link {{ request()->routeIs('school.mcqs.*') ? 'active' : '' }}">

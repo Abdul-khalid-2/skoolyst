@@ -114,7 +114,8 @@ class UserController extends Controller
                     ->get();
             }
 
-            return view('dashboard.users.create', compact('schools'));
+            $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
+            return view('dashboard.users.create', compact('schools', 'roles'));
         } catch (\Exception $e) {
             Log::error('Error loading create user form: '.$e->getMessage());
 
@@ -255,7 +256,8 @@ class UserController extends Controller
 
             $userRole = $user->roles->first()?->name ?? '';
 
-            return view('dashboard.users.edit', compact('user', 'schools', 'userRole'));
+            $roles = \Spatie\Permission\Models\Role::orderBy('name')->get();
+            return view('dashboard.users.edit', compact('user', 'schools', 'userRole', 'roles'));
         } catch (ModelNotFoundException $e) {
             return redirect()->route('users.index')
                 ->with('error', 'User not found.');

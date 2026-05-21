@@ -213,7 +213,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            @if(($association->status instanceof \BackedEnum ? $association->status->value : $association->status) == 'pending' && auth()->user()->hasRole('super_admin'))
+                                            @if(($association->status instanceof \BackedEnum ? $association->status->value : $association->status) == 'pending' && auth()->user()->hasRole('super-admin'))
                                             <form action="{{ route('shop-school-associations.approve', $association) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-success" title="Approve">
