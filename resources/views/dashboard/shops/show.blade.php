@@ -182,7 +182,7 @@
                                         <strong>{{ $association->school->name }}</strong>
                                         <br>
                                         <small class="text-muted text-capitalize">
-                                            {{ str_replace('_', ' ', $association->association_type) }}
+                                            {{ str_replace('_', ' ', $association->association_type instanceof \BackedEnum ? $association->association_type->value : $association->association_type) }}
                                         </small>
                                     </div>
                                     <span class="badge bg-{{ $association->status == 'approved' ? 'success' : 'warning' }}">

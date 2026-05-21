@@ -26,17 +26,9 @@ class WebsiteShopController extends Controller
         $city = $request->input('city');
         $shopType = $request->input('shop_type');
 
-        // Start query for shops with school associations
         $shopsQuery = Shop::with(['schoolAssociations.school', 'products'])
             ->where('is_active', true)
-            ->where('is_verified', true)
-            ->where(function ($query) {
-                $query->whereHas('schoolAssociations', function ($subQuery) {
-                    $subQuery->where('is_active', true)
-                        ->where('status', ModerationStatus::Approved);
-                })
-                    ->orWhereDoesntHave('schoolAssociations');
-            });
+            ->where('is_verified', true);
 
         // Apply search filter
         if ($search) {
@@ -86,7 +78,6 @@ class WebsiteShopController extends Controller
 
         // Get unique cities for filter
         $cities = Shop::where('is_active', true)
-            ->whereHas('schoolAssociations')
             ->distinct()
             ->pluck('city')
             ->filter();

@@ -214,7 +214,7 @@
                             {{ $association->school->city }}, {{ $association->school->state ?? '' }}
                         </div>
                         <div class="association-type">
-                            {{ ucfirst($association->association_type) }} Partner
+                            {{ ucfirst($association->association_type instanceof \BackedEnum ? $association->association_type->value : $association->association_type) }} Partner
                         </div>
                         @if($association->discount_percentage > 0)
                             <div class="discount-badge" style="margin-top: 1rem; background: #ff6b35; color: white; padding: 0.3rem 0.8rem; border-radius: 15px; font-size: 0.8rem;">

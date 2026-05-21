@@ -54,7 +54,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4 class="mb-0">{{ $associations->where('status', 'approved')->count() }}</h4>
+                                    <h4 class="mb-0">{{ $associations->where('status', \App\Enums\ModerationStatus::Approved)->count() }}</h4>
                                     <p class="mb-0">Approved</p>
                                 </div>
                                 <div class="align-self-center">
@@ -69,7 +69,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4 class="mb-0">{{ $associations->where('status', 'pending')->count() }}</h4>
+                                    <h4 class="mb-0">{{ $associations->where('status', \App\Enums\ModerationStatus::Pending)->count() }}</h4>
                                     <p class="mb-0">Pending</p>
                                 </div>
                                 <div class="align-self-center">
@@ -84,7 +84,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h4 class="mb-0">{{ $associations->where('status', 'rejected')->count() }}</h4>
+                                    <h4 class="mb-0">{{ $associations->where('status', \App\Enums\ModerationStatus::Rejected)->count() }}</h4>
                                     <p class="mb-0">Rejected</p>
                                 </div>
                                 <div class="align-self-center">
@@ -142,7 +142,7 @@
                                     </td>
                                     <td>
                                         <span class="badge bg-info text-capitalize">
-                                            {{ str_replace('_', ' ', $association->association_type) }}
+                                            {{ str_replace('_', ' ', $association->association_type instanceof \BackedEnum ? $association->association_type->value : $association->association_type) }}
                                         </span>
                                     </td>
                                     <td>
@@ -155,11 +155,12 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-{{ 
-                                            $association->status == 'approved' ? 'success' : 
-                                            ($association->status == 'pending' ? 'warning' : 'danger') 
+                                        @php $statusVal = $association->status instanceof \BackedEnum ? $association->status->value : $association->status; @endphp
+                                        <span class="badge bg-{{
+                                            $statusVal == 'approved' ? 'success' :
+                                            ($statusVal == 'pending' ? 'warning' : 'danger')
                                         }}">
-                                            {{ ucfirst($association->status) }}
+                                            {{ ucfirst($statusVal) }}
                                         </span>
                                         <br>
                                         <small class="text-muted">
@@ -212,7 +213,7 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            @if($association->status == 'pending' && auth()->user()->hasRole('super_admin'))
+                                            @if(($association->status instanceof \BackedEnum ? $association->status->value : $association->status) == 'pending' && auth()->user()->hasRole('super_admin'))
                                             <form action="{{ route('shop-school-associations.approve', $association) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 <button type="submit" class="btn btn-sm btn-success" title="Approve">
