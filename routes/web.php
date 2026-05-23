@@ -64,6 +64,13 @@ use App\Http\Controllers\Website\WebsiteMcqController;
 use App\Http\Controllers\Website\WebsiteMockMcqController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
+// Legacy /public/* URLs were indexed by Google when the document root was
+// misconfigured. Redirect them 301 to the same path without the /public prefix
+// so search-engine traffic lands on the real page instead of a 404.
+Route::get('/public/{any}', function ($any) {
+    return redirect('/' . ltrim($any, '/'), 301);
+})->where('any', '.*');
+
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
     'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
@@ -536,7 +543,14 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::get('/test/{test_type:slug}/subject/{subject:slug}', [WebsiteMcqController::class, 'subjectByTestType'])->name('subject-by-test-type');
 
     // Practice routes
-    Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
+    // Expired/deleted practice UUIDs were indexed by Google and were hard-404ing
+    // via route-model binding. Soft-redirect to the MCQ index instead.
+    Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])
+        ->missing(function () {
+            return redirect()->route('website.mcqs.index')
+                ->with('info', 'This practice session has expired or no longer exists. Please start a new one.');
+        })
+        ->name('practice');
     Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])
         ->name('check-answer');
     // GET fallback so crawlers hitting this POST-only action URL get redirected to the
