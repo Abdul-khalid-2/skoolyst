@@ -5,6 +5,54 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/registration.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<style>
+    /* ── School Registration Error Summary ── */
+    .school-error-summary {
+        background: #fef2f2;
+        border: 1.5px solid #fca5a5;
+        border-left: 4px solid #dc2626;
+        border-radius: 8px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1.5rem;
+        animation: errorShake 0.4s ease;
+    }
+    @keyframes errorShake {
+        0%, 100% { transform: translateX(0); }
+        20%       { transform: translateX(-6px); }
+        40%       { transform: translateX(6px); }
+        60%       { transform: translateX(-4px); }
+        80%       { transform: translateX(4px); }
+    }
+    .school-error-summary__header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #dc2626;
+        font-size: 0.9rem;
+        margin-bottom: 0.75rem;
+    }
+    .school-error-summary__header i { font-size: 1.1rem; flex-shrink: 0; }
+    .school-error-summary__header strong { flex: 1; font-weight: 600; }
+    .school-error-summary__close {
+        background: none; border: none; color: #dc2626;
+        font-size: 1.25rem; cursor: pointer; padding: 0;
+        line-height: 1; opacity: 0.7; flex-shrink: 0;
+    }
+    .school-error-summary__close:hover { opacity: 1; }
+    .school-error-summary__list {
+        margin: 0; padding-left: 1.25rem; list-style: disc;
+    }
+    .school-error-summary__list li {
+        color: #b91c1c; font-size: 0.875rem;
+        margin-bottom: 0.35rem; line-height: 1.4;
+    }
+    .school-error-summary__list li:last-child { margin-bottom: 0; }
+    .school-error-summary__list li a.error-goto-step {
+        color: #b91c1c; text-decoration: underline;
+        text-underline-offset: 2px; cursor: pointer; font-weight: 600;
+    }
+    .school-error-summary__list li a.error-goto-step:hover { color: #7f1d1d; }
+</style>
 @endpush
 
 @section('content')
@@ -132,6 +180,16 @@
                 <div id="schoolRegistration" class="school-registration">
                     <form method="POST" action="{{ route('school.register') }}">
                         @csrf
+
+                        <!-- Sticky Error Summary -->
+                        <div id="schoolErrorSummary" class="school-error-summary" style="display:none;" role="alert" aria-live="polite">
+                            <div class="school-error-summary__header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <strong>Please fix the following errors before continuing:</strong>
+                                <button type="button" class="school-error-summary__close" id="closeErrorSummary" aria-label="Close">&times;</button>
+                            </div>
+                            <ul id="schoolErrorList" class="school-error-summary__list"></ul>
+                        </div>
 
                         <!-- Step 1: School Basic Information -->
                         <div class="form-step active" data-step="1">
@@ -461,7 +519,60 @@
 @push('scripts')
 <script src="{{ asset('assets/js/register.js') }}"></script>
 <script>
-    
+
+    // Switch to the School tab when the server bounced back with school-form errors
+    // or any old school-form input — and restore the step the user was on.
+    document.addEventListener('DOMContentLoaded', function () {
+        const schoolFieldNames = [
+            'school_name', 'school_email', 'school_address', 'school_city', 'school_contact',
+            'school_description', 'school_facilities', 'school_gender_type', 'school_ownership_type',
+            'school_website', 'admin_name', 'admin_email', 'admin_password',
+            'fee_structure_type', 'regular_fees', 'discounted_fees', 'admission_fees',
+            'class_wise_fees', 'school_terms'
+        ];
+
+        const errorKeys = @json($errors->keys());
+        const hasBackendSchoolError = errorKeys.some(key =>
+            schoolFieldNames.some(field => key === field || key.startsWith(field + '.'))
+        );
+        const hadSchoolInput = {{ session()->hasOldInput('school_name') || session()->hasOldInput('admin_email') ? 'true' : 'false' }};
+
+        if (hasBackendSchoolError || hadSchoolInput) {
+            document.querySelector('.type-btn[data-type="school"]')?.click();
+
+            const lastStep = sessionStorage.getItem('schoolRegLastStep');
+            const targetStep = lastStep || (hasBackendSchoolError ? '3' : '1');
+            const target = document.querySelector(`.form-step[data-step="${targetStep}"]`);
+            if (target) {
+                document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+                target.classList.add('active');
+                document.querySelectorAll('.step').forEach(ind => {
+                    const n = parseInt(ind.getAttribute('data-step'));
+                    ind.classList.toggle('active', n === parseInt(targetStep));
+                    ind.classList.toggle('completed', n < parseInt(targetStep));
+                });
+            }
+        }
+
+        // Surface backend validation errors in the sticky summary box
+        if (hasBackendSchoolError && typeof window.showSchoolErrorSummary === 'function') {
+            const backendMessages = @json($errors->messages());
+            const summaryErrors = [];
+            Object.entries(backendMessages).forEach(([key, msgs]) => {
+                const baseName = String(key).split('.')[0];
+                if (!schoolFieldNames.includes(baseName)) return;
+                const field = document.querySelector(`[name="${baseName}"]`)
+                    || document.querySelector(`[name^="${baseName}"]`);
+                const stepEl = field?.closest('.form-step');
+                const step = stepEl ? parseInt(stepEl.getAttribute('data-step'), 10) : null;
+                const lblEl = field?.closest('.form-group')?.querySelector('.form-label, label.form-check-label');
+                const label = lblEl ? lblEl.textContent.replace(/\*/g, '').trim() : baseName;
+                msgs.forEach(m => summaryErrors.push({ step, label, message: m, fieldName: baseName }));
+            });
+            if (summaryErrors.length) window.showSchoolErrorSummary(summaryErrors);
+        }
+    });
+
     // Fee Structure Toggle
     document.addEventListener('DOMContentLoaded', function() {
         const feeFixedRadio = document.getElementById('fee_fixed');
