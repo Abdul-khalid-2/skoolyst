@@ -32,6 +32,20 @@
     @unless($pageSetsOwnCanonical ?? false)
     <!-- Default canonical; pages with a full @push("meta") block that includes their own should pass pageSetsOwnCanonical -->
     <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- hreflang alternates so the EN and UR versions of the same page are not
+         treated as canonical duplicates of each other in Google Search Console. --}}
+    @php
+        try {
+            $hreflangEn = LaravelLocalization::getLocalizedURL('en', null, [], true);
+            $hreflangUr = LaravelLocalization::getLocalizedURL('ur', null, [], true);
+        } catch (\Throwable $e) {
+            $hreflangEn = $hreflangUr = null;
+        }
+    @endphp
+    @if($hreflangEn)<link rel="alternate" hreflang="en" href="{{ $hreflangEn }}">@endif
+    @if($hreflangUr)<link rel="alternate" hreflang="ur" href="{{ $hreflangUr }}">@endif
+    @if($hreflangEn)<link rel="alternate" hreflang="x-default" href="{{ $hreflangEn }}">@endif
     @endunless
 
     <script type="application/ld+json">
