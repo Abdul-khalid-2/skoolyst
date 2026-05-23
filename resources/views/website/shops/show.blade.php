@@ -63,16 +63,16 @@
 <nav class="shop-sub-nav">
     <div class="container">
         <div class="shop-sub-nav-container">
-            <a href="#about" class="shop-nav-item active sub-nav-item">About</a>
-            <a href="#products" class="shop-nav-item sub-nav-item">Products ({{ $shop->products->count() }})</a>
-            <a href="#schools" class="shop-nav-item sub-nav-item">Associated Schools ({{ $shop->schoolAssociations->count() }})</a>
-            <a href="#reviews" class="shop-nav-item sub-nav-item">Reviews</a>
+            <a href="#" data-tab="about" class="shop-nav-item active sub-nav-item">About</a>
+            <a href="#" data-tab="products" class="shop-nav-item sub-nav-item">Products ({{ $shop->products->count() }})</a>
+            <a href="#" data-tab="schools" class="shop-nav-item sub-nav-item">Associated Schools ({{ $shop->schoolAssociations->count() }})</a>
+            <a href="#" data-tab="reviews" class="shop-nav-item sub-nav-item">Reviews</a>
         </div>
     </div>
 </nav>
 
 <!-- ==================== ABOUT SECTION ==================== -->
-<section id="about" class="shop-content-section about-section">
+<section id="about" data-tab-panel="about" class="shop-content-section about-section">
     <div class="container">
         <h2 class="section-title">About {{ $shop->name }}</h2>
         <div class="about-content">
@@ -134,7 +134,7 @@
 
 <!-- ==================== PRODUCTS SECTION ==================== -->
 <!-- ==================== FEATURED PRODUCTS SECTION ==================== -->
-<section class="products-section">
+<section id="products" data-tab-panel="products" class="products-section" style="display:none">
     <div class="container">
         <h2 class="section-title">Featured Products</h2>
         <p class="section-subtitle">
@@ -196,7 +196,7 @@
 
 <!-- ==================== ASSOCIATED SCHOOLS SECTION ==================== -->
 @if($shop->schoolAssociations->count() > 0)
-<section id="schools" class="shop-content-section schools-section">
+<section id="schools" data-tab-panel="schools" class="shop-content-section schools-section" style="display:none">
     <div class="container">
         <h2 class="section-title">Associated Schools</h2>
         <p class="section-subtitle" style="text-align: center; color: #666; margin-bottom: 3rem;">
@@ -230,7 +230,7 @@
 @endif
 
 <!-- ==================== REVIEWS SECTION ==================== -->
-<section id="reviews" class="shop-content-section" style="background: #f8f9fa;">
+<section id="reviews" data-tab-panel="reviews" class="shop-content-section" style="background: #f8f9fa; display:none">
     <div class="container">
         <h2 class="section-title">Customer Reviews</h2>
         
@@ -272,49 +272,34 @@
 @endsection
 
 @push('scripts')
+<script src="{{ asset('assets/js/product-modal.js') }}"></script>
 <script>
-    // Smooth scrolling for navigation
-    document.addEventListener('DOMContentLoaded', function() {
-        const navItems = document.querySelectorAll('.sub-nav-item');
-        const sections = document.querySelectorAll('.shop-content-section');
-        
-        // Update active nav item on scroll
-        function updateActiveNav() {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 100;
-                if (window.scrollY >= sectionTop) {
-                    current = section.getAttribute('id');
-                }
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const tabs   = document.querySelectorAll('.shop-nav-item[data-tab]');
+        const panels = document.querySelectorAll('[data-tab-panel]');
+
+        function switchTab(targetTab) {
+            tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === targetTab);
             });
 
-            navItems.forEach(item => {
-                item.classList.remove('active');
-                if (item.getAttribute('href') === `#${current}`) {
-                    item.classList.add('active');
-                }
+            panels.forEach(panel => {
+                panel.style.display = panel.dataset.tabPanel === targetTab ? '' : 'none';
             });
         }
 
-        // Smooth scroll to section
-        navItems.forEach(item => {
-            item.addEventListener('click', function(e) {
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function (e) {
                 e.preventDefault();
-                const targetId = this.getAttribute('href');
-                const targetSection = document.querySelector(targetId);
-                
-                if (targetSection) {
-                    window.scrollTo({
-                        top: targetSection.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
+                switchTab(this.dataset.tab);
             });
         });
 
-        window.addEventListener('scroll', updateActiveNav);
-        updateActiveNav(); // Initialize on load
+        const hash = window.location.hash.replace('#', '');
+        const validTabs = Array.from(tabs).map(t => t.dataset.tab);
+        switchTab(validTabs.includes(hash) ? hash : 'about');
+
     });
 </script>
-<script src="{{ asset('assets/js/product-modal.js') }}"></script>
 @endpush
