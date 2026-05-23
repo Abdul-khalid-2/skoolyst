@@ -400,11 +400,11 @@
                                         <div class="fees-row" style="display: flex; gap: 10px; margin-bottom: 10px; align-items: end;">
                                             <div style="flex: 1;">
                                                 <label class="form-label">Class Range</label>
-                                                <input type="text" class="form-control class-range" name="class_wise_fees[0][range]" maxlength="25" placeholder="e.g., KG to 1" required>
+                                                <input type="text" class="form-control class-range" name="class_wise_fees[0][range]" maxlength="25" placeholder="e.g., KG to 1">
                                             </div>
                                             <div style="flex: 1;">
                                                 <label class="form-label">Fees</label>
-                                                <input type="text" class="form-control fees-amount" name="class_wise_fees[0][amount]" maxlength="15" placeholder="e.g., 1000" required>
+                                                <input type="text" class="form-control fees-amount" name="class_wise_fees[0][amount]" maxlength="15" placeholder="e.g., 1000">
                                             </div>
                                             <button type="button" class="btn btn-danger remove-fee-row" style="display: none;">Remove</button>
                                         </div>
@@ -473,14 +473,31 @@
         const admissionFeesInput = document.getElementById('admission_fees');
         const classWiseAdmissionFeesInput = document.getElementById('class_wise_admission_fees');
 
+        function applyRequiredState() {
+            const isClassWise = feeClassWiseRadio.checked;
+
+            const classWiseInputs = classWiseFeeSection.querySelectorAll('.class-range, .fees-amount');
+            classWiseInputs.forEach(input => {
+                input.required = isClassWise;
+                input.disabled = !isClassWise;
+            });
+
+            // Fixed-section inputs are optional today (no required), but disable them
+            // when hidden so any future required attr won't block submission.
+            const fixedInputs = fixedFeeSection.querySelectorAll('input');
+            fixedInputs.forEach(input => {
+                input.disabled = isClassWise;
+            });
+        }
+
         function toggleFeeSections() {
             if (feeFixedRadio.checked) {
                 fixedFeeSection.style.display = 'block';
                 classWiseFeeSection.style.display = 'none';
-                
+
                 // Clear class-wise fields when switching to fixed
                 clearClassWiseFees();
-                
+
                 // Sync admission fees if needed
                 if (classWiseAdmissionFeesInput.value) {
                     admissionFeesInput.value = classWiseAdmissionFeesInput.value;
@@ -489,17 +506,19 @@
             } else {
                 fixedFeeSection.style.display = 'none';
                 classWiseFeeSection.style.display = 'block';
-                
+
                 // Clear fixed fields when switching to class-wise
                 regularFeesInput.value = '';
                 discountedFeesInput.value = '';
-                
+
                 // Sync admission fees if needed
                 if (admissionFeesInput.value) {
                     classWiseAdmissionFeesInput.value = admissionFeesInput.value;
                     admissionFeesInput.value = '';
                 }
             }
+
+            applyRequiredState();
         }
 
         function clearClassWiseFees() {
@@ -536,16 +555,17 @@
                 row.style = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: end;';
                 row.innerHTML = `
                     <div style="flex: 1;">
-                        <input type="text" class="form-control class-range" name="class_wise_fees[${index}][range]" maxlength="25" placeholder="e.g., KG to 1" value="${fee.range || ''}" required>
+                        <input type="text" class="form-control class-range" name="class_wise_fees[${index}][range]" maxlength="25" placeholder="e.g., KG to 1" value="${fee.range || ''}">
                     </div>
                     <div style="flex: 1;">
-                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="15" placeholder="e.g., 1000" value="${fee.amount || ''}" required>
+                        <input type="text" class="form-control fees-amount" name="class_wise_fees[${index}][amount]" maxlength="15" placeholder="e.g., 1000" value="${fee.amount || ''}">
                     </div>
                     <button type="button" class="btn btn-danger remove-fee-row" ${fees.length <= 1 ? 'style="display: none;"' : ''}>Remove</button>
                 `;
                 container.appendChild(row);
                 feeRowCount++;
             });
+            applyRequiredState();
         }
 
         document.getElementById('add-fee-row').addEventListener('click', function() {
@@ -560,15 +580,16 @@
             newRow.style = 'display: flex; gap: 10px; margin-bottom: 10px; align-items: end;';
             newRow.innerHTML = `
                 <div style="flex: 1;">
-                    <input type="text" class="form-control class-range" name="class_wise_fees[${feeRowCount}][range]" maxlength="25" placeholder="e.g., KG to 1" required>
+                    <input type="text" class="form-control class-range" name="class_wise_fees[${feeRowCount}][range]" maxlength="25" placeholder="e.g., KG to 1">
                 </div>
                 <div style="flex: 1;">
-                    <input type="text" class="form-control fees-amount" name="class_wise_fees[${feeRowCount}][amount]" maxlength="15" placeholder="e.g., 1000" required>
+                    <input type="text" class="form-control fees-amount" name="class_wise_fees[${feeRowCount}][amount]" maxlength="15" placeholder="e.g., 1000">
                 </div>
                 <button type="button" class="btn btn-danger remove-fee-row">Remove</button>
             `;
             container.appendChild(newRow);
             feeRowCount++;
+            applyRequiredState();
 
             // Show remove button on first row if more than one
             if (feeRowCount > 1) {

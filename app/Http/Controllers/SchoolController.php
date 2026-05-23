@@ -300,7 +300,8 @@ class SchoolController extends Controller
 
             Auth::login($user);
 
-            return redirect()->route('school.dashboard')->with('success', 'School registered successfully!');
+            return redirect()->route('schools.edit', $school->id)
+                ->with('success', 'Welcome! Your school has been registered. Please complete your school profile.');
         } catch (\Exception $e) {
             DB::rollBack();
 
