@@ -465,6 +465,12 @@ Route::group([
 
     // Comments
     Route::post('videos/{video}/comments', [VideoWebsiteController::class, 'storeComment'])->name('website.videos.comments.store');
+    // GET fallback so search-engine crawlers hitting this POST-only action URL get a
+    // 302 redirect instead of a 405/500 (the source of "Blocked due to other 4xx/5xx"
+    // entries in Google Search Console).
+    Route::get('videos/{video}/comments', function () {
+        return redirect()->route('website.videos.index');
+    })->name('website.videos.comments.redirect');
 
 
 
@@ -533,6 +539,11 @@ Route::prefix('mcq')->name('website.mcqs.')->group(function () {
     Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])->name('practice');
     Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])
         ->name('check-answer');
+    // GET fallback so crawlers hitting this POST-only action URL get redirected to the
+    // practice page instead of returning 405/500.
+    Route::get('/practice/{uuid}/check', function ($uuid) {
+        return redirect()->route('website.mcqs.practice', $uuid);
+    })->name('check-answer.redirect');
 });
 
     require __DIR__ . '/auth.php';
