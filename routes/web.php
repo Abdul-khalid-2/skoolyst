@@ -490,7 +490,7 @@ Route::group([
 
 
     // MCQs Routes
-Route::prefix('mcq')->name('website.mcqs.')->group(function () {
+Route::prefix('quiz')->name('website.mcqs.')->group(function () {
 
     // ✅ STATIC ROUTES FIRST
     Route::get('/mock-tests', [WebsiteMockMcqController::class, 'mockTests'])
