@@ -1,5 +1,12 @@
 @extends('website.layout.app')
 
+@php $pageSetsOwnCanonical = true; @endphp
+@push('meta')
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<link rel="canonical" href="{{ route('website.mcqs.index') }}">
+@endpush
+
 @php
     $mcqsCss = public_path('assets/css/mcqs.css');
     $testResultsCss = public_path('assets/css/test-results.css');

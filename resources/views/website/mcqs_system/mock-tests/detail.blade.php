@@ -1,5 +1,71 @@
 @extends('website.layout.app')
 
+@php $pageSetsOwnCanonical = true; @endphp
+@push('meta')
+@php
+    $questionCount = $mockTest->questions_count
+        ?? ($mockTest->total_questions ?? (method_exists($mockTest, 'mcqs') ? $mockTest->mcqs()->count() : 0));
+
+    $metaTitle = str_replace(':mock_test', $mockTest->name, __('mcqs.meta.mock_test_title'));
+    $metaDescription = str_replace(
+        [':mock_test', ':question_count'],
+        [$mockTest->name, $questionCount],
+        __('mcqs.meta.mock_test_description')
+    );
+    $metaKeywords    = str_replace(':mock_test', $mockTest->name, __('mcqs.meta.mock_test_keywords'));
+    $canonicalUrl    = route('website.mcqs.mock-test-detail', $mockTest->slug);
+    $ogImage         = asset('assets/assets/hero1.png');
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            ['@type' => 'ListItem', 'position' => 1, 'name' => __('messages.home'), 'item' => route('website.home')],
+            ['@type' => 'ListItem', 'position' => 2, 'name' => __('messages.mcqs'), 'item' => route('website.mcqs.index')],
+            ['@type' => 'ListItem', 'position' => 3, 'name' => 'Mock Tests',        'item' => route('website.mcqs.mock-tests')],
+            ['@type' => 'ListItem', 'position' => 4, 'name' => $mockTest->name,     'item' => $canonicalUrl],
+        ],
+    ];
+    $quizSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Quiz',
+        'name' => $mockTest->name,
+        'description' => $metaDescription,
+        'url' => $canonicalUrl,
+        'numberOfQuestions' => (int) $questionCount,
+        'timeRequired' => 'PT' . ($mockTest->duration_minutes ?? 60) . 'M',
+        'isAccessibleForFree' => isset($mockTest->is_free) ? (bool) $mockTest->is_free : true,
+        'provider' => ['@type' => 'Organization', 'name' => 'Skoolyst', 'url' => route('website.home')],
+        'educationalLevel' => 'All Levels',
+        'inLanguage' => app()->getLocale(),
+    ];
+@endphp
+<title>{{ $metaTitle }}</title>
+<meta name="description" content="{{ $metaDescription }}">
+<meta name="keywords"    content="{{ $metaKeywords }}">
+<meta name="robots"      content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<link rel="canonical"    href="{{ $canonicalUrl }}">
+
+<meta property="og:type"        content="website">
+<meta property="og:title"       content="{{ $metaTitle }}">
+<meta property="og:description" content="{{ $metaDescription }}">
+<meta property="og:url"         content="{{ $canonicalUrl }}">
+<meta property="og:image"       content="{{ $ogImage }}">
+<meta property="og:locale"      content="{{ app()->getLocale() == 'ur' ? 'ur_PK' : 'en_PK' }}">
+
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="{{ $metaTitle }}">
+<meta name="twitter:description" content="{{ $metaDescription }}">
+<meta name="twitter:image"       content="{{ $ogImage }}">
+
+<link rel="alternate" hreflang="en"        href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
+<link rel="alternate" hreflang="ur"        href="{{ LaravelLocalization::getLocalizedURL('ur', null, [], true) }}">
+<link rel="alternate" hreflang="x-default" href="{{ LaravelLocalization::getLocalizedURL('en', null, [], true) }}">
+
+<script type="application/ld+json">{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+<script type="application/ld+json">{!! json_encode($quizSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+@endpush
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">

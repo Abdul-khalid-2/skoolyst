@@ -6,6 +6,36 @@ return [
         'title' => 'MCQs Practice for NTS, PPSC, FPSC, MDCAT & ECAT | Skoolyst',
         'description' => 'Practice thousands of MCQs for NTS, PPSC, FPSC, MDCAT, ECAT and more. Explore test types, subjects, topics, recent questions, and mock tests on Skoolyst.',
         'keywords' => 'MCQs Pakistan, NTS MCQs, PPSC MCQs, FPSC MCQs, MDCAT MCQs, ECAT MCQs, mock tests, competitive exam preparation',
+
+        // Subject page
+        'subject_title'       => ':subject MCQs — Practice Online | Skoolyst',
+        'subject_description' => 'Practice :subject MCQs online with topic-wise questions, detailed explanations, and instant results. Prepare smarter with Skoolyst.',
+        'subject_keywords'    => ':subject MCQs, :subject questions, :subject practice test, :subject quiz online, Skoolyst',
+
+        // Topic page
+        'topic_title'         => ':topic MCQs — :subject Practice Questions | Skoolyst',
+        'topic_description'   => 'Solve :topic MCQs from :subject with answers and explanations. :count questions available. Practice free on Skoolyst.',
+        'topic_keywords'      => ':topic MCQs, :topic questions answers, :subject :topic quiz, :topic practice test Pakistan',
+
+        // Test type page
+        'test_type_title'       => ':test_type MCQs — Past Papers & Practice | Skoolyst',
+        'test_type_description' => 'Prepare for :test_type with subject-wise MCQs, past paper questions, and timed practice tests. Free on Skoolyst.',
+        'test_type_keywords'    => ':test_type MCQs, :test_type past papers, :test_type preparation, :test_type practice questions',
+
+        // Subject by test type page
+        'subject_by_test_title'       => ':subject MCQs for :test_type | Skoolyst',
+        'subject_by_test_description' => 'Practice :subject MCQs specifically for :test_type preparation. Topic-wise questions with answers and explanations.',
+        'subject_by_test_keywords'    => ':subject :test_type MCQs, :test_type :subject questions, :subject preparation :test_type',
+
+        // Mock tests list page
+        'mock_tests_title'       => 'Free Online Mock Tests — NTS, FPSC, MDCAT | Skoolyst',
+        'mock_tests_description' => 'Take free online mock tests for NTS, FPSC, MDCAT, ECAT and more. Timed exam mode with instant results and performance analytics.',
+        'mock_tests_keywords'    => 'online mock test, NTS mock test, FPSC mock test, MDCAT mock test, free practice test Pakistan',
+
+        // Mock test detail page
+        'mock_test_title'       => ':mock_test — Online Mock Test | Skoolyst',
+        'mock_test_description' => 'Take the :mock_test online. :question_count questions, timed exam mode, instant results. Free on Skoolyst.',
+        'mock_test_keywords'    => ':mock_test, :mock_test questions, :mock_test preparation, online mock test Pakistan',
     ],
 
     'schema' => [

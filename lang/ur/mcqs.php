@@ -6,6 +6,36 @@ return [
         'title' => 'این ٹی ایس، پی پی ایس سی، ایف پی ایس سی، ایم ڈی کیٹ و ای سی اے ٹی کے لیے ایم سی کیوز | Skoolyst',
         'description' => 'این ٹی ایس، پی پی ایس سی، ایف پی ایس سی، ایم ڈی کیٹ، ای سی اے ٹی اور مزید کے ہزاروں ایم سی کیو کی مشق کریں۔ ٹیسٹ اقسام، مضامین، حالیہ سوالات، اور ماک ٹیسٹ دریافت کریں۔',
         'keywords' => 'ایم سی کیو پاکستان, این ٹی ایس, پی پی ایس سی, ایف پی ایس سی, ایم ڈی کیٹ, ماک ٹیسٹ, تیاری',
+
+        // Subject page
+        'subject_title'       => ':subject ایم سی کیوز — آن لائن مشق | Skoolyst',
+        'subject_description' => ':subject کے ایم سی کیو موضوع وار سوالات، تفصیلی وضاحت اور فوری نتائج کے ساتھ آن لائن مشق کریں۔ Skoolyst پر بہتر تیاری کریں۔',
+        'subject_keywords'    => ':subject ایم سی کیو, :subject سوالات, :subject مشقی ٹیسٹ, :subject آن لائن کوئز, Skoolyst',
+
+        // Topic page
+        'topic_title'         => ':topic ایم سی کیوز — :subject مشقی سوالات | Skoolyst',
+        'topic_description'   => ':subject سے :topic کے ایم سی کیو جوابات اور وضاحت کے ساتھ حل کریں۔ :count سوالات دستیاب ہیں۔ Skoolyst پر مفت مشق کریں۔',
+        'topic_keywords'      => ':topic ایم سی کیو, :topic سوال جواب, :subject :topic کوئز, :topic مشقی ٹیسٹ پاکستان',
+
+        // Test type page
+        'test_type_title'       => ':test_type ایم سی کیوز — پاسٹ پیپرز اور مشق | Skoolyst',
+        'test_type_description' => ':test_type کی تیاری کے لیے مضمون وار ایم سی کیو، پاسٹ پیپر سوالات اور ٹائمڈ مشقی ٹیسٹ۔ Skoolyst پر مفت۔',
+        'test_type_keywords'    => ':test_type ایم سی کیو, :test_type پاسٹ پیپرز, :test_type تیاری, :test_type مشقی سوالات',
+
+        // Subject by test type page
+        'subject_by_test_title'       => ':test_type کے لیے :subject ایم سی کیوز | Skoolyst',
+        'subject_by_test_description' => ':test_type کی تیاری کے لیے :subject کے ایم سی کیو۔ موضوع وار سوالات جوابات اور وضاحت کے ساتھ۔',
+        'subject_by_test_keywords'    => ':subject :test_type ایم سی کیو, :test_type :subject سوالات, :subject :test_type تیاری',
+
+        // Mock tests list page
+        'mock_tests_title'       => 'مفت آن لائن ماک ٹیسٹ — این ٹی ایس، ایف پی ایس سی، ایم ڈی کیٹ | Skoolyst',
+        'mock_tests_description' => 'این ٹی ایس، ایف پی ایس سی، ایم ڈی کیٹ، ای سی اے ٹی اور مزید کے لیے مفت آن لائن ماک ٹیسٹ دیں۔ ٹائمڈ موڈ، فوری نتائج اور کارکردگی کا تجزیہ۔',
+        'mock_tests_keywords'    => 'آن لائن ماک ٹیسٹ, این ٹی ایس ماک ٹیسٹ, ایف پی ایس سی ماک ٹیسٹ, ایم ڈی کیٹ ماک ٹیسٹ, مفت مشقی ٹیسٹ پاکستان',
+
+        // Mock test detail page
+        'mock_test_title'       => ':mock_test — آن لائن ماک ٹیسٹ | Skoolyst',
+        'mock_test_description' => ':mock_test آن لائن دیں۔ :question_count سوالات، ٹائمڈ موڈ، فوری نتائج۔ Skoolyst پر مفت۔',
+        'mock_test_keywords'    => ':mock_test, :mock_test سوالات, :mock_test تیاری, آن لائن ماک ٹیسٹ پاکستان',
     ],
 
     'schema' => [

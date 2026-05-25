@@ -1,5 +1,12 @@
 @extends('website.layout.app')
 
+@php $pageSetsOwnCanonical = true; @endphp
+@push('meta')
+<meta name="robots" content="noindex, nofollow">
+<meta name="googlebot" content="noindex, nofollow">
+<link rel="canonical" href="{{ route('website.mcqs.mock-tests') }}">
+@endpush
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
