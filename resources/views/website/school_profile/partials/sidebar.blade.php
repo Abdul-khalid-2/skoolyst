@@ -30,7 +30,7 @@
     <section class="sidebar-section">
         <h3 class="sidebar-title">Fee Structure</h3>
         <div class="fee-info">
-            @if($school->fee_structure_type === 'fixed')
+            @if($school->fee_structure_type?->value === 'fixed')
 
                 @if($school->regular_fees)
                     <div class="fee-item">
@@ -57,7 +57,7 @@
                     <p class="no-content">Fee information not available.</p>
                 @endif
 
-            @elseif($school->fee_structure_type === 'class_wise')
+            @elseif($school->fee_structure_type?->value === 'class_wise')
 
                 @php
                     $classFees = is_array($school->class_wise_fees)

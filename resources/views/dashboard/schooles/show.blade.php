@@ -652,7 +652,7 @@
                         <div class="card-body">
 
                             {{-- ✅ FIXED STRUCTURE --}}
-                            @if($school->fee_structure_type === 'fixed')
+                            @if($school->fee_structure_type?->value === 'fixed')
 
                                 @if($school->regular_fees)
                                     <div class="d-flex justify-content-between mb-2">
@@ -680,7 +680,7 @@
                                 @endif
 
                             {{-- ✅ CLASS-WISE STRUCTURE --}}
-                            @elseif($school->fee_structure_type === 'class_wise')
+                            @elseif($school->fee_structure_type?->value === 'class_wise')
 
                                 @php
                                     $classFees = is_array($school->class_wise_fees)
