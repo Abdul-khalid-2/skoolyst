@@ -9,6 +9,18 @@
     background-color: rgba(78, 115, 223, 0.05);
 }
 
+.image-upload-area.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+    background-color: #f8f9fa;
+    pointer-events: none;
+}
+
+.image-upload-area.is-disabled:hover {
+    border-color: #dee2e6 !important;
+    background-color: #f8f9fa;
+}
+
 .image-field {
     border-left: 3px solid #4e73df;
 }

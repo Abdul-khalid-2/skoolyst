@@ -690,8 +690,11 @@
                         {{-- Existing images --}}
                         <div class="col-12">
                             <x-card class="mb-4">
-                                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">School Images</h5>
+                                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <h5 class="card-title mb-0">
+                                        School Images
+                                        <span class="badge bg-light text-muted border ms-2" id="image-count-badge">0 / 10</span>
+                                    </h5>
                                     <button type="button" class="btn btn-primary btn-sm" id="add-image-btn">
                                         <i class="fas fa-plus me-1"></i> Add Image
                                     </button>
@@ -721,10 +724,13 @@
                                         <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
                                         <p class="text-muted mb-2">Drag &amp; drop images here or click to browse</p>
                                         <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
+                                        <button type="button" class="btn btn-outline-primary btn-sm" id="select-images-btn" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
                                     </div>
                                     <div id="image-fields-container"></div>
-                                    <p class="text-muted small mb-0">Upload up to 10 new images. Max 2MB each.</p>
+                                    <div id="image-limit-notice" class="alert alert-info py-2 px-3 small mb-2 d-none">
+                                        <i class="fas fa-circle-info me-1"></i> You have reached the maximum of 10 images. Remove an existing or new image to add more.
+                                    </div>
+                                    <p class="text-muted small mb-0" id="image-limit-help">Upload up to 10 images in total (existing + new). Max 2MB each.</p>
                                     @error('school_images')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                                 </div>
                             </x-card>
@@ -943,6 +949,23 @@
                 }
             }
 
+            if (n === 4) {
+                var classWiseRadio = document.getElementById('fee_class_wise_edit');
+                if (classWiseRadio && classWiseRadio.checked) {
+                    var feeRows = step.querySelectorAll('#class_wise_fees_container_edit .fee-row');
+                    if (feeRows.length === 0) {
+                        var addBtn = document.getElementById('add_class_wise_fee_row_edit');
+                        if (addBtn) fail(addBtn, 'Add at least one class-wise fee entry.');
+                    }
+                    feeRows.forEach(function (row) {
+                        var range  = row.querySelector('.class-range');
+                        var amount = row.querySelector('.fees-amount');
+                        if (range  && !range.value.trim())  fail(range,  'Class range is required.');
+                        if (amount && !amount.value.trim()) fail(amount, 'Fees amount is required.');
+                    });
+                }
+            }
+
             if (first) setTimeout(function () { first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 60);
             return valid;
         }
@@ -1042,15 +1065,48 @@
 
         // ── Image upload ──────────────────────────────────────────
         var addImageBtn      = document.getElementById('add-image-btn');
+        var selectImagesBtn  = document.getElementById('select-images-btn');
         var imageContainer   = document.getElementById('image-fields-container');
         var imageTemplate    = document.getElementById('image-field-template');
         var imageUploadInput = document.getElementById('image-upload-input');
         var dropArea         = document.querySelector('.image-upload-area');
+        var imageCountBadge  = document.getElementById('image-count-badge');
+        var imageLimitNotice = document.getElementById('image-limit-notice');
+        var removeImageChecks = document.querySelectorAll('input[name="remove_images[]"]');
         var imageCount = 0;
         var MAX_IMAGES = 10;
+        var existingImageTotal = {{ $school->images ? $school->images->count() : 0 }};
+
+        // Existing images that are NOT marked for removal.
+        function keptExistingCount() {
+            var removed = document.querySelectorAll('input[name="remove_images[]"]:checked').length;
+            return existingImageTotal - removed;
+        }
+        function totalImageCount() { return keptExistingCount() + imageCount; }
+
+        // Reflect the current total on the badge, helper text, Add button and drop zone.
+        function refreshImageLimit() {
+            var total   = totalImageCount();
+            var atLimit = total >= MAX_IMAGES;
+
+            if (imageCountBadge) {
+                imageCountBadge.textContent = total + ' / ' + MAX_IMAGES;
+                imageCountBadge.classList.toggle('bg-danger', atLimit);
+                imageCountBadge.classList.toggle('text-white', atLimit);
+                imageCountBadge.classList.toggle('bg-light', !atLimit);
+                imageCountBadge.classList.toggle('text-muted', !atLimit);
+            }
+            if (addImageBtn)     addImageBtn.disabled    = atLimit;
+            if (selectImagesBtn) selectImagesBtn.disabled = atLimit;
+            if (dropArea)        dropArea.classList.toggle('is-disabled', atLimit);
+            if (imageLimitNotice) imageLimitNotice.classList.toggle('d-none', !atLimit);
+        }
 
         function addImageField(file) {
-            if (imageCount >= MAX_IMAGES) { alert('You can only upload up to ' + MAX_IMAGES + ' images.'); return; }
+            if (totalImageCount() >= MAX_IMAGES) {
+                alert('You can only have up to ' + MAX_IMAGES + ' images in total (existing + new). Remove an image to add more.');
+                return;
+            }
             if (file && file.size > MAX_FILE_SIZE) {
                 alert('"' + file.name + '" is ' + fileSizeMB(file) + 'MB and exceeds the 2MB limit.');
                 return;
@@ -1085,24 +1141,35 @@
                 document.querySelectorAll('.image-field').forEach(function (f, i) {
                     f.querySelector('.image-number').textContent = i + 1;
                 });
+                refreshImageLimit();
             });
 
             imageContainer.appendChild(node);
+            refreshImageLimit();
         }
 
         if (addImageBtn) addImageBtn.addEventListener('click', function () { addImageField(null); });
+
+        // Removing an existing image frees a slot and re-enables uploads.
+        removeImageChecks.forEach(function (chk) {
+            chk.addEventListener('change', refreshImageLimit);
+        });
 
         if (dropArea) {
             ['dragenter','dragover','dragleave','drop'].forEach(function (ev) {
                 dropArea.addEventListener(ev, function (e) { e.preventDefault(); e.stopPropagation(); });
             });
             ['dragenter','dragover'].forEach(function (ev) {
-                dropArea.addEventListener(ev, function () { dropArea.style.borderColor = '#0d6efd'; dropArea.style.backgroundColor = 'rgba(13,110,253,.05)'; });
+                dropArea.addEventListener(ev, function () {
+                    if (dropArea.classList.contains('is-disabled')) return;
+                    dropArea.style.borderColor = '#0d6efd'; dropArea.style.backgroundColor = 'rgba(13,110,253,.05)';
+                });
             });
             ['dragleave','drop'].forEach(function (ev) {
                 dropArea.addEventListener(ev, function () { dropArea.style.borderColor = '#dee2e6'; dropArea.style.backgroundColor = ''; });
             });
             dropArea.addEventListener('drop', function (e) {
+                if (dropArea.classList.contains('is-disabled')) return;
                 Array.from(e.dataTransfer.files).forEach(function (f) { if (f.type.match('image.*')) addImageField(f); });
             });
         }
@@ -1114,8 +1181,20 @@
             });
         }
 
+        refreshImageLimit();
+
         // ── Submit guard: block oversized images ──────────────────
         document.getElementById('main-school-form').addEventListener('submit', function (e) {
+            // Re-validate required steps before final submit (fields may be hidden in inactive steps).
+            var stepsToCheck = [1, 3, 4];
+            for (var s = 0; s < stepsToCheck.length; s++) {
+                if (!validateStep(stepsToCheck[s])) {
+                    e.preventDefault();
+                    showStep(stepsToCheck[s]);
+                    return;
+                }
+            }
+
             var oversized = [];
 
             var logo = document.getElementById('logo');
@@ -1197,9 +1276,9 @@
             row.className = 'row fee-row mb-2 align-items-end';
             row.innerHTML =
                 '<div class="col-md-5 mb-2"><label class="form-label">Class Range</label>' +
-                '<input type="text" class="form-control class-range" name="class_wise_fees[' + idx + '][range]" maxlength="25" placeholder="e.g., KG to 1" value="' + escHtml(range) + '" required></div>' +
+                '<input type="text" class="form-control class-range" name="class_wise_fees[' + idx + '][range]" maxlength="25" placeholder="e.g., KG to 1" value="' + escHtml(range) + '"></div>' +
                 '<div class="col-md-5 mb-2"><label class="form-label">Fees</label>' +
-                '<input type="text" class="form-control fees-amount" name="class_wise_fees[' + idx + '][amount]" maxlength="15" placeholder="e.g., 1000" value="' + escHtml(amount) + '" required></div>' +
+                '<input type="text" class="form-control fees-amount" name="class_wise_fees[' + idx + '][amount]" maxlength="15" placeholder="e.g., 1000" value="' + escHtml(amount) + '"></div>' +
                 '<div class="col-md-2 mb-2"><button type="button" class="btn btn-danger w-100 remove-cw-row" style="display:none;">Remove</button></div>';
             return row;
         }

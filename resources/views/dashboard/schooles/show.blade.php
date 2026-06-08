@@ -12,9 +12,11 @@
                     <x-button href="{{ route('schools.edit', $school->id) }}" variant="primary" class="me-2">
                         <i class="fas fa-edit me-2"></i> Edit School
                     </x-button>
+                    @role('super-admin')
                     <x-button href="{{ route('schools.index') }}" variant="secondary">
                         <i class="fas fa-arrow-left me-2"></i> Back to Schools
                     </x-button>
+                    @endrole
                 </x-slot>
             </x-page-header>
 

@@ -197,7 +197,7 @@
             @role('school-admin')
 
                 <li class="nav-item">
-                    <a href="{{ route('schools.index') }}"
+                    <a href="{{ route('schools.show', auth()->user()->school_id) }}"
                     class="nav-link {{ request()->routeIs('schools.*') ? 'active' : '' }}">
                         <i class="fas fa-school"></i>
                         <span>Schools</span>
