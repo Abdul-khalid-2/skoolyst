@@ -38,6 +38,7 @@ class BrowseSchoolController extends Controller
                 'ownership' => $filters['ownership'],
                 'curriculum' => $filters['curriculum'],
                 'pageSetsOwnCanonical' => true,
+                'pageSetsOwnMeta' => true,
             ]
         ));
     }

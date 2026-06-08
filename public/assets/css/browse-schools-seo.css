@@ -1,0 +1,82 @@
+.seo-content-section {
+    padding: 48px 0 24px;
+    background: #f8fafc;
+}
+
+.seo-content-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    box-shadow: 0 4px 20px rgba(15, 64, 119, 0.06);
+    border: 1px solid #e5e7eb;
+}
+
+.seo-content-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #0f4077;
+    margin-bottom: 12px;
+}
+
+.seo-subtitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 20px 0 10px;
+}
+
+.seo-intro-text {
+    color: #4b5563;
+    line-height: 1.7;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+}
+
+.seo-city-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.seo-city-list a {
+    display: inline-block;
+    padding: 6px 14px;
+    background: #eff6ff;
+    color: #0f4077;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.seo-city-list a:hover {
+    background: #dbeafe;
+    color: #0a2d52;
+}
+
+.seo-faq-accordion .accordion-button {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.seo-faq-accordion .accordion-button:not(.collapsed) {
+    background: #eff6ff;
+    color: #0f4077;
+}
+
+.seo-faq-answer {
+    color: #4b5563;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
+@media (max-width: 768px) {
+    .seo-content-card {
+        padding: 20px 18px;
+    }
+}

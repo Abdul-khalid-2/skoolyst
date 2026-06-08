@@ -4,11 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    {{-- Pages that build their own primary meta (title/description/OG/Twitter) via
+         @push('meta') should pass pageSetsOwnMeta => true so the layout does not
+         emit a second, conflicting <title>/description. --}}
+    @unless($pageSetsOwnMeta ?? false)
     <!-- Primary Meta Tags -->
     <title>SKOOLYST Pakistan - Find Best Schools Near You | Compare, Apply & Connect</title>
     <meta name="description" content="SKOOLYST Pakistan helps parents discover, compare, and connect with the best schools across Pakistan. Find top CBSE, Cambridge, O/A Level, and Montessori schools by city, fees, and reviews.">
     <meta name="keywords" content="best schools in Pakistan, schools near me, Lahore schools, Karachi schools, Islamabad schools, Montessori schools, O Level schools, A Level schools, school admission Pakistan, school directory Pakistan, find schools online">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SKOOLYST Pakistan">
@@ -23,6 +28,7 @@
     <meta property="twitter:title" content="Find Best Schools in Pakistan - SKOOLYST">
     <meta property="twitter:description" content="Explore and compare the best schools across Pakistan. Find by city, curriculum, or fee structure.">
     <meta property="twitter:image" content="{{ asset('assets/assets/hero.png') }}">
+    @endunless
 
 <!-- // <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3104637221187005"
     //  crossorigin="anonymous"></script> -->
@@ -57,8 +63,11 @@
             'description' => "Pakistan's leading school discovery platform. Find, compare, and connect with the best schools in Karachi, Lahore, Islamabad,  Peshawer, and more.",
             'potentialAction' => [
                 '@type' => 'SearchAction',
-                'target' => url('/browse-schools') . '?search={search_term_string}',
-                'query-input' => 'required name=search_term_string'
+                'target' => [
+                    '@type' => 'EntryPoint',
+                    'urlTemplate' => route('browseSchools.index') . '?search={search_term_string}',
+                ],
+                'query-input' => 'required name=search_term_string',
             ],
             'publisher' => [
                 '@type' => 'Organization',

@@ -2,7 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\ActiveStatus;
+use App\Enums\SchoolVisibility;
 use App\Models\BlogPost;
+use App\Models\School;
 use App\Models\Video;
 use App\Models\VideoCategory;
 use Illuminate\Console\Command;
@@ -35,8 +38,48 @@ class GenerateSitemap extends Command
 
         foreach ($locales as $locale) {
             foreach ($staticPrefixPaths as $path) {
+                $priority = $path === '/all/schools' ? 0.9 : 0.6;
                 $sitemap->add(
-                    $this->makeUrl("{$base}/{$locale}".$this->pathSuffix($path))
+                    $this->makeUrl("{$base}/{$locale}".$this->pathSuffix($path), null, $priority)
+                );
+            }
+        }
+
+        // City landing pages — high-intent SEO URLs for "schools in Karachi" etc.
+        $cities = School::query()
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
+            ->whereNotNull('city')
+            ->distinct()
+            ->orderBy('city')
+            ->pluck('city');
+
+        foreach ($locales as $locale) {
+            foreach ($cities as $city) {
+                $sitemap->add(
+                    $this->makeUrl(
+                        "{$base}/{$locale}/all/schools?location=".rawurlencode($city),
+                        null,
+                        0.75
+                    )
+                );
+            }
+        }
+
+        // Individual school profile pages
+        $schools = School::query()
+            ->where('status', ActiveStatus::Active)
+            ->where('visibility', SchoolVisibility::Public)
+            ->get(['uuid', 'updated_at']);
+
+        foreach ($locales as $locale) {
+            foreach ($schools as $school) {
+                $sitemap->add(
+                    $this->makeUrl(
+                        "{$base}/{$locale}/school/profile/{$school->uuid}",
+                        $school->updated_at,
+                        0.8
+                    )
                 );
             }
         }
@@ -100,11 +143,11 @@ class GenerateSitemap extends Command
         return $path[0] === '/' ? $path : '/'.$path;
     }
 
-    private function makeUrl(string $location, $lastMod = null): Url
+    private function makeUrl(string $location, $lastMod = null, float $priority = 0.6): Url
     {
         $u = Url::create($location)
             ->setChangeFrequency(Url::CHANGE_FREQUENCY_WEEKLY)
-            ->setPriority(0.6);
+            ->setPriority($priority);
 
         if ($lastMod) {
             $u->setLastModificationDate($lastMod);

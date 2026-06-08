@@ -18,7 +18,7 @@
     <url>
     <loc>http://localhost/en/all/schools</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.9</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog</loc>
@@ -53,7 +53,7 @@
     <url>
     <loc>http://localhost/ur/all/schools</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.9</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog</loc>
@@ -71,6 +71,206 @@
     <priority>0.6</priority>
             </url>
     <url>
+    <loc>http://localhost/en/all/schools?location=Hyderabad</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/all/schools?location=Karachi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/all/schools?location=Hyderabad</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/all/schools?location=Karachi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/3ca5fdbc-88f1-4187-86b5-8473ad4be345</loc>
+    <lastmod>2025-12-03T18:16:04+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/1817a4d8-0b6c-463e-aaaa-05e378ddb7ea</loc>
+    <lastmod>2026-04-15T21:40:17+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/702df6f4-51f4-4c77-8d9a-9f0bb6cb17db</loc>
+    <lastmod>2026-04-05T17:22:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/14921181-c449-459a-b7b0-11969f08869b</loc>
+    <lastmod>2025-11-21T06:44:49+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/9f07463c-aca2-4543-82ee-edbacb3d8b29</loc>
+    <lastmod>2025-12-04T10:22:17+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/477392e2-1ae6-462d-aa7a-2a3ff03e4a9f</loc>
+    <lastmod>2025-12-09T12:27:41+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/3e68b4c3-0f9c-495b-96ae-735ed51d56d5</loc>
+    <lastmod>2026-03-04T02:15:55+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/ab282b35-f381-4f62-97cf-0f4e1b69a81d</loc>
+    <lastmod>2025-12-15T19:12:45+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/ee7656ed-6681-4f49-ae4c-4c1c18993791</loc>
+    <lastmod>2026-03-10T21:35:59+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/993b78fc-1745-4c7c-b0da-cc1ec7d016aa</loc>
+    <lastmod>2026-04-04T13:42:31+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/3de0a908-6494-425a-af44-b297fa482dde</loc>
+    <lastmod>2026-04-08T13:04:33+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/906a6aa2-3411-48f4-9f2e-b534e8fdc4f8</loc>
+    <lastmod>2026-04-24T14:22:24+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/aaaaa888-2ed8-4920-bb80-7fbd17f943e8</loc>
+    <lastmod>2026-04-19T19:59:57+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/75d6c714-b16d-4cb2-9c61-5d8d80fac0fa</loc>
+    <lastmod>2026-05-12T21:56:52+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/school/profile/b4d0aae2-2a84-4adf-bca0-f728aeee11c8</loc>
+    <lastmod>2026-05-18T14:50:46+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/3ca5fdbc-88f1-4187-86b5-8473ad4be345</loc>
+    <lastmod>2025-12-03T18:16:04+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/1817a4d8-0b6c-463e-aaaa-05e378ddb7ea</loc>
+    <lastmod>2026-04-15T21:40:17+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/702df6f4-51f4-4c77-8d9a-9f0bb6cb17db</loc>
+    <lastmod>2026-04-05T17:22:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/14921181-c449-459a-b7b0-11969f08869b</loc>
+    <lastmod>2025-11-21T06:44:49+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/9f07463c-aca2-4543-82ee-edbacb3d8b29</loc>
+    <lastmod>2025-12-04T10:22:17+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/477392e2-1ae6-462d-aa7a-2a3ff03e4a9f</loc>
+    <lastmod>2025-12-09T12:27:41+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/3e68b4c3-0f9c-495b-96ae-735ed51d56d5</loc>
+    <lastmod>2026-03-04T02:15:55+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/ab282b35-f381-4f62-97cf-0f4e1b69a81d</loc>
+    <lastmod>2025-12-15T19:12:45+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/ee7656ed-6681-4f49-ae4c-4c1c18993791</loc>
+    <lastmod>2026-03-10T21:35:59+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/993b78fc-1745-4c7c-b0da-cc1ec7d016aa</loc>
+    <lastmod>2026-04-04T13:42:31+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/3de0a908-6494-425a-af44-b297fa482dde</loc>
+    <lastmod>2026-04-08T13:04:33+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/906a6aa2-3411-48f4-9f2e-b534e8fdc4f8</loc>
+    <lastmod>2026-04-24T14:22:24+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/aaaaa888-2ed8-4920-bb80-7fbd17f943e8</loc>
+    <lastmod>2026-04-19T19:59:57+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/75d6c714-b16d-4cb2-9c61-5d8d80fac0fa</loc>
+    <lastmod>2026-05-12T21:56:52+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/school/profile/b4d0aae2-2a84-4adf-bca0-f728aeee11c8</loc>
+    <lastmod>2026-05-18T14:50:46+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+            </url>
+    <url>
     <loc>http://localhost/en/videos/category/teaching-strategies</loc>
     <lastmod>2025-12-31T11:46:11+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -79,6 +279,12 @@
     <url>
     <loc>http://localhost/en/videos/category/edtech-tools</loc>
     <lastmod>2025-12-31T11:47:34+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/videos/category/school-leadership</loc>
+    <lastmod>2025-12-31T11:48:08+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
@@ -101,6 +307,12 @@
     <priority>0.6</priority>
             </url>
     <url>
+    <loc>http://localhost/ur/videos/category/school-leadership</loc>
+    <lastmod>2025-12-31T11:48:08+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
     <loc>http://localhost/ur/videos/category/career-guidance</loc>
     <lastmod>2025-12-31T11:48:42+00:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -108,198 +320,230 @@
             </url>
     <url>
     <loc>http://localhost/en/videos/classroom-discipline-i-classroom-management-and-discipline-strategies-Z5eFku</loc>
-    <lastmod>2026-03-24T14:01:07+00:00</lastmod>
+    <lastmod>2026-05-18T19:42:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/videos/stop-wasting-your-time-the-scientific-way-dhruv-rathee-eCpUsn</loc>
-    <lastmod>2026-04-23T21:30:31+00:00</lastmod>
+    <lastmod>2026-05-23T20:30:36+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/videos/skoolyst-schools-parents-students-learning-UjRpT5</loc>
-    <lastmod>2026-04-23T21:30:37+00:00</lastmod>
+    <lastmod>2026-05-14T23:39:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/videos/modern-stars-school-N83WYU</loc>
+    <lastmod>2026-05-17T12:06:55+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/videos/classroom-discipline-i-classroom-management-and-discipline-strategies-Z5eFku</loc>
-    <lastmod>2026-03-24T14:01:07+00:00</lastmod>
+    <lastmod>2026-05-18T19:42:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/videos/stop-wasting-your-time-the-scientific-way-dhruv-rathee-eCpUsn</loc>
-    <lastmod>2026-04-23T21:30:31+00:00</lastmod>
+    <lastmod>2026-05-23T20:30:36+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/videos/skoolyst-schools-parents-students-learning-UjRpT5</loc>
-    <lastmod>2026-04-23T21:30:37+00:00</lastmod>
+    <lastmod>2026-05-14T23:39:29+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/videos/modern-stars-school-N83WYU</loc>
+    <lastmod>2026-05-17T12:06:55+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/ygyl-klas-rom-ka-anklab-pakstany-askolo-my-yknalogy-k-msayl-aor-an-k-aamly-hl</loc>
-    <lastmod>2026-04-23T22:13:38+00:00</lastmod>
+    <lastmod>2026-05-16T14:03:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/quality-education-on-a-budget-smart-solutions-for-pakistani-families</loc>
-    <lastmod>2026-03-31T05:08:05+00:00</lastmod>
+    <lastmod>2026-05-09T12:03:01+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/teacher-excellence-program-upskilling-pakistans-educators</loc>
-    <lastmod>2026-03-31T05:09:23+00:00</lastmod>
+    <lastmod>2026-05-17T20:34:59+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/skoolyst-the-digital-platform-transforming-how-parents-and-students-discover-schools</loc>
-    <lastmod>2026-04-23T21:11:14+00:00</lastmod>
+    <lastmod>2026-05-13T02:59:17+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/stem-success-bringing-science-technology-to-pakistani-classrooms</loc>
-    <lastmod>2026-03-31T05:07:06+00:00</lastmod>
+    <lastmod>2026-05-18T02:25:54+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/the-short-video-era-how-tiktok-style-learning-is-changing-students-and-why-reading-still-matters</loc>
-    <lastmod>2026-03-31T05:06:23+00:00</lastmod>
+    <lastmod>2026-05-14T10:58:28+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/educating-humans-in-a-machine-driven-world-part-1-why-human-foundations-still-matter</loc>
-    <lastmod>2026-03-31T05:06:22+00:00</lastmod>
+    <lastmod>2026-05-18T02:14:03+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/educating-humans-in-a-machine-driven-world</loc>
-    <lastmod>2026-03-31T05:05:46+00:00</lastmod>
+    <lastmod>2026-05-18T02:13:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/preparing-students-for-a-future-that-still-needs-humans</loc>
-    <lastmod>2026-03-31T05:05:45+00:00</lastmod>
+    <lastmod>2026-05-18T02:10:50+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/classroom-discipline-classroom-management-and-discipline-strategies</loc>
-    <lastmod>2026-03-31T05:05:04+00:00</lastmod>
+    <lastmod>2026-05-18T16:49:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/how-to-open-a-successful-school-a-step-by-step-guide-for-beginners</loc>
-    <lastmod>2026-03-31T05:05:02+00:00</lastmod>
+    <lastmod>2026-05-17T00:28:44+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/skoolyst-ayk-ygyl-ply-farm-go-oaldyn-aor-tlb-k-ly-askol-tlash-krn-ka-tryk-bdl-ra</loc>
-    <lastmod>2026-04-23T22:04:06+00:00</lastmod>
+    <lastmod>2026-05-15T17:57:40+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/en/blog/what-is-the-real-purpose-of-education-the-future-of-education-in-pakistan-and-the-role-of-skoolyst</loc>
-    <lastmod>2026-04-24T09:03:41+00:00</lastmod>
+    <lastmod>2026-05-16T15:44:01+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/blog/complete-list-of-schools-in-karachi-public-private-international-more</loc>
+    <lastmod>2026-05-18T09:20:13+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/en/blog/kya-aapke-school-ka-apna-website-hona-zaroori-hai-ya-phir-ek-behtar-rasta-bhi-hai</loc>
+    <lastmod>2026-05-18T11:48:14+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/ygyl-klas-rom-ka-anklab-pakstany-askolo-my-yknalogy-k-msayl-aor-an-k-aamly-hl</loc>
-    <lastmod>2026-04-23T22:13:38+00:00</lastmod>
+    <lastmod>2026-05-16T14:03:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/quality-education-on-a-budget-smart-solutions-for-pakistani-families</loc>
-    <lastmod>2026-03-31T05:08:05+00:00</lastmod>
+    <lastmod>2026-05-09T12:03:01+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/teacher-excellence-program-upskilling-pakistans-educators</loc>
-    <lastmod>2026-03-31T05:09:23+00:00</lastmod>
+    <lastmod>2026-05-17T20:34:59+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/skoolyst-the-digital-platform-transforming-how-parents-and-students-discover-schools</loc>
-    <lastmod>2026-04-23T21:11:14+00:00</lastmod>
+    <lastmod>2026-05-13T02:59:17+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/stem-success-bringing-science-technology-to-pakistani-classrooms</loc>
-    <lastmod>2026-03-31T05:07:06+00:00</lastmod>
+    <lastmod>2026-05-18T02:25:54+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/the-short-video-era-how-tiktok-style-learning-is-changing-students-and-why-reading-still-matters</loc>
-    <lastmod>2026-03-31T05:06:23+00:00</lastmod>
+    <lastmod>2026-05-14T10:58:28+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/educating-humans-in-a-machine-driven-world-part-1-why-human-foundations-still-matter</loc>
-    <lastmod>2026-03-31T05:06:22+00:00</lastmod>
+    <lastmod>2026-05-18T02:14:03+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/educating-humans-in-a-machine-driven-world</loc>
-    <lastmod>2026-03-31T05:05:46+00:00</lastmod>
+    <lastmod>2026-05-18T02:13:18+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/preparing-students-for-a-future-that-still-needs-humans</loc>
-    <lastmod>2026-03-31T05:05:45+00:00</lastmod>
+    <lastmod>2026-05-18T02:10:50+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
     <url>
     <loc>http://localhost/ur/blog/classroom-discipline-classroom-management-and-discipline-strategies</loc>
-    <lastmod>2026-03-31T05:05:04+00:00</lastmod>
+    <lastmod>2026-05-18T16:49:25+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
-
     <url>
     <loc>http://localhost/ur/blog/how-to-open-a-successful-school-a-step-by-step-guide-for-beginners</loc>
-    <lastmod>2026-03-31T05:05:02+00:00</lastmod>
+    <lastmod>2026-05-17T00:28:44+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
-
     <url>
     <loc>http://localhost/ur/blog/skoolyst-ayk-ygyl-ply-farm-go-oaldyn-aor-tlb-k-ly-askol-tlash-krn-ka-tryk-bdl-ra</loc>
-    <lastmod>2026-04-23T22:04:06+00:00</lastmod>
+    <lastmod>2026-05-15T17:57:40+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
-
     <url>
     <loc>http://localhost/ur/blog/what-is-the-real-purpose-of-education-the-future-of-education-in-pakistan-and-the-role-of-skoolyst</loc>
-    <lastmod>2026-04-24T09:03:41+00:00</lastmod>
+    <lastmod>2026-05-16T15:44:01+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
             </url>
-
+    <url>
+    <loc>http://localhost/ur/blog/complete-list-of-schools-in-karachi-public-private-international-more</loc>
+    <lastmod>2026-05-18T09:20:13+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
+    <url>
+    <loc>http://localhost/ur/blog/kya-aapke-school-ka-apna-website-hona-zaroori-hai-ya-phir-ek-behtar-rasta-bhi-hai</loc>
+    <lastmod>2026-05-18T11:48:14+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+            </url>
 </urlset>
