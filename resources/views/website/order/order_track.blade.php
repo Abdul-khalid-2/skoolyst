@@ -27,7 +27,7 @@
                         <input type="text" class="form-input-custom" name="order_number"
                             value="{{ request('order_number') }}"
                             placeholder="e.g., ORD-20231201-ABC123" required>
-                        <small class="form-help-custom">You can find your order number in the confirmation email</small>
+                        <small class="form-help-custom">You can find your order number in the confirmation email. If your cart had items from multiple shops, any order number from that checkout will show all items.</small>
                     </div>
 
                     <div class="form-group-custom">
@@ -67,8 +67,14 @@
                     </div>
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Total Amount:</span>
-                        <span class="summary-value-custom">Rs. {{ number_format($order->total_amount, 2) }}</span>
+                        <span class="summary-value-custom">Rs. {{ number_format(($allOrders ?? collect([$order]))->sum('total_amount'), 2) }}</span>
                     </div>
+                    @if(($allOrders ?? collect())->count() > 1)
+                    <div class="summary-row-custom">
+                        <span class="summary-label-custom">Shops:</span>
+                        <span class="summary-value-custom">{{ ($allOrders ?? collect())->count() }} separate orders</span>
+                    </div>
+                    @endif
                     <div class="summary-row-custom">
                         <span class="summary-label-custom">Payment Status:</span>
                         @php $payStatusVal = $order->payment_status instanceof \BackedEnum ? $order->payment_status->value : $order->payment_status; @endphp
@@ -78,38 +84,51 @@
                     </div>
                 </div>
 
-                <!-- Tracking Timeline -->
+                @php
+                $statuses = [
+                    'pending' => ['icon' => 'fas fa-clock', 'color' => 'secondary-custom'],
+                    'confirmed' => ['icon' => 'fas fa-check', 'color' => 'primary-custom'],
+                    'processing' => ['icon' => 'fas fa-cog', 'color' => 'info-custom'],
+                    'shipped' => ['icon' => 'fas fa-shipping-fast', 'color' => 'warning-custom'],
+                    'delivered' => ['icon' => 'fas fa-box-open', 'color' => 'success-custom'],
+                    'cancelled' => ['icon' => 'fas fa-times', 'color' => 'danger-custom'],
+                ];
+                $ordersToShow = ($allOrders ?? collect())->isNotEmpty() ? $allOrders : collect([$order]);
+                @endphp
+
+                <!-- Tracking Timeline (per shop when multi-vendor checkout) -->
+                @foreach($ordersToShow as $shopOrder)
                 <div class="tracking-timeline-custom">
-                    <h4>Order Status Timeline</h4>
+                    <h4>
+                        Order Status
+                        @if($ordersToShow->count() > 1)
+                            — {{ $shopOrder->shop->name ?? 'Shop' }}
+                            <span style="font-weight:400; font-size:13px; color:#6b7280;">({{ $shopOrder->order_number }})</span>
+                        @else
+                            Timeline
+                        @endif
+                    </h4>
                     <div class="timeline-custom">
                         @php
-                        $statuses = [
-                        'pending' => ['icon' => 'fas fa-clock', 'color' => 'secondary-custom'],
-                        'confirmed' => ['icon' => 'fas fa-check', 'color' => 'primary-custom'],
-                        'processing' => ['icon' => 'fas fa-cog', 'color' => 'info-custom'],
-                        'shipped' => ['icon' => 'fas fa-shipping-fast', 'color' => 'warning-custom'],
-                        'delivered' => ['icon' => 'fas fa-box-open', 'color' => 'success-custom'],
-                        'cancelled' => ['icon' => 'fas fa-times', 'color' => 'danger-custom']
-                        ];
-
-                        $currentStatusIndex = array_search($order->status instanceof \BackedEnum ? $order->status->value : $order->status, array_keys($statuses));
+                        $shopStatusVal = $shopOrder->status instanceof \BackedEnum ? $shopOrder->status->value : $shopOrder->status;
+                        $currentStatusIndex = array_search($shopStatusVal, array_keys($statuses));
                         @endphp
 
                         @foreach($statuses as $status => $info)
                         @php
                         $isCompleted = array_search($status, array_keys($statuses)) <= $currentStatusIndex;
-                            $isCurrent = ($order->status instanceof \BackedEnum ? $order->status->value : $order->status) === $status;
-                            @endphp
+                        $isCurrent = $shopStatusVal === $status;
+                        @endphp
 
                             <div class="timeline-item-custom {{ $isCompleted ? 'completed' : '' }} {{ $isCurrent ? 'current' : '' }}">
                                 <div class="timeline-icon-custom">
                                     <i class="{{ $info['icon'] }}"></i>
                                 </div>
                                 <div class="timeline-content-custom">
-                                    <h5 class="timeline-title-custom">{{ ucfirst($status instanceof \BackedEnum ? $status->value : $status) }}</h5>
-                                    @if($isCompleted && $order->{"{$status}_at"})
+                                    <h5 class="timeline-title-custom">{{ ucfirst($status) }}</h5>
+                                    @if($isCompleted && $shopOrder->{"{$status}_at"})
                                     <p class="timeline-date-custom">
-                                        {{ $order->{"{$status}_at"}->format('M d, Y h:i A') }}
+                                        {{ $shopOrder->{"{$status}_at"}->format('M d, Y h:i A') }}
                                     </p>
                                     @elseif($isCompleted)
                                     <p class="timeline-date-custom">Completed</p>
@@ -118,38 +137,60 @@
                                     @endif
                                 </div>
                             </div>
-                            @endforeach
+                        @endforeach
                     </div>
                 </div>
+                @endforeach
 
                 <!-- Order Items Preview -->
                 <div class="order-items-preview-custom">
                     <h4>Order Items</h4>
                     <div class="items-list">
-                        @foreach($order->orderItems as $item)
-                        <div class="order-item-custom">
-                            <div class="item-image-custom">
-                                <img src="{{ $item->product_image }}" alt="{{ $item->product_name }}">
-                            </div>
-                            <div class="item-info-custom">
-                                <h5 class="item-name-custom">{{ $item->product_name }}</h5>
-                                <p class="item-shop-custom">{{ $item->shop->name ?? 'Unknown Shop' }}</p>
-                                <div class="item-meta-custom">
-                                    <span class="item-quantity">Qty: {{ $item->quantity }}</span>
-                                    <span class="item-price">Rs. {{ number_format($item->unit_price, 2) }}</span>
+                        @foreach($ordersToShow as $shopOrder)
+                            @if($ordersToShow->count() > 1)
+                                <p style="font-weight:600; margin:12px 0 6px; font-size:14px; color:#374151;">
+                                    {{ $shopOrder->shop->name ?? 'Shop' }}
+                                    <span style="font-weight:400; font-size:12px; color:#6b7280;">
+                                        ({{ $shopOrder->order_number }})
+                                    </span>
+                                </p>
+                            @endif
+
+                            @foreach($shopOrder->orderItems as $item)
+                            <div class="order-item-custom">
+                                <div class="item-image-custom">
+                                    <img src="{{ $item->product_image }}" alt="{{ $item->product_name }}">
+                                </div>
+                                <div class="item-info-custom">
+                                    <h5 class="item-name-custom">{{ $item->product_name }}</h5>
+                                    <p class="item-shop-custom">{{ $item->shop->name ?? 'Unknown Shop' }}</p>
+                                    <div class="item-meta-custom">
+                                        <span class="item-quantity">Qty: {{ $item->quantity }}</span>
+                                        <span class="item-price">Rs. {{ number_format($item->unit_price, 2) }}</span>
+                                    </div>
+                                </div>
+                                <div class="item-total-custom">
+                                    Rs. {{ number_format($item->total_price, 2) }}
                                 </div>
                             </div>
-                            <div class="item-total-custom">
-                                Rs. {{ number_format($item->total_price, 2) }}
-                            </div>
-                        </div>
+                            @endforeach
                         @endforeach
                     </div>
+
+                    @if($ordersToShow->count() > 1)
+                    <div style="margin-top:12px; padding:10px 14px; background:#eff6ff; border-radius:8px; font-size:13px; color:#1d4ed8;">
+                        Items from {{ $ordersToShow->count() }} shops — each shop will fulfill and deliver their order separately.
+                    </div>
+                    @endif
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="action-buttons-custom">
-                    <a href="{{ route('website.order.show', $order->uuid) }}" class="btn btn-primary">
+                    <a href="{{ route('website.order.invoice', $order->uuid) }}" class="btn btn-primary" target="_blank">
+                        <i class="fas fa-file-invoice me-2"></i>
+                        Generate Bill
+                    </a>
+                    <a href="{{ route('website.order.show', $order->uuid) }}" class="btn btn-outline-primary">
                         <i class="fas fa-eye me-2"></i>
                         View Full Order Details
                     </a>

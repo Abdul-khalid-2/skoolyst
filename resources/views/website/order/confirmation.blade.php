@@ -125,7 +125,11 @@
 
             <!-- Action Buttons -->
             <div class="confirmation-actions-custom">
-                <a href="{{ route('website.order.show', $order->uuid) }}" class="btn btn-primary">
+                <a href="{{ route('website.order.invoice', $order->uuid) }}" class="btn btn-primary" target="_blank">
+                    <i class="fas fa-file-invoice me-2"></i>
+                    Generate Bill
+                </a>
+                <a href="{{ route('website.order.show', $order->uuid) }}" class="btn btn-outline-primary">
                     <i class="fas fa-eye me-2"></i>
                     View Order Details
                 </a>

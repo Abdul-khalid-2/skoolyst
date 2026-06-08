@@ -463,6 +463,7 @@ Route::group([
 
     Route::get('orders/confirmation/{order}', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
     Route::get('orders/track', [WebsiteOrderController::class, 'track'])->name('website.order.track');
+    Route::get('orders/invoice/{order}', [WebsiteOrderController::class, 'invoice'])->name('website.order.invoice');
     Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('website.order.show');
 
 
