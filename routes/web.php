@@ -39,6 +39,7 @@ use App\Http\Controllers\Website\WebsiteBlogPostController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
+use App\Http\Controllers\CouponController;
 use App\Http\Controllers\SchoolMcqController;
 use App\Http\Controllers\SchoolStudyMaterialController;
 use App\Http\Controllers\ShopSchoolAssociationController;
@@ -146,6 +147,12 @@ Route::group([
 
         // Product Category Routes
         Route::resource('product-categories', ProductCategoryController::class);
+
+        // Coupon Routes (super-admin only)
+        Route::middleware('role:super-admin')->group(function () {
+            Route::post('coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
+            Route::resource('coupons', CouponController::class);
+        });
 
         // Shop School Association Routes
         Route::resource('shop-school-associations', ShopSchoolAssociationController::class)->except(['store']);

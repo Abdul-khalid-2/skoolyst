@@ -189,6 +189,13 @@
                         <span>Orders</span>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ route('coupons.index') }}"
+                    class="nav-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Coupons</span>
+                    </a>
+                </li>
 
             @endrole
 

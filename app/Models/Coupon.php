@@ -142,23 +142,31 @@ class Coupon extends Model
     {
         $discount = 0;
 
+        // $this->discount_type is cast to the CouponDiscountType enum, so compare
+        // against the enum cases (a string switch would never match).
         switch ($this->discount_type) {
-            case 'percentage':
-                $discount = ($orderAmount * $this->discount_value) / 100;
-                if ($this->maximum_discount_amount && $discount > $this->maximum_discount_amount) {
-                    $discount = $this->maximum_discount_amount;
+            case CouponDiscountType::Percentage:
+                $discount = ($orderAmount * (float) $this->discount_value) / 100;
+                if ($this->maximum_discount_amount && $discount > (float) $this->maximum_discount_amount) {
+                    $discount = (float) $this->maximum_discount_amount;
                 }
                 break;
-            case 'fixed_amount':
-                $discount = $this->discount_value;
+            case CouponDiscountType::FixedAmount:
+                $discount = (float) $this->discount_value;
                 break;
-            case 'free_shipping':
-                // This would be handled differently in order calculation
-                $discount = 0; // Actual shipping cost would be subtracted
+            case CouponDiscountType::FreeShipping:
+                // Free shipping is handled by zeroing the shipping cost, not by a
+                // line-item discount.
+                $discount = 0;
                 break;
         }
 
-        return min($discount, $orderAmount);
+        return round(min($discount, $orderAmount), 2);
+    }
+
+    public function isFreeShipping(): bool
+    {
+        return $this->discount_type === CouponDiscountType::FreeShipping;
     }
 
     public function canBeUsedByUser(User $user): bool

@@ -5,10 +5,15 @@ namespace App\Http\Controllers\Website;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Services\CartService;
 use Illuminate\Support\Facades\DB;
 
 class WebsiteCartController extends Controller
 {
+    public function __construct(private CartService $cartService)
+    {
+    }
+
     public function index()
     {
         $cartItems = $this->getCartItems();
@@ -63,6 +68,8 @@ class WebsiteCartController extends Controller
                 $cart[$cartKey] = [
                     'id' => $product->uuid,
                     'product_id' => $product->id,
+                    'shop_id' => $product->shop_id,
+                    'category_id' => $product->category_id,
                     'name' => $product->name,
                     'shop_name' => $product->shop->name ?? 'Unknown Shop',
                     'category' => $product->category->name ?? 'Uncategorized',
@@ -219,32 +226,8 @@ class WebsiteCartController extends Controller
 
     private function calculateCartTotals($cartItems)
     {
-        $subtotal = 0;
-        $totalItems = 0;
+        $appliedCoupon = session()->get('applied_coupon');
 
-        foreach ($cartItems as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-            $totalItems += $item['quantity'];
-        }
-
-        // Calculate shipping (free over 2000, otherwise 100)
-        $shipping = $subtotal > 2000 ? 0 : 100;
-
-        // Calculate tax (10% of subtotal)
-        $tax = $subtotal * 0.005;
-
-        // Calculate discount (5% of subtotal if over 1000)
-        $discount = $subtotal > 1000 ? $subtotal * 0.03 : 0;
-
-        $total = $subtotal + $shipping + $tax - $discount;
-
-        return [
-            'subtotal' => $subtotal,
-            'shipping' => $shipping,
-            'tax' => $tax,
-            'discount' => $discount,
-            'total' => $total,
-            'total_items' => $totalItems // Add this line
-        ];
+        return $this->cartService->totals($cartItems, $appliedCoupon);
     }
 }

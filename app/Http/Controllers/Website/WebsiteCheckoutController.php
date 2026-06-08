@@ -3,12 +3,26 @@
 namespace App\Http\Controllers\Website;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Mail\OrderPlacedMail;
 use App\Models\Coupon;
+use App\Models\Order;
+use App\Models\Product;
+use App\Services\CartService;
+use App\Services\CouponService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class WebsiteCheckoutController extends Controller
 {
+    public function __construct(
+        private CartService $cartService,
+        private CouponService $couponService,
+    ) {
+    }
+
     public function index()
     {
         $cartItems = $this->getCartItems();
@@ -34,7 +48,7 @@ class WebsiteCheckoutController extends Controller
 
         return view('website.checkout', array_merge($cartData, [
             'cartItems' => $cartItems,
-            'userData' => $userData
+            'userData' => $userData,
         ]));
     }
 
@@ -61,11 +75,26 @@ class WebsiteCheckoutController extends Controller
                 return response()->json(['success' => false, 'message' => 'Your cart is empty'], 400);
             }
 
+            // Re-validate any applied coupon at submit time so a stale/invalid
+            // session coupon can never grant a discount.
+            [$coupon, $couponResult] = $this->resolveAppliedCoupon($cartItems);
+
+            $appliedCoupon = $coupon
+                ? ['discount_amount' => $couponResult['discount'], 'free_shipping' => $couponResult['free_shipping']]
+                : null;
+
+            $globalTotals = $this->cartService->totals($cartItems, $appliedCoupon);
+            $totalSubtotal = $globalTotals['subtotal'];
+            $totalCouponDiscount = $globalTotals['coupon_discount'];
+            $freeShipping = $coupon ? $couponResult['free_shipping'] : false;
+
             // Group cart items by shop
             $itemsByShop = [];
             foreach ($cartItems as $item) {
                 $shopId = $this->getShopIdForProduct($item['id']);
-                if (!$shopId) continue;
+                if (! $shopId) {
+                    continue;
+                }
                 $itemsByShop[$shopId][] = $item;
             }
 
@@ -73,18 +102,52 @@ class WebsiteCheckoutController extends Controller
                 return response()->json(['success' => false, 'message' => 'Could not determine shops for cart items'], 400);
             }
 
-            $checkoutSessionId = \Illuminate\Support\Str::uuid()->toString();
+            $checkoutSessionId = (string) Str::uuid();
 
             $createdOrders = [];
             foreach ($itemsByShop as $shopId => $shopItems) {
-                $shopCartData  = $this->calculateCartTotals($shopItems);
-                $createdOrders[] = $this->createSingleShopOrder($request, $shopCartData, $shopItems, $shopId, $checkoutSessionId);
+                // Prorate the coupon discount across shops by their subtotal share.
+                $shopSubtotal = $this->couponService->cartSubtotal($shopItems);
+                $share = $totalSubtotal > 0 ? $shopSubtotal / $totalSubtotal : 0;
+
+                $shopCoupon = $coupon
+                    ? [
+                        'discount_amount' => round($totalCouponDiscount * $share, 2),
+                        'free_shipping' => $freeShipping,
+                    ]
+                    : null;
+
+                $shopTotals = $this->cartService->totals($shopItems, $shopCoupon);
+
+                $createdOrders[] = $this->createSingleShopOrder(
+                    $request,
+                    $shopTotals,
+                    $shopItems,
+                    $shopId,
+                    $checkoutSessionId,
+                    $coupon?->id,
+                );
+            }
+
+            // Record coupon usage once for the whole checkout (against the first order).
+            if ($coupon && $totalCouponDiscount > 0) {
+                $this->couponService->recordUsage(
+                    $coupon,
+                    $createdOrders[0],
+                    $totalCouponDiscount,
+                    auth()->id(),
+                );
             }
 
             session()->forget('cart');
             session()->forget('applied_coupon');
 
             DB::commit();
+
+            // Notifications are best-effort and must not break a successful order.
+            foreach ($createdOrders as $createdOrder) {
+                $this->sendOrderNotifications($createdOrder);
+            }
 
             $firstOrder = $createdOrders[0];
 
@@ -97,66 +160,62 @@ class WebsiteCheckoutController extends Controller
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['success' => false, 'message' => 'Failed to process order: ' . $e->getMessage()], 500);
+
+            return response()->json(['success' => false, 'message' => 'Failed to process order: '.$e->getMessage()], 500);
         }
     }
 
     public function applyCoupon(Request $request)
     {
         $request->validate([
-            'coupon_code' => 'required|string'
+            'coupon_code' => 'required|string',
         ]);
 
         try {
-            $coupon = Coupon::where('code', $request->coupon_code)
-                ->active()
-                ->first();
+            $coupon = Coupon::where('code', $request->coupon_code)->first();
 
-            if (!$coupon) {
+            if (! $coupon) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Invalid or expired coupon code'
+                    'message' => 'Invalid coupon code.',
                 ], 400);
             }
 
             $cartItems = $this->getCartItems();
-            $cartData = $this->calculateCartTotals($cartItems);
 
-            // Check minimum order amount
-            if ($coupon->minimum_order_amount && $cartData['subtotal'] < $coupon->minimum_order_amount) {
+            $result = $this->couponService->evaluate($coupon, $cartItems, auth()->user());
+
+            if (! $result['valid']) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Minimum order amount of Rs. ' . number_format($coupon->minimum_order_amount) . ' required'
+                    'message' => $result['message'],
                 ], 400);
             }
 
-            // Calculate discount
-            $discountAmount = $coupon->calculateDiscount($cartData['subtotal']);
-
-            // Update cart data with coupon discount
-            $cartData['discount'] += $discountAmount;
-            $cartData['total'] = $cartData['subtotal'] + $cartData['shipping'] + $cartData['tax'] - $cartData['discount'];
-
-            // Store coupon in session
+            // Store coupon in session so the cart/checkout totals reflect it.
             session()->put('applied_coupon', [
                 'id' => $coupon->id,
                 'code' => $coupon->code,
-                'discount_amount' => $discountAmount
+                'discount_amount' => $result['discount'],
+                'free_shipping' => $result['free_shipping'],
             ]);
+
+            $cartData = $this->calculateCartTotals($cartItems);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Coupon applied successfully',
+                'message' => $result['message'],
                 'coupon' => [
                     'code' => $coupon->code,
-                    'discount_amount' => $discountAmount
+                    'discount_amount' => $result['discount'],
+                    'free_shipping' => $result['free_shipping'],
                 ],
-                'cart_data' => $cartData
+                'cart_data' => $cartData,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to apply coupon: ' . $e->getMessage()
+                'message' => 'Failed to apply coupon: '.$e->getMessage(),
             ], 500);
         }
     }
@@ -171,7 +230,7 @@ class WebsiteCheckoutController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Coupon removed successfully',
-            'cart_data' => $cartData
+            'cart_data' => $cartData,
         ]);
     }
 
@@ -183,52 +242,51 @@ class WebsiteCheckoutController extends Controller
 
     private function calculateCartTotals($cartItems)
     {
-        $subtotal = 0;
-        $totalItems = 0;
-
-        foreach ($cartItems as $item) {
-            $subtotal += $item['price'] * $item['quantity'];
-            $totalItems += $item['quantity'];
-        }
-
-        // Calculate shipping (free over 2000, otherwise 100)
-        $shipping = $subtotal > 2000 ? 0 : 100;
-
-        // Calculate tax (10% of subtotal)
-        $tax = $subtotal * 0.10;
-
-        // Get applied coupon discount
-        $couponDiscount = 0;
         $appliedCoupon = session()->get('applied_coupon');
-        if ($appliedCoupon) {
-            $couponDiscount = $appliedCoupon['discount_amount'];
-        }
 
-        // Calculate regular discount (5% of subtotal if over 1000)
-        $regularDiscount = $subtotal > 1000 ? $subtotal * 0.05 : 0;
-
-        $totalDiscount = $regularDiscount + $couponDiscount;
-        $total = $subtotal + $shipping + $tax - $totalDiscount;
-
-        return [
-            'subtotal' => $subtotal,
-            'shipping' => $shipping,
-            'tax' => $tax,
-            'discount' => $totalDiscount,
-            'coupon_discount' => $couponDiscount,
-            'regular_discount' => $regularDiscount,
-            'total' => $total,
-            'total_items' => $totalItems
-        ];
+        return $this->cartService->totals($cartItems, $appliedCoupon);
     }
 
-    private function createSingleShopOrder($request, $cartData, $shopItems, $shopId, $checkoutSessionId)
+    /**
+     * Re-validate the session coupon against the current cart.
+     *
+     * @return array{0: ?Coupon, 1: array}
+     */
+    private function resolveAppliedCoupon(array $cartItems): array
     {
-        $order = \App\Models\Order::create([
-            'uuid'                  => \Illuminate\Support\Str::uuid(),
+        $applied = session()->get('applied_coupon');
+
+        if (! $applied || empty($applied['id'])) {
+            return [null, []];
+        }
+
+        $coupon = Coupon::find($applied['id']);
+
+        if (! $coupon) {
+            session()->forget('applied_coupon');
+
+            return [null, []];
+        }
+
+        $result = $this->couponService->evaluate($coupon, $cartItems, auth()->user());
+
+        if (! $result['valid']) {
+            session()->forget('applied_coupon');
+
+            return [null, []];
+        }
+
+        return [$coupon, $result];
+    }
+
+    private function createSingleShopOrder($request, $cartData, $shopItems, $shopId, $checkoutSessionId, ?int $couponId = null)
+    {
+        $order = Order::create([
+            'uuid'                  => (string) Str::uuid(),
             'checkout_session_id'   => $checkoutSessionId,
             'user_id'               => auth()->id(),
             'shop_id'               => $shopId,
+            'coupon_id'             => $couponId,
             'order_number'          => $this->generateOrderNumber(),
             'status'                => 'pending',
             'subtotal'              => $cartData['subtotal'],
@@ -254,7 +312,7 @@ class WebsiteCheckoutController extends Controller
             $categoryId = $this->getCategoryIdForProduct($item['id']);
 
             $order->orderItems()->create([
-                'uuid'                => \Illuminate\Support\Str::uuid(),
+                'uuid'                => (string) Str::uuid(),
                 'product_id'          => $item['product_id'],
                 'shop_id'             => $shopId,
                 'product_name'        => $item['name'],
@@ -272,70 +330,31 @@ class WebsiteCheckoutController extends Controller
         return $order;
     }
 
-    // private function getOrCreateUser($request)
-    // {
-    //     // If user is authenticated, return their ID
-    //     if (auth()->check()) {
-    //         return auth()->id();
-    //     }
+    private function sendOrderNotifications(Order $order): void
+    {
+        try {
+            $order->loadMissing(['orderItems', 'shop.user']);
 
-    //     // Check if user already exists with this email
-    //     $existingUser = \App\Models\User::where('email', $request->email)->first();
-    //     if ($existingUser) {
-    //         return $existingUser->id;
-    //     }
+            // Customer confirmation
+            if ($order->shipping_email) {
+                Mail::to($order->shipping_email)->send(new OrderPlacedMail($order, 'customer'));
+            }
 
-    //     // Create new guest user
-    //     try {
-    //         $user = \App\Models\User::create([
-    //             'uuid' => \Illuminate\Support\Str::uuid(),
-    //             'name' => $request->first_name . ' ' . $request->last_name,
-    //             'email' => $request->email,
-    //             'phone' => $request->phone,
-    //             'address' => $request->address,
-    //             'password' => \Illuminate\Support\Str::random(32), // Random password for guest users
-    //             'email_verified_at' => null, // Not verified for guest users
-    //         ]);
-
-    //         // You might want to assign a guest role or handle permissions
-    //         // $user->assignRole('guest');
-
-    //         return $user->id;
-    //     } catch (\Exception $e) {
-    //         throw new \Exception('Failed to create user account: ' . $e->getMessage());
-    //     }
-    // }
-
-    // private function applyCouponToOrder($order, $userId)
-    // {
-    //     $appliedCoupon = session()->get('applied_coupon');
-
-    //     if ($appliedCoupon) {
-    //         $coupon = \App\Models\Coupon::find($appliedCoupon['id']);
-
-    //         if ($coupon) {
-    //             $order->update(['coupon_id' => $coupon->id]);
-
-    //             // Record coupon usage
-    //             \App\Models\CouponUsage::create([
-    //                 'coupon_id' => $coupon->id,
-    //                 'user_id' => $userId,
-    //                 'order_id' => $order->id,
-    //                 'discount_amount' => $appliedCoupon['discount_amount'],
-    //             ]);
-
-    //             $coupon->incrementUsage();
-    //         }
-
-    //         // Clear applied coupon from session
-    //         session()->forget('applied_coupon');
-    //     }
-    // }
+            // Shop owner notification
+            $shopEmail = $order->shop->email ?? $order->shop->user->email ?? null;
+            if ($shopEmail) {
+                Mail::to($shopEmail)->send(new OrderPlacedMail($order, 'shop'));
+            }
+        } catch (\Throwable $e) {
+            Log::warning('Order notification failed for order '.$order->id.': '.$e->getMessage());
+        }
+    }
 
     private function getShopIdForProduct($productUuid)
     {
         try {
-            $product = \App\Models\Product::with('shop')->where('uuid', $productUuid)->first();
+            $product = Product::with('shop')->where('uuid', $productUuid)->first();
+
             return $product ? $product->shop_id : null;
         } catch (\Exception $e) {
             return null;
@@ -345,7 +364,8 @@ class WebsiteCheckoutController extends Controller
     private function getCategoryIdForProduct($productUuid)
     {
         try {
-            $product = \App\Models\Product::where('uuid', $productUuid)->first();
+            $product = Product::where('uuid', $productUuid)->first();
+
             return $product ? $product->category_id : null;
         } catch (\Exception $e) {
             return null;
@@ -355,7 +375,8 @@ class WebsiteCheckoutController extends Controller
     private function generateOrderNumber()
     {
         $timestamp = now()->format('YmdHis');
-        $random = strtoupper(\Illuminate\Support\Str::random(6));
+        $random = strtoupper(Str::random(6));
+
         return "ORD-{$timestamp}-{$random}";
     }
 }
