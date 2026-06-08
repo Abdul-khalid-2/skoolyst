@@ -26,6 +26,9 @@ class HomeController extends Controller
             'schoolGenderTypes' => $data['schoolGenderTypes'],
             'schoolOwnershipTypes' => $data['schoolOwnershipTypes'],
             'testimonials' => $data['testimonials'],
+            // Home pushes its own <title>/description/OG via @push('meta');
+            // tell the layout not to also emit the default duplicates.
+            'pageSetsOwnMeta' => true,
         ]);
     }
 

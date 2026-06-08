@@ -1,7 +1,7 @@
 <!-- ==================== HERO SECTION (compact) ==================== -->
 <section class="hero-section" id="home">
     <div class="hero-content">
-        <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Hero Image">
+        <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Find and compare the best schools in Pakistan with Skoolyst" width="612" height="408" fetchpriority="high" decoding="async">
         <p class="hero-subheading">Discover, compare, and connect with the best educational institutions</p>
     </div>
 </section>
@@ -29,10 +29,12 @@
                         class="search-input search-input--live"
                         id="mainSearch"
                         name="q"
+                        role="combobox"
                         autocomplete="off"
                         inputmode="search"
                         enterkeyhint="search"
                         placeholder="Search by name, email, phone, address, city, or description…"
+                        aria-label="Search schools by name, city, or description"
                         aria-autocomplete="list"
                         aria-controls="homeLiveSearchResults"
                         aria-expanded="false"

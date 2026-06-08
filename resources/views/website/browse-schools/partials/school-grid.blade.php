@@ -7,7 +7,7 @@
                 <article class="school-card" itemscope itemtype="https://schema.org/School">
                     <div class="school-image">
                         @if(isset($school['banner_image']) && $school['banner_image'])
-                        <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school image" itemprop="image">
+                        <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school image" itemprop="image" width="400" height="200" decoding="async" loading="{{ $loop->index < 3 ? 'eager' : 'lazy' }}" {{ $loop->index === 0 ? 'fetchpriority=high' : '' }}>
                         @else
                         <i class="fas fa-school" aria-hidden="true"></i>
                         @endif

@@ -23,7 +23,7 @@
                         </p>
                         <div class="testimonial-author">
                             @if($testimonial->avatar)
-                                <img src="{{ asset($testimonial->avatar) }}" alt="{{ $testimonial->author_name }}" class="author-avatar">
+                                <img src="{{ asset($testimonial->avatar) }}" alt="{{ $testimonial->author_name }}" class="author-avatar" width="56" height="56" loading="lazy" decoding="async">
                             @else
                                 <div class="author-avatar">{{ $testimonial->initials ?? substr($testimonial->author_name, 0, 1) }}</div>
                             @endif

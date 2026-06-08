@@ -11,9 +11,9 @@
                     <article class="school-card" itemscope itemtype="https://schema.org/School">
                         <div class="school-image">
                             @if(isset($school['banner_image']) && $school['banner_image'])
-                                <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ $school['banner_image'] }}" alt="{{ $school['name'] }} school campus image" itemprop="image" width="400" height="200" loading="lazy" decoding="async" style="width: 100%; height: 200px; object-fit: cover;">
                             @elseif(isset($school->banner_image) && $school->banner_image)
-                                <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ is_array($school) ? $school['name'] : $school->localized('name') }} school campus image" itemprop="image" style="width: 100%; height: 200px; object-fit: cover;">
+                                <img src="{{ asset('website/' . $school->banner_image) }}" alt="{{ is_array($school) ? $school['name'] : $school->localized('name') }} school campus image" itemprop="image" width="400" height="200" loading="lazy" decoding="async" style="width: 100%; height: 200px; object-fit: cover;">
                             @else
                                 <i class="fas fa-school" aria-hidden="true"></i>
                             @endif

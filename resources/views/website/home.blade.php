@@ -4,10 +4,14 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+{{-- footer.css is below the fold — load it without blocking first paint --}}
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 <link rel="stylesheet" href="{{ asset('assets/css/home-inline.css') }}?v={{ filemtime(public_path('assets/css/home-inline.css')) }}">
 @endpush
 @push('meta')
+    {{-- Preload the LCP hero image so the browser fetches it before CSS/JS finish --}}
+    <link rel="preload" as="image" href="{{ asset('assets/assets/hero1.png') }}" fetchpriority="high">
     <title>Find & Compare the Best Schools in Pakistan | SKOOLYST</title>
     <meta name="description" content="Discover, explore, and compare schools in Pakistan with SKOOLYST. Search by country, city, curriculum, and type to find the perfect school for your child anywhere in the world.">
     <meta name="keywords" content="best schools in Pakistan, international schools, global school search, O Level schools, Montessori schools, A Level schools, IB schools, school admissions, compare schools">
