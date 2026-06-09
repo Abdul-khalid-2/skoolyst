@@ -673,7 +673,7 @@
                                 @if($school->admission_fees)
                                     <div class="d-flex justify-content-between">
                                         <span>Admission Fees:</span>
-                                        <strong>Rs {{ number_format($school->admission_fees) }}</strong>
+                                        <strong>{{ $school->admission_fees }}</strong>
                                     </div>
                                 @endif
 
@@ -717,7 +717,7 @@
                                 @if($school->admission_fees)
                                     <div class="d-flex justify-content-between mt-2">
                                         <span>Admission Fees:</span>
-                                        <strong>Rs {{ number_format($school->admission_fees) }}</strong>
+                                        <strong>{{ $school->admission_fees }}</strong>
                                     </div>
                                 @endif
 

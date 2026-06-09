@@ -236,8 +236,8 @@ class SchoolController extends Controller
             'discounted_fees' => 'nullable',
             'admission_fees' => 'nullable',
             'class_wise_fees' => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
-            'class_wise_fees.*.range' => 'required|string|max:25',
-            'class_wise_fees.*.amount' => 'required|string|max:15',
+            'class_wise_fees.*.range' => 'required|string|max:35',
+            'class_wise_fees.*.amount' => 'required|string|max:35',
             'school_terms' => 'required|accepted',
         ]);
 

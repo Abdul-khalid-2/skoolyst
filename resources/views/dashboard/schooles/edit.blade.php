@@ -440,22 +440,9 @@
                             </div>
 
                             <div class="mb-3">
-                                <label class="form-label">Curriculum <span class="text-danger">*</span></label>
-                                <div class="row">
-                                    @foreach($curriculums as $curriculum)
-                                    <div class="col-md-6 mb-2">
-                                        <div class="form-check">
-                                            <input class="form-check-input curriculum-checkbox" type="checkbox" name="curriculum_ids[]"
-                                                value="{{ $curriculum->id }}" id="curriculum_{{ $curriculum->id }}"
-                                                {{ in_array($curriculum->id, old('curriculum_ids', $schoolCurriculums)) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="curriculum_{{ $curriculum->id }}">{{ $curriculum->name }}</label>
-                                        </div>
-                                        @if($curriculum->description)<small class="text-muted ms-4">{{ $curriculum->description }}</small>@endif
-                                    </div>
-                                    @endforeach
-                                </div>
-                                <div id="curriculum-error" class="text-danger small mt-1" style="display:none;">Please select at least one curriculum.</div>
-                                @error('curriculum_ids')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
+                                @include('dashboard.schooles.partials.curriculum-selector', [
+                                    'selectedCurriculumIds' => old('curriculum_ids', $schoolCurriculums),
+                                ])
                             </div>
 
                             <div class="d-flex justify-content-between pt-3 border-top">
@@ -546,10 +533,9 @@
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="admission_fees" class="form-label">Admission Fees</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text">Rs</span>
-                                            <input type="number" class="form-control" id="admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees', $school->admission_fees) }}">
-                                        </div>
+                                        <input type="text" class="form-control" id="admission_fees" name="admission_fees"
+                                            placeholder="e.g., PKR 15,000 – PKR 25,000" maxlength="255"
+                                            value="{{ old('admission_fees', $school->admission_fees) }}">
                                     </div>
                                 </div>
                             </div>
@@ -563,7 +549,7 @@
                                     <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="add_class_wise_fee_row_edit">
                                         <i class="fas fa-plus me-1"></i> Add Fee Entry
                                     </button>
-                                    <small class="text-muted d-block mt-2">Maximum 5 fee entries. Class Range max 25 chars. Fees max 8 chars.</small>
+                                    <small class="text-muted d-block mt-2">Maximum 5 fee entries. Class Range max 35 chars. Fees max 8 chars.</small>
                                     @error('class_wise_fees')<div class="text-danger small mt-1">{{ $message }}</div>@enderror
                                     @foreach ($errors->get('class_wise_fees.*') as $messages)
                                         @foreach ($messages as $message)
@@ -573,10 +559,9 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="class_wise_admission_fees" class="form-label">Admission Fees (Optional)</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text">Rs</span>
-                                        <input type="number" class="form-control" id="class_wise_admission_fees" name="admission_fees" placeholder="0.00" step="0.01" min="0" value="{{ old('admission_fees', $school->admission_fees) }}">
-                                    </div>
+                                    <input type="text" class="form-control" id="class_wise_admission_fees" name="admission_fees"
+                                        placeholder="e.g., PKR 15,000 – PKR 25,000" maxlength="255"
+                                        value="{{ old('admission_fees', $school->admission_fees) }}">
                                     <small class="text-muted">If admission fee is same for all classes, enter it here</small>
                                 </div>
                             </div>
@@ -601,8 +586,9 @@
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <label for="publish_date" class="form-label">Publish Date</label>
-                                    <input type="datetime-local" class="form-control" id="publish_date" name="publish_date"
-                                        value="{{ old('publish_date', $school->publish_date ? \Carbon\Carbon::parse($school->publish_date)->format('Y-m-d\TH:i') : '') }}">
+                                    <input type="date" class="form-control" id="publish_date" name="publish_date"
+                                        value="{{ old('publish_date', $school->publish_date ? $school->publish_date->format('Y-m-d') : '') }}">
+                                    <small class="text-muted">School becomes visible on this date (date only, no time).</small>
                                 </div>
                             </div>
 
@@ -1276,9 +1262,9 @@
             row.className = 'row fee-row mb-2 align-items-end';
             row.innerHTML =
                 '<div class="col-md-5 mb-2"><label class="form-label">Class Range</label>' +
-                '<input type="text" class="form-control class-range" name="class_wise_fees[' + idx + '][range]" maxlength="25" placeholder="e.g., KG to 1" value="' + escHtml(range) + '"></div>' +
+                '<input type="text" class="form-control class-range" name="class_wise_fees[' + idx + '][range]" maxlength="35" placeholder="e.g., KG to 1" value="' + escHtml(range) + '"></div>' +
                 '<div class="col-md-5 mb-2"><label class="form-label">Fees</label>' +
-                '<input type="text" class="form-control fees-amount" name="class_wise_fees[' + idx + '][amount]" maxlength="15" placeholder="e.g., 1000" value="' + escHtml(amount) + '"></div>' +
+                '<input type="text" class="form-control fees-amount" name="class_wise_fees[' + idx + '][amount]" maxlength="35" placeholder="e.g., 1000" value="' + escHtml(amount) + '"></div>' +
                 '<div class="col-md-2 mb-2"><button type="button" class="btn btn-danger w-100 remove-cw-row" style="display:none;">Remove</button></div>';
             return row;
         }

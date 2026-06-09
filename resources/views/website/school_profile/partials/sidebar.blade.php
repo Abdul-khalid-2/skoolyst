@@ -49,7 +49,7 @@
                 @if($school->admission_fees)
                     <div class="fee-item">
                         <span class="fee-label">Admission Fees:</span>
-                        <span class="fee-amount">Rs {{ number_format($school->admission_fees) }}</span>
+                        <span class="fee-amount">{{ $school->admission_fees }}</span>
                     </div>
                 @endif
 
@@ -81,7 +81,7 @@
                 @if($school->admission_fees)
                     <div class="fee-item">
                         <span class="fee-label">Admission Fees:</span>
-                        <span class="fee-amount">Rs {{ number_format($school->admission_fees) }}</span>
+                        <span class="fee-amount">{{ $school->admission_fees }}</span>
                     </div>
                 @endif
             @else

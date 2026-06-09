@@ -19,6 +19,7 @@ Route::redirect('/en', '/', 301);
 Route::redirect('/en/', '/', 301);
 Route::redirect('/public', '/', 301);
 
+use App\Http\Controllers\CurriculumController;
 use App\Http\Controllers\SchoolController;
 use App\Models\School;
 use App\Http\Controllers\PageController;
@@ -84,6 +85,7 @@ Route::group([
 
         // Add the custom create route separately
         Route::resource('schools', SchoolController::class);
+        Route::post('curriculums/quick-store', [CurriculumController::class, 'quickStore'])->name('curriculums.quick-store');
         // User Management Routes
         Route::resource('users', UserController::class);
         Route::patch('users/{user}/status', [UserController::class, 'updateStatus'])->name('users.update-status');

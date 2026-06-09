@@ -45,6 +45,7 @@ class HomeService
             ->withAvg('reviews', 'rating')
             ->where('status', ActiveStatus::Active)
             ->where('visibility', SchoolVisibility::Public)
+            ->published()
             ->orderBy('created_at', 'desc')
             ->take($limit)
             ->get()
@@ -61,6 +62,7 @@ class HomeService
         $query = School::query()
             ->where('status', ActiveStatus::Active)
             ->where('visibility', SchoolVisibility::Public)
+            ->published()
             ->with([
                 'curriculums',
                 'features',
@@ -105,6 +107,7 @@ class HomeService
         $query = School::query()
             ->where('status', ActiveStatus::Active)
             ->where('visibility', SchoolVisibility::Public)
+            ->published()
             ->with(['curriculums', 'translations']);
 
         $this->applyTextSearchToQuery($query, $q, 100, 6);
@@ -281,6 +284,7 @@ class HomeService
             function () {
                 return School::where('status', ActiveStatus::Active)
                     ->where('visibility', SchoolVisibility::Public)
+                    ->published()
                     ->whereNotNull('city')
                     ->distinct()
                     ->pluck('city')

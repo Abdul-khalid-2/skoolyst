@@ -25,7 +25,8 @@ class SchoolService
     {
         return School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
             ->where('status', ActiveStatus::Active)
-            ->where('visibility', SchoolVisibility::Public);
+            ->where('visibility', SchoolVisibility::Public)
+            ->published();
     }
 
     /**
@@ -166,6 +167,7 @@ class SchoolService
                 ])
                     ->where('status', ActiveStatus::Active)
                     ->where('visibility', SchoolVisibility::Public)
+                    ->published()
                     ->where('uuid', $uuid)
                     ->firstOrFail();
             }
@@ -217,6 +219,7 @@ class SchoolService
             function () {
                 return School::where('status', ActiveStatus::Active)
                     ->where('visibility', SchoolVisibility::Public)
+                    ->published()
                     ->whereNotNull('city')
                     ->distinct()
                     ->pluck('city')

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class AdminSchoolService
 {
@@ -60,7 +61,7 @@ class AdminSchoolService
                 'class_wise_fees' => $classWiseFees,
                 'status' => $validated['status'],
                 'visibility' => $validated['visibility'],
-                'publish_date' => $validated['publish_date'] ?? null,
+                'publish_date' => $this->normalizePublishDate($validated['publish_date'] ?? null),
                 'banner_title' => $validated['banner_title'] ?? null,
                 'banner_tagline' => $validated['banner_tagline'] ?? null,
             ]);
@@ -195,7 +196,7 @@ class AdminSchoolService
                 'class_wise_fees' => $classWiseFees,
                 'status' => $validated['status'],
                 'visibility' => $validated['visibility'],
-                'publish_date' => $validated['publish_date'] ?? null,
+                'publish_date' => $this->normalizePublishDate($validated['publish_date'] ?? null),
                 'banner_title' => $validated['banner_title'] ?? null,
                 'banner_tagline' => $validated['banner_tagline'] ?? null,
             ]);
@@ -337,5 +338,14 @@ class AdminSchoolService
         Cache::forget(CacheKeys::schoolCitiesList());
         CacheKeys::forgetDirectoryFirstPageCaches();
         Cache::forget(CacheKeys::schoolPublicShowByUuid($school->uuid));
+    }
+
+    private function normalizePublishDate(?string $publishDate): ?Carbon
+    {
+        if (empty($publishDate)) {
+            return null;
+        }
+
+        return Carbon::parse($publishDate)->startOfDay();
     }
 }

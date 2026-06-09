@@ -135,6 +135,14 @@ class School extends Model
         return $query->where('id', $user->school_id);
     }
 
+    public function scopePublished($query)
+    {
+        return $query->where(function ($q) {
+            $q->whereNull('publish_date')
+                ->orWhereDate('publish_date', '<=', now()->toDateString());
+        });
+    }
+
     public function images()
     {
         return $this->hasMany(SchoolImage::class);
