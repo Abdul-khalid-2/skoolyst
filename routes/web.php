@@ -75,7 +75,7 @@ Route::get('/public/{any}', function ($any) {
 
 Route::group([
     'prefix' => LaravelLocalization::setLocale(),
-    'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath']
+    'middleware' => ['localize', 'localizationRedirect', 'localeViewPath']
 ], function () {
 
     Route::middleware(['auth', 'verified', 'role:super-admin|school-admin|shop-owner'])->group(function () {
