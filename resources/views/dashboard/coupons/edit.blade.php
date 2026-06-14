@@ -1,22 +1,24 @@
 <x-app-layout>
     <main class="main-content">
         <section id="edit-coupon" class="page-section">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
+            <x-page-header class="mb-4">
+                <x-slot name="heading">
                     <h2 class="h4 mb-0">Edit Coupon</h2>
                     <p class="mb-0 text-muted">{{ $coupon->code }}</p>
-                </div>
-                <a href="{{ route('coupons.index') }}" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Coupons
-                </a>
-            </div>
+                </x-slot>
+                <x-slot name="actions">
+                    <x-button href="{{ route('coupons.index') }}" variant="secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Coupons
+                    </x-button>
+                </x-slot>
+            </x-page-header>
 
             @if($errors->any())
-                <div class="alert alert-danger">
+                <x-alert variant="danger" class="mb-4">
                     <ul class="mb-0">
                         @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
                     </ul>
-                </div>
+                </x-alert>
             @endif
 
             <form action="{{ route('coupons.update', $coupon) }}" method="POST">
@@ -25,8 +27,8 @@
                 @include('dashboard.coupons._form')
 
                 <div class="d-flex gap-2 mb-5">
-                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Update Coupon</button>
-                    <a href="{{ route('coupons.index') }}" class="btn btn-secondary">Cancel</a>
+                    <x-button type="submit" variant="primary"><i class="fas fa-save me-2"></i>Update Coupon</x-button>
+                    <x-button href="{{ route('coupons.index') }}" variant="secondary">Cancel</x-button>
                 </div>
             </form>
         </section>
