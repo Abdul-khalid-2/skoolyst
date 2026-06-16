@@ -52,7 +52,7 @@
                         Category
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="categoryFilter" name="category">
+                        <select class="filter-select js-select2" id="categoryFilter" name="category">
                             <option value="">All Categories</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->slug }}" {{ $category == $cat->slug ? 'selected' : '' }}>{{ $cat->name }}</option>
@@ -67,7 +67,7 @@
                         Shop
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="shopFilter" name="shop">
+                        <select class="filter-select js-select2" id="shopFilter" name="shop">
                             <option value="">All Shops</option>
                             @foreach($shops as $shopItem)
                                 <option value="{{ $shopItem->uuid }}" {{ $shop == $shopItem->uuid ? 'selected' : '' }}>{{ $shopItem->name }}</option>
@@ -82,7 +82,7 @@
                         Product type
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="productTypeFilter" name="product_type">
+                        <select class="filter-select js-select2" id="productTypeFilter" name="product_type">
                             <option value="">All Product Types</option>
                             @foreach($productTypes as $type)
                                 <option value="{{ $type }}" {{ $productType == $type ? 'selected' : '' }}>{{ ucfirst($type) }}</option>
@@ -97,7 +97,7 @@
                         Board
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="educationBoardFilter" name="education_board">
+                        <select class="filter-select js-select2" id="educationBoardFilter" name="education_board">
                             <option value="">All Education Boards</option>
                             @foreach($educationBoards as $board)
                                 <option value="{{ $board }}" {{ $educationBoard == $board ? 'selected' : '' }}>{{ ucfirst($board) }}</option>
@@ -112,7 +112,7 @@
                         Class level
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="classLevelFilter" name="class_level">
+                        <select class="filter-select js-select2" id="classLevelFilter" name="class_level">
                             <option value="">All Class Levels</option>
                             @foreach($classLevels as $level)
                                 <option value="{{ $level }}" {{ $classLevel == $level ? 'selected' : '' }}>{{ $level }}</option>
@@ -288,6 +288,7 @@
 @endsection
 
 @push('scripts')
+@include('website.partials.select2-assets')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var fc      = document.getElementById('productsFiltersContainer');

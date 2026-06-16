@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Mail\AdminUserActivityMail;
+use App\Services\HomeService;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,9 +20,20 @@ class RegisteredUserController extends Controller
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(HomeService $homeService): View
     {
-        return view('auth.register');
+        $defaultCities = [
+            'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad',
+            'Multan', 'Hyderabad', 'Peshawar', 'Sialkot', 'Gujranwala',
+        ];
+
+        $cities = collect($defaultCities)
+            ->merge($homeService->getCities())
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('auth.register', compact('cities'));
     }
 
     /**

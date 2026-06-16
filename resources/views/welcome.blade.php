@@ -32,7 +32,7 @@
         <div class="filter-container">
             <div class="filter-group">
                 <label class="filter-label">Location</label>
-                <select class="filter-select" id="locationFilter" onchange="applyFilters()">
+                <select class="filter-select js-select2" id="locationFilter">
                     <option value="">All Locations</option>
                     <option value="Mumbai">Mumbai</option>
                     <option value="Delhi">Delhi</option>
@@ -45,7 +45,7 @@
 
             <div class="filter-group">
                 <label class="filter-label">School Type</label>
-                <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+                <select class="filter-select js-select2" id="typeFilter">
                     <option value="">All Types</option>
                     <option value="Public">Public</option>
                     <option value="Private">Private</option>
@@ -56,7 +56,7 @@
 
             <div class="filter-group">
                 <label class="filter-label">Curriculum</label>
-                <select class="filter-select" id="curriculumFilter" onchange="applyFilters()">
+                <select class="filter-select js-select2" id="curriculumFilter">
                     <option value="">All Curriculums</option>
                     <option value="CBSE">CBSE</option>
                     <option value="ICSE">ICSE</option>
@@ -215,7 +215,7 @@
 </section>
 
 @push('scripts')
-
+@include('website.partials.select2-assets')
 <script src="{{ asset('assets/js/home.js') }}"></script>
 @endpush
 

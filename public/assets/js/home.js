@@ -220,21 +220,25 @@ function clearFilters() {
     if (mainSearch) {
         mainSearch.value = '';
     }
-    const loc = document.getElementById('locationFilter');
-    if (loc) {
-        loc.value = '';
-    }
-    const typ = document.getElementById('typeFilter');
-    if (typ) {
-        typ.value = '';
-    }
-    const own = document.getElementById('ownershipFilter');
-    if (own) {
-        own.value = '';
-    }
-    const cur = document.getElementById('curriculumFilter');
-    if (cur) {
-        cur.value = '';
+    if (window.SkoolystWebsiteSelect2) {
+        window.SkoolystWebsiteSelect2.resetAll();
+    } else {
+        const loc = document.getElementById('locationFilter');
+        if (loc) {
+            loc.value = '';
+        }
+        const typ = document.getElementById('typeFilter');
+        if (typ) {
+            typ.value = '';
+        }
+        const own = document.getElementById('ownershipFilter');
+        if (own) {
+            own.value = '';
+        }
+        const cur = document.getElementById('curriculumFilter');
+        if (cur) {
+            cur.value = '';
+        }
     }
     if (typeof closeHomeSuggestDropdown === 'function') {
         closeHomeSuggestDropdown();
@@ -524,6 +528,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     observeElements();
+
+    ['locationFilter', 'typeFilter', 'ownershipFilter', 'curriculumFilter'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('change', applyFilters);
+        }
+    });
 
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {

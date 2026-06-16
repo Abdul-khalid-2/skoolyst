@@ -18,7 +18,7 @@
                         Category
                     </label>
                     <div class="filter-select-wrap">
-                        <select name="category" id="category" class="filter-select">
+                        <select name="category" id="category" class="filter-select js-select2">
                             <option value="all">All Categories</option>
                             @foreach($categories as $category)
                             <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
@@ -34,7 +34,7 @@
                         School
                     </label>
                     <div class="filter-select-wrap">
-                        <select name="school" id="school" class="filter-select">
+                        <select name="school" id="school" class="filter-select js-select2">
                             <option value="all">All Schools</option>
                             @foreach($schools as $school)
                             <option value="{{ $school->id }}" {{ request('school') == $school->id ? 'selected' : '' }}>
@@ -50,7 +50,7 @@
                         Shop
                     </label>
                     <div class="filter-select-wrap">
-                        <select name="shop" id="shop" class="filter-select">
+                        <select name="shop" id="shop" class="filter-select js-select2">
                             <option value="all">All Shops</option>
                             @foreach($shops as $shop)
                             <option value="{{ $shop->id }}" {{ request('shop') == $shop->id ? 'selected' : '' }}>

@@ -229,19 +229,14 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="school_city" class="form-label">City *</label>
-                                        <!-- <input class="form-control" type="text" name="school_city" value="{{ old('school_city') }}" required placeholder="Enter city"> -->
-                                       <select id="school_city" class="form-control" name="school_city" required>
-                                            <option value="">Select City</option>
-                                            <option value="Karachi">Karachi</option>
-                                            <option value="Lahore">Lahore</option>
-                                            <option value="Islamabad">Islamabad</option>
-                                            <option value="Rawalpindi">Rawalpindi</option>
-                                            <option value="Faisalabad">Faisalabad</option>
-                                            <option value="Multan">Multan</option>
-                                            <option value="Hyderabad">Hyderabad</option>
-                                            <option value="Peshawar">Peshawar</option>
-                                            <option value="Sialkot">Sialkot</option>
-                                            <option value="Gujranwala">Gujranwala</option>
+                                       <select id="school_city" class="form-control js-select2 js-select2-tags" name="school_city" required>
+                                            <option value="">Select or type city</option>
+                                            @foreach($cities as $city)
+                                            <option value="{{ $city }}" {{ old('school_city') == $city ? 'selected' : '' }}>{{ $city }}</option>
+                                            @endforeach
+                                            @if(old('school_city') && !$cities->contains(old('school_city')))
+                                            <option value="{{ old('school_city') }}" selected>{{ old('school_city') }}</option>
+                                            @endif
                                         </select>
                                         @if ($errors->has('school_city'))
                                         <div class="input-error">
@@ -517,6 +512,7 @@
 </section>
 
 @push('scripts')
+@include('website.partials.select2-assets')
 <script src="{{ asset('assets/js/register.js') }}"></script>
 <script>
 

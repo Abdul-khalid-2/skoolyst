@@ -32,6 +32,7 @@
 @include('website.browse-schools.partials.seo-content')
 
 @push('scripts')
+@include('website.partials.select2-assets')
 <script src="{{ asset('assets/js/browse-schools-filters.js') }}?v={{ filemtime(public_path('assets/js/browse-schools-filters.js')) }}"></script>
 @endpush
 

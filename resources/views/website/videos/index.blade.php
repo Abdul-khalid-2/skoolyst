@@ -173,5 +173,6 @@
 @endsection
 
 @push('scripts')
+@include('website.partials.select2-assets')
 <script src="{{ asset('assets/js/videos-index.js') }}?v={{ filemtime(public_path('assets/js/videos-index.js')) }}"></script>
 @endpush

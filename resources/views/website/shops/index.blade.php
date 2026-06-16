@@ -50,7 +50,7 @@
                         Gender type
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="genderTypeFilter" name="school_gender_type">
+                        <select class="filter-select js-select2" id="genderTypeFilter" name="school_gender_type">
                             <option value="">All gender types</option>
                             @foreach($schoolGenderTypes as $value => $label)
                             <option value="{{ $value }}" {{ ($schoolGenderType ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -65,7 +65,7 @@
                         Ownership
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="ownershipTypeFilter" name="school_ownership_type">
+                        <select class="filter-select js-select2" id="ownershipTypeFilter" name="school_ownership_type">
                             <option value="">All ownership types</option>
                             @foreach($schoolOwnershipTypes as $value => $label)
                             <option value="{{ $value }}" {{ ($schoolOwnershipType ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
@@ -80,7 +80,7 @@
                         City
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="cityFilter" name="city">
+                        <select class="filter-select js-select2" id="cityFilter" name="city">
                             <option value="">All Cities</option>
                             @foreach($cities as $cityItem)
                             <option value="{{ $cityItem }}" {{ $city == $cityItem ? 'selected' : '' }}>{{ $cityItem }}</option>
@@ -95,7 +95,7 @@
                         Shop type
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="shopTypeFilter" name="shop_type">
+                        <select class="filter-select js-select2" id="shopTypeFilter" name="shop_type">
                             <option value="">All Shop Types</option>
                             <option value="stationery" {{ $shopType == 'stationery' ? 'selected' : '' }}>Stationery</option>
                             <option value="book_store" {{ $shopType == 'book_store' ? 'selected' : '' }}>Book Store</option>
@@ -370,6 +370,8 @@
 </section>
 
 @endsection
+
+@include('website.partials.select2-assets')
 
 @push('scripts')
 <script>

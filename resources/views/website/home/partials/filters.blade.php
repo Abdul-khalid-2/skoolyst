@@ -14,7 +14,7 @@
                         Location
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="locationFilter" onchange="applyFilters()">
+                        <select class="filter-select js-select2" id="locationFilter">
                             <option value="">All locations</option>
                             @foreach($cities as $city)
                             <option value="{{ $city }}">{{ $city }}</option>
@@ -29,7 +29,7 @@
                         Gender type
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="typeFilter" onchange="applyFilters()">
+                        <select class="filter-select js-select2" id="typeFilter">
                             <option value="">All gender types</option>
                             @foreach($schoolGenderTypes as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
@@ -44,7 +44,7 @@
                         Ownership
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="ownershipFilter" onchange="applyFilters()">
+                        <select class="filter-select js-select2" id="ownershipFilter">
                             <option value="">All ownership types</option>
                             @foreach($schoolOwnershipTypes as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
@@ -59,7 +59,7 @@
                         Curriculum
                     </label>
                     <div class="filter-select-wrap">
-                        <select class="filter-select" id="curriculumFilter" onchange="applyFilters()">
+                        <select class="filter-select js-select2" id="curriculumFilter">
                             <option value="">All curriculums</option>
                             @foreach($curriculums as $curriculum)
                             <option value="{{ $curriculum->code }}">{{ $curriculum->name }}</option>
