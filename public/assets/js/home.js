@@ -529,12 +529,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     observeElements();
 
-    ['locationFilter', 'typeFilter', 'ownershipFilter', 'curriculumFilter'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) {
-            el.addEventListener('change', applyFilters);
+    function bindDirectoryFilterChanges(handler) {
+        var ids = ['locationFilter', 'typeFilter', 'ownershipFilter', 'curriculumFilter'];
+        if (window.SkoolystWebsiteSelect2) {
+            window.SkoolystWebsiteSelect2.bindChanges(ids, handler);
+            return;
         }
-    });
+        if (window.jQuery) {
+            window.jQuery('#' + ids.join(', #')).on('change', handler);
+            return;
+        }
+        ids.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('change', handler);
+            }
+        });
+    }
+
+    bindDirectoryFilterChanges(applyFilters);
 
     document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {

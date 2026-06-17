@@ -58,20 +58,29 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    const locationFilter = document.getElementById("locationFilter");
-    const typeFilter = document.getElementById("typeFilter");
-    const ownershipFilter = document.getElementById("ownershipFilter");
-    const curriculumFilter = document.getElementById("curriculumFilter");
     const clearFiltersBtn = document.getElementById("clearFiltersBtn");
-
-    if (locationFilter) locationFilter.addEventListener("change", applyFilters);
-    if (typeFilter) typeFilter.addEventListener("change", applyFilters);
-    if (ownershipFilter) ownershipFilter.addEventListener("change", applyFilters);
-    if (curriculumFilter) curriculumFilter.addEventListener("change", applyFilters);
     if (clearFiltersBtn) {
         clearFiltersBtn.addEventListener("click", function (event) {
             event.preventDefault();
             clearFilters();
+        });
+    }
+
+    if (window.SkoolystWebsiteSelect2) {
+        window.SkoolystWebsiteSelect2.bindChanges(
+            ["locationFilter", "typeFilter", "ownershipFilter", "curriculumFilter"],
+            applyFilters
+        );
+    } else if (window.jQuery) {
+        window.jQuery(
+            "#locationFilter, #typeFilter, #ownershipFilter, #curriculumFilter"
+        ).on("change", applyFilters);
+    } else {
+        ["locationFilter", "typeFilter", "ownershipFilter", "curriculumFilter"].forEach(function (id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener("change", applyFilters);
+            }
         });
     }
 

@@ -373,9 +373,8 @@
 
 @endsection
 
-@include('website.partials.select2-assets')
-
 @push('scripts')
+@include('website.partials.select2-assets')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var fc      = document.getElementById('shopFiltersContainer');
@@ -404,7 +403,16 @@
 
         ['genderTypeFilter', 'ownershipTypeFilter', 'cityFilter', 'shopTypeFilter'].forEach(function (id) {
             var el = document.getElementById(id);
-            if (el) el.addEventListener('change', applyShopFilters);
+            if (!el) {
+                return;
+            }
+            if (window.SkoolystWebsiteSelect2) {
+                window.SkoolystWebsiteSelect2.onChange(el, applyShopFilters);
+            } else if (window.jQuery) {
+                window.jQuery(el).on('change', applyShopFilters);
+            } else {
+                el.addEventListener('change', applyShopFilters);
+            }
         });
 
         var searchInput = document.getElementById('shopSearchInput');

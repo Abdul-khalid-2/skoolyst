@@ -4,12 +4,21 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
-    const filterInputs = filterForm.querySelectorAll("select");
-    filterInputs.forEach(function (input) {
-        input.addEventListener("change", function () {
-            filterForm.submit();
+    function submitVideoFilters() {
+        filterForm.submit();
+    }
+
+    if (window.SkoolystWebsiteSelect2) {
+        filterForm.querySelectorAll("select").forEach(function (selectEl) {
+            window.SkoolystWebsiteSelect2.onChange(selectEl, submitVideoFilters);
         });
-    });
+    } else if (window.jQuery) {
+        window.jQuery(filterForm).find("select").on("change", submitVideoFilters);
+    } else {
+        filterForm.querySelectorAll("select").forEach(function (input) {
+            input.addEventListener("change", submitVideoFilters);
+        });
+    }
 
     const quickFilterBtns = document.querySelectorAll(".quick-filter-btn");
     const filterHiddenInput = document.getElementById("filter");

@@ -332,14 +332,29 @@
         }
 
         // Filter selects — navigate on change
-        ['categoryFilter', 'shopFilter', 'productTypeFilter', 'educationBoardFilter', 'classLevelFilter'].forEach(function (id) {
-            var el = document.getElementById(id);
-            if (el) el.addEventListener('change', applyProductsFilters);
-        });
+        var filterIds = ['categoryFilter', 'shopFilter', 'productTypeFilter', 'educationBoardFilter', 'classLevelFilter'];
+        if (window.SkoolystWebsiteSelect2) {
+            window.SkoolystWebsiteSelect2.bindChanges(filterIds, applyProductsFilters);
+        } else if (window.jQuery) {
+            window.jQuery('#' + filterIds.join(', #')).on('change', applyProductsFilters);
+        } else {
+            filterIds.forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) el.addEventListener('change', applyProductsFilters);
+            });
+        }
 
         // Sort — navigate on change (includes active filter params)
         var sortFilter = document.getElementById('sortFilter');
-        if (sortFilter) sortFilter.addEventListener('change', applyProductsFilters);
+        if (sortFilter) {
+            if (window.SkoolystWebsiteSelect2) {
+                window.SkoolystWebsiteSelect2.onChange(sortFilter, applyProductsFilters);
+            } else if (window.jQuery) {
+                window.jQuery(sortFilter).on('change', applyProductsFilters);
+            } else {
+                sortFilter.addEventListener('change', applyProductsFilters);
+            }
+        }
 
         // Search — debounced 500 ms, instant on Enter
         var searchInput = document.getElementById('productSearchInput');

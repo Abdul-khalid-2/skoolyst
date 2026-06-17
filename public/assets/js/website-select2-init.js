@@ -74,6 +74,30 @@
         });
     }
 
+    function onChange(selectEl, handler) {
+        if (!selectEl || typeof handler !== 'function') {
+            return;
+        }
+
+        $(selectEl).on('change.skoolystFilter', handler);
+    }
+
+    function bindChanges(ids, handler, root) {
+        if (typeof handler !== 'function') {
+            return;
+        }
+
+        var list = Array.isArray(ids) ? ids : [ids];
+        var $scope = root ? $(root) : $(document);
+
+        list.forEach(function (id) {
+            var el = $scope.find('#' + id)[0] || document.getElementById(id);
+            if (el) {
+                onChange(el, handler);
+            }
+        });
+    }
+
     $(function () {
         init(document);
     });
@@ -82,5 +106,7 @@
         init: init,
         reset: reset,
         resetAll: resetAll,
+        onChange: onChange,
+        bindChanges: bindChanges,
     };
 })(jQuery);
