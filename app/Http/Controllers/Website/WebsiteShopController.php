@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Shop;
 use App\Models\Product;
 use App\Models\ProductCategory;
+use App\Models\ShopReview;
 use App\Enums\SchoolGenderType;
 use App\Enums\SchoolOwnershipType;
 use App\Models\ShopSchoolAssociation;
@@ -144,11 +145,28 @@ class WebsiteShopController extends Controller
                     ->where('is_approved', true);
             },
             'products.category',
-            'products.attributes'
+            'products.attributes',
+            'reviews' => function ($query) {
+                $query->where('status', ModerationStatus::Approved)
+                    ->with('user')
+                    ->latest();
+            },
         ])->where('uuid', $uuid)
             ->where('is_active', true)
             ->firstOrFail();
 
-        return view('website.shops.show', compact('shop'));
+        $userHasReviewed = auth()->check()
+            && ShopReview::query()
+                ->where('shop_id', $shop->id)
+                ->where('user_id', auth()->id())
+                ->exists();
+
+        // Avoid showing legacy placeholder counts when no real reviews exist yet.
+        if ($shop->reviews->isEmpty() && (int) $shop->total_reviews > 0) {
+            $shop->total_reviews = 0;
+            $shop->rating = 0;
+        }
+
+        return view('website.shops.show', compact('shop', 'userHasReviewed'));
     }
 }

@@ -978,3 +978,324 @@
             color: white;
             z-index: 2;
         }
+
+        /* ==================== SHOP REVIEWS ==================== */
+        .shop-reviews-section {
+            padding: 3rem 0;
+        }
+
+        .shop-reviews-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+        }
+
+        .shop-rating-large {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .shop-rating-large .rating-stars {
+            color: #fbbf24;
+            font-size: 1.1rem;
+        }
+
+        .shop-rating-large .rating-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .shop-rating-large .rating-count {
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .btn-write-review {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: var(--color-primary, #4361ee);
+            color: #fff;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .btn-write-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+        }
+
+        .shop-reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .shop-review-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.25rem 1.5rem;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .shop-review-item:hover {
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        .shop-review-item__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .shop-review-item__name {
+            display: block;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 0.35rem;
+        }
+
+        .shop-review-item__stars {
+            color: #fbbf24;
+            font-size: 0.9rem;
+        }
+
+        .shop-review-item__date {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .shop-review-item__body {
+            margin: 0;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .verified-badge {
+            display: inline-block;
+            margin-left: 0.35rem;
+            padding: 0.1rem 0.45rem;
+            background: #ecfdf5;
+            color: #059669;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
+        /* Review modal */
+        .shop-review-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            z-index: 1050;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .shop-review-modal .modal-content {
+            max-width: 560px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.18);
+            overflow: hidden;
+        }
+
+        .shop-review-modal .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .shop-review-modal .modal-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            color: #0f172a;
+        }
+
+        .shop-review-modal .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.75rem;
+            line-height: 1;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .shop-review-modal .modal-body {
+            padding: 1.5rem;
+        }
+
+        .shop-review-modal .star-rating-container {
+            margin-bottom: 1.25rem;
+        }
+
+        .shop-review-modal .star-rating-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+
+        .shop-review-modal .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.25rem;
+        }
+
+        .shop-review-modal .star-rating input {
+            display: none;
+        }
+
+        .shop-review-modal .star-rating .star-label {
+            cursor: pointer;
+            color: #cbd5e1;
+            font-size: 1.5rem;
+            transition: color 0.15s ease;
+        }
+
+        .shop-review-modal .star-rating .star-label:hover,
+        .shop-review-modal .star-rating .star-label:hover ~ .star-label,
+        .shop-review-modal .star-rating input:checked ~ .star-label {
+            color: #fbbf24;
+        }
+
+        .shop-review-modal .rating-text {
+            margin-top: 0.5rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .shop-review-modal .review-form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .shop-review-modal .review-form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #0f172a;
+        }
+
+        .shop-review-modal .review-form-group textarea {
+            width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .shop-review-modal .review-form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-primary, #4361ee);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+        }
+
+        .shop-review-modal .modal-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        .shop-review-modal .btn-cancel-review,
+        .shop-review-modal .btn-submit-review {
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .shop-review-modal .btn-cancel-review {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .shop-review-modal .btn-submit-review {
+            background: var(--color-primary, #4361ee);
+            color: #fff;
+        }
+
+        .shop-review-modal .btn-submit-review:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .shop-review-modal .login-required,
+        .shop-review-already {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .shop-review-modal .login-icon,
+        .shop-review-already i {
+            font-size: 2.5rem;
+            color: var(--color-primary, #4361ee);
+            margin-bottom: 1rem;
+        }
+
+        .shop-review-already i {
+            color: #059669;
+        }
+
+        .shop-review-modal .auth-buttons {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .shop-review-modal .btn-login-modal,
+        .shop-review-modal .btn-register-modal {
+            padding: 0.65rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .shop-review-modal .btn-login-modal {
+            background: var(--color-primary, #4361ee);
+            color: #fff;
+        }
+
+        .shop-review-modal .btn-register-modal {
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        @media (max-width: 768px) {
+            .shop-reviews-header {
+                flex-direction: column;
+            }
+
+            .btn-write-review {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .shop-review-item__header {
+                flex-direction: column;
+            }
+        }

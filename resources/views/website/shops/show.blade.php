@@ -66,7 +66,7 @@
             <a href="#" data-tab="about" class="shop-nav-item active sub-nav-item">About</a>
             <a href="#" data-tab="products" class="shop-nav-item sub-nav-item">Products ({{ $shop->products->count() }})</a>
             <a href="#" data-tab="schools" class="shop-nav-item sub-nav-item">Associated Schools ({{ $shop->schoolAssociations->count() }})</a>
-            <a href="#" data-tab="reviews" class="shop-nav-item sub-nav-item">Reviews</a>
+            <a href="#" data-tab="reviews" class="shop-nav-item sub-nav-item">Reviews ({{ $shop->total_reviews }})</a>
         </div>
     </div>
 </nav>
@@ -230,32 +230,61 @@
 @endif
 
 <!-- ==================== REVIEWS SECTION ==================== -->
-<section id="reviews" data-tab-panel="reviews" class="shop-content-section" style="background: #f8f9fa; display:none">
+<section id="reviews" data-tab-panel="reviews" class="shop-content-section shop-reviews-section" style="background: #f8f9fa; display:none">
     <div class="container">
-        <h2 class="section-title">Customer Reviews</h2>
-        
-        @if($shop->total_reviews > 0)
-            <div style="text-align: center; margin-bottom: 3rem;">
-                <div class="shop-rating-large" style="justify-content: center;">
-                    <div class="rating-stars">
-                        @for($i = 1; $i <= 5; $i++)
-                            @if($i <= floor($shop->rating))
-                                <i class="fas fa-star"></i>
-                            @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
-                                <i class="fas fa-star-half-alt"></i>
-                            @else
-                                <i class="far fa-star"></i>
-                            @endif
-                        @endfor
+        <div class="shop-reviews-header">
+            <div>
+                <h2 class="section-title mb-2">Customer Reviews</h2>
+                @if($shop->total_reviews > 0)
+                    <div class="shop-rating-large">
+                        <div class="rating-stars">
+                            @for($i = 1; $i <= 5; $i++)
+                                @if($i <= floor($shop->rating))
+                                    <i class="fas fa-star"></i>
+                                @elseif($i == ceil($shop->rating) && $shop->rating != floor($shop->rating))
+                                    <i class="fas fa-star-half-alt"></i>
+                                @else
+                                    <i class="far fa-star"></i>
+                                @endif
+                            @endfor
+                        </div>
+                        <span class="rating-value">{{ number_format($shop->rating, 1) }}</span>
+                        <span class="rating-count">based on {{ $shop->total_reviews }} {{ Str::plural('review', $shop->total_reviews) }}</span>
                     </div>
-                    <span class="rating-value">{{ number_format($shop->rating, 1) }}</span>
-                    <span class="rating-count">based on {{ $shop->total_reviews }} reviews</span>
-                </div>
+                @endif
             </div>
-            
-            <!-- Reviews content would go here -->
-            <div style="text-align: center; padding: 2rem;">
-                <p>Reviews feature coming soon!</p>
+            <button type="button" class="btn-write-review" id="writeShopReviewBtn">
+                <i class="fas fa-pen"></i> Write a Review
+            </button>
+        </div>
+
+        @if($shop->reviews->count() > 0)
+            <div class="shop-reviews-list">
+                @foreach($shop->reviews as $review)
+                    <article class="shop-review-item">
+                        <div class="shop-review-item__header">
+                            <div class="shop-review-item__meta">
+                                <span class="shop-review-item__name">
+                                    {{ $review->reviewer_name }}
+                                    <span class="verified-badge">✓ Verified</span>
+                                </span>
+                                <div class="shop-review-item__stars">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= $review->rating)
+                                            <i class="fas fa-star"></i>
+                                        @else
+                                            <i class="far fa-star"></i>
+                                        @endif
+                                    @endfor
+                                </div>
+                            </div>
+                            <time class="shop-review-item__date" datetime="{{ $review->created_at->toIso8601String() }}">
+                                {{ $review->created_at->format('M d, Y') }}
+                            </time>
+                        </div>
+                        <p class="shop-review-item__body">{{ $review->review }}</p>
+                    </article>
+                @endforeach
             </div>
         @else
             <div class="no-results">
@@ -269,10 +298,13 @@
     </div>
 </section>
 
+@include('website.shops.partials.review-modal')
+
 @endsection
 
 @push('scripts')
 <script src="{{ asset('assets/js/product-modal.js') }}"></script>
+<script src="{{ asset('assets/js/shop-reviews.js') }}?v={{ filemtime(public_path('assets/js/shop-reviews.js')) }}"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
 

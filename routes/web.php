@@ -59,6 +59,7 @@ use App\Http\Controllers\Website\WebsiteCartController;
 use App\Http\Controllers\Website\WebsiteCheckoutController;
 use App\Http\Controllers\Website\WebsiteOrderController;
 use App\Http\Controllers\Website\WebsiteShopController;
+use App\Http\Controllers\Website\ShopReviewController;
 use App\Http\Controllers\Website\WebsiteProductsController;
 use App\Http\Controllers\Website\WebsiteModalController;
 use App\Http\Controllers\Website\TestimonialController;
@@ -437,6 +438,9 @@ Route::group([
 
     Route::get('shop/', [WebsiteShopController::class, 'index'])->name('website.shop.index');
     Route::get('shop/{uuid}', [WebsiteShopController::class, 'show'])->name('website.shop.show');
+    Route::post('shop/{uuid}/reviews', [ShopReviewController::class, 'store'])
+        ->middleware('auth')
+        ->name('website.shop.reviews.store');
 
     Route::get('products/', [WebsiteProductsController::class, 'index'])->name('website.stationary.index');
 

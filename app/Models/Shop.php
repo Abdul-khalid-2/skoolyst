@@ -116,4 +116,22 @@ class Shop extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ShopReview::class);
+    }
+
+    public function recalculateRating(): void
+    {
+        $stats = $this->reviews()
+            ->where('status', \App\Enums\ModerationStatus::Approved)
+            ->selectRaw('AVG(rating) as avg_rating, COUNT(*) as total')
+            ->first();
+
+        $this->update([
+            'rating' => round((float) ($stats->avg_rating ?? 0), 2),
+            'total_reviews' => (int) ($stats->total ?? 0),
+        ]);
+    }
 }
