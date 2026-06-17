@@ -142,6 +142,7 @@
 
 @include('website.videos.partials.index.hero-search')
 
+@include('website.partials.advertisement-board')
 <!-- ==================== VIDEOS CONTENT SECTION ==================== -->
 <section class="py-5">
     <div class="container">
@@ -169,6 +170,7 @@
         </div>
     </div>
 </section>
+
 
 @endsection
 

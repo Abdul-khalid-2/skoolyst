@@ -1,0 +1,271 @@
+/* ==================== SITE ADVERTISEMENT NOTICE BOARD ==================== */
+
+.ad-board-section {
+    position: relative;
+    padding: 2.5rem 0;
+    background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
+    border-top: 1px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.ad-board-section .container {
+    position: relative;
+}
+
+.ad-board-section__dismiss {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    background: #fff;
+    color: #64748b;
+    font-size: 1.35rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ad-board-section__dismiss:hover {
+    color: #0f172a;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+/* Active advertisements */
+.ad-board-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.ad-board-card {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ad-board-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
+}
+
+.ad-board-card__media {
+    flex: 0 0 42%;
+    max-width: 42%;
+    min-height: 180px;
+    background: #f1f5f9;
+    overflow: hidden;
+}
+
+.ad-board-card__image,
+.ad-board-card__video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    object-fit: cover;
+}
+
+.ad-board-card__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.25rem 1.5rem;
+}
+
+.ad-board-card__badge {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 0.5rem;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4338ca;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.ad-board-card__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.ad-board-card__text {
+    margin: 0 0 0.85rem;
+    color: #475569;
+    line-height: 1.55;
+    font-size: 0.92rem;
+}
+
+.ad-board-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    align-self: flex-start;
+    color: #4361ee;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.ad-board-card__cta:hover {
+    text-decoration: underline;
+}
+
+/* Empty notice board — bilingual invitation */
+.ad-board-notice {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 0;
+}
+
+.ad-board-notice__messages {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.25rem;
+    align-items: stretch;
+    text-align: left;
+    margin-bottom: 1.25rem;
+}
+
+.ad-board-notice__block {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    background: #f8fafc;
+}
+
+.ad-board-notice__block--rtl {
+    text-align: right;
+}
+
+.ad-board-notice__lang {
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ad-board-notice__title {
+    margin: 0 0 0.6rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+.ad-board-notice__body {
+    margin: 0 0 0.65rem;
+    color: #475569;
+    line-height: 1.6;
+    font-size: 0.92rem;
+}
+
+.ad-board-notice__cta-text {
+    margin: 0;
+    color: #4361ee;
+    font-weight: 600;
+    font-size: 0.88rem;
+}
+
+.ad-board-notice__divider {
+    width: 1px;
+    background: linear-gradient(180deg, transparent, #cbd5e1, transparent);
+}
+
+.ad-board-notice__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.ad-board-notice__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.1rem;
+    border-radius: 0.55rem;
+    font-weight: 600;
+    font-size: 0.88rem;
+    text-decoration: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.ad-board-notice__btn:hover {
+    transform: translateY(-1px);
+}
+
+.ad-board-notice__btn--primary {
+    background: #4361ee;
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(67, 97, 238, 0.25);
+}
+
+.ad-board-notice__btn--secondary {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+}
+
+@media (max-width: 768px) {
+    .ad-board-card {
+        flex-direction: column;
+    }
+
+    .ad-board-card__media {
+        flex: none;
+        max-width: 100%;
+        min-height: 160px;
+    }
+
+    .ad-board-card__image,
+    .ad-board-card__video {
+        min-height: 160px;
+    }
+
+    .ad-board-notice__messages {
+        grid-template-columns: 1fr;
+    }
+
+    .ad-board-notice__divider {
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #cbd5e1, transparent);
+    }
+
+    .ad-board-notice__actions {
+        flex-direction: column;
+    }
+
+    .ad-board-notice__btn {
+        justify-content: center;
+        width: 100%;
+    }
+}

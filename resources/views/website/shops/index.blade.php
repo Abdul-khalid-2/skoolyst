@@ -21,6 +21,7 @@
     </div>
 </section>
 
+@include('website.partials.advertisement-board')
 <!-- ==================== FILTERS SECTION ==================== -->
 <section class="filter-section" aria-label="Filter shops">
     <div class="container">
@@ -368,6 +369,7 @@
         </div>
     </div>
 </section>
+
 
 @endsection
 

@@ -109,6 +109,8 @@
 
 @section('content')
 @include('website.mcqs_system.mcqs.partials.index.hero-stats', ['stats' => $stats])
+
+@include('website.partials.advertisement-board')
 @include('website.mcqs_system.mcqs.partials.index.top-performers', ['topUsers' => $topUsers])
 @include('website.mcqs_system.mcqs.partials.index.test-types', ['testTypes' => $testTypes])
 @include('website.mcqs_system.mcqs.partials.index.subjects', ['subjects' => $subjects])

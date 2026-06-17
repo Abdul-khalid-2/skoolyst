@@ -269,7 +269,6 @@ Route::group([
         Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
         Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
         Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-        Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
         Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
         Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
         Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
@@ -298,7 +297,7 @@ Route::group([
     Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');
     Route::get('/page-view/{slug}/{page_uuid}', [AdvertisementPageController::class, 'show'])->name('advertisement_pages.show');
 
-    Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('reviews.store');
+    Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('website.school.reviews.store');
 
 
     Route::post('/contact-inquiry', [ContactInquiryController::class, 'store'])->name('contact.inquiry.store');

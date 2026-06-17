@@ -135,6 +135,7 @@
             <!-- Main Content -->
             <div class="col-lg-8">
                 @include('website.blog.partials.index.toolbar', ['posts' => $posts])
+                @include('website.partials.advertisement-board')
                 @include('website.blog.partials.index.posts-grid', ['posts' => $posts])
             </div>
 

@@ -488,6 +488,7 @@
     </div>
 </section>
 
+@include('website.partials.advertisement-board')
 <!-- ==================== ABOUT SECTION ==================== -->
 <section class="about-section" id="about">
     <div class="container">
@@ -793,6 +794,7 @@
         <a href="{{ route('register') }}" class="final-cta-button {{ $rtlText }}">{{ __('about.get_started_free') }}</a>
     </div>
 </section>
+
 
 @endsection
 

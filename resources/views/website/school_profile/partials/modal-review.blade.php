@@ -6,7 +6,7 @@
         </div>
         <div class="modal-body">
             @auth
-                <form id="reviewForm" action="{{ route('reviews.store', $school->id) }}" method="POST">
+                <form id="reviewForm" action="{{ route('website.school.reviews.store', $school->id) }}" method="POST">
                     @csrf
                     <div class="star-rating-container">
                         <label class="star-rating-label">Your Rating *</label>
