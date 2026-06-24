@@ -19,7 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\ForceCanonicalUrl::class,
         ]);
         $middleware->web(append: [
-            \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
             \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
             \App\Http\Middleware\SetNoindexRobotsForMcqPracticeCheck::class,
@@ -30,7 +30,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'localize' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRoutes::class,
-            'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+            'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             'localeSessionRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
             'localeCookieRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleCookieRedirect::class,
             'localeViewPath' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationViewPath::class,
