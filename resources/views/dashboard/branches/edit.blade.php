@@ -139,7 +139,10 @@
                                                     <label for="features" class="form-label">Features</label>
                                                     <div class="border rounded p-3" style="max-height: 300px; overflow-y: auto;">
                                                         @php
-                                                            $selectedFeatures = $branch->getFeaturesArray();
+                                                            $selectedFeatures = array_map('strval', $branch->getFeaturesArray());
+                                                            $checkedFeatures = old('features')
+                                                                ? array_map('strval', old('features'))
+                                                                : $selectedFeatures;
                                                         @endphp
                                                         @foreach($features as $feature)
                                                         <div class="form-check mb-2">
@@ -147,7 +150,7 @@
                                                                 name="features[]"
                                                                 value="{{ $feature->id }}"
                                                                 id="feature_{{ $feature->id }}"
-                                                                {{ in_array($feature->id, old('features', $selectedFeatures)) ? 'checked' : '' }}>
+                                                                {{ in_array((string) $feature->id, $checkedFeatures, true) ? 'checked' : '' }}>
                                                             <label class="form-check-label" for="feature_{{ $feature->id }}">
                                                                 @if($feature->icon)
                                                                 <i class="{{ $feature->icon }} me-2"></i>
@@ -174,11 +177,14 @@
                                                     <small class="text-muted">If checked, this branch will be marked as the main branch and any existing main branch will be demoted.</small>
                                                 </div>
 
+                                                @php
+                                                    $currentStatus = old('status', $branch->status instanceof \App\Enums\ActiveStatus ? $branch->status->value : $branch->status);
+                                                @endphp
                                                 <div class="mb-3">
                                                     <label for="status" class="form-label">Status *</label>
                                                     <select class="form-select" id="status" name="status" required>
-                                                        <option value="active" {{ old('status', $branch->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                                        <option value="inactive" {{ old('status', $branch->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                        <option value="active" {{ $currentStatus === 'active' ? 'selected' : '' }}>Active</option>
+                                                        <option value="inactive" {{ $currentStatus === 'inactive' ? 'selected' : '' }}>Inactive</option>
                                                     </select>
                                                     @error('status')
                                                     <div class="text-danger">{{ $message }}</div>

@@ -44,7 +44,7 @@
                                 <td>{{ $branch->city }}</td>
                                 <td>{{ $branch->contact_number ?? '-' }}</td>
                                 <td>
-                                    @if($branch->status === 'active')
+                                    @if($branch->status === \App\Enums\ActiveStatus::Active)
                                     <x-badge variant="success">Active</x-badge>
                                     @else
                                     <x-badge variant="secondary">Inactive</x-badge>

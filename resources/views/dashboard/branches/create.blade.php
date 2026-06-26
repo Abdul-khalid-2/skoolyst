@@ -166,6 +166,17 @@
                                                     </div>
                                                     <small class="text-muted">If checked, this branch will be marked as the main branch and any existing main branch will be demoted.</small>
                                                 </div>
+
+                                                <div class="mb-3">
+                                                    <label for="status" class="form-label">Status</label>
+                                                    <select class="form-select" id="status" name="status">
+                                                        <option value="active" {{ old('status', 'active') === 'active' ? 'selected' : '' }}>Active</option>
+                                                        <option value="inactive" {{ old('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                    </select>
+                                                    @error('status')
+                                                    <div class="text-danger">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
                                             </div>
                                         </x-card>
 

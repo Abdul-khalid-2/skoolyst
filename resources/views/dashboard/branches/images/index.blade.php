@@ -158,9 +158,12 @@
                     @if($images->count() > 0)
                         <div id="imageGallery" class="row sortable-gallery">
                             @foreach($images as $image)
+                            @php
+                                $imageTypeValue = $image->type instanceof \App\Enums\BranchImageType ? $image->type->value : $image->type;
+                            @endphp
                             <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-4 image-item" 
                                  data-id="{{ $image->id }}" 
-                                 data-type="{{ $image->type }}">
+                                 data-type="{{ $imageTypeValue }}">
                                 <x-card class="h-100 shadow-sm">
                                     <div class="position-relative">
                                         <img src="{{ asset('website/'. $image->image_path) }}" 
@@ -186,7 +189,7 @@
                                         <!-- Type Badge -->
                                         <div class="position-absolute top-0 end-0 m-2">
                                             <x-badge variant="info">
-                                                {{ $imageTypes[$image->type] ?? $image->type }}
+                                                {{ $imageTypes[$imageTypeValue] ?? ($image->type instanceof \App\Enums\BranchImageType ? $image->type->label() : $imageTypeValue) }}
                                             </x-badge>
                                         </div>
 

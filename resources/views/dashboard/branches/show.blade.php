@@ -62,7 +62,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <strong class="d-block text-muted mb-1">Status</strong>
-                                        @if($branch->status === 'active')
+                                        @if($branch->status === \App\Enums\ActiveStatus::Active)
                                         <x-badge variant="success">Active</x-badge>
                                         @else
                                         <x-badge variant="secondary">Inactive</x-badge>
@@ -160,7 +160,9 @@
                             <!-- Features -->
                             @php
                                 $selectedFeatures = $branch->getFeaturesArray();
-                                $featuresList = $selectedFeatures ? App\Models\Feature::whereIn('id', $selectedFeatures)->get() : collect();
+                                $featuresList = !empty($selectedFeatures)
+                                    ? App\Models\Feature::whereIn('id', $selectedFeatures)->get()
+                                    : collect();
                             @endphp
                             
                             @if($featuresList->count() > 0)
@@ -230,7 +232,7 @@
                                         @endif
 
                                         <x-badge variant="info" class="position-absolute bottom-0 start-0 m-2">
-                                            {{ ucfirst($image->type) }}
+                                            {{ $image->type instanceof \App\Enums\BranchImageType ? $image->type->label() : ucfirst($image->type) }}
                                         </x-badge>
                                     </div>
                                     <p class="mt-2 mb-0 small text-truncate">{{ $image->title }}</p>
@@ -379,7 +381,7 @@
                             <div class="border-top pt-3">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span class="text-muted">Status</span>
-                                    @if($branch->status === 'active')
+                                    @if($branch->status === \App\Enums\ActiveStatus::Active)
                                     <x-badge variant="success">Active</x-badge>
                                     @else
                                     <x-badge variant="secondary">Inactive</x-badge>
@@ -411,13 +413,16 @@
                         </div>
                         <div class="card-body">
                             @php
-                                $imageTypes = $branch->images->groupBy('type');
+                                $imageTypeGroups = $branch->images->groupBy(function ($image) {
+                                    return $image->type instanceof \App\Enums\BranchImageType ? $image->type->value : $image->type;
+                                });
+                                $imageTypeLabels = \App\Models\BranchImage::getTypeOptions();
                             @endphp
                             
-                            @foreach($imageTypes as $type => $images)
+                            @foreach($imageTypeGroups as $type => $typeImages)
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="text-capitalize">{{ $type }}</span>
-                                <x-badge variant="primary">{{ $images->count() }}</x-badge>
+                                <span>{{ $imageTypeLabels[$type] ?? ucfirst($type) }}</span>
+                                <x-badge variant="primary">{{ $typeImages->count() }}</x-badge>
                             </div>
                             @endforeach
                             

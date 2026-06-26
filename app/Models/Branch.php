@@ -29,7 +29,8 @@ class Branch extends Model
         'latitude',
         'longitude',
         'is_main_branch',
-        'status'
+        'status',
+        'features',
     ];
 
     protected $casts = [
@@ -92,6 +93,14 @@ class Branch extends Model
 
     public function getFeaturesArray(): array
     {
-        return $this->features ?? [];
+        $features = $this->features;
+
+        if (is_string($features)) {
+            $decoded = json_decode($features, true);
+
+            return is_array($decoded) ? $decoded : [];
+        }
+
+        return $features ?? [];
     }
 }

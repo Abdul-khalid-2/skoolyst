@@ -6,6 +6,7 @@ use App\Models\School;
 use App\Models\Branch;
 use App\Models\Feature;
 use App\Models\BranchImage;
+use App\Enums\BranchImageType;
 use App\Services\ImageWebpService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -59,15 +60,15 @@ class BranchController extends Controller
                 'latitude' => 'nullable|numeric|between:-90,90',
                 'longitude' => 'nullable|numeric|between:-180,180',
                 'is_main_branch' => 'boolean',
+                'status' => 'nullable|in:active,inactive',
             ]);
 
-            // Prepare features as JSON
-            if ($request->has('features')) {
-                $validated['features'] = json_encode($request->features);
-            }
+            $validated['is_main_branch'] = $request->boolean('is_main_branch');
+            $validated['status'] = $validated['status'] ?? 'active';
+            $validated['features'] = $request->has('features') ? $request->features : null;
 
             // If setting this as main branch, remove main branch status from others
-            if ($request->has('is_main_branch') && $request->is_main_branch) {
+            if ($validated['is_main_branch']) {
                 $school->branches()->update(['is_main_branch' => false]);
             }
 
@@ -92,7 +93,8 @@ class BranchController extends Controller
             abort(404);
         }
 
-        $branch->load(['images', 'events', 'reviews']);
+        $branch->load(['images', 'events', 'reviews'])
+            ->loadCount(['events', 'reviews']);
         return view('dashboard.branches.show', compact('school', 'branch'));
     }
 
@@ -141,15 +143,11 @@ class BranchController extends Controller
                 'status' => 'required|in:active,inactive',
             ]);
 
-            // Prepare features as JSON
-            if ($request->has('features')) {
-                $validated['features'] = json_encode($request->features);
-            } else {
-                $validated['features'] = null;
-            }
+            $validated['is_main_branch'] = $request->boolean('is_main_branch');
+            $validated['features'] = $request->has('features') ? $request->features : null;
 
             // If setting this as main branch, remove main branch status from others
-            if ($request->has('is_main_branch') && $request->is_main_branch) {
+            if ($validated['is_main_branch']) {
                 $school->branches()->where('id', '!=', $branch->id)->update(['is_main_branch' => false]);
             }
 
@@ -269,7 +267,7 @@ class BranchController extends Controller
                 $uploadedImages[] = [
                     'id' => $branchImage->id,
                     'title' => $branchImage->title,
-                    'type' => $branchImage->type,
+                    'type' => $branchImage->type instanceof BranchImageType ? $branchImage->type->value : $branchImage->type,
                     'is_featured' => (bool)$branchImage->is_featured,
                     'is_main_banner' => (bool)$branchImage->is_main_banner,
                     'image_path' => $branchImage->image_path,
@@ -332,7 +330,7 @@ class BranchController extends Controller
                     'id' => $image->id,
                     'title' => $image->title,
                     'caption' => $image->caption,
-                    'type' => $image->type,
+                    'type' => $image->type instanceof BranchImageType ? $image->type->value : $image->type,
                     'is_featured' => (bool)$image->is_featured,
                     'is_main_banner' => (bool)$image->is_main_banner,
                     'image_path' => $image->image_path,
