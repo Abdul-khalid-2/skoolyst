@@ -27,15 +27,19 @@ class ProductModal {
                     </div>
                     <div class="modal-body">
                         <div class="modal-product">
-                            <div class="modal-product-image">
-                                <img id="detailsProductImage" src="" alt="Product Image">
+                            <div class="modal-product-gallery">
+                                <div class="modal-product-image">
+                                    <img id="detailsProductImage" src="" alt="Product Image">
+                                </div>
+                                <div class="modal-product-thumbnails" id="detailsProductThumbnails"></div>
                             </div>
                             <div class="product-info-simple">
                                 <div id="detailsProductCategory" class="modal-product-category"></div>
                                 <h4 id="detailsProductName" class="modal-product-name"></h4>
                                 <div id="detailsProductPrice" class="modal-product-price"></div>
                                 <div class="modal-description">
-                                    <p id="detailsProductDescription"></p>
+                                    <span class="desc-text" id="detailsProductDescription"></span>
+                                    <span class="desc-toggle" id="descToggleBtn" style="display:none;">See more</span>
                                 </div>
                             </div>
                         </div>
@@ -81,6 +85,22 @@ class ProductModal {
             }
         });
 
+        // Thumbnail clicks (event delegation for dynamic content)
+        this.modal.addEventListener('click', (e) => {
+            const thumbnailItem = e.target.closest('.thumbnail-item');
+            if (thumbnailItem) {
+                const imageSrc = thumbnailItem.querySelector('img').src;
+                this.changeMainImage(imageSrc, thumbnailItem);
+            }
+        });
+
+        // Description toggle (event delegation for dynamic content)
+        this.modal.addEventListener('click', (e) => {
+            if (e.target.id === 'descToggleBtn') {
+                this.toggleDescription();
+            }
+        });
+
         // Bind favorite buttons globally
         this.bindFavoriteButtons();
     }
@@ -92,6 +112,62 @@ class ProductModal {
                 this.handleFavoriteClick(e.target.closest('.favorite-btn'));
             }
         });
+    }
+
+    getFavorites() {
+        try {
+            return JSON.parse(localStorage.getItem('skoolyst_favorites')) || [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    saveFavorites(favorites) {
+        localStorage.setItem('skoolyst_favorites', JSON.stringify(favorites));
+    }
+
+    isFavorite(productId) {
+        return this.getFavorites().includes(productId);
+    }
+
+    toggleFavorite(productId) {
+        let favorites = this.getFavorites();
+        const index = favorites.indexOf(productId);
+        let isNowFavorite;
+
+        if (index > -1) {
+            favorites.splice(index, 1);
+            isNowFavorite = false;
+        } else {
+            favorites.push(productId);
+            isNowFavorite = true;
+        }
+
+        this.saveFavorites(favorites);
+        return isNowFavorite;
+    }
+
+    restoreFavoritesUI() {
+        const favorites = this.getFavorites();
+        document.querySelectorAll('.favorite-btn').forEach(btn => {
+            const productId = btn.getAttribute('data-product-id');
+            if (favorites.includes(productId)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    buildImageUrl(path) {
+        if (!path) return '';
+        // If it's already a full URL (starts with http), return as-is
+        if (path.startsWith('http://') || path.startsWith('https://')) {
+            return path;
+        }
+        const base = window.assetBaseUrl || '';
+        // Avoid double slashes
+        return `${base.replace(/\/$/, '')}/${path.replace(/^\//, '')}`;
     }
 
     show(productData, productImage = null) {
@@ -108,9 +184,44 @@ class ProductModal {
     }
 
     populateModal(productData, productImage = null) {
-        // Set product image
-        if (productImage) {
-            document.getElementById('detailsProductImage').src = productImage;
+        // Build combined image list: [main_image_url, ...image_gallery], removing duplicates and empty values
+        let imageList = [];
+        const mainImage = productData.main_image_url || productImage || '';
+        const gallery = productData.image_gallery || [];
+
+        // Add main image first (with base URL)
+        if (mainImage) {
+            imageList.push(this.buildImageUrl(mainImage));
+        }
+
+        // Add gallery images (removing duplicates and applying base URL)
+        gallery.forEach(img => {
+            const fullUrl = this.buildImageUrl(img);
+            if (fullUrl && fullUrl !== (imageList[0] || '') && !imageList.includes(fullUrl)) {
+                imageList.push(fullUrl);
+            }
+        });
+
+        // Set main image
+        const mainImageUrl = imageList.length > 0 ? imageList[0] : '';
+        document.getElementById('detailsProductImage').src = mainImageUrl;
+
+        // Render thumbnails (max 3, excluding the main image)
+        const thumbnailsContainer = document.getElementById('detailsProductThumbnails');
+        thumbnailsContainer.innerHTML = '';
+
+        const remainingImages = imageList.slice(1, 4); // Get max 3 images after main
+        
+        if (remainingImages.length > 0) {
+            remainingImages.forEach(imageSrc => {
+                const thumbnailDiv = document.createElement('div');
+                thumbnailDiv.className = 'thumbnail-item';
+                thumbnailDiv.innerHTML = `<img src="${imageSrc}" alt="Thumbnail">`;
+                thumbnailsContainer.appendChild(thumbnailDiv);
+            });
+            thumbnailsContainer.style.display = 'flex';
+        } else {
+            thumbnailsContainer.style.display = 'none';
         }
 
         // Product name
@@ -139,10 +250,20 @@ class ProductModal {
             priceElement.textContent = `Rs. ${parseInt(currentPrice).toLocaleString()}`;
         }
 
-
         // Description
         const descriptionElement = document.getElementById('detailsProductDescription');
-        descriptionElement.textContent = productData.short_description || productData.description || 'No description available.';
+        const descriptionText = productData.short_description || productData.description || 'No description available.';
+        descriptionElement.textContent = descriptionText;
+        descriptionElement.classList.remove('expanded');
+
+        // Check if description needs "See more" toggle (roughly > 120 characters)
+        const toggleBtn = document.getElementById('descToggleBtn');
+        if (descriptionText.length > 120) {
+            toggleBtn.style.display = 'inline-block';
+            toggleBtn.textContent = 'See more';
+        } else {
+            toggleBtn.style.display = 'none';
+        }
 
         // Reset quantity
         document.getElementById('quantity').value = 1;
@@ -157,6 +278,38 @@ class ProductModal {
         const currentValue = parseInt(quantityInput.value);
         if (currentValue > 1) {
             quantityInput.value = currentValue - 1;
+        }
+    }
+
+    changeMainImage(newSrc, clickedThumbnail) {
+        const mainImage = document.getElementById('detailsProductImage');
+        
+        // Fade out animation
+        mainImage.style.opacity = '0';
+        
+        // Change image after fade out
+        setTimeout(() => {
+            mainImage.src = newSrc;
+            mainImage.style.opacity = '1';
+        }, 200);
+
+        // Update active class on thumbnails
+        document.querySelectorAll('.thumbnail-item').forEach(thumb => {
+            thumb.classList.remove('active');
+        });
+        clickedThumbnail.classList.add('active');
+    }
+
+    toggleDescription() {
+        const descText = document.getElementById('detailsProductDescription');
+        const toggleBtn = document.getElementById('descToggleBtn');
+
+        descText.classList.toggle('expanded');
+
+        if (descText.classList.contains('expanded')) {
+            toggleBtn.textContent = 'See less';
+        } else {
+            toggleBtn.textContent = 'See more';
         }
     }
 
@@ -220,17 +373,15 @@ class ProductModal {
     }
 
     handleFavoriteClick(button) {
+        const productId = button.getAttribute('data-product-id');
         const productCard = button.closest('.product-card');
-        const productName = productCard.querySelector('.product-name').textContent;
-        const isActive = button.classList.contains('active');
+        const productName = productCard ? productCard.querySelector('.product-name').textContent : 'Product';
 
-        // Toggle favorite state
-        button.classList.toggle('active');
+        const isNowFavorite = this.toggleFavorite(productId);
 
-        // AJAX call to update favorites
-        // You can implement this based on your backend
+        button.classList.toggle('active', isNowFavorite);
 
-        if (!isActive) {
+        if (isNowFavorite) {
             this.showToast(`${productName} added to favorites!`, 'success');
         } else {
             this.showToast(`${productName} removed from favorites!`, 'info');
@@ -277,6 +428,7 @@ let productModal = null;
 
 document.addEventListener('DOMContentLoaded', function () {
     productModal = new ProductModal();
+    productModal.restoreFavoritesUI();
 
     // Bind quick view buttons globally
     document.addEventListener('click', function (e) {

@@ -136,6 +136,12 @@
     @include('website.layout.footer')
     <!-- ==================== JAVASCRIPT ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
+    
+    <!-- Global asset base URL for JS components (e.g., product-modal.js) -->
+    <script>
+        window.assetBaseUrl = "{{ asset('website') }}";
+    </script>
+    
     @stack('scripts')
 
     <!--Start of Tawk.to Script-->
