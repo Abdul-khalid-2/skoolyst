@@ -7,9 +7,6 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EventController;
-use App\Http\Controllers\McqController;
-use App\Http\Controllers\McqDashboardController;
-use App\Http\Controllers\MockTestController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,12 +32,8 @@ use App\Http\Controllers\SchoolImageGalleryController;
 use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 
-use App\Http\Controllers\SchoolMcqController;
 use App\Http\Controllers\SchoolStudyMaterialController;
 use App\Http\Controllers\StudyMaterialController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\TestTypeController;
-use App\Http\Controllers\TopicController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VideoCategoryController;
 use App\Http\Controllers\VideoCommentController;
@@ -250,11 +243,9 @@ Route::group([
 
         // In routes/web.php
         Route::prefix('dashboard')->middleware(['auth', 'role:super-admin'])->group(function () {
-            // Admin MCQ dashboard routes (mcq-dashboard/stats, test-types, subjects,
-            // topics, mcqs, mock-tests) removed (Step 2, 2026-09-10). Controllers,
-            // models, migrations and database untouched — see McqDashboardController,
-            // TestTypeController, SubjectController, TopicController, McqController,
-            // MockTestController (kept for final cleanup step).
+            // Admin MCQ dashboard routes and controllers (mcq-dashboard/stats,
+            // test-types, subjects, topics, mcqs, mock-tests) removed (Steps 2-3,
+            // 2026-09-10). Models, migrations and database untouched.
 
             // Book Categories
             Route::resource('book-categories', BookCategoryController::class);
