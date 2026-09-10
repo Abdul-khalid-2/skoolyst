@@ -250,59 +250,12 @@ Route::group([
 
         // In routes/web.php
         Route::prefix('dashboard')->middleware(['auth', 'role:super-admin'])->group(function () {
-            // Dashboard
-            Route::get('/mcq-dashboard', [McqDashboardController::class, 'index'])->name('mcq.dashboard');
-            Route::get('/mcq-stats', [McqDashboardController::class, 'getStats'])->name('mcq.stats');
+            // Admin MCQ dashboard routes (mcq-dashboard/stats, test-types, subjects,
+            // topics, mcqs, mock-tests) removed (Step 2, 2026-09-10). Controllers,
+            // models, migrations and database untouched — see McqDashboardController,
+            // TestTypeController, SubjectController, TopicController, McqController,
+            // MockTestController (kept for final cleanup step).
 
-            // Test Types
-            Route::resource('test-types', TestTypeController::class);
-            Route::post('test-types/bulk-action', [TestTypeController::class, 'bulkAction'])->name('test-types.bulk.action');
-            Route::post('test-types/update-sort', [TestTypeController::class, 'updateSort'])->name('test-types.update.sort');
-
-            // Subjects
-            Route::resource('subjects', SubjectController::class);
-            Route::post('subjects/bulk-action', [SubjectController::class, 'bulkAction'])->name('subjects.bulk.action');
-            Route::post('subjects/update-sort', [SubjectController::class, 'updateSort'])->name('subjects.update.sort');
-
-            // Topics
-            Route::resource('topics', TopicController::class);
-            Route::post('topics/bulk-action', [TopicController::class, 'bulkAction'])->name('topics.bulk.action');
-            Route::post('topics/update-sort', [TopicController::class, 'updateSort'])->name('topics.update.sort');
-
-            // MCQs
-            Route::post('mcqs/bulk-action', [McqController::class, 'bulkAction'])->name('mcqs.bulk.action');
-            Route::post('mcqs/{mcq}/verify', [McqController::class, 'verify'])->name('mcqs.verify');
-            Route::post('mcqs/{mcq}/unverify', [McqController::class, 'unverify'])->name('mcqs.unverify');
-            Route::get('mcqs/get-topics', [McqController::class, 'getTopicsBySubject'])->name('mcqs.get-topics');
-            Route::get('mcqs/get-test-types', [McqController::class, 'getTestTypesBySubject'])->name('mcqs.get-test-types');
-
-            // MCQs - Bulk Import
-            Route::get('mcqs/bulk-import/template', [McqController::class, 'downloadBulkImportTemplate'])->name('mcqs.bulk-import.template');
-            Route::post('mcqs/bulk-import/preview', [McqController::class, 'previewBulkImport'])->name('mcqs.bulk-import.preview');
-            Route::post('mcqs/bulk-import', [McqController::class, 'storeBulkImport'])->name('mcqs.bulk-import.store');
-
-            // MCQs - Smart Export Template (pre-filled with selected subject/topic/test types)
-            Route::get('mcqs/export-template', [McqController::class, 'exportTemplate'])->name('mcqs.exportTemplate');
-
-            // MCQs - Live search (JSON; must be before resource so "search" is not captured as {mcq})
-            Route::get('mcqs/search', [McqController::class, 'searchLive'])->name('mcqs.search');
-
-            Route::resource('mcqs', McqController::class);
-
-            // Mock Tests
-            Route::post('mock-tests/bulk-action', [MockTestController::class, 'bulkAction'])->name('mock-tests.bulk.action');
-            Route::get('mock-tests/{mockTest}/add-questions', [MockTestController::class, 'addQuestions'])->name('mock-tests.add-questions');
-            Route::post('mock-tests/{mockTest}/add-question', [MockTestController::class, 'addQuestion'])->name('mock-tests.add-question');
-            Route::delete('mock-tests/{mockTest}/remove-question/{mcq}', [MockTestController::class, 'removeQuestion'])->name('mock-tests.remove-question');
-            Route::post('mock-tests/{mockTest}/update-question-order', [MockTestController::class, 'updateQuestionOrder'])->name('mock-tests.update-question-order');
-            Route::post('mock-tests/{mockTest}/questions/{question}/update-details', [MockTestController::class, 'updateQuestionDetails'])->name('mock-tests.update-question-details');
-            Route::post('mock-tests/{mockTest}/bulk-add-questions', [MockTestController::class, 'bulkAddQuestions'])->name('mock-tests.bulk-add-questions');
-            Route::get('mock-tests/get-mcqs/selection', [MockTestController::class, 'getMcqsForSelection'])->name('mock-tests.get-mcqs');
-            Route::get('mock-tests/{mockTest}/preview', [MockTestController::class, 'preview'])->name('mock-test.preview');
-            Route::resource('mock-tests', MockTestController::class);
-
-            // user-test-attemts
-            Route::get('mock-tests/user-test-attempts', [MockTestController::class, 'user-test-attempts'])->name('user-test-attempts.index');
             // Book Categories
             Route::resource('book-categories', BookCategoryController::class);
 
@@ -315,7 +268,8 @@ Route::group([
 
         // School Admin Routes
             Route::prefix('school')->name('school.')->middleware(['auth', 'role:school-admin'])->group(function () {
-            Route::get('/mcqs', [SchoolMcqController::class, 'index'])->name('mcqs.index');
+            // school.mcqs.index removed (Step 2, 2026-09-10) — was already dead code:
+            // pointed to a non-existent view and had no live nav link.
             Route::get('/study-materials', [SchoolStudyMaterialController::class, 'index'])->name('study-materials.index');
         });
     });
