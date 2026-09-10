@@ -10,7 +10,6 @@ use App\Http\Controllers\EventController;
 use App\Http\Controllers\McqController;
 use App\Http\Controllers\McqDashboardController;
 use App\Http\Controllers\MockTestController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -37,13 +36,8 @@ use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
 use App\Http\Controllers\Website\WebsiteBlogPostController;
 
-use App\Http\Controllers\ShopController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\ProductCategoryController;
-use App\Http\Controllers\CouponController;
 use App\Http\Controllers\SchoolMcqController;
 use App\Http\Controllers\SchoolStudyMaterialController;
-use App\Http\Controllers\ShopSchoolAssociationController;
 use App\Http\Controllers\StudyMaterialController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TestTypeController;
@@ -116,44 +110,9 @@ Route::group([
             return $school->branches()->where('status', 'active')->get();
         });
 
-        // // Dashboard Shop Routes
-        // // Route::resource('shops', ShopController::class);
-        // Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
-        // Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
-        // Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
-        // Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
-        // Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
-        // Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-        // Route::patch('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-        // Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
-        // Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
-        // Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
-
-        // Dashboard Product Routes
-        // Route::resource('products', ProductController::class);
-        Route::get('dashboard/products', [ProductController::class, 'index'])->name('products.index');
-        Route::get('dashboard/products/create', [ProductController::class, 'create'])->name('products.create');
-        Route::post('dashboard/products', [ProductController::class, 'store'])->name('products.store');
-        Route::get('dashboard/products/{product}', [ProductController::class, 'show'])->name('products.show');
-        Route::get('dashboard/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
-        Route::put('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update');
-        Route::patch('dashboard/products/{product}', [ProductController::class, 'update'])->name('products.update.patch');
-        Route::delete('dashboard/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-        Route::post('products/{product}/update-stock', [ProductController::class, 'updateStock'])->name('products.update-stock');
-
-        // Product Category Routes
-        Route::resource('product-categories', ProductCategoryController::class);
-
-        // Coupon Routes (super-admin only)
-        Route::middleware('role:super-admin')->group(function () {
-            Route::post('coupons/{coupon}/toggle-status', [CouponController::class, 'toggleStatus'])->name('coupons.toggle-status');
-            Route::resource('coupons', CouponController::class);
-        });
-
-        // Shop School Association Routes
-        Route::resource('shop-school-associations', ShopSchoolAssociationController::class)->except(['store']);
-        Route::post('shop-school-associations/{association}/approve', [ShopSchoolAssociationController::class, 'approve'])->name('shop-school-associations.approve');
-        Route::post('shop-school-associations/{association}/reject', [ShopSchoolAssociationController::class, 'reject'])->name('shop-school-associations.reject');
+        // Shop/Product/Coupon/Order dashboard routes removed (Step 3, 2026-09-10).
+        // Backend controllers/models/migrations/database untouched; only the admin
+        // routes, views and nav were removed.
 
         Route::resource('dashboard/announcements', AnnouncementController::class);
 
@@ -169,18 +128,6 @@ Route::group([
             Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
             Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
         });
-
-
-        // access to update status of school
-        Route::put('/shop-school-associations/{association}/status', [ShopSchoolAssociationController::class, 'updateStatus'])->name('shop-school-associations.update-status');
-
-        Route::get('dashboard/orders/', [OrderController::class, 'index'])->name('dashboard.orders.index');
-        Route::get('dashboard/orders/{order}', [OrderController::class, 'show'])->name('dashboard.orders.show');
-        Route::post('dashboard/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('dashboard.orders.update-status');
-        Route::post('dashboard/orders/{order}/update-payment-status', [OrderController::class, 'updatePaymentStatus'])->name('dashboard.orders.update-payment-status');
-        Route::post('dashboard/orders/{order}/update-shipping', [OrderController::class, 'updateShippingInfo'])->name('dashboard.orders.update-shipping');
-        Route::post('dashboard/orders/{order}/add-notes', [OrderController::class, 'addAdminNotes'])->name('dashboard.orders.add-notes');
-        Route::get('dashboard/orders/export/orders', [OrderController::class, 'exportOrders'])->name('dashboard.orders.export');
 
 
         // Videos Routes
@@ -251,20 +198,6 @@ Route::group([
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    });
-
-    Route::middleware(['auth', 'verified', 'role:super-admin|shop-owner'])->group(function () {
-
-        // Route::resource('shops', ShopController::class);
-        Route::get('dashboard/shops', [ShopController::class, 'index'])->name('shops.index');
-        Route::get('dashboard/shops/create', [ShopController::class, 'create'])->name('shops.create');
-        Route::post('dashboard/shops', [ShopController::class, 'store'])->name('shops.store');
-        Route::get('dashboard/shops/{shop}', [ShopController::class, 'show'])->name('shops.show');
-        Route::get('dashboard/shops/{shop}/edit', [ShopController::class, 'edit'])->name('shops.edit');
-        Route::put('dashboard/shops/{shop}', [ShopController::class, 'update'])->name('shops.update');
-        Route::delete('dashboard/shops/{shop}', [ShopController::class, 'destroy'])->name('shops.destroy');
-        Route::post('shops/{shop}/associate-school', [ShopController::class, 'associateSchool'])->name('shops.associate-school');
-        Route::get('shops/{shop}/associations', [ShopController::class, 'getAssociations'])->name('shops.associations');
     });
 
     // Route::middleware(['auth'])->group(function () {
@@ -398,10 +331,6 @@ Route::group([
             Route::prefix('school')->name('school.')->middleware(['auth', 'role:school-admin'])->group(function () {
             Route::get('/mcqs', [SchoolMcqController::class, 'index'])->name('mcqs.index');
             Route::get('/study-materials', [SchoolStudyMaterialController::class, 'index'])->name('study-materials.index');
-
-            Route::get('shop-associations', [\App\Http\Controllers\SchoolShopAssociationController::class, 'index'])->name('shop-associations.index');
-            Route::post('shop-associations/{association}/approve', [\App\Http\Controllers\SchoolShopAssociationController::class, 'approve'])->name('shop-associations.approve');
-            Route::post('shop-associations/{association}/reject', [\App\Http\Controllers\SchoolShopAssociationController::class, 'reject'])->name('shop-associations.reject');
         });
     });
 

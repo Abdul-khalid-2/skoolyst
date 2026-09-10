@@ -68,72 +68,10 @@ class DashboardControlle extends Controller
 
             return view('dashboard.dashboard', compact('school', 'stats', 'recentReviews', 'upcomingEvents'));
         } elseif (auth()->user()->hasRole('shop-owner')) {
-            // Shop Owner sees only their shop data and associated schools
-            $shopOwnerId = auth()->id();
-
-
-            // Get the shop owned by this user
-            $shop = \App\Models\Shop::with([
-                'schoolAssociations.school',
-                'products',
-                'products.category',
-                'user'
-            ])->where('user_id', $shopOwnerId)->first();
-
-            if (!$shop) {
-                return redirect()->route('dashboard')->with('error', 'Shop not found. Please create a shop first.');
-            }
-
-            // Get associated schools (approved associations only)
-            $associatedSchools = $shop->schoolAssociations()
-                ->where('status', 'approved')
-                ->where('is_active', true)
-                ->with('school')
-                ->get();
-
-            // Calculate shop-specific statistics
-            $stats = [
-                'total_products' => $shop->products->count(),
-                'active_products' => $shop->products->where('is_active', true)->count(),
-                'out_of_stock' => $shop->products->where('is_in_stock', false)->count(),
-                'low_stock' => $shop->products->where('stock_quantity', '<=', 5)->count(),
-                'total_schools' => $associatedSchools->count(),
-                'total_reviews' => $shop->total_reviews,
-                'average_rating' => $shop->rating,
-                'pending_associations' => $shop->schoolAssociations()->where('status', 'pending')->count(),
-            ];
-
-            // Get recent products
-            $recentProducts = $shop->products()
-                ->with('category')
-                ->latest()
-                ->take(5)
-                ->get();
-
-            // Get low stock products
-            $lowStockProducts = $shop->products()
-                ->where('manage_stock', true)
-                ->where('stock_quantity', '<=', 5)
-                ->where('is_active', true)
-                ->with('category')
-                ->take(5)
-                ->get();
-
-            // Get pending association requests
-            $pendingAssociations = $shop->schoolAssociations()
-                ->where('status', 'pending')
-                ->with('school')
-                ->take(5)
-                ->get();
-
-            return view('dashboard.shops.dashboard', compact(
-                'shop',
-                'stats',
-                'recentProducts',
-                'lowStockProducts',
-                'pendingAssociations',
-                'associatedSchools'
-            ));
+            // The Shop admin dashboard was removed (Step 3, 2026-09-10). Shop data,
+            // models and the database are untouched; only this admin UI entry point
+            // is disabled.
+            abort(404, 'The shop dashboard has been removed.');
         } else {
             return redirect()->route('dashboard')->with('error', 'Unauthorized access.');
         }

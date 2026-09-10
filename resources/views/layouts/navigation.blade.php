@@ -58,14 +58,6 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('shops.index') }}"
-                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
-                        <i class="fas fa-store me-1"></i>
-                        <span>Shops</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
                     <a href="{{ route('events.index') }}"
                     class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt"></i>
@@ -78,13 +70,6 @@
                     class="nav-link {{ request()->routeIs('admin.blog-categories.*') ? 'active' : '' }}">
                         <i class="fas fa-list-alt"></i>
                         <span>Blog Categories</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('product-categories.index') }}"
-                    class="nav-link {{ request()->routeIs('product-categories.*') ? 'active' : '' }}">
-                        <i class="fas fa-list-alt"></i>
-                        <span>Productes Categories</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -175,28 +160,6 @@
                     </div>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('products.index') }}"
-                    class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                        <i class="fas fa-box"></i>
-                        <span>Products</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('dashboard.orders.index') }}"
-                    class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Orders</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('coupons.index') }}"
-                    class="nav-link {{ request()->routeIs('coupons.*') ? 'active' : '' }}">
-                        <i class="fas fa-ticket-alt"></i>
-                        <span>Coupons</span>
-                    </a>
-                </li>
-
             @endrole
 
 
@@ -226,36 +189,11 @@
                         <span>Posts</span>
                     </a>
                 </li>
-                {{-- 
-                <li class="nav-item">
-                    <a href="{{ route('shops.index') }}"
-                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
-                        <span>Shops</span>
-                    </a>
-                </li>
-                --}}
                 <li class="nav-item">
                     <a href="{{ route('reviews.index') }}"
                     class="nav-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">
                         <i class="fas fa-star"></i>
                         <span>Reviews</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ route('school.shop-associations.index') }}"
-                    class="nav-link {{ request()->routeIs('school.shop-associations.*') ? 'active' : '' }}">
-                        <i class="fas fa-handshake"></i>
-                        <span>Shop Associations</span>
-                        @php
-                            $pendingAssocCount = \App\Models\ShopSchoolAssociation::where('school_id', auth()->user()->school_id)
-                                ->where('status', \App\Enums\ModerationStatus::Pending)
-                                ->count();
-                        @endphp
-                        @if($pendingAssocCount > 0)
-                            <span class="badge bg-danger ms-auto">{{ $pendingAssocCount }}</span>
-                        @endif
                     </a>
                 </li>
 
@@ -284,33 +222,6 @@
                         <span>Videos</span>
                     </a>
                 </li>
-
-            {{-- ===================== SHOP OWNER MENU ===================== --}}
-            @role('shop-owner')
-
-                <li class="nav-item">
-                    <a href="{{ route('shops.index') }}"
-                    class="nav-link {{ request()->routeIs('shops.*') ? 'active' : '' }}">
-                        <i class="fas fa-store"></i>
-                        <span>My Shop</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('products.index') }}"
-                    class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
-                        <i class="fas fa-box"></i>
-                        <span>Products</span>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('dashboard.orders.index') }}"
-                    class="nav-link {{ request()->routeIs('orders.*') ? 'active' : '' }}">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span>Orders</span>
-                    </a>
-                </li>
-
-            @endrole
 
         </ul>
 
@@ -424,118 +335,6 @@
                     <li>
                         <a class="dropdown-item text-center" href="{{ route('admin.inquiries.index') }}">
                             <i class="fas fa-eye me-1"></i> View All Inquiries
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            @endrole
-            @role('shop-owner')
-            <div class="dropdown me-3">
-                <button class="btn btn-link position-relative" data-bs-toggle="dropdown" id="orderNotifications">
-                    <i class="fas fa-bell text-gray-600"></i>
-                    @php
-                    // Get shop and count pending orders
-                    $shop = auth()->user()->shop;
-                    $pendingOrdersCount = 0;
-                    
-                    if ($shop) {
-                        $pendingOrdersCount = \App\Models\Order::where('shop_id', $shop->id)
-                            ->where('status', 'pending')
-                            ->count();
-                    }
-                    @endphp
-                    
-                    @if($pendingOrdersCount > 0)
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-                        style="font-size: 0.6rem;" id="notificationBadge">
-                        {{ $pendingOrdersCount }}
-                    </span>
-                    @endif
-                </button>
-                
-                <ul class="dropdown-menu dropdown-menu-end" style="min-width: 300px;" id="orderNotificationsDropdown">
-                    <li class="dropdown-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <strong>Pending Orders</strong>
-                            @if($pendingOrdersCount > 0)
-                            <span class="badge bg-danger">{{ $pendingOrdersCount }} new</span>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <div class="dropdown-item-text">
-                            @php
-                            // Fetch recent pending orders for this shop
-                            $recentOrders = collect();
-                            if ($shop) {
-                                $recentOrders = \App\Models\Order::with(['user', 'orderItems.product'])
-                                    ->where('shop_id', $shop->id)
-                                    ->where('status', 'pending')
-                                    ->latest()
-                                    ->limit(5)
-                                    ->get();
-                            }
-                            @endphp
-
-                            @if($recentOrders->count() > 0)
-                            <div class="notification-list">
-                                @foreach($recentOrders as $order)
-                                <div class="notification-item p-2 border-bottom">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="flex-grow-1">
-                                            <div class="fw-bold text-truncate" style="max-width: 200px;">
-                                                <a href="{{ route('dashboard.orders.show', $order) }}" 
-                                                class="btn btn-sm btn-outline-primary" title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                                Order #{{ $order->order_number }}
-                                                </a>
-                                            </div>
-                                            <small class="text-muted">
-                                                {{ $order->user->name ?? 'Customer' }}
-                                            </small>
-                                            <div class="small">
-                                                {{ $order->orderItems->count() }} item(s)
-                                                • {{ number_format($order->total_amount, 2) }} {{ config('app.currency', 'USD') }}
-                                            </div>
-                                        </div>
-                                        <div class="text-end">
-                                            <span class="badge bg-warning badge-sm">
-                                                Pending
-                                            </span>
-                                            <div class="text-muted small">
-                                                {{ $order->created_at->diffForHumans() }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    @if($order->note)
-                                    <div class="small text-muted mt-1">
-                                        <i class="fas fa-sticky-note me-1"></i>
-                                        {{ Str::limit($order->note, 30) }}
-                                    </div>
-                                    @endif
-                                </div>
-                                @endforeach
-                            </div>
-                            @else
-                            <div class="text-center py-3 text-muted">
-                                <i class="fas fa-shopping-cart fa-2x mb-2"></i>
-                                <p class="mb-0">
-                                    @if(!$shop)
-                                    You need to create a shop first
-                                    @else
-                                    No pending orders
-                                    @endif
-                                </p>
-                            </div>
-                            @endif
-                        </div>
-                    </li>
-                    <li>
-                        <hr class="dropdown-divider">
-                    </li>
-                    <li>
-                        <a class="dropdown-item text-center" href="{{ route('dashboard.orders.index') }}">
-                            <i class="fas fa-eye me-1"></i> View All Orders
                         </a>
                     </li>
                 </ul>

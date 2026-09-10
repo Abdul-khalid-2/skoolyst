@@ -82,13 +82,6 @@
                                     </a>
                                 </div>
                                 @endif
-                                @if($video->shop)
-                                <div class="col-auto mb-2">
-                                    <a href="{{ route('shops.show', $video->shop->uuid) }}" class="badge bg-success text-decoration-none">
-                                        <i class="fas fa-store me-1"></i> {{ $video->shop->name }}
-                                    </a>
-                                </div>
-                                @endif
                                 @if($video->is_featured)
                                 <div class="col-auto mb-2">
                                     <span class="badge bg-warning">
