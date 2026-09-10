@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Enums\ActiveStatus;
 use App\Enums\SchoolVisibility;
-use App\Models\BlogPost;
 use App\Models\School;
 use App\Models\Video;
 use App\Models\VideoCategory;
@@ -31,7 +30,6 @@ class GenerateSitemap extends Command
             '/about',
             '/contact',
             '/all/schools',
-            '/blog',
             '/videos',
             '/mcq',
         ];
@@ -111,18 +109,6 @@ class GenerateSitemap extends Command
             foreach ($videos as $video) {
                 $sitemap->add(
                     $this->makeUrl("{$base}/{$locale}/videos/{$video->slug}", $video->updated_at)
-                );
-            }
-        }
-
-        $posts = BlogPost::query()
-            ->published()
-            ->get(['slug', 'updated_at']);
-
-        foreach ($locales as $locale) {
-            foreach ($posts as $post) {
-                $sitemap->add(
-                    $this->makeUrl("{$base}/{$locale}/blog/{$post->slug}", $post->updated_at)
                 );
             }
         }

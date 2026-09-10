@@ -54,11 +54,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('blog') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl('/blog') }}">
-                        {{ __('messages.blog') }}
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.videos.index', [], false)) }}">
                         {{ __('messages.videos') }}
                     </a>

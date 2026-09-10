@@ -25,7 +25,6 @@
                 <a class="btn btn-primary" href="{{ route('website.home') }}">Back to home</a>
                 <a class="btn btn-outline-primary" href="{{ route('browseSchools.index') }}">Browse schools</a>
                 <a class="btn btn-outline-primary" href="{{ route('website.videos.index') }}">EduVideos</a>
-                <a class="btn btn-outline-primary" href="{{ route('website.blog.index') }}">Blog</a>
             </div>
         </div>
     </div>

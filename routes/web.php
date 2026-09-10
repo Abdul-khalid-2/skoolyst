@@ -34,7 +34,6 @@ use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\SchoolImageGalleryController;
 use App\Http\Controllers\Website\WebsiteAnnouncementController;
 
-use App\Http\Controllers\Website\WebsiteBlogPostController;
 
 use App\Http\Controllers\SchoolMcqController;
 use App\Http\Controllers\SchoolStudyMaterialController;
@@ -47,7 +46,6 @@ use App\Http\Controllers\VideoCategoryController;
 use App\Http\Controllers\VideoCommentController;
 use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoReactionController;
-use App\Http\Controllers\Website\BlogCommentController;
 use App\Http\Controllers\Website\VideoWebsiteController;
 use App\Http\Controllers\Website\TestimonialController;
 use App\Http\Controllers\Website\WebsiteMcqController;
@@ -347,15 +345,23 @@ Route::group([
     // Route::post('announcements/{uuid}/comments', [AnnouncementController::class, 'storeComment'])
     //     ->name('announcements.comments.store');
 
-    // Blog Routes
-    Route::get('blog/', [WebsiteBlogPostController::class, 'index'])->name('website.blog.index');
-    Route::get('blog/{slug}', [WebsiteBlogPostController::class, 'show'])->name('website.blog.show');
-    Route::get('blog/category/{slug}', [WebsiteBlogPostController::class, 'category'])->name('website.blog.category');
-    Route::get('blog/tag/{tag}', [WebsiteBlogPostController::class, 'tag'])->name('website.blog.tag');
-    Route::post('blog/{post}/comment', [\App\Http\Controllers\Website\BlogCommentController::class, 'store'])->name('website.blog.comment.store');
-    Route::post('blog/{post}/reading-time', [WebsiteBlogPostController::class, 'trackReadingTime'])
-        ->middleware('throttle:60,1')
-        ->name('website.blog.reading-time');
+    // Blog module removed from the public website (2026-09-10). The Blog admin/
+    // dashboard system and the database are untouched; these URLs were publicly
+    // indexed, so they intentionally return 410 Gone instead of a generic
+    // redirect/404. Comment submission and reading-time tracking (POST, not
+    // indexed) are removed entirely.
+    Route::get('blog/', function () {
+        abort(410, 'The blog has been permanently removed.');
+    })->name('website.blog.index');
+    Route::get('blog/{slug}', function () {
+        abort(410, 'The blog has been permanently removed.');
+    })->name('website.blog.show');
+    Route::get('blog/category/{slug}', function () {
+        abort(410, 'The blog has been permanently removed.');
+    })->name('website.blog.category');
+    Route::get('blog/tag/{tag}', function () {
+        abort(410, 'The blog has been permanently removed.');
+    })->name('website.blog.tag');
 
     // Shop/Store module removed from the public website (2026-09-10). The dashboard
     // Shop system and the database are untouched; these URLs were publicly indexed,
