@@ -25,23 +25,7 @@
             <!-- <span class="ms-2 d-none d-lg-inline">Skoolyst</span> -->
         </a>
 
-        @php
-            $cartCount = 0;
-            if(session()->has('cart')) {
-                $cart = session('cart');
-                $cartCount = array_sum(array_column($cart, 'quantity'));
-            }
-        @endphp
-
         <div class="d-flex align-items-center ms-auto d-lg-none">
-            <!-- Mobile Cart Icon (right side, before toggler) -->
-            <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="position-relative text-decoration-none me-2" aria-label="View shopping cart">
-                <i class="fas fa-shopping-cart fa-lg cart-icon" aria-hidden="true"></i>
-                <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                    {{ $cartCount > 99 ? '99+' : $cartCount }}
-                </span>
-            </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation menu">
                 <span class="navbar-toggler-icon" aria-hidden="true"></span>
             </button>
@@ -75,11 +59,6 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('shop') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.shop.index', [], false)) }}">
-                        {{ __('messages.shop') }}
-                    </a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link {{ request()->is('videos') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.videos.index', [], false)) }}">
                         {{ __('messages.videos') }}
                     </a>
@@ -94,14 +73,6 @@
             <div class="navbar-actions d-flex align-items-center gap-3">
                 <!-- Language Switcher -->
                 <x-language-switcher />
-
-                <!-- Cart Icon with Count (shown inside collapse / on desktop) -->
-                <a href="{{ LaravelLocalization::localizeUrl(route('website.cart', [], false)) }}" class="cart-icon position-relative text-decoration-none d-none d-lg-inline-flex  me-2" aria-label="View shopping cart">
-                    <i class="fas fa-shopping-cart fa-lg cart-icon" aria-hidden="true"></i>
-                    <span class="cart-badge position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success">
-                        {{ $cartCount > 99 ? '99+' : $cartCount }}
-                    </span>
-                </a>
 
                 <!-- Auth: guest buttons / logged-in user menu -->
                 <div class="auth-buttons d-flex align-items-center gap-2">

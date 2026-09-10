@@ -55,13 +55,6 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoReactionController;
 use App\Http\Controllers\Website\BlogCommentController;
 use App\Http\Controllers\Website\VideoWebsiteController;
-use App\Http\Controllers\Website\WebsiteCartController;
-use App\Http\Controllers\Website\WebsiteCheckoutController;
-use App\Http\Controllers\Website\WebsiteOrderController;
-use App\Http\Controllers\Website\WebsiteShopController;
-use App\Http\Controllers\Website\ShopReviewController;
-use App\Http\Controllers\Website\WebsiteProductsController;
-use App\Http\Controllers\Website\WebsiteModalController;
 use App\Http\Controllers\Website\TestimonialController;
 use App\Http\Controllers\Website\WebsiteMcqController;
 use App\Http\Controllers\Website\WebsiteMockMcqController;
@@ -435,13 +428,18 @@ Route::group([
         ->middleware('throttle:60,1')
         ->name('website.blog.reading-time');
 
-    Route::get('shop/', [WebsiteShopController::class, 'index'])->name('website.shop.index');
-    Route::get('shop/{uuid}', [WebsiteShopController::class, 'show'])->name('website.shop.show');
-    Route::post('shop/{uuid}/reviews', [ShopReviewController::class, 'store'])
-        ->middleware('auth')
-        ->name('website.shop.reviews.store');
-
-    Route::get('products/', [WebsiteProductsController::class, 'index'])->name('website.stationary.index');
+    // Shop/Store module removed from the public website (2026-09-10). The dashboard
+    // Shop system and the database are untouched; these URLs were publicly indexed,
+    // so they intentionally return 410 Gone instead of a generic redirect/404.
+    Route::get('shop/', function () {
+        abort(410, 'The shop section has been permanently removed.');
+    })->name('website.shop.index');
+    Route::get('shop/{uuid}', function () {
+        abort(410, 'The shop section has been permanently removed.');
+    })->name('website.shop.show');
+    Route::get('products/', function () {
+        abort(410, 'The shop section has been permanently removed.');
+    })->name('website.stationary.index');
 
     // Comments
     // Route::post('dashboard/videos/{video}/comments', [VideoCommentController::class, 'store'])->name('admin.videos.comments.store');
@@ -451,26 +449,9 @@ Route::group([
     // Reactions
     Route::post('dashboard/videos/{video}/reactions', [VideoReactionController::class, 'store'])->name('videos.reactions.store');
 
-    // Cart and Checkout Routes
-    Route::get('/cart', [WebsiteCartController::class, 'index'])->name('website.cart');
-    Route::post('/cart/add', [WebsiteCartController::class, 'addToCart'])->name('website.cart.add');
-    Route::post('/cart/update', [WebsiteCartController::class, 'updateCart'])->name('website.cart.update');
-    Route::post('/cart/remove', [WebsiteCartController::class, 'removeFromCart'])->name('website.cart.remove');
-    Route::post('/cart/clear', [WebsiteCartController::class, 'clearCart'])->name('website.cart.clear');
-    Route::get('/cart/count', [WebsiteCartController::class, 'getCartCount'])->name('website.cart.count');
-
-
-    Route::get('/checkout', [WebsiteCheckoutController::class, 'index'])->name('website.checkout');
-    Route::post('/checkout/process', [WebsiteCheckoutController::class, 'process'])->name('website.checkout.process');
-    Route::post('/checkout/apply-coupon', [WebsiteCheckoutController::class, 'applyCoupon'])->name('website.checkout.apply-coupon');
-    Route::post('/checkout/remove-coupon', [WebsiteCheckoutController::class, 'removeCoupon'])->name('website.checkout.remove-coupon');
-
-
-    Route::get('orders/confirmation/{order}', [WebsiteOrderController::class, 'confirmation'])->name('website.order.confirmation');
-    Route::get('orders/track', [WebsiteOrderController::class, 'track'])->name('website.order.track');
-    Route::get('orders/invoice/{order}', [WebsiteOrderController::class, 'invoice'])->name('website.order.invoice');
-    Route::get('orders/{order}', [WebsiteOrderController::class, 'show'])->name('website.order.show');
-
+    // Cart, Checkout and public Order routes removed along with the Shop module
+    // (2026-09-10). Not publicly indexed (session/transactional pages), so a plain
+    // 404 is sufficient — no redirect/410 handling needed.
 
     Route::view('privacy', 'website.privacy')->name('website.privacy');
     Route::view('terms', 'website.terms')->name('website.terms');
@@ -496,10 +477,6 @@ Route::group([
 
     Route::post('/testimonials', [TestimonialController::class, 'store'])->name('testimonials.store');
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
-
-
-    // Modal routes
-    Route::get('/modal/product/{product}', [WebsiteModalController::class, 'productModal'])->name('website.modal.product');
 
 
     // MCQs Routes

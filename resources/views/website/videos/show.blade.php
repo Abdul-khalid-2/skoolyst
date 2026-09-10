@@ -179,20 +179,6 @@
                         </div>
                         @endif
 
-                        @if($video->shop)
-                        <div class="col-md-6 detail-item">
-                            <div class="detail-label">
-                                <i class="fas fa-store"></i> Shop
-                            </div>
-                            <div class="detail-value">
-                                <a href="{{ route('website.shop.show', $video->shop->uuid) }}" 
-                                   class="text-decoration-none">
-                                    {{ $video->shop->name }}
-                                </a>
-                            </div>
-                        </div>
-                        @endif
-
                         <div class="col-md-6 detail-item">
                             <div class="detail-label">
                                 <i class="fas fa-user"></i> Uploaded By
