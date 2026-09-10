@@ -50,14 +50,6 @@
                 </li>
 
                 <li class="nav-item">
-                    <a href="{{ route('admin.blog-posts.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}">
-                        <i class="fas fa-blog me-1"></i>
-                        <span>Posts</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
                     <a href="{{ route('events.index') }}"
                     class="nav-link {{ request()->routeIs('events.*') ? 'active' : '' }}">
                         <i class="fas fa-calendar-alt"></i>
@@ -65,13 +57,6 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('admin.blog-categories.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.blog-categories.*') ? 'active' : '' }}">
-                        <i class="fas fa-list-alt"></i>
-                        <span>Blog Categories</span>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a href="{{ route('video-categories.index') }}"
                     class="nav-link {{ request()->routeIs('video-categories.*') ? 'active' : '' }}">
@@ -182,13 +167,6 @@
                     </a>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('admin.blog-posts.index') }}"
-                    class="nav-link {{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}">
-                        <i class="fas fa-blog"></i>
-                        <span>Posts</span>
-                    </a>
-                </li>
                 <li class="nav-item">
                     <a href="{{ route('reviews.index') }}"
                     class="nav-link {{ request()->routeIs('reviews.*') ? 'active' : '' }}">

@@ -114,18 +114,8 @@ Route::group([
 
         Route::resource('dashboard/announcements', AnnouncementController::class);
 
-        Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
-            // Blog Categories
-            Route::resource('blog-categories', \App\Http\Controllers\BlogCategoryController::class);
-
-            // Blog Posts
-            Route::resource('blog-posts', \App\Http\Controllers\BlogPostController::class);
-
-            // Comments
-            Route::get('comments', [\App\Http\Controllers\CommentController::class, 'index'])->name('comments.index');
-            Route::put('comments/{comment}/status', [\App\Http\Controllers\CommentController::class, 'updateStatus'])->name('comments.update-status');
-            Route::delete('comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('comments.destroy');
-        });
+        // Admin Blog (posts/categories/comments) dashboard routes removed
+        // (Step 2, 2026-09-10). Blog models/migrations/database untouched.
 
 
         // Videos Routes
