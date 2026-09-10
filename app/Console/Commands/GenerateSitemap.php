@@ -31,7 +31,6 @@ class GenerateSitemap extends Command
             '/contact',
             '/all/schools',
             '/videos',
-            '/mcq',
         ];
 
         foreach ($locales as $locale) {

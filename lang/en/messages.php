@@ -6,5 +6,4 @@ return [
     'about' => 'About',
     'shop' => 'Shop',
     'videos' => 'Videos',
-    'mcqs' => 'MCQs',
 ];

@@ -58,11 +58,6 @@
                         {{ __('messages.videos') }}
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->is('mcqs') ? 'active' : '' }}" href="{{ LaravelLocalization::localizeUrl(route('website.mcqs.index', [], false)) }}">
-                        {{ __('messages.mcqs') }}
-                    </a>
-                </li>
             </ul>
 
             <div class="navbar-actions d-flex align-items-center gap-3">

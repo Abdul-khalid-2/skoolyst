@@ -1,8 +1,0 @@
-/**
- * @deprecated For new work, use the split styles in assets/css/mcq/ (see topic.blade.php).
- * This file remains as a single entry that imports the same modules for backward compatibility.
- */
-@import url("mcq/topic-hero-breadcrumb-description.css");
-@import url("mcq/topic-questions-testnav.css");
-@import url("mcq/topic-question-palette-mcq.css");
-@import url("mcq/topic-mcq-responsive.css");

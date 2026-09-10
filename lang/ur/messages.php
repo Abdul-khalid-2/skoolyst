@@ -6,5 +6,4 @@ return [
     'about' => 'متعلق',
     'shop' => 'دکان',
     'videos' => 'ویڈیوز',
-    'mcqs' => 'MCQs',
 ];

@@ -48,8 +48,6 @@ use App\Http\Controllers\VideoController;
 use App\Http\Controllers\VideoReactionController;
 use App\Http\Controllers\Website\VideoWebsiteController;
 use App\Http\Controllers\Website\TestimonialController;
-use App\Http\Controllers\Website\WebsiteMcqController;
-use App\Http\Controllers\Website\WebsiteMockMcqController;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 // Legacy /public/* URLs were indexed by Google when the document root was
@@ -404,76 +402,25 @@ Route::group([
     Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
 
 
-    // MCQs Routes
-Route::prefix('quiz')->name('website.mcqs.')->group(function () {
+    // Public MCQ/Quiz module removed (Step 1, 2026-09-10). The MCQ admin/
+    // dashboard system and the database are untouched. Content pages that were
+    // publicly browsable/indexed return 410 Gone; session/transactional
+    // endpoints (attempts, answer submission, results) are removed entirely
+    // (404) since they were never indexed.
+    Route::prefix('quiz')->name('website.mcqs.')->group(function () {
+        $gone = function () {
+            abort(410, 'The MCQ/quiz section has been permanently removed.');
+        };
 
-    // ✅ STATIC ROUTES FIRST
-    Route::get('/mock-tests', [WebsiteMockMcqController::class, 'mockTests'])
-        ->name('mock-tests');
-
-    Route::get('/mock-tests/{mock_test:slug}', [WebsiteMockMcqController::class, 'mockTestDetail'])
-        ->name('mock-test-detail');
-
-    Route::get('/mock-tests/{mock_test:slug}/start', [WebsiteMockMcqController::class, 'startMockTest'])
-        ->name('start-mock-test');
-
-    Route::post('/mock-tests/{mock_test:slug}/submit', [WebsiteMockMcqController::class, 'submitMockTest'])
-        ->name('submit-mock-test');
-
-    // ✅ TEST ATTEMPT ROUTES - Place these BEFORE dynamic routes
-    Route::get('/take/{attempt:uuid}', [WebsiteMockMcqController::class, 'takeTest'])
-        ->name('take-test');
-
-    Route::post('/attempt/{attempt:uuid}/save', [WebsiteMockMcqController::class, 'saveAnswer'])
-        ->name('save-answer');
-
-    // Route::post('/attempt/{attempt:uuid}/submit', [WebsiteMockMcqController::class, 'submitTest'])
-    //     ->name('submit-test');
-
-    Route::get('/test-attempts/{attempt:uuid}', [WebsiteMockMcqController::class, 'testResult'])
-        ->name('test-result');
-
-    // ✅ TOPIC TEST RESULTS ROUTE - ADD THIS NEW ROUTE
-    Route::get('/topic/{topic:slug}/results', [WebsiteMcqController::class, 'topicTestResults'])
-        ->name('test-results');
-
-    Route::get('/test/{test_type:slug}/subject/{subject:slug}/results', [WebsiteMcqController::class, 'subjectTestResults'])
-    ->name('subject-results');
-
-    // ✅ THEN DYNAMIC ROUTES
-    Route::get('/', [WebsiteMcqController::class, 'index'])->name('index');
-
-    // Test Type routes
-    Route::get('/test/{test_type:slug}', [WebsiteMcqController::class, 'testType'])->name('test-type');
-
-    // Subject routes
-    Route::get('/subject/{subject:slug}', [WebsiteMcqController::class, 'subject'])->name('subject');
-
-    // Topic routes
-    Route::get('/subject/{subject:slug}/topic/{topic:slug}', [WebsiteMcqController::class, 'topic'])->name('topic');
-
-    Route::post('/mcqs/submit-topic-test', [WebsiteMcqController::class, 'submitTopicTest'])->name('submit-topic-test');
-    Route::post('/submit-test', [WebsiteMcqController::class, 'submitTest'])->name('submit-test');
-    // Test Type + Subject routes  
-    Route::get('/test/{test_type:slug}/subject/{subject:slug}', [WebsiteMcqController::class, 'subjectByTestType'])->name('subject-by-test-type');
-
-    // Practice routes
-    // Expired/deleted practice UUIDs were indexed by Google and were hard-404ing
-    // via route-model binding. Soft-redirect to the MCQ index instead.
-    Route::get('/practice/{mcq:uuid}', [WebsiteMcqController::class, 'practice'])
-        ->missing(function () {
-            return redirect()->route('website.mcqs.index')
-                ->with('info', 'This practice session has expired or no longer exists. Please start a new one.');
-        })
-        ->name('practice');
-    Route::post('/practice/{mcq:uuid}/check', [WebsiteMcqController::class, 'checkAnswer'])
-        ->name('check-answer');
-    // GET fallback so crawlers hitting this POST-only action URL get redirected to the
-    // practice page instead of returning 405/500.
-    Route::get('/practice/{uuid}/check', function ($uuid) {
-        return redirect()->route('website.mcqs.practice', $uuid);
-    })->name('check-answer.redirect');
-});
+        Route::get('/', $gone)->name('index');
+        Route::get('/test/{test_type}', $gone)->name('test-type');
+        Route::get('/subject/{subject}', $gone)->name('subject');
+        Route::get('/subject/{subject}/topic/{topic}', $gone)->name('topic');
+        Route::get('/test/{test_type}/subject/{subject}', $gone)->name('subject-by-test-type');
+        Route::get('/practice/{mcq}', $gone)->name('practice');
+        Route::get('/mock-tests', $gone)->name('mock-tests');
+        Route::get('/mock-tests/{mock_test}', $gone)->name('mock-test-detail');
+    });
 
     require __DIR__ . '/auth.php';
 });
