@@ -3,7 +3,8 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 <style>
     .insights-hero { background: #1e3a8a; color: white; padding: 80px 0; text-align: center; }
     .insights-hero h1 { font-size: 2.8rem; margin-bottom: 1rem; }

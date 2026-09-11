@@ -20,14 +20,14 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="Find & Compare Top Schools in Pakistan - SKOOLYST">
     <meta property="og:description" content="Discover and compare top schools across Pakistan including Karachi, Lahore, and Islamabad. Read reviews, explore curriculums, and apply online.">
-    <meta property="og:image" content="{{ asset('assets/assets/hero.png') }}">
+    <meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:site" content="@skoolystpk">
     <meta property="twitter:title" content="Find Best Schools in Pakistan - SKOOLYST">
     <meta property="twitter:description" content="Explore and compare the best schools across Pakistan. Find by city, curriculum, or fee structure.">
-    <meta property="twitter:image" content="{{ asset('assets/assets/hero.png') }}">
+    <meta property="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
     @endunless
 
 <!-- // <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3104637221187005"

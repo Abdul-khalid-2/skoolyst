@@ -5,7 +5,8 @@
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/browse_schools.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/browse-schools-seo.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 <link rel="stylesheet" href="{{ asset('assets/css/browse_schools-inline.css') }}?v={{ filemtime(public_path('assets/css/browse_schools-inline.css')) }}">
 @endpush
 
@@ -34,7 +35,7 @@
 
 @push('scripts')
 @include('website.partials.select2-assets')
-<script src="{{ asset('assets/js/browse-schools-filters.js') }}?v={{ filemtime(public_path('assets/js/browse-schools-filters.js')) }}"></script>
+<script src="{{ asset('assets/js/browse-schools-filters.js') }}?v={{ filemtime(public_path('assets/js/browse-schools-filters.js')) }}" defer></script>
 @endpush
 
 @endsection

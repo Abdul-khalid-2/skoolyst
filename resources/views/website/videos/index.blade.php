@@ -4,7 +4,8 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/videos.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 <link rel="stylesheet" href="{{ asset('assets/css/videos-inline.css') }}?v={{ filemtime(public_path('assets/css/videos-inline.css')) }}">
 @endpush
 
@@ -176,5 +177,5 @@
 
 @push('scripts')
 @include('website.partials.select2-assets')
-<script src="{{ asset('assets/js/videos-index.js') }}?v={{ filemtime(public_path('assets/js/videos-index.js')) }}"></script>
+<script src="{{ asset('assets/js/videos-index.js') }}?v={{ filemtime(public_path('assets/js/videos-index.js')) }}" defer></script>
 @endpush

@@ -42,7 +42,7 @@
                 'url' => url('/'),
                 'logo' => [
                     '@type' => 'ImageObject',
-                    'url' => asset('assets/assets/hero.png')
+                    'url' => asset('assets/images/logo.png')
                 ],
             ],
             'mainEntity' => [
@@ -90,8 +90,8 @@
 
 @push('scripts')
 @include('website.partials.select2-assets')
-<script src="{{ asset('assets/js/home.js') }}"></script>
-<script src="{{ asset('assets/js/home-testimonial-form.js') }}?v={{ filemtime(public_path('assets/js/home-testimonial-form.js')) }}"></script>
+<script src="{{ asset('assets/js/home.js') }}" defer></script>
+<script src="{{ asset('assets/js/home-testimonial-form.js') }}?v={{ filemtime(public_path('assets/js/home-testimonial-form.js')) }}" defer></script>
 @endpush
 
 @endsection

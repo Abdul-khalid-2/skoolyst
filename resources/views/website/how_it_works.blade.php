@@ -5,7 +5,8 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/how_it_works.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 @endpush
 
 @push('meta')
@@ -220,7 +221,7 @@
 
 @push('scripts')
 
-<script src="{{ asset('assets/js/how_it_works.js') }}"></script>
+<script src="{{ asset('assets/js/how_it_works.js') }}" defer></script>
 @endpush
 
 @endsection

@@ -3,7 +3,8 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 <link rel="stylesheet" href="{{ asset('assets/css/school-profile.css') }}">
 @if($school->custom_style)
 <link rel="stylesheet" href="{{ asset('assets/css/schools/' . $school->custom_style . '.css') }}">
@@ -22,7 +23,7 @@
     $locDescription = $school->localized('description') ?: "Find fees, admissions, curriculum, and verified reviews for {$locName}" . ($school->city ? " in {$school->city}" : '') . " on SKOOLYST Pakistan.";
     $metaTitle = $locName . ($school->city ? " - {$school->city}" : '') . ' | Fees, Reviews & Admissions | SKOOLYST';
     $metaDescription = \Illuminate\Support\Str::limit(strip_tags($locDescription), 155);
-    $ogImage = $school->banner_image ? asset('website/' . $school->banner_image) : asset('assets/assets/hero.png');
+    $ogImage = $school->banner_image ? asset('website/' . $school->banner_image) : asset('assets/assets/hero1.png');
 
     $averageRating = round($school->reviews->avg('rating') ?? 0, 1);
     $reviewCount = $school->reviews->count();
@@ -161,6 +162,6 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/js/school-profile.js') }}"></script>
-<script src="{{ asset('assets/js/contact-form.js') }}"></script>
+<script src="{{ asset('assets/js/school-profile.js') }}" defer></script>
+<script src="{{ asset('assets/js/contact-form.js') }}" defer></script>
 @endpush

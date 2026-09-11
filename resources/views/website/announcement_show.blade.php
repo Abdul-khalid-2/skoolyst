@@ -3,8 +3,10 @@
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/announcement-show.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/announcement-show.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/announcement-show.css') }}"></noscript>
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 @endpush
 
 @section('content')
@@ -37,7 +39,7 @@
                 <div class="content-wrapper">
                     <div class="announcement-card">
                         @if($announcement->feature_image)
-                            <img src="{{ $announcement->feature_image_url }}" alt="{{ $announcement->title }}" class="featured-image">
+                            <img src="{{ $announcement->feature_image_url }}" alt="{{ $announcement->title }}" class="featured-image" loading="lazy" decoding="async">
                         @endif
                         
                         <div class="announcement-body">

@@ -4,7 +4,8 @@
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/videos_show.css') }}">
-<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
+<link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}"></noscript>
 @endpush
 
 @push('meta')
@@ -325,8 +326,9 @@
                                 <div class="comment-header">
                                     <div>
                                         @if($comment->user && $comment->user->profile_picture)
-                                        <img src="{{ asset('website/' . $comment->user->profile_picture) }}" 
-                                             alt="{{ $comment->user->name }}" class="comment-avatar">
+                                        <img src="{{ asset('website/' . $comment->user->profile_picture) }}"
+                                             alt="{{ $comment->user->name }}" class="comment-avatar"
+                                             loading="lazy" decoding="async">
                                         @elseif($comment->name)
                                         <div class="comment-avatar-placeholder">
                                             {{ substr($comment->name, 0, 1) }}
@@ -371,9 +373,10 @@
                                         <div class="comment-header">
                                             <div>
                                                 @if($reply->user && $reply->user->profile_picture)
-                                                <img src="{{ asset('website/' . $reply->user->profile_picture) }}" 
-                                                     alt="{{ $reply->user->name }}" 
-                                                     style="width: 32px; height: 32px;" class="comment-avatar">
+                                                <img src="{{ asset('website/' . $reply->user->profile_picture) }}"
+                                                     alt="{{ $reply->user->name }}"
+                                                     style="width: 32px; height: 32px;" class="comment-avatar"
+                                                     loading="lazy" decoding="async">
                                                 @elseif($reply->name)
                                                 <div class="comment-avatar-placeholder" style="width: 32px; height: 32px; font-size: 0.875rem;">
                                                     {{ substr($reply->name, 0, 1) }}
@@ -641,7 +644,7 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('assets/js/video-watch-tracker.js') }}?v={{ filemtime(public_path('assets/js/video-watch-tracker.js')) }}"></script>
+<script src="{{ asset('assets/js/video-watch-tracker.js') }}?v={{ filemtime(public_path('assets/js/video-watch-tracker.js')) }}" defer></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Like functionality

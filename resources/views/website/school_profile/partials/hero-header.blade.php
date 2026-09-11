@@ -26,6 +26,7 @@
                                 class="school-logo-img school-logo-img--hero"
                                 width="160"
                                 height="160"
+                                decoding="async"
                             >
                         @else
                             <div class="school-logo-placeholder school-logo-placeholder--hero d-flex align-items-center justify-content-center" role="img" aria-label="{{ $locName }}">
