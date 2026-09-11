@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Enums\ActiveStatus;
 use App\Enums\SchoolVisibility;
+use App\Models\Announcement;
 use App\Models\School;
 use App\Models\Video;
 use App\Models\VideoCategory;
@@ -26,17 +27,21 @@ class GenerateSitemap extends Command
         $sitemap = Sitemap::create();
 
         $staticPrefixPaths = [
-            '/',
-            '/about',
-            '/contact',
-            '/all/schools',
-            '/compare',
-            '/videos',
+            '/'                                  => 1.0,
+            '/all/schools'                       => 0.9,
+            '/compare'                           => 0.7,
+            '/videos'                            => 0.7,
+            '/testimonials'                      => 0.6,
+            '/how-it-works'                      => 0.6,
+            '/about'                             => 0.6,
+            '/contact'                           => 0.5,
+            '/insights/digital-transformation'   => 0.6,
+            '/insights/school-community'         => 0.6,
+            '/insights/school-marketing'         => 0.6,
         ];
 
         foreach ($locales as $locale) {
-            foreach ($staticPrefixPaths as $path) {
-                $priority = $path === '/all/schools' ? 0.9 : 0.6;
+            foreach ($staticPrefixPaths as $path => $priority) {
                 $sitemap->add(
                     $this->makeUrl("{$base}/{$locale}".$this->pathSuffix($path), null, $priority)
                 );
@@ -109,6 +114,23 @@ class GenerateSitemap extends Command
             foreach ($videos as $video) {
                 $sitemap->add(
                     $this->makeUrl("{$base}/{$locale}/videos/{$video->slug}", $video->updated_at)
+                );
+            }
+        }
+
+        // Published school announcements
+        $announcements = Announcement::query()
+            ->published()
+            ->get(['uuid', 'updated_at']);
+
+        foreach ($locales as $locale) {
+            foreach ($announcements as $announcement) {
+                $sitemap->add(
+                    $this->makeUrl(
+                        "{$base}/{$locale}/announcement/{$announcement->uuid}",
+                        $announcement->updated_at,
+                        0.5
+                    )
                 );
             }
         }
