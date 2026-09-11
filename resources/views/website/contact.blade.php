@@ -231,7 +231,7 @@
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script>
     // Simple form validation enhancement
     document.addEventListener('DOMContentLoaded', function() {
@@ -261,4 +261,4 @@
         }
     });
 </script>
-@endsection
+@endpush
