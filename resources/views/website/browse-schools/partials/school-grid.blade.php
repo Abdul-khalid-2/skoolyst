@@ -23,14 +23,15 @@
                             </div>
                             <span class="school-type-badge">{{ $school['type'] }}</span>
                         </div>
-                        <div class="school-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">
-                            @php
-                            $averageRating = $school['rating'] ?? 0;
-                            $fullStars = floor($averageRating);
-                            $hasHalfStar = $averageRating - $fullStars >= 0.5;
-                            $emptyStars = 5 - ceil($averageRating);
-                            @endphp
-
+                        @php
+                        $averageRating = $school['rating'] ?? 0;
+                        $reviewCount = $school['review_count'] ?? 0;
+                        $fullStars = floor($averageRating);
+                        $hasHalfStar = $averageRating - $fullStars >= 0.5;
+                        $emptyStars = 5 - ceil($averageRating);
+                        $hasRealRating = $averageRating > 0 && $reviewCount > 0;
+                        @endphp
+                        <div class="school-rating" @if($hasRealRating) itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating" @endif>
                             @for($i = 0; $i < $fullStars; $i++)
                                 <i class="fas fa-star"></i>
                             @endfor
@@ -44,9 +45,11 @@
                             @endfor
 
                             <span class="rating-value">{{ number_format($averageRating, 1) }}</span>
-                            <small class="review-count">({{ $school['review_count'] ?? 0 }} reviews)</small>
+                            <small class="review-count">({{ $reviewCount }} reviews)</small>
+                            @if($hasRealRating)
                             <meta itemprop="ratingValue" content="{{ number_format($averageRating, 1) }}">
-                            <meta itemprop="reviewCount" content="{{ $school['review_count'] ?? 0 }}">
+                            <meta itemprop="reviewCount" content="{{ $reviewCount }}">
+                            @endif
                         </div>
                         <p class="school-description" itemprop="description">
                             {{ Str::limit($school['description'] ?? 'No description available.', 120) }}
