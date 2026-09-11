@@ -1819,3 +1819,42 @@
 #contactInquiryForm.modal {
     display: none;
 }
+
+.school-profile-breadcrumb {
+    padding: 0.75rem 0;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eceff1;
+}
+
+.school-profile-breadcrumb .breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.school-profile-breadcrumb .breadcrumb-list li:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.4rem;
+    color: #adb5bd;
+}
+
+.school-profile-breadcrumb .breadcrumb-list a {
+    color: #495057;
+    text-decoration: none;
+}
+
+.school-profile-breadcrumb .breadcrumb-list a:hover {
+    color: #0d6efd;
+    text-decoration: underline;
+}
+
+.school-profile-breadcrumb .breadcrumb-list li[aria-current="page"] {
+    color: #212529;
+    font-weight: 500;
+}

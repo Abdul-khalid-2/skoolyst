@@ -259,7 +259,7 @@
 <title>{{ $metaTitle }}</title>
 <meta name="description" content="{{ $metaDescription }}">
 <meta name="keywords" content="{{ $metaKeywords }}">
-<meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1">
+<meta name="robots" content="{{ $totalSchools > 0 ? 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1' : 'noindex,follow' }}">
 <meta name="author" content="SKOOLYST Pakistan">
 <meta name="geo.region" content="PK">
 <meta name="geo.placename" content="Pakistan">

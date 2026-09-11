@@ -21,6 +21,7 @@ use App\Models\School;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Website\AboutController;
 use App\Http\Controllers\Website\BrowseSchoolController;
+use App\Http\Controllers\Website\CompareController;
 use App\Http\Controllers\Website\HomeController;
 use App\Http\Controllers\Website\HomeControllere;
 use App\Http\Controllers\Website\ReviewController;
@@ -164,6 +165,7 @@ Route::group([
     Route::get('/all/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
     Route::get('/browse/schools/search', [BrowseSchoolController::class, 'search'])->name('browseSchools.search');
     Route::get('/school/profile/{uuid}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show');
+    Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 
     Route::get('/about', [AboutController::class, 'index'])->name('about');
     // Route::get('/insights', [AboutController::class, 'about'])->name('about');

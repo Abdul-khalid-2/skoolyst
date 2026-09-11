@@ -10,6 +10,9 @@
                 <div class="results-count">
                     Showing {{ $schools->firstItem() ?? 0 }}-{{ $schools->lastItem() ?? 0 }} of {{ $schools->total() }} schools
                 </div>
+                <a href="{{ route('compare.index') }}" class="compare-schools-link">
+                    <i class="fas fa-balance-scale" aria-hidden="true"></i> Compare Schools
+                </a>
             </div>
         </div>
     </div>

@@ -61,6 +61,37 @@
             'reviewCount' => $reviewCount,
         ];
     }
+
+    $breadcrumbSchema = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => array_values(array_filter([
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => route('website.home'),
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'All Schools',
+                'item' => route('browseSchools.index'),
+            ],
+            $school->city ? [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => 'Schools in ' . $school->city,
+                'item' => route('browseSchools.index', ['location' => $school->city]),
+            ] : null,
+            [
+                '@type' => 'ListItem',
+                'position' => $school->city ? 4 : 3,
+                'name' => $locName,
+                'item' => url()->current(),
+            ],
+        ])),
+    ];
 @endphp
 
 @push('meta')
@@ -97,9 +128,25 @@
 <script type="application/ld+json">
 {!! json_encode($schoolSchema, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
 </script>
+<script type="application/ld+json">
+{!! json_encode($breadcrumbSchema, JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}
+</script>
 @endpush
 
 @section('content')
+    <nav class="school-profile-breadcrumb" aria-label="Breadcrumb">
+        <div class="container">
+            <ol class="breadcrumb-list">
+                <li><a href="{{ route('website.home') }}">Home</a></li>
+                <li><a href="{{ route('browseSchools.index') }}">All Schools</a></li>
+                @if($school->city)
+                <li><a href="{{ route('browseSchools.index', ['location' => $school->city]) }}">Schools in {{ $school->city }}</a></li>
+                @endif
+                <li aria-current="page">{{ $locName }}</li>
+            </ol>
+        </div>
+    </nav>
+
     @include('website.school_profile.partials.hero-header')
     @include('website.school_profile.partials.navigation')
 

@@ -621,3 +621,18 @@
     font-size: var(--font-size-base);
   }
 }
+
+.compare-schools-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.compare-schools-link:hover {
+    text-decoration: underline;
+}

@@ -30,6 +30,7 @@ class GenerateSitemap extends Command
             '/about',
             '/contact',
             '/all/schools',
+            '/compare',
             '/videos',
         ];
 
