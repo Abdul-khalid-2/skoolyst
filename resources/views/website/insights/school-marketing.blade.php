@@ -107,6 +107,51 @@
 </style>
 @endpush
 
+@push('meta')
+<title>Connecting Schools, Parents & Students in Pakistan | SKOOLYST Insights</title>
+<meta name="description" content="How Skoolyst helps parents find the best schools in Pakistan, explore detailed profiles, read real reviews and connect with educational institutions on one smart platform.">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:title" content="Connecting Schools, Parents & Students in Pakistan | SKOOLYST Insights">
+<meta property="og:description" content="How Skoolyst helps parents find the best schools in Pakistan, explore detailed profiles, read real reviews and connect with educational institutions.">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="Connecting Schools, Parents & Students in Pakistan | SKOOLYST Insights">
+<meta name="twitter:description" content="Skoolyst simplifies the school search process — discover, compare and connect with schools across Pakistan.">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => 'Connecting Schools, Parents & Students in Pakistan',
+    'description' => 'How Skoolyst helps parents find the best schools in Pakistan, explore detailed profiles, read real reviews and connect with educational institutions on one smart platform.',
+    'url' => url()->current(),
+    'datePublished' => '2024-01-01',
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'SKOOLYST Pakistan',
+        'url' => url('/'),
+        'logo' => ['@type' => 'ImageObject', 'url' => asset('assets/images/logo.png')],
+    ],
+    'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => url()->current()],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('website.home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Insights', 'item' => url('/about') . '#blog'],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => 'Connecting Schools, Parents & Students', 'item' => url()->current()],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @section('content')
 <!-- ==================== INSIGHTS HERO SECTION (compact, unified) ==================== -->
 <section class="insights-hero-section" id="insights-hero">

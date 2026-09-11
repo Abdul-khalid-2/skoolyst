@@ -27,6 +27,12 @@
 <meta property="og:title" content="{{ $compareTitle }}">
 <meta property="og:description" content="{{ $compareDescription }}">
 <meta property="og:url" content="{{ $canonicalUrl }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="{{ $compareTitle }}">
+<meta name="twitter:description" content="{{ $compareDescription }}">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
 
 @if($isValidComparison)
 <script type="application/ld+json">

@@ -8,11 +8,38 @@
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
+@push('meta')
+<title>How SKOOLYST Works — Discover & Compare Schools in Pakistan</title>
+<meta name="description" content="Learn how SKOOLYST helps schools, parents and students connect. Create your school profile, post announcements, highlight achievements and engage with the Pakistan school community.">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:title" content="How SKOOLYST Works — Discover & Compare Schools in Pakistan">
+<meta property="og:description" content="Learn how SKOOLYST helps schools, parents and students connect on Pakistan's leading school discovery platform.">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="How SKOOLYST Works — Discover & Compare Schools in Pakistan">
+<meta name="twitter:description" content="Learn how SKOOLYST helps schools, parents and students connect on Pakistan's leading school discovery platform.">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'WebPage',
+    'name' => 'How SKOOLYST Works',
+    'description' => "Learn how SKOOLYST helps schools, parents and students connect on Pakistan's leading school discovery platform.",
+    'url' => url()->current(),
+    'isPartOf' => ['@type' => 'WebSite', 'name' => 'SKOOLYST Pakistan', 'url' => url('/')],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @section('content')
 <!-- ==================== HERO SECTION ==================== -->
 <section class="hero-section" id="home">
     <div class="hero-content">
-        <img class="hero-subheading" src="{{ asset('assets/assets/hero1.png') }}" alt="hero1.png">
+        <img class="hero-subheading" src="{{ asset('assets/assets/hero1.png') }}" alt="SKOOLYST — Pakistan ka School Discovery Platform">
 
     </div>
 </section>

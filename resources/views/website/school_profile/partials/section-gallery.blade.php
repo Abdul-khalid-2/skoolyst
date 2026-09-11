@@ -5,7 +5,7 @@
             <div class="gallery-grid">
                 @foreach($school->images as $image)
                     <div class="gallery-item">
-                        <img src="{{ asset('website/' . $image->image_path) }}" alt="{{ $image->title ?? 'School Image' }}">
+                        <img src="{{ asset('website/' . $image->image_path) }}" alt="{{ $image->title ? $image->title . ' — ' . $school->localized('name') : $school->localized('name') . ' school gallery image' }}" loading="lazy">
                         @if($image->title)
                             <div class="image-caption">{{ $image->title }}</div>
                         @endif

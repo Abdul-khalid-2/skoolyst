@@ -107,6 +107,51 @@
 </style>
 @endpush
 
+@push('meta')
+<title>Building a Connected School Community | SKOOLYST Insights</title>
+<meta name="description" content="How Skoolyst bridges the gap between schools, parents and students in Pakistan — building trust through transparent reviews, announcements and an interactive education ecosystem.">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:title" content="Building a Connected School Community | SKOOLYST Insights">
+<meta property="og:description" content="How Skoolyst bridges the gap between schools, parents and students — building trust through transparent reviews, announcements and an interactive education ecosystem.">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="Building a Connected School Community | SKOOLYST Insights">
+<meta name="twitter:description" content="How Skoolyst bridges the gap between schools, parents and students in Pakistan through transparency and communication.">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'Article',
+    'headline' => 'Building a Connected School Community',
+    'description' => 'How Skoolyst bridges the gap between schools, parents and students in Pakistan — building trust through transparent reviews, announcements and an interactive education ecosystem.',
+    'url' => url()->current(),
+    'datePublished' => '2024-01-01',
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'SKOOLYST Pakistan',
+        'url' => url('/'),
+        'logo' => ['@type' => 'ImageObject', 'url' => asset('assets/images/logo.png')],
+    ],
+    'mainEntityOfPage' => ['@type' => 'WebPage', '@id' => url()->current()],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('website.home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Insights', 'item' => url('/about') . '#blog'],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => 'Building a Connected School Community', 'item' => url()->current()],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @section('content')
 <!-- ==================== INSIGHTS HERO SECTION (compact, unified) ==================== -->
 <section class="insights-hero-section" id="insights-hero">

@@ -77,7 +77,7 @@
                         <button class="btn btn-link text-decoration-none dropdown-toggle d-flex align-items-center gap-2 p-0 border-0"
                             type="button" data-bs-toggle="dropdown" data-bs-auto-close="true" aria-expanded="false"
                             id="userNavDropdown" aria-label="Account menu">
-                            <img src="{{ $navAvatarUrl }}" alt="" width="36" height="36" class="rounded-circle" style="object-fit: cover;">
+                            <img src="{{ $navAvatarUrl }}" alt="{{ $currentUser->name }}" width="36" height="36" class="rounded-circle" style="object-fit: cover;">
                             <span class="d-none d-sm-inline text-dark fw-medium">{{ \Illuminate\Support\Str::limit($currentUser->name, 22) }}</span>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm" aria-labelledby="userNavDropdown">

@@ -359,7 +359,7 @@
                                 <div class="page-element element-image">
                                     @if(isset($elementContent['src']) && $elementContent['src'])
                                         <img src="{{ $elementContent['src'] }}" 
-                                             alt="{{ $elementContent['alt'] ?? 'Image' }}" 
+                                             alt="{{ $elementContent['alt'] ?? ($page->name ?? 'Advertisement image') }}"
                                              style="max-height: 300px;">
                                     @else
                                         <div class="text-center py-4 bg-light rounded text-muted">
@@ -379,7 +379,7 @@
                                 <div class="page-element element-banner">
                                     @if(isset($elementContent['src']) && $elementContent['src'])
                                         <img src="{{ $elementContent['src'] }}" 
-                                             alt="{{ $elementContent['alt'] ?? 'Banner' }}"
+                                             alt="{{ $elementContent['alt'] ?? ($page->name ?? 'Advertisement banner') }}"
                                              style="max-height: 400px;">
                                     @else
                                         <div class="text-center py-5 bg-light text-muted">

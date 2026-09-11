@@ -7,6 +7,52 @@
 <link rel="stylesheet" href="{{ asset('assets/css/footer.css') }}">
 @endpush
 
+@push('meta')
+<title>{{ $video->title }} | SKOOLYST Videos</title>
+<meta name="description" content="{{ Str::limit(strip_tags($video->description ?? ''), 155) }}">
+<link rel="canonical" href="{{ url()->current() }}">
+<meta property="og:type" content="video.other">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:title" content="{{ $video->title }} | SKOOLYST Videos">
+<meta property="og:description" content="{{ Str::limit(strip_tags($video->description ?? ''), 155) }}">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:image" content="https://img.youtube.com/vi/{{ $video->video_id }}/hqdefault.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="{{ $video->title }} | SKOOLYST Videos">
+<meta name="twitter:description" content="{{ Str::limit(strip_tags($video->description ?? ''), 155) }}">
+<meta name="twitter:image" content="https://img.youtube.com/vi/{{ $video->video_id }}/hqdefault.jpg">
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'VideoObject',
+    'name' => $video->title,
+    'description' => strip_tags($video->description ?? ''),
+    'thumbnailUrl' => "https://img.youtube.com/vi/{$video->video_id}/hqdefault.jpg",
+    'uploadDate' => $video->created_at->toIso8601String(),
+    'embedUrl' => "https://www.youtube.com/embed/{$video->video_id}",
+    'url' => url()->current(),
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'SKOOLYST Pakistan',
+        'url' => url('/'),
+        'logo' => ['@type' => 'ImageObject', 'url' => asset('assets/images/logo.png')],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('website.home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => 'Videos', 'item' => route('website.videos.index')],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $video->title, 'item' => url()->current()],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @section('content')
 <div id="video-watch-config"
     data-endpoint="{{ route('website.videos.watch-time', $video) }}"
@@ -21,7 +67,8 @@
             <div class="col-lg-8">
                 <div class="video-container mb-4">
                     <iframe class="video-player"
-                        src="https://www.youtube.com/embed/{{ $video->video_id }}?rel=0" 
+                        title="{{ $video->title }}"
+                        src="https://www.youtube.com/embed/{{ $video->video_id }}?rel=0"
                         frameborder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowfullscreen>

@@ -5,7 +5,7 @@
                 <a href="{{ route('website.home') }}">Home</a>
                 <a href="{{ route('browseSchools.index') }}">Browse Schools</a>
                 <a href="{{ route('website.how_it_works') }}">How It Works</a>
-                <a href="{{ route('website.home') }}">Testimonials</a>
+                <a href="{{ route('testimonials.index') }}">Testimonials</a>
                 <a href="{{ url('/about') }}">About</a>
                 <a href="{{ route('website.terms') }}">Terms</a>
                 <a href="{{ route('website.privacy') }}">Privacy</a>
