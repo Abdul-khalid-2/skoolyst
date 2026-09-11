@@ -1,4 +1,52 @@
 @extends('website.layout.app')
+
+@php
+    $pageSetsOwnMeta = true;
+    $pageSetsOwnCanonical = true;
+@endphp
+
+@push('meta')
+<title>Contact Skoolyst | Get in Touch with Skoolyst</title>
+<meta name="description" content="Contact Skoolyst for questions, feedback, school listings, partnerships, and support related to our education platform.">
+<link rel="canonical" href="{{ url()->current() }}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:url" content="{{ url()->current() }}">
+<meta property="og:title" content="Contact Skoolyst | Get in Touch with Skoolyst">
+<meta property="og:description" content="Contact Skoolyst for questions, feedback, school listings, partnerships, and support related to our education platform.">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="Contact Skoolyst | Get in Touch with Skoolyst">
+<meta name="twitter:description" content="Contact Skoolyst for questions, feedback, school listings, partnerships, and support related to our education platform.">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'ContactPage',
+    'name' => 'Contact Skoolyst',
+    'description' => 'Contact Skoolyst for questions, feedback, school listings, partnerships, and support.',
+    'url' => url()->current(),
+    'publisher' => [
+        '@type' => 'Organization',
+        'name' => 'SKOOLYST',
+        'url' => url('/'),
+        'email' => 'skoolyst@gmail.com',
+        'telephone' => '+92-334-0673401',
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'Gulzar-e-Hijri',
+            'addressLocality' => 'Karachi',
+            'addressCountry' => 'PK',
+        ],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">

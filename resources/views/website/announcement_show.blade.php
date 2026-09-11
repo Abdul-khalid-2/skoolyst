@@ -1,5 +1,61 @@
 @extends('website.layout.app')
 
+@php
+    $pageSetsOwnMeta = true;
+    $pageSetsOwnCanonical = true;
+    $announcementDescription = \Illuminate\Support\Str::limit(strip_tags($announcement->content ?? ''), 155);
+    $announcementOgImage = $announcement->feature_image ? $announcement->feature_image_url : asset('assets/assets/hero1.png');
+    $announcementCanonical = route('announcements.show', $announcement->uuid);
+@endphp
+
+@push('meta')
+<title>{{ $announcement->title }} | {{ $announcement->school->localized('name') }} | SKOOLYST</title>
+<meta name="description" content="{{ $announcementDescription }}">
+<link rel="canonical" href="{{ $announcementCanonical }}">
+
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:url" content="{{ $announcementCanonical }}">
+<meta property="og:title" content="{{ $announcement->title }} | {{ $announcement->school->localized('name') }}">
+<meta property="og:description" content="{{ $announcementDescription }}">
+<meta property="og:image" content="{{ $announcementOgImage }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="{{ $announcement->title }} | {{ $announcement->school->localized('name') }}">
+<meta name="twitter:description" content="{{ $announcementDescription }}">
+<meta name="twitter:image" content="{{ $announcementOgImage }}">
+
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'NewsArticle',
+    'headline' => $announcement->title,
+    'description' => $announcementDescription,
+    'url' => $announcementCanonical,
+    'image' => $announcementOgImage,
+    'datePublished' => $announcement->publish_at?->toIso8601String() ?? $announcement->created_at->toIso8601String(),
+    'dateModified' => $announcement->updated_at->toIso8601String(),
+    'publisher' => [
+        '@type' => 'EducationalOrganization',
+        'name' => $announcement->school->localized('name'),
+        'url' => route('browseSchools.show', $announcement->school->uuid),
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+<script type="application/ld+json">
+{!! json_encode([
+    '@context' => 'https://schema.org',
+    '@type' => 'BreadcrumbList',
+    'itemListElement' => [
+        ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('website.home')],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $announcement->school->localized('name'), 'item' => route('browseSchools.show', $announcement->school->uuid)],
+        ['@type' => 'ListItem', 'position' => 3, 'name' => $announcement->title, 'item' => $announcementCanonical],
+    ],
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
+</script>
+@endpush
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">

@@ -1,5 +1,32 @@
 @extends('website.layout.app')
 
+@php
+    $pageSetsOwnMeta = true;
+    $pageSetsOwnCanonical = true;
+    $canonicalUrl = $testimonials->currentPage() > 1
+        ? url()->current() . '?page=' . $testimonials->currentPage()
+        : url('/testimonials');
+@endphp
+
+@push('meta')
+<title>Skoolyst Testimonials | What Parents and Schools Say</title>
+<meta name="description" content="Read feedback and experiences from parents, students, schools, and members of the Skoolyst education community.">
+<link rel="canonical" href="{{ $canonicalUrl }}">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SKOOLYST Pakistan">
+<meta property="og:url" content="{{ $canonicalUrl }}">
+<meta property="og:title" content="Skoolyst Testimonials | What Parents and Schools Say">
+<meta property="og:description" content="Read feedback and experiences from parents, students, schools, and members of the Skoolyst education community.">
+<meta property="og:image" content="{{ asset('assets/assets/hero1.png') }}">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@skoolystpk">
+<meta name="twitter:title" content="Skoolyst Testimonials | What Parents and Schools Say">
+<meta name="twitter:description" content="Read feedback and experiences from parents, students, schools, and members of the Skoolyst education community.">
+<meta name="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
+@endpush
+
 @push('styles')
 <link rel="stylesheet" href="{{ asset('assets/css/global.css') }}">
 <link rel="stylesheet" href="{{ asset('assets/css/navigation.css') }}">
