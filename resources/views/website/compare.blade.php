@@ -98,7 +98,7 @@
                         <th scope="row">School</th>
                         @foreach($selectedSchools as $school)
                             <td>
-                                <a href="{{ route('browseSchools.show', $school->uuid) }}">{{ $school->localized('name') }}</a>
+                                <a href="{{ route('browseSchools.show', $school->slug ?? $school->uuid) }}">{{ $school->localized('name') }}</a>
                             </td>
                         @endforeach
                     </tr>

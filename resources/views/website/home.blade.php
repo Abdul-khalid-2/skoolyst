@@ -57,7 +57,7 @@
                 $jsonLd['mainEntity']['itemListElement'][] = [
                     '@type' => 'ListItem',
                     'position' => $index + 1,
-                    'url' => route('browseSchools.show', $school['id'] ?? $school->id),
+                    'url' => route('browseSchools.show', $school['slug'] ?? $school['uuid'] ?? $school->slug ?? $school->uuid),
                     'name' => $school['name'] ?? $school->name,
                     'image' => isset($school['banner_image']) ? asset('website/'.$school['banner_image']) : (isset($school->banner_image) ? asset('website/'.$school->banner_image) : asset('assets/images/default-school.jpg')),
                     'address' => $school['location'] ?? ($school->city ?? 'Location not specified'),

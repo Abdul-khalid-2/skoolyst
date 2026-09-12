@@ -20,7 +20,7 @@
                             @if(isset($school->hasNewAnnouncements) && $school->hasNewAnnouncements())
                                 <div class="new-announcement-badge">
                                     <span class="badge-pulse"></span>
-                                    <a href="{{ route('browseSchools.show', $school->uuid ?? $school['id']) }}" class="announcement-link">
+                                    <a href="{{ route('browseSchools.show', $school->slug ?? $school['slug'] ?? $school->uuid ?? $school['id']) }}" class="announcement-link">
                                         <i class="fas fa-bullhorn"></i>
                                         New Updates
                                     </a>
@@ -83,7 +83,7 @@
                                     @endforeach
                                 @endif
                             </div>
-                            <a href="{{ route('browseSchools.show', $school['uuid']) }}" class="view-profile-btn" itemprop="url">
+                            <a href="{{ route('browseSchools.show', $school['slug'] ?? $school['uuid']) }}" class="view-profile-btn" itemprop="url">
                                 <i class="fas fa-eye"></i> View Full Profile
                             </a>
                             <p class="visitor-count">

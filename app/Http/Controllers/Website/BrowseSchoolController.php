@@ -65,9 +65,15 @@ class BrowseSchoolController extends Controller
         ]);
     }
 
-    public function show($uuid)
+    public function show($slug)
+    {
+        $school = $this->schoolService->getSchoolBySlug($slug);
+        return view('website.school_profile', compact('school'));
+    }
+
+    public function redirectFromUuid($uuid)
     {
         $school = $this->schoolService->getSchoolByUuid($uuid);
-        return view('website.school_profile', compact('school'));
+        return redirect()->route('browseSchools.show', ['slug' => $school->slug ?? $uuid], 301);
     }
 }

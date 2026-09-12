@@ -39,7 +39,7 @@
     'publisher' => [
         '@type' => 'EducationalOrganization',
         'name' => $announcement->school->localized('name'),
-        'url' => route('browseSchools.show', $announcement->school->uuid),
+        'url' => route('browseSchools.show', $announcement->school->slug ?? $announcement->school->uuid),
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
 </script>
@@ -49,7 +49,7 @@
     '@type' => 'BreadcrumbList',
     'itemListElement' => [
         ['@type' => 'ListItem', 'position' => 1, 'name' => 'Home', 'item' => route('website.home')],
-        ['@type' => 'ListItem', 'position' => 2, 'name' => $announcement->school->localized('name'), 'item' => route('browseSchools.show', $announcement->school->uuid)],
+        ['@type' => 'ListItem', 'position' => 2, 'name' => $announcement->school->localized('name'), 'item' => route('browseSchools.show', $announcement->school->slug ?? $announcement->school->uuid)],
         ['@type' => 'ListItem', 'position' => 3, 'name' => $announcement->title, 'item' => $announcementCanonical],
     ],
 ], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) !!}
@@ -74,7 +74,7 @@
             <nav class="announcement-breadcrumb">
                 <a href="{{ route('website.home') }}" class="breadcrumb-link">Home</a>
                 <span class="text-white mx-2">/</span>
-                <a href="{{ route('browseSchools.show', $announcement->school->uuid) }}" class="breadcrumb-link">{{ $announcement->school->localized('name') }}</a>
+                <a href="{{ route('browseSchools.show', $announcement->school->slug ?? $announcement->school->uuid) }}" class="breadcrumb-link">{{ $announcement->school->localized('name') }}</a>
                 <span class="text-white mx-2">/</span>
                 <span class="text-white-50">Announcement</span>
             </nav>
@@ -261,7 +261,7 @@
                             <span class="stat-label-sidebar">Locations</span>
                         </div>
                     </div>
-                    <a href="{{ route('browseSchools.show', $announcement->school->uuid) }}" class="view-school-btn-sidebar">
+                    <a href="{{ route('browseSchools.show', $announcement->school->slug ?? $announcement->school->uuid) }}" class="view-school-btn-sidebar">
                         <i class="fas fa-external-link-alt me-2"></i> View School Profile
                     </a>
                 </div>

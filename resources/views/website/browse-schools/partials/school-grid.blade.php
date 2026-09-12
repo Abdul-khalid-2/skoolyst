@@ -65,7 +65,7 @@
                                 @endforeach
                             @endif
                         </div>
-                        <a href="{{ route('browseSchools.show', $school['uuid']) }}" class="view-profile-btn" itemprop="url">
+                        <a href="{{ route('browseSchools.show', $school['slug'] ?? $school['uuid']) }}" class="view-profile-btn" itemprop="url">
                             <i class="fas fa-eye"></i> View Full Profile
                         </a>
                         <p class="visitor-count">

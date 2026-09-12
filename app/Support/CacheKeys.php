@@ -45,6 +45,11 @@ final class CacheKeys
         return "school:{$uuid}:publicShow";
     }
 
+    public static function schoolPublicShowBySlug(string $slug): string
+    {
+        return "school:slug:{$slug}:publicShow";
+    }
+
     /**
      * First page of the public school directory (empty filters, fixed perPage).
      */

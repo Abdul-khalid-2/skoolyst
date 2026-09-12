@@ -82,7 +82,7 @@
         $itemList[] = [
             '@type' => 'ListItem',
             'position' => $position,
-            'url' => route('browseSchools.show', $school['uuid']),
+            'url' => route('browseSchools.show', $school['slug'] ?? $school['uuid']),
             'name' => $school['name'],
         ];
     }
@@ -92,9 +92,9 @@
     foreach ($schools->take(12) as $school) {
         $entity = [
             '@type' => 'EducationalOrganization',
-            '@id' => route('browseSchools.show', $school['uuid']) . '#school',
+            '@id' => route('browseSchools.show', $school['slug'] ?? $school['uuid']) . '#school',
             'name' => $school['name'],
-            'url' => route('browseSchools.show', $school['uuid']),
+            'url' => route('browseSchools.show', $school['slug'] ?? $school['uuid']),
             'description' => Str::limit(strip_tags($school['description'] ?? ''), 200),
         ];
         if (! empty($school['location'])) {

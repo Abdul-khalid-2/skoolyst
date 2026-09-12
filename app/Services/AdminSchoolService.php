@@ -338,6 +338,9 @@ class AdminSchoolService
         Cache::forget(CacheKeys::schoolCitiesList());
         CacheKeys::forgetDirectoryFirstPageCaches();
         Cache::forget(CacheKeys::schoolPublicShowByUuid($school->uuid));
+        if ($school->slug) {
+            Cache::forget(CacheKeys::schoolPublicShowBySlug($school->slug));
+        }
     }
 
     private function normalizePublishDate(?string $publishDate): ?Carbon

@@ -99,7 +99,7 @@
     <div class="videos-sidebar-content">
         <div class="videos-school-list">
             @foreach($schools->take(5) as $school)
-            <a href="{{ route('browseSchools.show', $school->uuid) }}"
+            <a href="{{ route('browseSchools.show', $school->slug ?? $school->uuid) }}"
             class="videos-school-item">
                 @if($school->logo)
                 <img src="{{ asset('website/' . $school->logo) }}"

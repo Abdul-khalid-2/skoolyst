@@ -209,7 +209,7 @@ class HomeService
         $curriculumNames = $school->curriculums->pluck('name')->toArray();
         $primaryCurriculum = ! empty($curriculumNames) ? $curriculumNames[0] : '—';
 
-        $uuid = $school->uuid ?? (string) $school->id;
+        $slug = $school->slug ?? $school->uuid ?? (string) $school->id;
 
         return [
             'id' => $school->id,
@@ -220,7 +220,7 @@ class HomeService
             'excerpt' => $excerpt,
             'highlight' => $this->highlightQueryInText($excerpt, $query),
             'title_highlight' => $this->highlightQueryInText($name, $query),
-            'profile_url' => route('browseSchools.show', ['uuid' => $uuid]),
+            'profile_url' => route('browseSchools.show', ['slug' => $slug]),
         ];
     }
 
@@ -361,11 +361,12 @@ class HomeService
             $visitorCount = (int) $school->profile->visitor_count;
         }
 
-        $uuid = $school->uuid ?? (string) $school->id;
+        $slug = $school->slug ?? $school->uuid ?? (string) $school->id;
 
         return [
             'id' => $school->id,
-            'uuid' => $uuid,
+            'uuid' => $school->uuid ?? (string) $school->id,
+            'slug' => $slug,
             'name' => $school->localized('name'),
             'type' => $school->school_gender_type?->label() ?? '',
             'location' => $school->city,
@@ -376,7 +377,7 @@ class HomeService
             'banner_image' => $school->banner_image ? asset('website/'.$school->banner_image) : null,
             'review_count' => (int) $reviewCount,
             'visitor_count' => $visitorCount,
-            'profile_url' => route('browseSchools.show', ['uuid' => $uuid]),
+            'profile_url' => route('browseSchools.show', ['slug' => $slug]),
         ];
     }
 

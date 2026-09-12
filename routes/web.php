@@ -164,7 +164,11 @@ Route::group([
 
     Route::get('/all/schools', [BrowseSchoolController::class, 'index'])->name('browseSchools.index');
     Route::get('/browse/schools/search', [BrowseSchoolController::class, 'search'])->name('browseSchools.search');
-    Route::get('/school/profile/{uuid}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show');
+    Route::get('/school/profile/{slug}', [BrowseSchoolController::class, 'show'])->name('browseSchools.show')
+        ->where('slug', '[a-zA-Z0-9\-]+');
+    // Legacy UUID redirect — keeps old links working with a 301
+    Route::get('/school/profile/{uuid}', [BrowseSchoolController::class, 'redirectFromUuid'])
+        ->where('uuid', '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}');
     Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 
     Route::get('/about', [AboutController::class, 'index'])->name('about');

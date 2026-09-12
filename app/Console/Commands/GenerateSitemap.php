@@ -73,13 +73,14 @@ class GenerateSitemap extends Command
         $schools = School::query()
             ->where('status', ActiveStatus::Active)
             ->where('visibility', SchoolVisibility::Public)
-            ->get(['uuid', 'updated_at']);
+            ->get(['uuid', 'slug', 'updated_at']);
 
         foreach ($locales as $locale) {
             foreach ($schools as $school) {
+                $identifier = $school->slug ?? $school->uuid;
                 $sitemap->add(
                     $this->makeUrl(
-                        "{$base}/{$locale}/school/profile/{$school->uuid}",
+                        "{$base}/{$locale}/school/profile/{$identifier}",
                         $school->updated_at,
                         0.8
                     )

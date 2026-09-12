@@ -21,6 +21,7 @@ class School extends Model
 
     protected $fillable = [
         'uuid',
+        'slug',
         'name',
         'banner_image',
         'description',
@@ -45,7 +46,6 @@ class School extends Model
         'banner_tagline'
     ];
 
-    // Generate UUID automatically
     protected static function boot()
     {
         parent::boot();
@@ -54,7 +54,35 @@ class School extends Model
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
+            if (empty($model->slug)) {
+                $model->slug = static::generateUniqueSlug($model->name);
+            }
         });
+    }
+
+    public static function generateUniqueSlug(string $name, ?int $excludeId = null): string
+    {
+        $baseSlug = Str::slug($name);
+
+        if ($baseSlug === '') {
+            $baseSlug = 'school-' . Str::random(8);
+        }
+
+        $slug = $baseSlug;
+        $counter = 2;
+
+        while (true) {
+            $query = static::where('slug', $slug);
+            if ($excludeId) {
+                $query->where('id', '!=', $excludeId);
+            }
+            if (! $query->exists()) {
+                break;
+            }
+            $slug = $baseSlug . '-' . $counter++;
+        }
+
+        return $slug;
     }
 
     protected $casts = [

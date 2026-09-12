@@ -146,7 +146,43 @@ class SchoolService
     }
 
     /**
-     * Get a single school by UUID
+     * Get a single school by slug
+     */
+    public function getSchoolBySlug(string $slug)
+    {
+        $key = CacheKeys::schoolPublicShowBySlug($slug);
+        $school = Cache::remember(
+            $key,
+            CacheKeys::TTL_SCHOOL_PUBLIC_SHOW,
+            function () use ($slug) {
+                return School::with([
+                    'profile',
+                    'translations',
+                    'curriculums',
+                    'features',
+                    'reviews',
+                    'images',
+                    'branches',
+                    'events',
+                ])
+                    ->where('status', ActiveStatus::Active)
+                    ->where('visibility', SchoolVisibility::Public)
+                    ->published()
+                    ->where('slug', $slug)
+                    ->firstOrFail();
+            }
+        );
+
+        $this->recordSchoolProfileVisit->execute($school);
+        if ($school->profile) {
+            $school->profile->refresh();
+        }
+
+        return $school;
+    }
+
+    /**
+     * Get a single school by UUID (legacy — used for redirecting old URLs)
      */
     public function getSchoolByUuid(string $uuid)
     {
@@ -172,11 +208,6 @@ class SchoolService
                     ->firstOrFail();
             }
         );
-
-        $this->recordSchoolProfileVisit->execute($school);
-        if ($school->profile) {
-            $school->profile->refresh();
-        }
 
         return $school;
     }
@@ -278,6 +309,7 @@ class SchoolService
         return [
             'id' => $school->id,
             'uuid' => $school->uuid ?? $school->id,
+            'slug' => $school->slug ?? $school->uuid ?? $school->id,
             'name' => $school->localized('name'),
             'type' => $school->school_gender_type?->label() ?? '',
             'location' => $school->city,
@@ -288,7 +320,7 @@ class SchoolService
             'banner_image' => $school->banner_image ? asset('website/' . $school->banner_image) : null,
             'review_count' => $school->reviews->count(),
             'visitor_count' => $visitorCount,
-            'profile_url' => route('browseSchools.show', $school->uuid ?? $school->id)
+            'profile_url' => route('browseSchools.show', $school->slug ?? $school->uuid ?? $school->id)
         ];
     }
 }
