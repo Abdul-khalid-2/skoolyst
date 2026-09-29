@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    {{-- Resource hints: start the connection to third-party origins as early as
+         possible (DNS + TCP + TLS), in parallel with HTML parsing, so the actual
+         requests for Bootstrap CSS / Font Awesome / etc. don't pay that latency
+         on top of the fetch itself. This is the main lever for "render-blocking
+         requests" savings, since we can't avoid needing those origins. --}}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://embed.tawk.to">
+
     {{-- Pages that build their own primary meta (title/description/OG/Twitter) via
          @push('meta') should pass pageSetsOwnMeta => true so the layout does not
          emit a second, conflicting <title>/description. --}}
@@ -30,11 +40,6 @@
     <meta property="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
     @endunless
 
-<!-- // <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3104637221187005"
-    //  crossorigin="anonymous"></script> -->
-    
-     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2529569703326249"
-     crossorigin="anonymous"></script>
     @unless($pageSetsOwnCanonical ?? false)
     <!-- Default canonical; pages with a full @push("meta") block that includes their own should pass pageSetsOwnCanonical -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -144,16 +149,43 @@
     
     @stack('scripts')
 
+    <!-- Google AdSense (auto ads) — moved here from <head> so it never competes
+         with critical CSS/fonts/LCP image for early network priority. Still
+         async, so it never blocks rendering either way. -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2529569703326249"
+     crossorigin="anonymous"></script>
+
     <!--Start of Tawk.to Script-->
+    <!-- Chat widget is not needed for first paint/LCP and its JS is heavy
+         enough to add measurable main-thread work — load it once the browser
+         is idle (or after the user actually interacts), not immediately on
+         page load, to keep TBT/long-tasks down during initial render. -->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6a29afa35bdfa41c2ccf5e2a/1jqpdc6jv';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+        var loaded = false;
+        function loadTawk() {
+            if (loaded) return;
+            loaded = true;
+            var Tawk_API = window.Tawk_API = window.Tawk_API || {};
+            Tawk_API.Tawk_LoadStart = new Date();
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/6a29afa35bdfa41c2ccf5e2a/1jqpdc6jv';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+            ['scroll', 'mousemove', 'touchstart', 'keydown'].forEach(function (evt) {
+                window.removeEventListener(evt, loadTawk, { passive: true });
+            });
+        }
+        ['scroll', 'mousemove', 'touchstart', 'keydown'].forEach(function (evt) {
+            window.addEventListener(evt, loadTawk, { passive: true, once: true });
+        });
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadTawk, { timeout: 5000 });
+        } else {
+            setTimeout(loadTawk, 4000);
+        }
     })();
     </script>
     <!--End of Tawk.to Script-->
