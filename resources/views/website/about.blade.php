@@ -527,7 +527,7 @@
     </div>
 </section>
 
-@include('website.partials.advertisement-board')
+@include('website.partials.advertisement-board', ['placement' => 'about'])
 <!-- ==================== ABOUT SECTION ==================== -->
 <section class="about-section" id="about">
     <div class="container">

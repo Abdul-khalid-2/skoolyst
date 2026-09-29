@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdController;
 use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookController;
@@ -207,6 +208,10 @@ Route::group([
     // advertisement pages
     Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');
     Route::get('/page-view/{slug}/{page_uuid}', [AdvertisementPageController::class, 'show'])->name('advertisement_pages.show');
+
+    // Central ad engine (ads.skoolyst.com) — click redirect + TEMPORARY debug route.
+    Route::get('/ads/click/{placement}', [AdController::class, 'click'])->name('ads.click');
+    Route::get('/ads-debug/{placement}', [AdController::class, 'debug'])->name('ads.debug'); // TODO: remove after testing
 
     Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('website.school.reviews.store');
 

@@ -143,7 +143,7 @@
 
 @include('website.videos.partials.index.hero-search')
 
-@include('website.partials.advertisement-board')
+@include('website.partials.advertisement-board', ['placement' => 'videos'])
 <!-- ==================== VIDEOS CONTENT SECTION ==================== -->
 <section class="py-5">
     <div class="container">

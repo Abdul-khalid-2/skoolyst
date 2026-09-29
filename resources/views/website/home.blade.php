@@ -76,7 +76,7 @@
 
 @section('content')
 @include('website.home.partials.hero-search')
-@include('website.partials.advertisement-board')
+@include('website.partials.advertisement-board', ['placement' => 'home'])
 @include('website.home.partials.filters', ['cities' => $cities, 'schoolGenderTypes' => $schoolGenderTypes, 'schoolOwnershipTypes' => $schoolOwnershipTypes, 'curriculums' => $curriculums])
 @include('website.home.partials.school-directory', ['schools' => $schools])
 @include('website.home.partials.testimonials', ['testimonials' => $testimonials])

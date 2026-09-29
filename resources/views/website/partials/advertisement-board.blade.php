@@ -1,42 +1,36 @@
 @php
-$ads = [
-    // TO ADD A CLIENT AD, uncomment and fill one block:
-    // ['media_type' => 'image', 'media' => 'public\website\school\dominic-barker\logo\634139d0-9209-4374-a7cf-659b5ee0bb5f.webp', 'title' => 'Title Here', 'description' => 'Full Description Here', 'url' => 'https://...', 'cta' => 'Visit Website'],
-    // Paths under public/ — use website/... (no "public/" prefix), full https:// URL, or Google Images link (imgurl is auto-extracted):
-    // ['media_type' => 'image', 'media' => 'https://www.google.com/imgres?q=image&imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fb%2Fb6%2FImage_created_with_a_mobile_phone.png&imgrefurl=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FImage&docid=0JWe7yDOKrVFAM&tbnid=Q53WJiavu6IJtM&vet=12ahUKEwjB-t2h-46VAxVZV6QEHWwnLQQQnPAOegQIFxAB..i&w=4000&h=3000&hcb=2&ved=2ahUKEwjB-t2h-46VAxVZV6QEHWwnLQQQnPAOegQIFxAB', 'title' => 'Title Here', 'description' => 'Full Description Here', 'url' => 'https://...', 'cta' => 'Visit Website'],
-    // ['media_type' => 'video', 'media' => 'https://...mp4', 'title' => '...', 'description' => '...', 'url' => 'https://...', 'cta' => 'Learn More'],
-];
-$contactEmail = 'skoolyst@gmail.com';
-$contactWhatsApp = '+92 334 0673401';
+// Ads are now served live by the central ads.skoolyst.com engine
+// (App\Services\AdService) instead of a hardcoded array here. $placement
+// must be passed in by the including view (e.g. ['placement' => 'home']) —
+// see config/ads.php for the slot -> placement-code mapping.
+$adService = app(\App\Services\AdService::class);
+$liveAd = isset($placement) ? $adService->getAd($placement) : null;
+
+$ads = [];
+if ($liveAd) {
+    $validClickUrl = $adService->sanitizeClickUrl($liveAd['click_url'] ?? $liveAd['url'] ?? null);
+
+    $ads[] = [
+        'media_type' => ($liveAd['media_type'] ?? 'image') === 'video' ? 'video' : 'image',
+        'media' => $adService->imageUrl($liveAd['image_path'] ?? $liveAd['media'] ?? null),
+        'title' => $liveAd['title'] ?? null,
+        'description' => $liveAd['description'] ?? null,
+        // Route the CTA through our own tracked-click redirect (never the
+        // raw click_url) so AdController::click() records the click and
+        // re-validates the URL server-side before sending the visitor on.
+        'url' => $validClickUrl ? route('ads.click', $placement) : null,
+        'cta' => $liveAd['cta'] ?? $liveAd['cta_text'] ?? 'Learn More',
+    ];
+}
+
+$contactEmail = config('ads.contact_email');
+$contactWhatsApp = config('ads.contact_phone');
 $contactWhatsAppUrl = 'https://wa.me/' . preg_replace('/\D+/', '', $contactWhatsApp);
 
+// Media URLs from the ad engine already come back as absolute URLs (see
+// AdService::imageUrl()) — this just passes them through unchanged.
 $resolveAdMedia = function (?string $media): ?string {
-    if (empty($media)) {
-        return null;
-    }
-
-    if (preg_match('#^(https?:|data:)#i', $media)) {
-        // Google Image Search pages are not direct image URLs — extract ?imgurl=
-        if (preg_match('#google\.[a-z.]+/imgres#i', $media)) {
-            $query = [];
-            parse_str(parse_url($media, PHP_URL_QUERY) ?? '', $query);
-
-            if (!empty($query['imgurl'])) {
-                return urldecode($query['imgurl']);
-            }
-        }
-
-        return $media;
-    }
-
-    $path = str_replace('\\', '/', $media);
-    $path = ltrim($path, '/');
-
-    if (str_starts_with($path, 'public/')) {
-        $path = substr($path, 7);
-    }
-
-    return asset($path);
+    return $media;
 };
 @endphp
 

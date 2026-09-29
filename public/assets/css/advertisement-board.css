@@ -51,6 +51,7 @@
     display: flex;
     align-items: stretch;
     gap: 0;
+    height: 180px;
     background: #fff;
     border: 1px solid #e2e8f0;
     border-radius: 0.85rem;
@@ -67,7 +68,10 @@
 .ad-board-card__media {
     flex: 0 0 42%;
     max-width: 42%;
-    min-height: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: #f1f5f9;
     overflow: hidden;
 }
@@ -77,45 +81,56 @@
     display: block;
     width: 100%;
     height: 100%;
-    min-height: 180px;
-    object-fit: cover;
+    /* contain (not cover) — ad banners bake their own text/CTA into the
+       image, so cropping any edge can cut off real ad content. */
+    object-fit: contain;
 }
 
 .ad-board-card__body {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 1.25rem 1.5rem;
+    padding: 0.85rem 1.25rem;
+    overflow: hidden;
 }
 
 .ad-board-card__badge {
     display: inline-block;
     align-self: flex-start;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
     padding: 0.15rem 0.55rem;
     border-radius: 999px;
     background: #eef2ff;
     color: #4338ca;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
 
 .ad-board-card__title {
-    margin: 0 0 0.5rem;
-    font-size: 1.15rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    margin: 0 0 0.3rem;
+    font-size: 1.05rem;
     font-weight: 700;
     color: #0f172a;
-    line-height: 1.35;
+    line-height: 1.3;
 }
 
 .ad-board-card__text {
-    margin: 0 0 0.85rem;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 0 0 0.5rem;
     color: #475569;
-    line-height: 1.55;
-    font-size: 0.92rem;
+    line-height: 1.4;
+    font-size: 0.85rem;
 }
 
 .ad-board-card__cta {
@@ -236,18 +251,27 @@
 
 @media (max-width: 768px) {
     .ad-board-card {
+        height: auto;
         flex-direction: column;
     }
 
     .ad-board-card__media {
         flex: none;
         max-width: 100%;
-        min-height: 160px;
+        height: 140px;
     }
 
     .ad-board-card__image,
     .ad-board-card__video {
-        min-height: 160px;
+        height: 140px;
+    }
+
+    .ad-board-card__body {
+        padding: 0.75rem 1rem;
+    }
+
+    .ad-board-card__text {
+        -webkit-line-clamp: 3;
     }
 
     .ad-board-notice__messages {
