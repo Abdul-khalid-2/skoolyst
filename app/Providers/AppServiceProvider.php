@@ -3,12 +3,15 @@
 namespace App\Providers;
 
 use App\Enums\ModerationStatus;
+use App\Mail\Transport\SkoolystEmailTransport;
 use App\Models\Testimonial;
 use App\Services\ImageWebpService;
+use App\Services\SkoolystEmailService;
 use App\Support\CacheKeys;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Mail::extend('skoolyst', function () {
+            return new SkoolystEmailTransport($this->app->make(SkoolystEmailService::class));
+        });
+
         Testimonial::saved(function (Testimonial $t): void {
             if ($t->wasRecentlyCreated) {
                 if ($t->status === ModerationStatus::Approved) {

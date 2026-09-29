@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
+use App\Mail\AdminSchoolActivityMail;
 use App\Models\Curriculum;
 use App\Models\Feature;
 use App\Models\School;
@@ -14,6 +15,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class SchoolController extends Controller
@@ -98,7 +101,9 @@ class SchoolController extends Controller
     public function store(StoreSchoolRequest $request, ImageWebpService $imageWebp, AdminSchoolService $adminSchools)
     {
         try {
-            $adminSchools->createSchool($request, $imageWebp);
+            $school = $adminSchools->createSchool($request, $imageWebp);
+
+            $this->notifyAdminOfSchoolActivity($school, 'created');
         } catch (\Throwable $e) {
             report($e);
             $userMessage = 'Could not save the school. Please review the highlighted fields and the message below, then try again.';
@@ -193,6 +198,8 @@ class SchoolController extends Controller
 
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
+
+        $this->notifyAdminOfSchoolActivity($school, 'updated');
 
         return redirect()->route('schools.show', $school->id)
             ->with('success', 'School updated successfully!');
@@ -298,6 +305,8 @@ class SchoolController extends Controller
 
             DB::commit();
 
+            $this->notifyAdminOfSchoolActivity($school, 'registered');
+
             Auth::login($user);
 
             return redirect()->route('schools.edit', $school->id)
@@ -306,6 +315,24 @@ class SchoolController extends Controller
             DB::rollBack();
 
             return back()->with('error', 'Registration failed: '.$e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Notify the platform admin about school registration/create/update
+     * activity. Never allowed to break the calling action — any mail
+     * failure is logged, not thrown (same pattern as ContactInquiryController).
+     */
+    private function notifyAdminOfSchoolActivity(School $school, string $type): void
+    {
+        try {
+            Mail::to('skoolyst@gmail.com')->send(new AdminSchoolActivityMail($school, $type));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to email admin about school activity', [
+                'school_id' => $school->id,
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

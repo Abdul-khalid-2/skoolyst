@@ -79,6 +79,14 @@ return [
             'transport' => 'array',
         ],
 
+        // Central Skoolyst Email API (ads.skoolyst.com) — see
+        // App\Mail\Transport\SkoolystEmailTransport and config/skoolyst_email.php.
+        // Set MAIL_MAILER=skoolyst to make this the app-wide default, but only
+        // after confirming /email-debug works with a real API key.
+        'skoolyst' => [
+            'transport' => 'skoolyst',
+        ],
+
         'failover' => [
             'transport' => 'failover',
             'mailers' => [

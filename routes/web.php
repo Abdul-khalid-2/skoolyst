@@ -7,6 +7,7 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -212,6 +213,9 @@ Route::group([
     // Central ad engine (ads.skoolyst.com) — click redirect + TEMPORARY debug route.
     Route::get('/ads/click/{placement}', [AdController::class, 'click'])->name('ads.click');
     Route::get('/ads-debug/{placement}', [AdController::class, 'debug'])->name('ads.debug'); // TODO: remove after testing
+
+    // Central email API (ads.skoolyst.com) — TEMPORARY debug route.
+    Route::get('/email-debug', [EmailController::class, 'debug'])->name('email.debug'); // TODO: remove after testing
 
     Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('website.school.reviews.store');
 

@@ -10,6 +10,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
@@ -57,10 +58,18 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // Notify admin about new registration
-        Mail::to('skoolyst@gmail.com')->send(
-            new AdminUserActivityMail($user, 'registered')
-        );
+        // Notify admin about new registration. Must never block registration
+        // itself — the user account already exists at this point.
+        try {
+            Mail::to('skoolyst@gmail.com')->send(
+                new AdminUserActivityMail($user, 'registered')
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Failed to email admin about user registration', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         Auth::login($user);
 
