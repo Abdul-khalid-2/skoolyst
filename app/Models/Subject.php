@@ -49,16 +49,6 @@ class Subject extends Model
         return $this->hasMany(Mcq::class);
     }
 
-    public function books()
-    {
-        return $this->hasMany(Book::class, 'subject');
-    }
-
-    public function userProgress()
-    {
-        return $this->hasMany(UserProgress::class);
-    }
-
     // Add these scope methods
     public function scopeActive($query)
     {

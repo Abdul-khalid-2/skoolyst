@@ -23,7 +23,13 @@ class SchoolService
      */
     protected function getBaseQuery()
     {
-        return School::with(['curriculums', 'features', 'reviews', 'profile', 'translations'])
+        // Listing pages only ever need the review COUNT and AVERAGE rating
+        // (see formatSchoolData()) — withCount/withAvg compute those in SQL
+        // instead of pulling every review row per school just to average
+        // them in PHP, which used to be the case here.
+        return School::with(['curriculums', 'features', 'profile', 'translations'])
+            ->withCount('reviews')
+            ->withAvg('reviews', 'rating')
             ->where('status', ActiveStatus::Active)
             ->where('visibility', SchoolVisibility::Public)
             ->published();
@@ -290,8 +296,9 @@ class SchoolService
      */
     public function formatSchoolData($school): array
     {
-        // Calculate average rating
-        $averageRating = $school->reviews->avg('rating') ?? 0;
+        // Average rating computed in SQL via withAvg() in getBaseQuery() — no
+        // need to load every review row just to average them here.
+        $averageRating = $school->reviews_avg_rating ?? 0;
 
         // Get curriculum names
         $curriculumNames = $school->curriculums->pluck('name')->toArray();
@@ -318,7 +325,7 @@ class SchoolService
             'description' => $school->localized('description') ?: 'No description available.',
             'features' => $featureNames,
             'banner_image' => $school->banner_image ? asset('website/' . $school->banner_image) : null,
-            'review_count' => $school->reviews->count(),
+            'review_count' => $school->reviews_count,
             'visitor_count' => $visitorCount,
             'profile_url' => route('browseSchools.show', $school->slug ?? $school->uuid ?? $school->id)
         ];

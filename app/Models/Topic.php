@@ -41,16 +41,6 @@ class Topic extends Model
         return $this->hasMany(Mcq::class);
     }
 
-    public function userProgress()
-    {
-        return $this->hasMany(UserProgress::class);
-    }
-
-    public function userMcqAnswers()
-    {
-        return $this->hasMany(UserMcqAnswer::class);
-    }
-
     // Scopes
     public function scopeActive($query)
     {

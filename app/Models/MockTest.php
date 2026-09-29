@@ -79,12 +79,6 @@ class MockTest extends Model
         return $this->hasMany(UserTestAttempt::class);
     }
 
-    // Alias for attempts for consistency
-    public function userTestAttempts()
-    {
-        return $this->hasMany(UserTestAttempt::class);
-    }
-
     // Get all attempts count
     public function getAttemptsCountAttribute()
     {

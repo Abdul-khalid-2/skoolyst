@@ -64,11 +64,6 @@ class UserTestAttempt extends Model
         return $this->belongsTo(MockTest::class);
     }
 
-    public function userMcqAnswers()
-    {
-        return $this->hasMany(UserMcqAnswer::class);
-    }
-
     public function calculateScore()
     {
         // Implement scoring logic
