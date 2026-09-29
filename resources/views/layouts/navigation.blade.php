@@ -34,10 +34,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('users.index') }}" 
+                    <a href="{{ route('users.index') }}"
                     class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('oauth-clients.index') }}"
+                    class="nav-link {{ request()->routeIs('oauth-clients.*') ? 'active' : '' }}">
+                        <i class="fas fa-plug"></i>
+                        <span>Connected Apps</span>
                     </a>
                 </li>
 

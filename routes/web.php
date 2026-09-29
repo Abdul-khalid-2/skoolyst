@@ -9,6 +9,8 @@ use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
 use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OAuthClientController;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -205,6 +207,13 @@ Route::group([
             Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
             Route::get('/certificate/{attempt:uuid}', [UserProfileController::class, 'downloadCertificate'])->name('user_profile.certificate');
         });
+
+        // "Login with Skoolyst" — step 1. Guests land here, the `auth`
+        // middleware stores this URL as the intended redirect and sends
+        // them to login; AuthenticatedSessionController::store() sends them
+        // straight back here afterwards (Laravel's built-in intended-URL
+        // mechanism — no custom code needed for that hop).
+        Route::get('/oauth/authorize', [OAuthController::class, 'authorize'])->name('oauth.authorize');
     });
     // advertisement pages
     Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');
@@ -270,6 +279,11 @@ Route::group([
 
             // Study Materials
             Route::resource('study-materials', StudyMaterialController::class);
+
+            // "Login with Skoolyst" — Connected Apps management.
+            Route::resource('oauth-clients', OAuthClientController::class)->except(['show']);
+            Route::post('oauth-clients/{oauthClient}/regenerate-secret', [OAuthClientController::class, 'regenerateSecret'])
+                ->name('oauth-clients.regenerate-secret');
         });
 
         // School Admin Routes

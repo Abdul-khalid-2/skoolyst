@@ -5,6 +5,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AboutApiController;
 use App\Http\Controllers\API\HomeApiController;
+use App\Http\Controllers\OAuthController;
+
+// "Login with Skoolyst" — steps 2 & 3. See app/Http/Controllers/OAuthController.php
+// and integrate_login_with_skoolyst.md for the full consumer-app integration guide.
+Route::prefix('oauth')->group(function () {
+    Route::post('/token', [OAuthController::class, 'token'])
+        ->middleware('throttle:30,1')
+        ->name('api.oauth.token');
+    Route::get('/user', [OAuthController::class, 'user'])
+        ->middleware(['auth:sanctum', 'throttle:60,1'])
+        ->name('api.oauth.user');
+});
 
 
 Route::prefix('home')->group(function () {
