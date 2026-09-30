@@ -132,6 +132,59 @@
 
     @include('website.layout.header')
 
+    <!-- ==================== FLASH TOAST (session success/error/status) ==================== -->
+    @if (session('success') || session('error') || session('status'))
+        @php
+            $flashType = session('success') ? 'success' : (session('error') ? 'error' : 'status');
+            $flashMessage = session('success') ?: (session('error') ?: session('status'));
+        @endphp
+        <div id="flashToast" class="flash-toast flash-toast--{{ $flashType }}" role="alert" aria-live="polite">
+            <i class="fas {{ $flashType === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check' }}"></i>
+            <span>{{ $flashMessage }}</span>
+            <button type="button" class="flash-toast__close" aria-label="Close" onclick="document.getElementById('flashToast').remove()">&times;</button>
+        </div>
+        <style>
+            .flash-toast {
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                max-width: 380px;
+                padding: 0.9rem 1.1rem;
+                border-radius: 10px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                font-size: 0.9rem;
+                animation: flashToastIn 0.35s ease;
+            }
+            .flash-toast--success { background: #ecfdf5; border-left: 4px solid #10b981; color: #065f46; }
+            .flash-toast--error   { background: #fef2f2; border-left: 4px solid #dc2626; color: #991b1b; }
+            .flash-toast--status  { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+            .flash-toast i { font-size: 1.1rem; flex-shrink: 0; }
+            .flash-toast span { flex: 1; line-height: 1.4; }
+            .flash-toast__close {
+                background: none; border: none; font-size: 1.2rem; line-height: 1;
+                cursor: pointer; opacity: 0.6; color: inherit; flex-shrink: 0;
+            }
+            .flash-toast__close:hover { opacity: 1; }
+            @keyframes flashToastIn {
+                from { transform: translateX(30px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @media (max-width: 480px) {
+                .flash-toast { right: 12px; left: 12px; max-width: none; top: 80px; }
+            }
+        </style>
+        <script>
+            setTimeout(function () {
+                var toast = document.getElementById('flashToast');
+                if (toast) toast.remove();
+            }, 6000);
+        </script>
+    @endif
+
     <!-- ==================== MAIN CONTENT ==================== -->
     @yield('content')
 

@@ -239,13 +239,18 @@ class SchoolController extends Controller
             'admin_email' => 'required|email|unique:users,email',
             'admin_password' => 'required|string|min:8|confirmed',
             'fee_structure_type' => 'required|in:fixed,class_wise',
-            'regular_fees' => 'nullable',
-            'discounted_fees' => 'nullable',
-            'admission_fees' => 'nullable',
+            'regular_fees' => 'nullable|numeric|min:0|max:99999999.99',
+            'discounted_fees' => 'nullable|numeric|min:0|max:99999999.99',
+            'admission_fees' => 'nullable|numeric|min:0|max:99999999.99',
             'class_wise_fees' => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
             'class_wise_fees.*.range' => 'required|string|max:35',
-            'class_wise_fees.*.amount' => 'required|string|max:35',
+            'class_wise_fees.*.amount' => 'required|numeric|min:0|max:99999999.99',
             'school_terms' => 'required|accepted',
+        ], [
+            'regular_fees.numeric' => 'Regular fees must be a valid number.',
+            'discounted_fees.numeric' => 'Discounted fees must be a valid number.',
+            'admission_fees.numeric' => 'Admission fees must be a valid number.',
+            'class_wise_fees.*.amount.numeric' => 'Fee amount must be a valid number.',
         ]);
 
         try {
@@ -314,7 +319,14 @@ class SchoolController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return back()->with('error', 'Registration failed: '.$e->getMessage())->withInput();
+            Log::error('School registration failed', [
+                'error' => $e->getMessage(),
+                'school_email' => $validated['school_email'] ?? null,
+            ]);
+
+            return back()
+                ->with('error', 'Something went wrong while registering your school. Please check your details and try again.')
+                ->withInput();
         }
     }
 

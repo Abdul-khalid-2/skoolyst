@@ -73,6 +73,7 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('website.home', absolute: false));
+        return redirect(route('website.home', absolute: false))
+            ->with('success', 'Welcome to Skoolyst! Your account has been created.');
     }
 }
