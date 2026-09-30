@@ -34,9 +34,9 @@
                 align-items: center;
                 position: relative;
                 z-index: 2;
-                cursor: default;
+                cursor: pointer;
             }
-            .step-item.completed { cursor: pointer; }
+            .step-item:hover .step-circle { border-color: #0d6efd; }
             .step-circle {
                 width: 40px;
                 height: 40px;
@@ -126,9 +126,8 @@
             @endphp
 
             {{-- Step Indicator --}}
-            <x-card class="mb-4">
-                <div class="card-body py-3">
-                    <div class="step-wrapper">
+            <x-card class="mb-4 py-1">
+                <div class="step-wrapper">
                         <div class="step-progress-line" id="step-progress-line"></div>
                         <div class="step-item" data-target-step="1">
                             <div class="step-circle"><i class="fas fa-user-shield"></i></div>
@@ -150,7 +149,6 @@
                             <div class="step-circle"><i class="fas fa-images"></i></div>
                             <span class="step-label">Media</span>
                         </div>
-                    </div>
                 </div>
             </x-card>
 
@@ -161,7 +159,6 @@
                 {{-- ==================== STEP 1 ==================== --}}
                 <div class="form-step" id="step-1">
                     <x-card>
-                        <div class="card-body">
                             <h5 class="mb-3">Admin Information</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -247,14 +244,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 2 ==================== --}}
                 <div class="form-step" id="step-2">
                     <x-card>
-                        <div class="card-body">
                             <h5 class="mb-3">School Profile Details</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -378,14 +373,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 3 ==================== --}}
                 <div class="form-step" id="step-3">
                     <x-card>
-                        <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="school_gender_type" class="form-label">School Type (Gender) <span class="text-danger">*</span></label>
@@ -413,29 +406,25 @@
                             <div class="mb-3">
                                 <label class="form-label">School Features</label>
                                 @foreach($features->groupBy('category') as $category => $categoryFeatures)
-                                <x-card class="mb-3 feature-category" data-category="{{ Str::slug($category) }}">
-                                    <div class="card-header bg-light">
-                                        <h6 class="mb-0 text-capitalize">{{ $category }} Features</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            @foreach($categoryFeatures as $feature)
-                                            <div class="col-md-6 mb-2 feature-item">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="features[]"
-                                                        value="{{ $feature->id }}" id="feature_{{ $feature->id }}"
-                                                        {{ in_array($feature->id, $schoolFeatures) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="feature_{{ $feature->id }}">
-                                                        {{ $feature->name }}
-                                                        @if($feature->icon)<i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>@endif
-                                                    </label>
-                                                </div>
-                                                @if($feature->description)<small class="text-muted ms-4">{{ $feature->description }}</small>@endif
+                                <div class="mb-3 feature-category" data-category="{{ Str::slug($category) }}">
+                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">{{ $category }} Features</h6>
+                                    <div class="row">
+                                        @foreach($categoryFeatures as $feature)
+                                        <div class="col-md-6 mb-2 feature-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="features[]"
+                                                    value="{{ $feature->id }}" id="feature_{{ $feature->id }}"
+                                                    {{ in_array($feature->id, $schoolFeatures) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="feature_{{ $feature->id }}">
+                                                    {{ $feature->name }}
+                                                    @if($feature->icon)<i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>@endif
+                                                </label>
                                             </div>
-                                            @endforeach
+                                            @if($feature->description)<small class="text-muted ms-4">{{ $feature->description }}</small>@endif
                                         </div>
+                                        @endforeach
                                     </div>
-                                </x-card>
+                                </div>
                                 @endforeach
                             </div>
 
@@ -453,14 +442,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 4 ==================== --}}
                 <div class="form-step" id="step-4">
                     <x-card>
-                        <div class="card-body">
                             @php
                                 $sm = ($school->profile && $school->profile->social_media)
                                     ? json_decode($school->profile->social_media, true)
@@ -600,21 +587,19 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 5 ==================== --}}
                 <div class="form-step" id="step-5">
-                    <div class="row">
-                        {{-- Logo --}}
-                        <div class="col-md-4">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0"><h5 class="card-title mb-0">School Logo</h5></div>
-                                <div class="card-body">
+                    <x-card>
+                            <h5 class="mb-3">School Logo &amp; Banner</h5>
+                            <div class="row mb-2">
+                                {{-- Logo --}}
+                                <div class="col-md-4 mb-3">
                                     @if($school->logo_url)
                                     <div class="mb-3 text-center">
-                                        <p class="text-muted small">Current Logo</p>
+                                        <p class="text-muted small mb-1">Current Logo</p>
                                         <img src="{{ $school->logo_url }}" class="img-fluid rounded mb-2" style="max-height:120px;">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="remove_logo" name="remove_logo" value="1">
@@ -631,17 +616,12 @@
                                         <img id="logo-preview-img" class="img-fluid rounded" style="max-height:120px;">
                                     </div>
                                 </div>
-                            </x-card>
-                        </div>
 
-                        {{-- Banner --}}
-                        <div class="col-md-8">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0"><h5 class="card-title mb-0">Banner Image</h5></div>
-                                <div class="card-body">
+                                {{-- Banner --}}
+                                <div class="col-md-8 mb-3">
                                     @if($school->banner_url)
                                     <div class="mb-3 text-center">
-                                        <p class="text-muted small">Current Banner</p>
+                                        <p class="text-muted small mb-1">Current Banner</p>
                                         <img src="{{ $school->banner_url }}" class="img-fluid rounded mb-2" style="max-height:120px;">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="remove_banner" name="remove_banner" value="1">
@@ -670,86 +650,73 @@
                                         <img id="banner-preview-img" class="img-fluid rounded" style="max-height:120px;">
                                     </div>
                                 </div>
-                            </x-card>
-                        </div>
+                            </div>
 
-                        {{-- Existing images --}}
-                        <div class="col-12">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                    <h5 class="card-title mb-0">
-                                        School Images
-                                        <span class="badge bg-light text-muted border ms-2" id="image-count-badge">0 / 10</span>
-                                    </h5>
-                                    <button type="button" class="btn btn-primary btn-sm" id="add-image-btn">
-                                        <i class="fas fa-plus me-1"></i> Add Image
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    @if($school->images && $school->images->count() > 0)
-                                    <h6 class="text-muted mb-3">Current Images</h6>
-                                    <div class="row mb-4">
-                                        @foreach($school->images as $image)
-                                        <div class="col-md-4 mb-3">
-                                            <x-card>
-                                                <div class="card-body p-2">
-                                                    <img src="{{ asset('website/' . $image->image_path) }}" class="img-thumbnail w-100 mb-2" style="max-height:100px;object-fit:cover;">
-                                                    <p class="small mb-1"><strong>{{ $image->title }}</strong></p>
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" id="remove_image_{{ $image->id }}" name="remove_images[]" value="{{ $image->id }}">
-                                                        <label class="form-check-label text-danger small" for="remove_image_{{ $image->id }}">Remove</label>
-                                                    </div>
-                                                </div>
-                                            </x-card>
+                            <hr class="my-4">
+
+                            {{-- Existing images --}}
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                <h5 class="mb-0">
+                                    School Images
+                                    <span class="badge bg-light text-muted border ms-2" id="image-count-badge">0 / 10</span>
+                                </h5>
+                                <button type="button" class="btn btn-primary btn-sm" id="add-image-btn">
+                                    <i class="fas fa-plus me-1"></i> Add Image
+                                </button>
+                            </div>
+                            @if($school->images && $school->images->count() > 0)
+                            <h6 class="text-muted mb-3">Current Images</h6>
+                            <div class="row mb-4">
+                                @foreach($school->images as $image)
+                                <div class="col-md-4 mb-3">
+                                    <div class="border rounded p-2">
+                                        <img src="{{ asset('website/' . $image->image_path) }}" class="img-thumbnail w-100 mb-2" style="max-height:100px;object-fit:cover;">
+                                        <p class="small mb-1"><strong>{{ $image->title }}</strong></p>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="remove_image_{{ $image->id }}" name="remove_images[]" value="{{ $image->id }}">
+                                            <label class="form-check-label text-danger small" for="remove_image_{{ $image->id }}">Remove</label>
                                         </div>
-                                        @endforeach
                                     </div>
-                                    @endif
-
-                                    <div class="border border-dashed border-2 rounded p-4 text-center mb-3 image-upload-area" style="border-color:#dee2e6!important;">
-                                        <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
-                                        <p class="text-muted mb-2">Drag &amp; drop images here or click to browse</p>
-                                        <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" id="select-images-btn" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
-                                    </div>
-                                    <div id="image-fields-container"></div>
-                                    <div id="image-limit-notice" class="alert alert-info py-2 px-3 small mb-2 d-none">
-                                        <i class="fas fa-circle-info me-1"></i> You have reached the maximum of 10 images. Remove an existing or new image to add more.
-                                    </div>
-                                    <p class="text-muted small mb-0" id="image-limit-help">Upload up to 10 images in total (existing + new). Max 2MB each.</p>
-                                    @error('school_images')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
                                 </div>
-                            </x-card>
-                        </div>
+                                @endforeach
+                            </div>
+                            @endif
 
-                        {{-- School info & danger zone --}}
-                        <div class="col-md-6">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white"><h5 class="card-title mb-0">School Information</h5></div>
-                                <div class="card-body">
+                            <div class="border border-dashed border-2 rounded p-4 text-center mb-3 image-upload-area" style="border-color:#dee2e6!important;">
+                                <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                <p class="text-muted mb-2">Drag &amp; drop images here or click to browse</p>
+                                <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
+                                <button type="button" class="btn btn-outline-primary btn-sm" id="select-images-btn" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
+                            </div>
+                            <div id="image-fields-container"></div>
+                            <div id="image-limit-notice" class="alert alert-info py-2 px-3 small mb-2 d-none">
+                                <i class="fas fa-circle-info me-1"></i> You have reached the maximum of 10 images. Remove an existing or new image to add more.
+                            </div>
+                            <p class="text-muted small mb-0" id="image-limit-help">Upload up to 10 images in total (existing + new). Max 2MB each.</p>
+                            @error('school_images')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
+
+                            <hr class="my-4">
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <h6 class="text-muted mb-2">School Information</h6>
                                     <div class="mb-2"><strong>Created:</strong> <span class="text-muted">{{ $school->created_at->format('M d, Y') }}</span></div>
                                     <div class="mb-2"><strong>Last Updated:</strong> <span class="text-muted">{{ $school->updated_at->format('M d, Y') }}</span></div>
                                     <div class="mb-2"><strong>Total Reviews:</strong> <span class="text-muted">{{ $school->reviews->count() }}</span></div>
                                     <div><strong>Upcoming Events:</strong> <span class="text-muted">{{ $school->events->where('event_date', '>=', now())->count() }}</span></div>
                                 </div>
-                            </x-card>
-                        </div>
-                        <div class="col-md-6">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white"><h5 class="card-title mb-0 text-danger">Danger Zone</h5></div>
-                                <div class="card-body">
-                                    <p class="small text-muted">Once you delete a school, there is no going back. Please be certain.</p>
-                                    <button type="button" class="btn btn-danger w-100" id="delete-school-btn">
-                                        <i class="fas fa-trash me-2"></i> Delete School
-                                    </button>
+                                <div class="col-md-6 mb-3">
+                                    <div class="border border-danger-subtle rounded p-3 bg-danger-subtle bg-opacity-25">
+                                        <h6 class="text-danger mb-2">Danger Zone</h6>
+                                        <p class="small text-muted">Once you delete a school, there is no going back. Please be certain.</p>
+                                        <button type="button" class="btn btn-danger w-100" id="delete-school-btn">
+                                            <i class="fas fa-trash me-2"></i> Delete School
+                                        </button>
+                                    </div>
                                 </div>
-                            </x-card>
-                        </div>
-                    </div>
+                            </div>
 
-                    <x-card>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top">
                                 <button type="button" class="btn btn-secondary prev-step-btn" data-prev="4">
                                     <i class="fas fa-arrow-left me-2"></i> Previous
                                 </button>
@@ -760,7 +727,6 @@
                                     <a href="{{ route('schools.show', $school->id) }}" class="btn btn-outline-secondary">Cancel</a>
                                 </div>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
@@ -776,25 +742,23 @@
 
     {{-- Image field template --}}
     <template id="image-field-template">
-        <div class="card image-field mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="card-title mb-0">New Image <span class="image-number"></span></h6>
-                    <button type="button" class="btn btn-danger btn-sm remove-image-btn"><i class="fas fa-times"></i></button>
+        <div class="border rounded p-3 image-field mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">New Image <span class="image-number"></span></h6>
+                <button type="button" class="btn btn-danger btn-sm remove-image-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Image File</label>
+                    <input type="file" class="form-control image-file-input" name="school_images[]" accept=".webp,.jpg,.png">
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Image File</label>
-                        <input type="file" class="form-control image-file-input" name="school_images[]" accept=".webp,.jpg,.png">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Image Title</label>
-                        <input type="text" class="form-control image-title-input" name="image_titles[]" placeholder="Enter image title">
-                    </div>
+                <div class="col-md-6">
+                    <label class="form-label">Image Title</label>
+                    <input type="text" class="form-control image-title-input" name="image_titles[]" placeholder="Enter image title">
                 </div>
-                <div class="image-preview text-center mt-2" style="display:none;">
-                    <img class="img-thumbnail preview-img" style="max-height:100px;">
-                </div>
+            </div>
+            <div class="image-preview text-center mt-2" style="display:none;">
+                <img class="img-thumbnail preview-img" style="max-height:100px;">
             </div>
         </div>
     </template>
@@ -956,11 +920,13 @@
             return valid;
         }
 
-        // ── Next / Prev buttons ───────────────────────────────────
+        // ── Next / Prev buttons — this is an edit form with data already
+        // filled in for every section, so navigation between sections is
+        // free; only the final submit enforces required-field validation
+        // (see the submit guard below, which jumps to the first invalid step).
         document.querySelectorAll('.next-step-btn').forEach(function (btn) {
             btn.addEventListener('click', function () {
-                var next = parseInt(btn.getAttribute('data-next'), 10);
-                if (validateStep(next - 1)) showStep(next);
+                showStep(parseInt(btn.getAttribute('data-next'), 10));
             });
         });
 
@@ -972,8 +938,7 @@
 
         stepItems.forEach(function (item) {
             item.addEventListener('click', function () {
-                var t = parseInt(item.getAttribute('data-target-step'), 10);
-                if (t < currentStep) showStep(t);
+                showStep(parseInt(item.getAttribute('data-target-step'), 10));
             });
         });
 
