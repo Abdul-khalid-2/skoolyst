@@ -20,7 +20,6 @@
         'search' => $searchTerm !== '' ? $searchTerm : null,
         'category' => (request('category') && request('category') != 'all') ? request('category') : null,
         'school' => (request('school') && request('school') != 'all') ? request('school') : null,
-        'shop' => (request('shop') && request('shop') != 'all') ? request('shop') : null,
         'filter' => ($filter && $filter != 'all') ? $filter : null,
     ]);
     $canonicalUrl = route('website.videos.index') . (count($queryForCanonical) ? '?' . http_build_query($queryForCanonical) : '');
@@ -152,7 +151,6 @@
                 @include('website.videos.partials.index.filters', [
                     'categories' => $categories,
                     'schools' => $schools,
-                    'shops' => $shops,
                 ])
                 @include('website.videos.partials.index.video-grid', [
                     'videos' => $videos,

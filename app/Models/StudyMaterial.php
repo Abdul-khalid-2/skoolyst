@@ -48,16 +48,6 @@ class StudyMaterial extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function subject()
-    {
-        return $this->belongsTo(Subject::class);
-    }
-
-    public function testType()
-    {
-        return $this->belongsTo(TestType::class);
-    }
-
     public function incrementDownloadCount()
     {
         $this->download_count++;

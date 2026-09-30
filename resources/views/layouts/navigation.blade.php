@@ -82,21 +82,7 @@
                     <div class="collapse"  style="visibility: visible;" id="studyCollapse">
                         <ul class="submenu">
                             <li class="nav-item">
-                                <a href="{{ route('book-categories.index') }}" 
-                                class="nav-link {{ request()->routeIs('book-categories.*') ? 'active' : '' }}">
-                                    <i class="fas fa-list"></i>
-                                    <span>Book Categories</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('books.index') }}" 
-                                class="nav-link {{ request()->routeIs('books.*') ? 'active' : '' }}">
-                                    <i class="fas fa-book-open"></i>
-                                    <span>Books</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('study-materials.index') }}" 
+                                <a href="{{ route('study-materials.index') }}"
                                 class="nav-link {{ request()->routeIs('study-materials.*') ? 'active' : '' }}">
                                     <i class="fas fa-file-pdf"></i>
                                     <span>Study Materials</span>

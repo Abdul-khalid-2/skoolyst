@@ -141,24 +141,6 @@
                                             @enderror
                                         </div>
                                         @endif
-                                        
-                                        @if(auth()->user()->can('assign-shop-videos'))
-                                        <div class="col-md-6">
-                                            <label for="shop_id" class="form-label">Shop (Optional)</label>
-                                            <select class="form-select @error('shop_id') is-invalid @enderror"
-                                                id="shop_id" name="shop_id">
-                                                <option value="">Select Shop</option>
-                                                @foreach($shops as $shop)
-                                                <option value="{{ $shop->id }}" {{ old('shop_id', $video->shop_id) == $shop->id ? 'selected' : '' }}>
-                                                    {{ $shop->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                            @error('shop_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                        @endif
                                     </div>
                                 </div>
                                 

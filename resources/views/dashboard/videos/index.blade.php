@@ -8,7 +8,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h1 class="page-title">Videos</h1>
-                                <p class="page-subtitle">Explore educational videos from schools and shops</p>
+                                <p class="page-subtitle">Explore educational videos from schools</p>
                             </div>
                             {{-- @can('create-videos') --}}
                             <a href="{{ route('admin.videos.create') }}" class="btn btn-primary">
@@ -61,20 +61,6 @@
                                                 <option value="{{ $school->id }}" 
                                                     {{ request('school') == $school->id ? 'selected' : '' }}>
                                                     {{ $school->name }}
-                                                </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-
-                                        <!-- Shop Filter -->
-                                        <div class="col-lg-3 col-md-6">
-                                            <label class="form-label">Shop</label>
-                                            <select name="shop" class="form-select" onchange="this.form.submit()">
-                                                <option value="">All Shops</option>
-                                                @foreach($shops as $shop)
-                                                <option value="{{ $shop->id }}" 
-                                                    {{ request('shop') == $shop->id ? 'selected' : '' }}>
-                                                    {{ $shop->name }}
                                                 </option>
                                                 @endforeach
                                             </select>
@@ -236,7 +222,7 @@
                                     </div>
                                     <h4 class="mt-3">No Videos Found</h4>
                                     <p class="text-muted">
-                                        @if(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
+                                        @if(request()->hasAny(['category', 'school', 'filter', 'search']))
                                         No videos match your search criteria. Try different filters.
                                         @else
                                         No videos have been uploaded yet. Be the first to upload one!

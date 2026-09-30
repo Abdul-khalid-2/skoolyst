@@ -121,16 +121,6 @@ class School extends Model
         return $this->hasOne(User::class, 'school_id');
     }
 
-    // Used by VideoController for shop-owner video uploads (schools associated
-    // with the uploader's shop) — the rest of the Shop-association helpers here
-    // (associatedShops, hasActiveShopAssociations, scopeWithActiveShopAssociations)
-    // had zero remaining callers after the Shop admin/public removal and were
-    // deleted; this relation itself is still live business logic, kept.
-    public function shopAssociations(): HasMany
-    {
-        return $this->hasMany(ShopSchoolAssociation::class, 'school_id');
-    }
-
     // Scope for school admins to see only their schools
     public function scopeForUser($query, $user)
     {

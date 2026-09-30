@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Video;
 use App\Models\VideoCategory;
 use App\Models\School;
-use App\Models\Shop;
 use App\Models\VideoComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,10 +18,6 @@ class VideoWebsiteController extends Controller
     {
         $noindex = (bool) $request->attributes->get('video_category_noindex', false);
 
-        // 'shop' is intentionally NOT eager-loaded here: byShop() below filters
-        // via a plain WHERE on shop_id, and no public video card/detail view
-        // renders $video->shop (only the admin edit form does) — confirmed via
-        // a repo-wide search before removing this.
         $query = Video::with(['category', 'user', 'school.translations'])
             ->published()
             ->approved();
@@ -34,10 +29,6 @@ class VideoWebsiteController extends Controller
 
         if ($request->has('school') && $request->school != 'all') {
             $query->bySchool($request->school);
-        }
-
-        if ($request->has('shop') && $request->shop != 'all') {
-            $query->byShop($request->shop);
         }
 
         if ($request->has('filter')) {
@@ -80,7 +71,6 @@ class VideoWebsiteController extends Controller
             ->orderBy('name')
             ->limit(300)
             ->get();
-        $shops = Shop::where('is_active', true)->orderBy('name')->limit(300)->get();
 
         // Popular videos for sidebar
         $popularVideos = Video::published()
@@ -105,7 +95,6 @@ class VideoWebsiteController extends Controller
                 'videos',
                 'categories',
                 'schools',
-                'shops',
                 'popularVideos',
                 'featuredVideos',
                 'totalVideos',
@@ -127,7 +116,7 @@ class VideoWebsiteController extends Controller
         // Increment views
         $video->increment('views');
 
-        // Get related videos ('shop' not needed — not rendered on any public video card)
+        // Get related videos
         $videoEager = ['category', 'user', 'school.translations'];
 
         $relatedVideos = Video::with($videoEager)

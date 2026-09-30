@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\AdController;
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\BookCategoryController;
-use App\Http\Controllers\BookController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
@@ -205,7 +203,6 @@ Route::group([
             Route::get('/', [UserProfileController::class, 'show'])->name('user_profile.show');
             Route::get('/edit', [UserProfileController::class, 'edit'])->name('user_profile.edit');
             Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
-            Route::get('/certificate/{attempt:uuid}', [UserProfileController::class, 'downloadCertificate'])->name('user_profile.certificate');
         });
 
         // "Login with Skoolyst" — step 1. Guests land here, the `auth`
@@ -267,15 +264,11 @@ Route::group([
 
         // In routes/web.php
         Route::prefix('dashboard')->middleware(['auth', 'role:super-admin'])->group(function () {
-            // Admin MCQ dashboard routes and controllers (mcq-dashboard/stats,
-            // test-types, subjects, topics, mcqs, mock-tests) removed (Steps 2-3,
-            // 2026-09-10). Models, migrations and database untouched.
-
-            // Book Categories
-            Route::resource('book-categories', BookCategoryController::class);
-
-            // Books
-            Route::resource('books', BookController::class);
+            // Admin MCQ dashboard routes/controllers removed (Steps 2-3, 2026-09-10).
+            // Book Categories / Books admin routes removed (2026-09-29) — both
+            // controllers were already empty stubs with no views, never functional.
+            // The Shop/Blog/MCQ/Books database tables themselves were dropped in
+            // this same change (see database/migrations/2026_09_29_1310*).
 
             // Study Materials
             Route::resource('study-materials', StudyMaterialController::class);

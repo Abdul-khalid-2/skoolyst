@@ -130,13 +130,13 @@
     <p class="text-muted">
         @if($noindex && $selectedForEmpty)
             No published videos in &ldquo;{{ $selectedForEmpty->name }}&rdquo; yet. More content is coming soon. Browse all videos or try another category.
-        @elseif(request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
+        @elseif(request()->hasAny(['category', 'school', 'filter', 'search']))
             No videos match your search criteria. Try different filters.
         @else
             No videos have been uploaded yet. Check back soon!
         @endif
     </p>
-    @if(($noindex && $selectedForEmpty) || request()->hasAny(['category', 'school', 'shop', 'filter', 'search']))
+    @if(($noindex && $selectedForEmpty) || request()->hasAny(['category', 'school', 'filter', 'search']))
     <a href="{{ route('website.videos.index') }}" class="btn btn-primary">
         <i class="fas fa-video me-2"></i>View All Videos
     </a>

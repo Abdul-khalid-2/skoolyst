@@ -44,22 +44,6 @@
                         </select>
                     </div>
                 </div>
-                <div class="filter-group">
-                    <label class="filter-label" for="shop">
-                        <i class="fas fa-store" aria-hidden="true"></i>
-                        Shop
-                    </label>
-                    <div class="filter-select-wrap">
-                        <select name="shop" id="shop" class="filter-select js-select2">
-                            <option value="all">All Shops</option>
-                            @foreach($shops as $shop)
-                            <option value="{{ $shop->id }}" {{ request('shop') == $shop->id ? 'selected' : '' }}>
-                                {{ $shop->name }}
-                            </option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
                 <div class="filter-group filter-group--action">
                     <span class="filter-label filter-label--spacer" aria-hidden="true">
                         <i class="fas fa-school" aria-hidden="true"></i>
