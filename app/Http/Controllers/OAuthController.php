@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OAuthAuthCode;
 use App\Models\OAuthClient;
+use App\Notifications\SkoolystOAuthVerifyEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -73,6 +74,51 @@ class OAuthController extends Controller
         ]));
 
         return redirect()->away($request->redirect_uri . $separator . $query);
+    }
+
+    /**
+     * A consumer app lands a logged-in user here when it found a local
+     * account matching this user's email but couldn't safely auto-link it
+     * (email not verified on our side — see integrate_login_with_skoolyst.md
+     * and the "already exists" error a consumer app shows for this case).
+     *
+     * Same params as /oauth/authorize. If the user is already verified we
+     * just mint a code immediately (no detour needed). Otherwise we email a
+     * verification link that, once clicked, sends them straight back here
+     * to /oauth/authorize — completing the SSO login they started —
+     * instead of landing on our own dashboard.
+     */
+    public function verifyRequired(Request $request)
+    {
+        $request->validate([
+            'client_id' => 'required|string',
+            'redirect_uri' => 'required|string',
+            'state' => 'nullable|string|max:255',
+        ]);
+
+        $client = OAuthClient::where('client_id', $request->client_id)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$client) {
+            abort(400, 'Unknown or inactive client_id.');
+        }
+
+        if (!$client->allowsRedirectUri($request->redirect_uri)) {
+            abort(400, 'redirect_uri is not registered for this client.');
+        }
+
+        $user = $request->user();
+
+        if ($user->hasVerifiedEmail()) {
+            return redirect()->route('oauth.authorize', $request->only(['client_id', 'redirect_uri', 'state']));
+        }
+
+        $user->notify(new SkoolystOAuthVerifyEmail(
+            $request->only(['client_id', 'redirect_uri', 'state'])
+        ));
+
+        return view('auth.verify-email', ['oauthReturnPending' => true]);
     }
 
     /**

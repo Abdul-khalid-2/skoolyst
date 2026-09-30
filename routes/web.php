@@ -211,6 +211,13 @@ Route::group([
         // straight back here afterwards (Laravel's built-in intended-URL
         // mechanism — no custom code needed for that hop).
         Route::get('/oauth/authorize', [OAuthController::class, 'authorize'])->name('oauth.authorize');
+
+        // Consumer apps send a logged-in user here when SSO found a local
+        // account with this email but it isn't verified yet (see
+        // OAuthController::verifyRequired()) — sends a verification email
+        // that returns the user to /oauth/authorize once clicked, instead
+        // of leaving them stuck on the consumer app's error page.
+        Route::get('/oauth/verify-required', [OAuthController::class, 'verifyRequired'])->name('oauth.verify-required');
     });
     // advertisement pages
     Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');

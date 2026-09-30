@@ -75,12 +75,14 @@ class SkoolystEmailService
 
         $decoded = json_decode((string) $response, true);
 
-        if ($status === 201 && is_array($decoded) && !empty($decoded['success'])) {
+        // 201 = sent immediately, 202 = accepted and queued for delivery.
+        // Both are successful outcomes from the caller's point of view.
+        if (in_array($status, [201, 202], true) && is_array($decoded) && !empty($decoded['success'])) {
             return [
                 'success' => true,
                 'status' => $status,
-                'message_id' => $decoded['data']['message_id'] ?? null,
-                'sent_via' => $decoded['data']['sent_via'] ?? null,
+                'message_id' => $decoded['data']['message_id'] ?? $decoded['data']['queue_id'] ?? null,
+                'sent_via' => $decoded['data']['sent_via'] ?? $decoded['data']['status'] ?? null,
                 'error_code' => null,
                 'error_message' => null,
             ];
