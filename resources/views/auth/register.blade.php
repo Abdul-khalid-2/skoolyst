@@ -150,6 +150,13 @@
                         </button>
                     </form>
 
+                    <div class="auth-divider"><span>or</span></div>
+
+                    <a href="{{ route('auth.google.redirect') }}" class="google-btn">
+                        <img src="{{ asset('assets/images/google-icon.svg') }}" alt="" width="18" height="18">
+                        Continue with Google
+                    </a>
+
                     <div class="login-link">
                         Already have an account? <a href="{{ route('login') }}">Login now</a>
                     </div>

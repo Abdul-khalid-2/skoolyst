@@ -18,7 +18,7 @@ Base URL (same host as the Ads / Email APIs): `https://skoolyst.com`
 
 ## 0. Decisions every app makes differently — answer these first
 
-This guide's flow (§1-§10) is the same for every app, but **each app is
+This guide's flow (§1-§11) is the same for every app, but **each app is
 built differently**, so before touching code, decide these three things for
 *your* app specifically. There's no universal right answer — what's right
 for a PHP/MySQL blog is wrong for a static site, and what's right for an
@@ -127,7 +127,7 @@ SKOOLYST_AUTH_REDIRECT_URI=https://blogs.skoolyst.com/auth/skoolyst/callback
 
 The `code` from step 3 is single-use and expires after 5 minutes. The
 `access_token` from step 4 is long-lived — keep it if you want to re-verify
-the user or pull fresh info later (see §7), but it's optional.
+the user or pull fresh info later (see §8), but it's optional.
 
 ---
 
@@ -153,7 +153,7 @@ GET https://skoolyst.com/oauth/authorize
 ## 4. Step 3 — handle the callback
 
 Your `redirect_uri` receives `?code=...&state=...` (or `?error=...` — see
-§6 for what can go wrong before this point). First thing: **compare `state`
+§7 for what can go wrong before this point). First thing: **compare `state`
 against what you stored in the session**; if it doesn't match, abort — do
 not proceed to step 4.
 
@@ -215,7 +215,89 @@ All errors: `{ "success": false, "error": { "code": "...", "message": "..." } }`
 
 ---
 
-## 6. What can go wrong before the callback
+## 6. Account linking — when the SSO email matches an existing local account
+
+This case is easy to miss in testing (it only shows up once your app has
+*both* SSO users and password users), so it gets its own section. It comes
+up whenever someone who already has a local account on your app — created
+the normal way, with email/password — later tries "Login with Skoolyst"
+using a Skoolyst identity that happens to share that same email address.
+
+**Never auto-link on email match alone.** If you silently attach the
+incoming Skoolyst `user.id` to whichever local account has a matching
+email, anyone who controls *an unverified* email address on skoolyst.com
+could sign in as someone else on your app just by registering that email
+there — a full account takeover. The `email_verified` field in the §5
+response exists specifically so you don't have to make this mistake:
+
+| Local account for this email? | `skoolyst_id` already set? | `email_verified` | What to do |
+|---|---|---|---|
+| No | — | — | First-time SSO login — provision a new account (§0.C). |
+| Yes | Set, and it's **this** Skoolyst `user.id` | — | Normal return login — sign in. |
+| Yes | Set, but to a **different** Skoolyst `user.id` | — | Reject. This email is already linked elsewhere; tell the user to sign in with their password instead. |
+| Yes | Not set yet | `true` | Safe to auto-link: store the `skoolyst_id` on the existing local account, then sign in. skoolyst.com is vouching that this person controls the email. |
+| Yes | Not set yet | `false` | **Do not link and do not just show an error.** Send the user to `/oauth/verify-required` (below) so skoolyst.com can get them verified and bounce them straight back — see the flow under this table. |
+
+### Resolving the "not verified yet" case without a dead end
+
+A plain error message ("please verify your email") is a dead end — the
+user has no way to act on it without leaving your app and hunting for a
+"resend verification" option on skoolyst.com themselves. Instead, redirect
+them to a second skoolyst.com endpoint that closes the loop automatically:
+
+```
+GET https://skoolyst.com/oauth/verify-required
+    ?client_id=skl_client_xxxxxxxxxxxxxxxxxxxxxxxx
+    &redirect_uri=https%3A%2F%2Fblogs.skoolyst.com%2Fauth%2Fskoolyst%2Fcallback
+    &state=<a fresh state, generated and stored the same way as §3>
+```
+
+Same `client_id`/`redirect_uri` rules as `/oauth/authorize` (§3) — exact
+match required, and it requires the user to be logged in on skoolyst.com
+(they already are, at this point in the flow, from §2 step 3). What
+happens next, entirely on skoolyst.com's side:
+
+1. **Already verified by the time they land here** (e.g. they verified
+   from an earlier attempt) → immediately redirected to `/oauth/authorize`
+   with the same params, which mints a fresh `code` and sends them straight
+   back to your `redirect_uri` — no email, no extra step.
+2. **Not verified** → skoolyst.com emails them a verification link. That
+   link, once clicked, marks the email verified *and* redirects the
+   browser back through `/oauth/authorize` — landing on your `redirect_uri`
+   with a fresh `code`, exactly as if they'd just completed step 3 of the
+   normal flow (§2). Your callback code doesn't need to know or care that a
+   verification detour happened in between.
+
+```php
+// Wherever you currently do:
+//   flash('error', 'An account with this email already exists...');
+//   redirect(url('/login'));
+// do this instead:
+function redirectToSkoolystVerifyRequired(): void
+{
+    $state = bin2hex(random_bytes(16));
+    $_SESSION['skoolyst_oauth_state'] = $state; // same session slot §3's state check reads
+
+    $query = http_build_query([
+        'client_id'    => getenv('SKOOLYST_AUTH_CLIENT_ID'),
+        'redirect_uri' => getenv('SKOOLYST_AUTH_REDIRECT_URI'),
+        'state'        => $state,
+    ]);
+
+    header('Location: ' . rtrim(getenv('SKOOLYST_AUTH_BASE'), '/') . '/oauth/verify-required?' . $query);
+    exit;
+}
+```
+
+Your existing callback handler (§4, §9) needs no changes for this — the
+browser comes back to the exact same `redirect_uri` with a `code` either
+way, so the "already verified, mint a fresh code" and "verified via email,
+then mint a fresh code" paths both look like an ordinary successful
+callback by the time your code sees them.
+
+---
+
+## 7. What can go wrong before the callback
 
 If `client_id`/`redirect_uri` themselves are invalid, skoolyst.com
 returns an **HTTP 400 directly** (it does NOT redirect to an
@@ -227,7 +309,7 @@ test it.
 
 ---
 
-## 7. Step 5 (optional) — verify / refresh a token later
+## 8. Step 5 (optional) — verify / refresh a token later
 
 If you kept the `access_token` from step 4, you can call this anytime to
 re-check it's still valid and pull fresh name/email (e.g. the user changed
@@ -244,7 +326,7 @@ integrations only need steps 1-5 above for the login itself.
 
 ---
 
-## 8. Example: PHP (framework-agnostic)
+## 9. Example: PHP (framework-agnostic)
 
 ```php
 // --- Step 2: redirect the user ---
@@ -314,7 +396,7 @@ the existing local account instead of creating duplicates.
 
 ---
 
-## 9. Security checklist
+## 10. Security checklist
 
 - [ ] `client_secret` lives only in server-side config, never in JS/mobile app code.
 - [ ] `redirect_uri` you send in step 2 is registered **exactly** (protocol, host, path, no trailing slash surprises) on skoolyst.com.
@@ -322,12 +404,14 @@ the existing local account instead of creating duplicates.
 - [ ] All URLs are `https://` in production (localhost/127.0.0.1 is allowed only for local dev registration).
 - [ ] You key local users by `user.id` from the response, not by email.
 - [ ] The token exchange (step 4) happens on **your server**, never via a browser `fetch()`/AJAX call — that would expose `client_secret`.
+- [ ] You never auto-link an existing local account to an incoming Skoolyst identity on email match alone — only when `email_verified` is `true` (§6).
 
 ---
 
-## 10. If something's not working
+## 11. If something's not working
 
 - **400 on `/oauth/authorize`** → your `client_id` or `redirect_uri` is wrong/not registered. Check for typos and exact-match issues (trailing slash, http vs https).
 - **`invalid_grant` on token exchange** → the code was already used (can only be redeemed once), expired (>5 minutes since redirect), or your `redirect_uri` in step 4 doesn't exactly match step 2's.
 - **`invalid_client`** → `client_id`/`client_secret` mismatch — re-check your `.env`, or ask an admin to regenerate the secret if it may have been lost.
+- **User stuck on an "account already exists" message with no way forward** → you're showing `email_verified: false` as a dead-end error instead of redirecting to `/oauth/verify-required` (§6). This is the most common integration gap once an app has both SSO and password users.
 - Ask a skoolyst.com admin to check **Dashboard → Connected Apps** — they can see your app's `last_used_at` timestamp there, which tells you whether requests are reaching us at all.
