@@ -192,6 +192,41 @@
     <!-- ==================== FOOTER ==================== -->
 
     @include('website.layout.footer')
+
+    <!-- ==================== FIRST-VISIT INTRO MODAL ==================== -->
+    <div class="modal fade" id="introModal" tabindex="-1" aria-labelledby="introModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h2 class="modal-title h5" id="introModalTitle">Welcome to SKOOLYST</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">SKOOLYST connects parents with schools across Pakistan, all in one place.</p>
+                    <div class="mb-3">
+                        <h3 class="h6 fw-bold mb-1"><i class="fas fa-user-graduate text-primary me-1"></i> For parents &amp; students</h3>
+                        <ul class="small mb-0 ps-3">
+                            <li>Find and compare schools by city, fees, curriculum and facilities.</li>
+                            <li>See complete details about any listed school.</li>
+                            <li>Ask people who know a school to share their review on SKOOLYST.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="h6 fw-bold mb-1"><i class="fas fa-school text-primary me-1"></i> For school owners</h3>
+                        <ul class="small mb-0 ps-3">
+                            <li>List your school and reach thousands of parents.</li>
+                            <li>Receive inquiries directly, including on WhatsApp.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 flex-wrap gap-2">
+                    <a href="{{ route('register') }}" class="btn btn-outline-primary btn-sm">Register Your School</a>
+                    <a href="{{ route('browseSchools.index') }}" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Explore Schools</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== JAVASCRIPT ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
     
@@ -201,6 +236,24 @@
     </script>
     
     @stack('scripts')
+
+    <script>
+        window.addEventListener('load', function () {
+            const modalEl = document.getElementById('introModal');
+            if (!modalEl || !window.bootstrap) return;
+
+            const KEY = 'skoolyst_intro_seen_v1';
+            let seen = false;
+            try { seen = localStorage.getItem(KEY) === '1'; } catch (e) {}
+            if (seen) return;
+
+            const modal = new bootstrap.Modal(modalEl);
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                try { localStorage.setItem(KEY, '1'); } catch (e) {}
+            });
+            modal.show();
+        });
+    </script>
 
     <!-- Google AdSense (auto ads) — moved here from <head> so it never competes
          with critical CSS/fonts/LCP image for early network priority. Still

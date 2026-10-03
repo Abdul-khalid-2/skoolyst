@@ -8,6 +8,12 @@
                     <span style="white-space: pre-line;">{{ $school->contact_number }}</span>
                 </div>
             @endif
+            @if($school->whatsappUrl())
+                <div class="contact-item">
+                    <i class="fab fa-whatsapp text-success"></i>
+                    <a href="{{ $school->whatsappUrl() }}" target="_blank" rel="noopener">Chat on WhatsApp</a>
+                </div>
+            @endif
             @if($school->email)
                 <div class="contact-item">
                     <i class="fas fa-envelope"></i>

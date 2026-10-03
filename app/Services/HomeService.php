@@ -377,6 +377,7 @@ class HomeService
             'banner_image' => $school->banner_image ? asset('website/'.$school->banner_image) : null,
             'review_count' => (int) $reviewCount,
             'visitor_count' => $visitorCount,
+            'whatsapp_url' => $school->whatsappUrl(),
             'profile_url' => route('browseSchools.show', ['slug' => $slug]),
         ];
     }

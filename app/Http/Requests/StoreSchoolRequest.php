@@ -21,6 +21,7 @@ class StoreSchoolRequest extends FormRequest
             'address' => 'required|string|max:255',
             'city' => 'required|string|max:100',
             'contact_number' => 'nullable|string|max:500',
+            'whatsapp_number' => ['nullable', 'string', 'regex:/^[0-9+\-\s()]{7,25}$/'],
             'email' => 'required|email|max:100|unique:schools,email',
             'admin-name' => 'required|string|max:255',
             'admin-email' => 'required|email|max:100|unique:users,email',

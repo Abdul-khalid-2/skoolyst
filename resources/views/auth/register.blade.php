@@ -243,6 +243,22 @@
                                             {{ $errors->first('school_contact') }}
                                         </div>
                                         @endif
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="school_whatsapp_enabled" name="school_whatsapp_enabled" value="1" {{ old('school_whatsapp_enabled') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="school_whatsapp_enabled">
+                                                <i class="fab fa-whatsapp text-success"></i> This number is also on WhatsApp
+                                            </label>
+                                        </div>
+                                        <div id="school_whatsapp_field" class="mt-2" style="{{ old('school_whatsapp_enabled') ? '' : 'display:none;' }}">
+                                            <label for="school_whatsapp" class="form-label">WhatsApp Number</label>
+                                            <input id="school_whatsapp" class="form-control" type="tel" name="school_whatsapp" value="{{ old('school_whatsapp') }}" placeholder="e.g., 0300 1234567">
+                                            <small class="text-muted">Parents will see a WhatsApp button on your school card.</small>
+                                            @if ($errors->has('school_whatsapp'))
+                                            <div class="input-error">
+                                                {{ $errors->first('school_whatsapp') }}
+                                            </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -551,6 +567,22 @@
             });
             if (summaryErrors.length) window.showUserErrorSummary(summaryErrors);
         }
+    });
+
+    // WhatsApp toggle — reveals the WhatsApp number input and pre-fills it from the contact number
+    document.addEventListener('DOMContentLoaded', function () {
+        const waToggle = document.getElementById('school_whatsapp_enabled');
+        const waField = document.getElementById('school_whatsapp_field');
+        const waInput = document.getElementById('school_whatsapp');
+        const contactInput = document.getElementById('school_contact');
+        if (!waToggle || !waField || !waInput || !contactInput) return;
+
+        waToggle.addEventListener('change', function () {
+            waField.style.display = this.checked ? '' : 'none';
+            if (this.checked && !waInput.value) {
+                waInput.value = contactInput.value.split('\n')[0].trim();
+            }
+        });
     });
 
     // Fee Structure Toggle

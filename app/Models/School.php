@@ -27,6 +27,7 @@ class School extends Model
         'address',
         'city',
         'contact_number',
+        'whatsapp_number',
         'email',
         'website',
         'facilities',
@@ -182,6 +183,25 @@ class School extends Model
         }
 
         return $this->translations()->where('locale', $locale)->first();
+    }
+
+    /**
+     * wa.me link for the school's WhatsApp number, or null when none is set.
+     * Pakistani local format (03xxxxxxxxx) is converted to international (923xxxxxxxxx).
+     */
+    public function whatsappUrl(): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $this->whatsapp_number);
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '0')) {
+            $digits = '92' . substr($digits, 1);
+        }
+
+        return 'https://wa.me/' . $digits;
     }
 
     /**

@@ -327,6 +327,7 @@ class SchoolService
             'banner_image' => $school->banner_image ? asset('website/' . $school->banner_image) : null,
             'review_count' => $school->reviews_count,
             'visitor_count' => $visitorCount,
+            'whatsapp_url' => $school->whatsappUrl(),
             'profile_url' => route('browseSchools.show', $school->slug ?? $school->uuid ?? $school->id)
         ];
     }

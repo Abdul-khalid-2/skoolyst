@@ -111,7 +111,7 @@
             @endif
 
             @php
-                $step1Fields = ['admin-name','admin-email','name','email','address','city','password','password_confirmation','contact_number','website'];
+                $step1Fields = ['admin-name','admin-email','name','email','address','city','password','password_confirmation','contact_number','whatsapp_number','website'];
                 $step2Fields = ['established_year','student_strength','faculty_count','campus_size','school_motto','mission','vision','description','facilities'];
                 $step3Fields = ['school_gender_type','school_ownership_type','features','curriculum_ids'];
                 $step4Fields = ['fee_structure_type','regular_fees','discounted_fees','admission_fees','class_wise_fees','status','visibility','publish_date','facebook_url','twitter_url','instagram_url','linkedin_url','youtube_url'];
@@ -214,6 +214,12 @@
                                         placeholder="Phone #1: 0333-1234567&#10;Phone #2: 0349-7654321">{{ old('contact_number', $school->contact_number) }}</textarea>
                                     <small class="text-muted">Enter each number on a new line.</small>
                                     @error('contact_number')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="whatsapp_number" class="form-label">WhatsApp Number</label>
+                                    <input type="tel" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp_number" name="whatsapp_number" placeholder="e.g., 0300 1234567" value="{{ old('whatsapp_number', $school->whatsapp_number) }}">
+                                    <small class="text-muted">Shown as a "Chat on WhatsApp" button on the school card. Leave empty to remove.</small>
+                                    @error('whatsapp_number')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="website" class="form-label">Website</label>
