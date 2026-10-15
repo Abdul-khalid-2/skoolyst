@@ -41,7 +41,7 @@ class UpdateSchoolRequest extends FormRequest
             'admin-email' => $adminEmailRule,
             'website' => 'nullable|url|max:255',
             'facilities' => 'nullable|string',
-            'school_gender_type' => 'required|in:girls,boys,co-education',
+            'school_gender_type' => 'required|in:girls,boys,co-education,separate-campuses',
             'school_ownership_type' => 'required|in:private,government,semi-government,ngo',
             'fee_structure_type' => 'required|in:fixed,class_wise',
             'established_year' => 'nullable|string|max:4',

@@ -275,6 +275,7 @@ class SchoolService
             'girls' => 'Girls',
             'boys' => 'Boys',
             'co-education' => 'Co-Education',
+            'separate-campuses' => 'Boys & Girls (Separate Campuses)',
         ];
     }
 

@@ -87,6 +87,7 @@
                                             <select class="form-select" id="school_type" name="school_type">
                                                 <option value="">Select Type</option>
                                                 <option value="co-education" {{ old('school_type') == 'co-education' ? 'selected' : '' }}>Co-Educational</option>
+                                                <option value="separate-campuses" {{ old('school_type') == 'separate-campuses' ? 'selected' : '' }}>Boys &amp; Girls (Separate Campuses)</option>
                                                 <option value="boys" {{ old('school_type') == 'boys' ? 'selected' : '' }}>Boys Only</option>
                                                 <option value="girls" {{ old('school_type') == 'girls' ? 'selected' : '' }}>Girls Only</option>
                                             </select>

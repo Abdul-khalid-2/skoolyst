@@ -233,7 +233,7 @@ class SchoolController extends Controller
             'school_whatsapp' => 'nullable|string|regex:/^[0-9+\-\s()]{7,25}$/',
             'school_description' => 'nullable|string',
             'school_facilities' => 'nullable|string',
-            'school_gender_type' => 'required|in:girls,boys,co-education',
+            'school_gender_type' => 'required|in:girls,boys,co-education,separate-campuses',
             'school_ownership_type' => 'required|in:private,government,semi-government,ngo',
             'school_website' => 'nullable|url',
             'admin_name' => 'required|string|max:255',

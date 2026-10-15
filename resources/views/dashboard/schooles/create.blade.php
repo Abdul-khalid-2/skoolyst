@@ -342,6 +342,7 @@
                                         <option value="girls"          {{ old('school_gender_type') == 'girls'          ? 'selected' : '' }}>Girls</option>
                                         <option value="boys"           {{ old('school_gender_type') == 'boys'           ? 'selected' : '' }}>Boys</option>
                                         <option value="co-education"   {{ old('school_gender_type') == 'co-education'   ? 'selected' : '' }}>Co-Education</option>
+                                        <option value="separate-campuses" {{ old('school_gender_type') == 'separate-campuses' ? 'selected' : '' }}>Boys &amp; Girls (Separate Campuses)</option>
                                     </select>
                                     @error('school_gender_type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
