@@ -34,10 +34,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="{{ route('users.index') }}" 
+                    <a href="{{ route('users.index') }}"
                     class="nav-link {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('oauth-clients.index') }}"
+                    class="nav-link {{ request()->routeIs('oauth-clients.*') ? 'active' : '' }}">
+                        <i class="fas fa-plug"></i>
+                        <span>Connected Apps</span>
                     </a>
                 </li>
 
@@ -74,21 +82,7 @@
                     <div class="collapse"  style="visibility: visible;" id="studyCollapse">
                         <ul class="submenu">
                             <li class="nav-item">
-                                <a href="{{ route('book-categories.index') }}" 
-                                class="nav-link {{ request()->routeIs('book-categories.*') ? 'active' : '' }}">
-                                    <i class="fas fa-list"></i>
-                                    <span>Book Categories</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('books.index') }}" 
-                                class="nav-link {{ request()->routeIs('books.*') ? 'active' : '' }}">
-                                    <i class="fas fa-book-open"></i>
-                                    <span>Books</span>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('study-materials.index') }}" 
+                                <a href="{{ route('study-materials.index') }}"
                                 class="nav-link {{ request()->routeIs('study-materials.*') ? 'active' : '' }}">
                                     <i class="fas fa-file-pdf"></i>
                                     <span>Study Materials</span>

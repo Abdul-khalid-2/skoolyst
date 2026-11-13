@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    // "Login with Gmail" — see app/Http/Controllers/Auth/GoogleAuthController.php.
+    // Credentials come from Google Cloud Console → APIs & Services → Credentials
+    // (OAuth 2.0 Client ID, type "Web application").
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI'),
+    ],
+
 ];

@@ -27,7 +27,7 @@
 
 @section('content')
 @include('website.browse-schools.partials.page-header', ['schools' => $schools])
-@include('website.partials.advertisement-board')
+@include('website.partials.advertisement-board', ['placement' => 'browse_schools'])
 @include('website.browse-schools.partials.filters', ['cities' => $cities, 'schoolGenderTypes' => $schoolGenderTypes, 'schoolOwnershipTypes' => $schoolOwnershipTypes, 'curriculums' => $curriculums])
 @include('website.browse-schools.partials.school-grid', ['schools' => $schools])
 @include('website.browse-schools.partials.pagination', ['schools' => $schools])

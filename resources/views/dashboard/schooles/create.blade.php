@@ -36,7 +36,7 @@
                 z-index: 2;
                 cursor: default;
             }
-            .step-item.completed { cursor: pointer; }
+            .step-item.completed, .step-item.active { cursor: pointer; }
             .step-circle {
                 width: 40px;
                 height: 40px;
@@ -111,7 +111,7 @@
             @endif
 
             @php
-                $step1Fields = ['admin-name','admin-email','name','email','address','city','password','password_confirmation','contact_number','website'];
+                $step1Fields = ['admin-name','admin-email','name','email','address','city','password','password_confirmation','contact_number','whatsapp_number','website'];
                 $step2Fields = ['established_year','student_strength','faculty_count','campus_size','school_motto','mission','vision','description','facilities'];
                 $step3Fields = ['school_gender_type','school_ownership_type','features','curriculum_ids'];
                 $step4Fields = ['fee_structure_type','regular_fees','discounted_fees','admission_fees','class_wise_fees','status','visibility','publish_date','facebook_url','twitter_url','instagram_url','linkedin_url','youtube_url'];
@@ -132,8 +132,7 @@
             @endphp
 
             {{-- Step Indicator --}}
-            <x-card class="mb-4">
-                <div class="card-body py-3">
+            <x-card class="mb-4 py-1">
                     <div class="step-wrapper">
                         <div class="step-progress-line" id="step-progress-line"></div>
 
@@ -158,7 +157,6 @@
                             <span class="step-label">Media</span>
                         </div>
                     </div>
-                </div>
             </x-card>
 
             <form id="main-school-form" method="POST" action="{{ route('schools.store') }}" enctype="multipart/form-data" novalidate>
@@ -167,7 +165,6 @@
                 {{-- ==================== STEP 1 ==================== --}}
                 <div class="form-step" id="step-1">
                     <x-card>
-                        <div class="card-body">
                             <h5 class="mb-3">Admin Information</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -218,6 +215,12 @@
                                     <small class="text-muted">Enter each number on a new line.</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
+                                    <label for="whatsapp_number" class="form-label">WhatsApp Number</label>
+                                    <input type="tel" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp_number" name="whatsapp_number" placeholder="e.g., 0300 1234567" value="{{ old('whatsapp_number') }}">
+                                    <small class="text-muted">Shown as a "Chat on WhatsApp" button on the school card.</small>
+                                    @error('whatsapp_number')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="col-md-6 mb-3">
                                     <label for="website" class="form-label">Website</label>
                                     <input type="url" class="form-control @error('website') is-invalid @enderror" id="website" name="website" placeholder="https://…" value="{{ old('website') }}">
                                     @error('website')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
@@ -243,14 +246,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 2 ==================== --}}
                 <div class="form-step" id="step-2">
                     <x-card>
-                        <div class="card-body">
                             <h5 class="mb-3">School Profile Details</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -327,14 +328,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 3 ==================== --}}
                 <div class="form-step" id="step-3">
                     <x-card>
-                        <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-6 mb-3">
                                     <label for="school_gender_type" class="form-label">School Type (Gender) <span class="text-danger">*</span></label>
@@ -343,6 +342,7 @@
                                         <option value="girls"          {{ old('school_gender_type') == 'girls'          ? 'selected' : '' }}>Girls</option>
                                         <option value="boys"           {{ old('school_gender_type') == 'boys'           ? 'selected' : '' }}>Boys</option>
                                         <option value="co-education"   {{ old('school_gender_type') == 'co-education'   ? 'selected' : '' }}>Co-Education</option>
+                                        <option value="separate-campuses" {{ old('school_gender_type') == 'separate-campuses' ? 'selected' : '' }}>Boys &amp; Girls (Separate Campuses)</option>
                                     </select>
                                     @error('school_gender_type')<div class="invalid-feedback d-block">{{ $message }}</div>@enderror
                                 </div>
@@ -362,27 +362,23 @@
                             <div class="mb-3">
                                 <label class="form-label">School Features</label>
                                 @foreach($features->groupBy('category') as $category => $categoryFeatures)
-                                <x-card class="mb-3">
-                                    <div class="card-header bg-light">
-                                        <h6 class="mb-0 text-capitalize">{{ $category }} Features</h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            @foreach($categoryFeatures as $feature)
-                                            <div class="col-md-6 mb-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="features[]" value="{{ $feature->id }}" id="feature_{{ $feature->id }}" {{ in_array($feature->id, old('features', [])) ? 'checked' : '' }}>
-                                                    <label class="form-check-label" for="feature_{{ $feature->id }}">
-                                                        {{ $feature->name }}
-                                                        @if($feature->icon)<i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>@endif
-                                                    </label>
-                                                </div>
-                                                @if($feature->description)<small class="text-muted ms-4">{{ $feature->description }}</small>@endif
+                                <div class="mb-3">
+                                    <h6 class="text-uppercase text-muted small fw-semibold mb-2">{{ $category }} Features</h6>
+                                    <div class="row">
+                                        @foreach($categoryFeatures as $feature)
+                                        <div class="col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="features[]" value="{{ $feature->id }}" id="feature_{{ $feature->id }}" {{ in_array($feature->id, old('features', [])) ? 'checked' : '' }}>
+                                                <label class="form-check-label" for="feature_{{ $feature->id }}">
+                                                    {{ $feature->name }}
+                                                    @if($feature->icon)<i class="fas fa-{{ $feature->icon }} ms-1 text-muted"></i>@endif
+                                                </label>
                                             </div>
-                                            @endforeach
+                                            @if($feature->description)<small class="text-muted ms-4">{{ $feature->description }}</small>@endif
                                         </div>
+                                        @endforeach
                                     </div>
-                                </x-card>
+                                </div>
                                 @endforeach
                             </div>
 
@@ -400,14 +396,12 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 4 ==================== --}}
                 <div class="form-step" id="step-4">
                     <x-card>
-                        <div class="card-body">
                             <h5 class="mb-3">Social Media Links</h5>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
@@ -540,19 +534,15 @@
                                     Next <i class="fas fa-arrow-right ms-2"></i>
                                 </button>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
                 {{-- ==================== STEP 5 ==================== --}}
                 <div class="form-step" id="step-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0">
-                                    <h5 class="card-title mb-0">School Logo</h5>
-                                </div>
-                                <div class="card-body">
+                    <x-card>
+                            <h5 class="mb-3">School Logo &amp; Banner</h5>
+                            <div class="row mb-2">
+                                <div class="col-md-4 mb-3">
                                     <label for="logo" class="form-label">Upload school logo</label>
                                     <input type="file" class="form-control @error('logo') is-invalid @enderror" id="logo" name="logo" accept="image/jpeg,image/png,image/jpg,image/webp,image/gif">
                                     <div class="form-text">JPEG, PNG, WebP, GIF. Max 2MB.</div>
@@ -562,15 +552,8 @@
                                         <img id="logo-preview-img" class="img-fluid rounded" style="max-height:150px;">
                                     </div>
                                 </div>
-                            </x-card>
-                        </div>
 
-                        <div class="col-md-8">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0">
-                                    <h5 class="card-title mb-0">Banner Image</h5>
-                                </div>
-                                <div class="card-body">
+                                <div class="col-md-8 mb-3">
                                     <div class="mb-3">
                                         <label for="banner_image" class="form-label">Upload cover/banner image</label>
                                         <input type="file" class="form-control @error('banner_image') is-invalid @enderror" id="banner_image" name="banner_image" accept="image/jpeg,image/png,image/jpg,image/webp,image/gif">
@@ -592,35 +575,27 @@
                                         <img id="banner-preview-img" class="img-fluid rounded" style="max-height:150px;">
                                     </div>
                                 </div>
-                            </x-card>
-                        </div>
+                            </div>
 
-                        <div class="col-12">
-                            <x-card class="mb-4">
-                                <div class="card-header bg-white border-0 d-flex justify-content-between align-items-center">
-                                    <h5 class="card-title mb-0">School Images</h5>
-                                    <button type="button" class="btn btn-primary btn-sm" id="add-image-btn">
-                                        <i class="fas fa-plus me-1"></i> Add Image
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="border border-dashed border-2 rounded p-4 text-center mb-3 image-upload-area" style="border-color:#dee2e6!important;">
-                                        <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
-                                        <p class="text-muted mb-2">Drag &amp; drop images here or click to browse</p>
-                                        <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
-                                    </div>
-                                    <div id="image-fields-container"></div>
-                                    <p class="text-muted small mb-0">Upload up to 10 images with title. Max 2MB each.</p>
-                                    @error('school_images')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
-                                </div>
-                            </x-card>
-                        </div>
-                    </div>
+                            <hr class="my-4">
 
-                    <x-card>
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0">School Images</h5>
+                                <button type="button" class="btn btn-primary btn-sm" id="add-image-btn">
+                                    <i class="fas fa-plus me-1"></i> Add Image
+                                </button>
+                            </div>
+                            <div class="border border-dashed border-2 rounded p-4 text-center mb-3 image-upload-area" style="border-color:#dee2e6!important;">
+                                <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-3"></i>
+                                <p class="text-muted mb-2">Drag &amp; drop images here or click to browse</p>
+                                <input type="file" class="d-none" id="image-upload-input" multiple accept="image/*">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('image-upload-input').click()">Select Images</button>
+                            </div>
+                            <div id="image-fields-container"></div>
+                            <p class="text-muted small mb-0">Upload up to 10 images with title. Max 2MB each.</p>
+                            @error('school_images')<div class="text-danger small mt-2">{{ $message }}</div>@enderror
+
+                            <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
                                 <button type="button" class="btn btn-secondary prev-step-btn" data-prev="4">
                                     <i class="fas fa-arrow-left me-2"></i> Previous
                                 </button>
@@ -634,7 +609,6 @@
                                     <a href="{{ route('schools.index') }}" class="btn btn-outline-secondary">Cancel</a>
                                 </div>
                             </div>
-                        </div>
                     </x-card>
                 </div>
 
@@ -644,25 +618,23 @@
 
     {{-- Image field template --}}
     <template id="image-field-template">
-        <div class="card image-field mb-3">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="card-title mb-0">Image <span class="image-number"></span></h6>
-                    <button type="button" class="btn btn-danger btn-sm remove-image-btn"><i class="fas fa-times"></i></button>
+        <div class="border rounded p-3 image-field mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0">Image <span class="image-number"></span></h6>
+                <button type="button" class="btn btn-danger btn-sm remove-image-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label class="form-label">Image File</label>
+                    <input type="file" class="form-control image-file-input" name="school_images[]" accept=".webp,.jpg,.png">
                 </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <label class="form-label">Image File</label>
-                        <input type="file" class="form-control image-file-input" name="school_images[]" accept=".webp,.jpg,.png">
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Image Title</label>
-                        <input type="text" class="form-control image-title-input" name="image_titles[]" placeholder="Enter image title">
-                    </div>
+                <div class="col-md-6">
+                    <label class="form-label">Image Title</label>
+                    <input type="text" class="form-control image-title-input" name="image_titles[]" placeholder="Enter image title">
                 </div>
-                <div class="image-preview text-center mt-2" style="display:none;">
-                    <img class="img-thumbnail preview-img" style="max-height:100px;">
-                </div>
+            </div>
+            <div class="image-preview text-center mt-2" style="display:none;">
+                <img class="img-thumbnail preview-img" style="max-height:100px;">
             </div>
         </div>
     </template>

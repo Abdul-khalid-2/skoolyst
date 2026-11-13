@@ -1,7 +1,10 @@
 <!-- ==================== HERO SECTION (compact) ==================== -->
 <section class="hero-section" id="home">
     <div class="hero-content">
-        <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Find and compare the best schools in Pakistan with Skoolyst" width="612" height="408" fetchpriority="high" decoding="async">
+        <picture>
+            <source srcset="{{ asset('assets/assets/hero1.webp') }}" type="image/webp">
+            <img class="hero-image" src="{{ asset('assets/assets/hero1.png') }}" alt="Find and compare the best schools in Pakistan with Skoolyst" width="612" height="408" fetchpriority="high" decoding="async">
+        </picture>
         <p class="hero-subheading">Discover, compare, and connect with the best educational institutions</p>
     </div>
 </section>

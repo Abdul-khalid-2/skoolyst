@@ -68,9 +68,10 @@ class DashboardControlle extends Controller
 
             return view('dashboard.dashboard', compact('school', 'stats', 'recentReviews', 'upcomingEvents'));
         } elseif (auth()->user()->hasRole('shop-owner')) {
-            // The Shop admin dashboard was removed (Step 3, 2026-09-10). Shop data,
-            // models and the database are untouched; only this admin UI entry point
-            // is disabled.
+            // The Shop module (admin UI, backend, and database tables) has been
+            // fully removed (2026-09-29). The 'shop-owner' Spatie role itself is
+            // left alone (a role/permission row, not app code) — a user still
+            // holding it simply gets a 404 here instead of a dashboard.
             abort(404, 'The shop dashboard has been removed.');
         } else {
             return redirect()->route('dashboard')->with('error', 'Unauthorized access.');

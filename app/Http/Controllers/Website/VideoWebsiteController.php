@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Video;
 use App\Models\VideoCategory;
 use App\Models\School;
-use App\Models\Shop;
 use App\Models\VideoComment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -19,7 +18,7 @@ class VideoWebsiteController extends Controller
     {
         $noindex = (bool) $request->attributes->get('video_category_noindex', false);
 
-        $query = Video::with(['category', 'user', 'school.translations', 'shop'])
+        $query = Video::with(['category', 'user', 'school.translations'])
             ->published()
             ->approved();
 
@@ -30,10 +29,6 @@ class VideoWebsiteController extends Controller
 
         if ($request->has('school') && $request->school != 'all') {
             $query->bySchool($request->school);
-        }
-
-        if ($request->has('shop') && $request->shop != 'all') {
-            $query->byShop($request->shop);
         }
 
         if ($request->has('filter')) {
@@ -76,7 +71,6 @@ class VideoWebsiteController extends Controller
             ->orderBy('name')
             ->limit(300)
             ->get();
-        $shops = Shop::where('is_active', true)->orderBy('name')->limit(300)->get();
 
         // Popular videos for sidebar
         $popularVideos = Video::published()
@@ -101,7 +95,6 @@ class VideoWebsiteController extends Controller
                 'videos',
                 'categories',
                 'schools',
-                'shops',
                 'popularVideos',
                 'featuredVideos',
                 'totalVideos',
@@ -114,7 +107,7 @@ class VideoWebsiteController extends Controller
 
     public function show($slug)
     {
-        $video = Video::with(['category', 'user', 'school.translations', 'shop', 'comments.user', 'comments.replies.user'])
+        $video = Video::with(['category', 'user', 'school.translations', 'comments.user', 'comments.replies.user'])
             ->where('slug', $slug)
             ->published()
             ->approved()
@@ -124,7 +117,7 @@ class VideoWebsiteController extends Controller
         $video->increment('views');
 
         // Get related videos
-        $videoEager = ['category', 'user', 'school.translations', 'shop'];
+        $videoEager = ['category', 'user', 'school.translations'];
 
         $relatedVideos = Video::with($videoEager)
             ->where('category_id', $video->category_id)

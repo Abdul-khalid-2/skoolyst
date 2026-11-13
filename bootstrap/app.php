@@ -37,5 +37,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // Every /api/* route (including the "Login with Skoolyst" OAuth
+        // endpoints) must always return JSON errors, even when the caller
+        // is a server-to-server HTTP client that didn't send an
+        // "Accept: application/json" header — otherwise an unauthenticated
+        // call silently gets an HTML login-page redirect instead of a
+        // clean 401 JSON body, which breaks non-browser API consumers.
+        $exceptions->shouldRenderJsonWhen(function ($request, \Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
     })->create();

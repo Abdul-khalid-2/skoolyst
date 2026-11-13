@@ -23,7 +23,7 @@ Optionally on production, after your `.env` is correct:
 
 ```bash
 php artisan config:cache
-php artisan route:cache
+php artisan route:trans:cache
 php artisan view:cache
 ```
 

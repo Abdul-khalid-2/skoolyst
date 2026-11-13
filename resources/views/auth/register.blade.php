@@ -60,37 +60,6 @@
 <!-- ==================== REGISTER SECTION ==================== -->
 <section class="register-section">
     <div class="container">
-        <div class="register-container">
-            <div class="register-left">
-                <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1.5rem;">Join SKOOLYST Today</h2>
-                <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
-                    Discover the perfect educational institutions for your needs.
-                </p>
-                <div style="margin-top: 2rem;">
-                    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                        <i class="fas fa-search" style="font-size: 1.5rem; margin-right: 1rem;"></i>
-                        <div>
-                            <h4 style="margin-bottom: 0.3rem;">Search & Filter</h4>
-                            <p style="opacity: 0.8;">Find schools by location, type, curriculum, and more</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center; margin-bottom: 1.5rem;">
-                        <i class="fas fa-list" style="font-size: 1.5rem; margin-right: 1rem;"></i>
-                        <div>
-                            <h4 style="margin-bottom: 0.3rem;">Browse Profiles</h4>
-                            <p style="opacity: 0.8;">Explore detailed school profiles with ratings and reviews</p>
-                        </div>
-                    </div>
-                    <div style="display: flex; align-items: center;">
-                        <i class="fas fa-handshake" style="font-size: 1.5rem; margin-right: 1rem;"></i>
-                        <div>
-                            <h4 style="margin-bottom: 0.3rem;">Connect Directly</h4>
-                            <p style="opacity: 0.8;">Reach out to schools for inquiries and admission details</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="register-right">
                 <h2 class="register-title">Create Your Account</h2>
                 <p class="register-subtitle">Choose your account type and join SKOOLYST</p>
 
@@ -112,52 +81,62 @@
                     </div>
                 </div>
 
-                <!-- Session Status -->
-                @if (session('status'))
-                <div class="auth-session-status">
-                    {{ session('status') }}
-                </div>
-                @endif
-
                 <!-- User Registration Form -->
                 <div id="userRegistration">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
                         <x-spam-guard />
 
-                        <div class="form-group">
-                            <label for="name" class="form-label">Full Name</label>
-                            <input id="name" class="form-control" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Enter your full name">
-                            @if ($errors->has('name'))
-                            <div class="input-error">
-                                {{ $errors->first('name') }}
+                        <!-- Sticky Error Summary -->
+                        <div id="userErrorSummary" class="school-error-summary" style="display:none;" role="alert" aria-live="polite">
+                            <div class="school-error-summary__header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <strong>Please fix the following errors before continuing:</strong>
+                                <button type="button" class="school-error-summary__close" id="closeUserErrorSummary" aria-label="Close">&times;</button>
                             </div>
-                            @endif
+                            <ul id="userErrorList" class="school-error-summary__list"></ul>
                         </div>
 
-                        <div class="form-group">
-                            <label for="email" class="form-label">Email Address</label>
-                            <input id="email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Enter your email">
-                            @if ($errors->has('email'))
-                            <div class="input-error">
-                                {{ $errors->first('email') }}
+                        <div class="row">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input id="name" class="form-control" type="text" name="name" value="{{ old('name') }}" required autofocus autocomplete="name" placeholder="Enter your full name">
+                                    @if ($errors->has('name'))
+                                    <div class="input-error">
+                                        {{ $errors->first('name') }}
+                                    </div>
+                                    @endif
+                                </div>
                             </div>
-                            @endif
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password" class="form-label">Password</label>
-                            <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password" placeholder="Create a password">
-                            @if ($errors->has('password'))
-                            <div class="input-error">
-                                {{ $errors->first('password') }}
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input id="email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autocomplete="email" placeholder="Enter your email">
+                                    @if ($errors->has('email'))
+                                    <div class="input-error">
+                                        {{ $errors->first('email') }}
+                                    </div>
+                                    @endif
+                                </div>
                             </div>
-                            @endif
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password_confirmation" class="form-label">Confirm Password</label>
-                            <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm your password">
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="form-group">
+                                    <label for="password" class="form-label">Password</label>
+                                    <input id="password" class="form-control" type="password" name="password" required autocomplete="new-password" placeholder="Create a password">
+                                    @if ($errors->has('password'))
+                                    <div class="input-error">
+                                        {{ $errors->first('password') }}
+                                    </div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="form-group">
+                                    <label for="password_confirmation" class="form-label">Confirm Password</label>
+                                    <input id="password_confirmation" class="form-control" type="password" name="password_confirmation" required autocomplete="new-password" placeholder="Confirm your password">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-check">
@@ -171,6 +150,13 @@
                             Create Account
                         </button>
                     </form>
+
+                    <div class="auth-divider"><span>or</span></div>
+
+                    <a href="{{ route('auth.google.redirect') }}" class="google-btn">
+                        <img src="{{ asset('assets/images/google-icon.svg') }}" alt="" width="18" height="18">
+                        Continue with Google
+                    </a>
 
                     <div class="login-link">
                         Already have an account? <a href="{{ route('login') }}">Login now</a>
@@ -197,38 +183,41 @@
                         <div class="form-step active" data-step="1">
                             <h3 style="margin-bottom: 1.5rem; color: #1a1a1a;">School Information</h3>
 
-                            <div class="form-group">
-                                <label for="school_name" class="form-label">School Name *</label>
-                                <input id="school_name" class="form-control" type="text" name="school_name" value="{{ old('school_name') }}" required placeholder="Enter school name">
-                                @if ($errors->has('school_name'))
-                                <div class="input-error">
-                                    {{ $errors->first('school_name') }}
-                                </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label for="school_email" class="form-label">School Email *</label>
-                                <input id="school_email" class="form-control" type="email" name="school_email" value="{{ old('school_email') }}" required placeholder="Enter school email">
-                                @if ($errors->has('school_email'))
-                                <div class="input-error">
-                                    {{ $errors->first('school_email') }}
-                                </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label for="school_address" class="form-label">Address *</label>
-                                <input id="school_address" class="form-control" type="text" name="school_address" value="{{ old('school_address') }}" required placeholder="Enter school address">
-                                @if ($errors->has('school_address'))
-                                <div class="input-error">
-                                    {{ $errors->first('school_address') }}
-                                </div>
-                                @endif
-                            </div>
-
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="school_name" class="form-label">School Name *</label>
+                                        <input id="school_name" class="form-control" type="text" name="school_name" value="{{ old('school_name') }}" required placeholder="Enter school name">
+                                        @if ($errors->has('school_name'))
+                                        <div class="input-error">
+                                            {{ $errors->first('school_name') }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="school_email" class="form-label">School Email *</label>
+                                        <input id="school_email" class="form-control" type="email" name="school_email" value="{{ old('school_email') }}" required placeholder="Enter school email">
+                                        @if ($errors->has('school_email'))
+                                        <div class="input-error">
+                                            {{ $errors->first('school_email') }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="school_address" class="form-label">Address *</label>
+                                        <input id="school_address" class="form-control" type="text" name="school_address" value="{{ old('school_address') }}" required placeholder="Enter school address">
+                                        @if ($errors->has('school_address'))
+                                        <div class="input-error">
+                                            {{ $errors->first('school_address') }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="school_city" class="form-label">City *</label>
                                        <select id="school_city" class="form-control js-select2 js-select2-tags" name="school_city" required>
@@ -247,7 +236,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="school_contact" class="form-label">Contact Number</label>
                                         <input id="school_contact" class="form-control" type="tel" name="school_contact" value="{{ old('school_contact') }}" placeholder="Enter contact number">
@@ -256,14 +245,26 @@
                                             {{ $errors->first('school_contact') }}
                                         </div>
                                         @endif
+                                        <div class="form-check form-switch mt-2">
+                                            <input class="form-check-input" type="checkbox" role="switch" id="school_whatsapp_enabled" name="school_whatsapp_enabled" value="1" {{ old('school_whatsapp_enabled') ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="school_whatsapp_enabled">
+                                                <i class="fab fa-whatsapp text-success"></i> This number is also on WhatsApp
+                                            </label>
+                                        </div>
+                                        <div id="school_whatsapp_field" class="mt-2" style="{{ old('school_whatsapp_enabled') ? '' : 'display:none;' }}">
+                                            <label for="school_whatsapp" class="form-label">WhatsApp Number</label>
+                                            <input id="school_whatsapp" class="form-control" type="tel" name="school_whatsapp" value="{{ old('school_whatsapp') }}" placeholder="e.g., 0300 1234567">
+                                            <small class="text-muted">Parents will see a WhatsApp button on your school card.</small>
+                                            @if ($errors->has('school_whatsapp'))
+                                            <div class="input-error">
+                                                {{ $errors->first('school_whatsapp') }}
+                                            </div>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-navigation">
-                                <button type="button" class="btn-prev" disabled>Previous</button>
-                                <button type="button" class="btn-next" data-next="2">Next</button>
-                            </div>
                         </div>
 
                         <!-- Step 2: School Details -->
@@ -291,7 +292,7 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="school_gender_type" class="form-label">School type (gender) *</label>
                                         <select id="school_gender_type" class="form-control" name="school_gender_type" required>
@@ -299,6 +300,7 @@
                                             <option value="girls" {{ old('school_gender_type') == 'girls' ? 'selected' : '' }}>Girls</option>
                                             <option value="boys" {{ old('school_gender_type') == 'boys' ? 'selected' : '' }}>Boys</option>
                                             <option value="co-education" {{ old('school_gender_type') == 'co-education' ? 'selected' : '' }}>Co-Education</option>
+                                            <option value="separate-campuses" {{ old('school_gender_type') == 'separate-campuses' ? 'selected' : '' }}>Boys &amp; Girls (Separate Campuses)</option>
                                         </select>
                                         @if ($errors->has('school_gender_type'))
                                         <div class="input-error">
@@ -307,7 +309,7 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="school_ownership_type" class="form-label">School type (ownership) *</label>
                                         <select id="school_ownership_type" class="form-control" name="school_ownership_type" required>
@@ -324,9 +326,7 @@
                                         @endif
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-12 col-md-6 col-lg-4">
                                     <div class="form-group">
                                         <label for="school_website" class="form-label">Website</label>
                                         <input id="school_website" class="form-control" type="url" name="school_website" value="{{ old('school_website') }}" placeholder="https://">
@@ -339,49 +339,52 @@
                                 </div>
                             </div>
 
-                            <div class="form-navigation">
-                                <button type="button" class="btn-prev" data-prev="1">Previous</button>
-                                <button type="button" class="btn-next" data-next="3">Next</button>
-                            </div>
                         </div>
 
                         <!-- Step 3: Admin Account & Fees -->
                         <div class="form-step" data-step="3">
                             <h3 style="margin-bottom: 1.5rem; color: #1a1a1a;">Admin Account & Fees</h3>
 
-                            <div class="form-group">
-                                <label for="admin_name" class="form-label">Admin Name *</label>
-                                <input id="admin_name" class="form-control" type="text" name="admin_name" value="{{ old('admin_name') }}" required placeholder="Enter admin full name">
-                                @if ($errors->has('admin_name'))
-                                <div class="input-error">
-                                    {{ $errors->first('admin_name') }}
+                            <div class="row">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="admin_name" class="form-label">Admin Name *</label>
+                                        <input id="admin_name" class="form-control" type="text" name="admin_name" value="{{ old('admin_name') }}" required placeholder="Enter admin full name">
+                                        @if ($errors->has('admin_name'))
+                                        <div class="input-error">
+                                            {{ $errors->first('admin_name') }}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label for="admin_email" class="form-label">Admin Email *</label>
-                                <input id="admin_email" class="form-control" type="email" name="admin_email" value="{{ old('admin_email') }}" required placeholder="Enter admin email">
-                                @if ($errors->has('admin_email'))
-                                <div class="input-error">
-                                    {{ $errors->first('admin_email') }}
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="admin_email" class="form-label">Admin Email *</label>
+                                        <input id="admin_email" class="form-control" type="email" name="admin_email" value="{{ old('admin_email') }}" required placeholder="Enter admin email">
+                                        @if ($errors->has('admin_email'))
+                                        <div class="input-error">
+                                            {{ $errors->first('admin_email') }}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label for="admin_password" class="form-label">Admin Password *</label>
-                                <input id="admin_password" class="form-control" type="password" name="admin_password" required placeholder="Create admin password">
-                                @if ($errors->has('admin_password'))
-                                <div class="input-error">
-                                    {{ $errors->first('admin_password') }}
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="admin_password" class="form-label">Admin Password *</label>
+                                        <input id="admin_password" class="form-control" type="password" name="admin_password" required placeholder="Create admin password">
+                                        @if ($errors->has('admin_password'))
+                                        <div class="input-error">
+                                            {{ $errors->first('admin_password') }}
+                                        </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                @endif
-                            </div>
-
-                            <div class="form-group">
-                                <label for="admin_password_confirmation" class="form-label">Confirm Admin Password *</label>
-                                <input id="admin_password_confirmation" class="form-control" type="password" name="admin_password_confirmation" required placeholder="Confirm admin password">
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="form-group">
+                                        <label for="admin_password_confirmation" class="form-label">Confirm Admin Password *</label>
+                                        <input id="admin_password_confirmation" class="form-control" type="password" name="admin_password_confirmation" required placeholder="Confirm admin password">
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Fees Structure Type -->
@@ -411,7 +414,7 @@
                             <!-- Fixed Fee Structure Fields -->
                             <div id="fixed_fee_structure" class="fee-structure-section" style="{{ old('fee_structure_type', 'fixed') == 'fixed' ? '' : 'display: none;' }}">
                                 <div class="row">
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label for="regular_fees" class="form-label">Regular Fees</label>
                                             <input id="regular_fees" class="form-control" type="text" name="regular_fees" value="{{ old('regular_fees') }}" step="0.01" placeholder="0.00">
@@ -422,7 +425,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label for="discounted_fees" class="form-label">Discounted Fees</label>
                                             <input id="discounted_fees" class="form-control" type="text" name="discounted_fees" value="{{ old('discounted_fees') }}" step="0.01" placeholder="0.00">
@@ -433,7 +436,7 @@
                                             @endif
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
+                                    <div class="col-12 col-md-6 col-lg-4">
                                         <div class="form-group">
                                             <label for="admission_fees" class="form-label">Admission Fees</label>
                                             <input id="admission_fees" class="form-control" type="number" name="admission_fees" value="{{ old('admission_fees') }}" step="0.01" placeholder="0.00">
@@ -497,10 +500,7 @@
                                 @endif
                             </div>
 
-                            <div class="form-navigation">
-                                <button type="button" class="btn-prev" data-prev="2">Previous</button>
-                                <button type="submit" class="btn-next">Complete Registration</button>
-                            </div>
+                            <button type="submit" class="school-register-btn">Complete Registration</button>
                         </div>
                     </form>
 
@@ -508,8 +508,6 @@
                         Already have an account? <a href="{{ route('login') }}">Login now</a>
                     </div>
                 </div>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -518,8 +516,9 @@
 <script src="{{ asset('assets/js/register.js') }}"></script>
 <script>
 
-    // Switch to the School tab when the server bounced back with school-form errors
-    // or any old school-form input — and restore the step the user was on.
+    // Switch to the School tab when the server bounced back with school-form
+    // errors or any old school-form input (single-step form now — no step
+    // restoration needed, every field is always on screen).
     document.addEventListener('DOMContentLoaded', function () {
         const schoolFieldNames = [
             'school_name', 'school_email', 'school_address', 'school_city', 'school_contact',
@@ -537,19 +536,6 @@
 
         if (hasBackendSchoolError || hadSchoolInput) {
             document.querySelector('.type-btn[data-type="school"]')?.click();
-
-            const lastStep = sessionStorage.getItem('schoolRegLastStep');
-            const targetStep = lastStep || (hasBackendSchoolError ? '3' : '1');
-            const target = document.querySelector(`.form-step[data-step="${targetStep}"]`);
-            if (target) {
-                document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
-                target.classList.add('active');
-                document.querySelectorAll('.step').forEach(ind => {
-                    const n = parseInt(ind.getAttribute('data-step'));
-                    ind.classList.toggle('active', n === parseInt(targetStep));
-                    ind.classList.toggle('completed', n < parseInt(targetStep));
-                });
-            }
         }
 
         // Surface backend validation errors in the sticky summary box
@@ -561,14 +547,45 @@
                 if (!schoolFieldNames.includes(baseName)) return;
                 const field = document.querySelector(`[name="${baseName}"]`)
                     || document.querySelector(`[name^="${baseName}"]`);
-                const stepEl = field?.closest('.form-step');
-                const step = stepEl ? parseInt(stepEl.getAttribute('data-step'), 10) : null;
                 const lblEl = field?.closest('.form-group')?.querySelector('.form-label, label.form-check-label');
                 const label = lblEl ? lblEl.textContent.replace(/\*/g, '').trim() : baseName;
-                msgs.forEach(m => summaryErrors.push({ step, label, message: m, fieldName: baseName }));
+                msgs.forEach(m => summaryErrors.push({ label, message: m, fieldName: baseName }));
             });
             if (summaryErrors.length) window.showSchoolErrorSummary(summaryErrors);
         }
+
+        // Same treatment for the Parent/Student form's backend validation errors
+        const userFieldNames = ['name', 'email', 'password', 'agree_terms'];
+        const hasBackendUserError = errorKeys.some(key => userFieldNames.includes(key));
+
+        if (hasBackendUserError && typeof window.showUserErrorSummary === 'function') {
+            const backendMessages = @json($errors->messages());
+            const summaryErrors = [];
+            Object.entries(backendMessages).forEach(([key, msgs]) => {
+                if (!userFieldNames.includes(key)) return;
+                const field = document.querySelector(`#userRegistration [name="${key}"]`);
+                const lblEl = field?.closest('.form-group')?.querySelector('.form-label, label.form-check-label');
+                const label = lblEl ? lblEl.textContent.replace(/\*/g, '').trim() : key;
+                msgs.forEach(m => summaryErrors.push({ label, message: m, fieldName: key }));
+            });
+            if (summaryErrors.length) window.showUserErrorSummary(summaryErrors);
+        }
+    });
+
+    // WhatsApp toggle — reveals the WhatsApp number input and pre-fills it from the contact number
+    document.addEventListener('DOMContentLoaded', function () {
+        const waToggle = document.getElementById('school_whatsapp_enabled');
+        const waField = document.getElementById('school_whatsapp_field');
+        const waInput = document.getElementById('school_whatsapp');
+        const contactInput = document.getElementById('school_contact');
+        if (!waToggle || !waField || !waInput || !contactInput) return;
+
+        waToggle.addEventListener('change', function () {
+            waField.style.display = this.checked ? '' : 'none';
+            if (this.checked && !waInput.value) {
+                waInput.value = contactInput.value.split('\n')[0].trim();
+            }
+        });
     });
 
     // Fee Structure Toggle

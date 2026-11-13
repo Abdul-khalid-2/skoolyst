@@ -86,6 +86,11 @@
                             <a href="{{ route('browseSchools.show', $school['slug'] ?? $school['uuid']) }}" class="view-profile-btn" itemprop="url">
                                 <i class="fas fa-eye"></i> View Full Profile
                             </a>
+                            @if(!empty($school['whatsapp_url']))
+                            <a href="{{ $school['whatsapp_url'] }}" class="btn btn-success btn-sm w-100 mt-2" target="_blank" rel="noopener">
+                                <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                            </a>
+                            @endif
                             <p class="visitor-count">
                                 @if(isset($school['visitor_count']) && $school['visitor_count'] > 0)
                                     <i class="fas fa-eye"></i> {{ $school['visitor_count'] }}

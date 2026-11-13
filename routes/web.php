@@ -1,12 +1,14 @@
 <?php
 
+use App\Http\Controllers\AdController;
 use App\Http\Controllers\AnnouncementController;
-use App\Http\Controllers\BookCategoryController;
-use App\Http\Controllers\BookController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ContactInquiryController;
 use App\Http\Controllers\DashboardControlle;
+use App\Http\Controllers\EmailController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\OAuthClientController;
+use App\Http\Controllers\OAuthController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -203,12 +205,32 @@ Route::group([
             Route::get('/', [UserProfileController::class, 'show'])->name('user_profile.show');
             Route::get('/edit', [UserProfileController::class, 'edit'])->name('user_profile.edit');
             Route::put('/update', [UserProfileController::class, 'update'])->name('user_profile.update');
-            Route::get('/certificate/{attempt:uuid}', [UserProfileController::class, 'downloadCertificate'])->name('user_profile.certificate');
         });
+
+        // "Login with Skoolyst" — step 1. Guests land here, the `auth`
+        // middleware stores this URL as the intended redirect and sends
+        // them to login; AuthenticatedSessionController::store() sends them
+        // straight back here afterwards (Laravel's built-in intended-URL
+        // mechanism — no custom code needed for that hop).
+        Route::get('/oauth/authorize', [OAuthController::class, 'authorize'])->name('oauth.authorize');
+
+        // Consumer apps send a logged-in user here when SSO found a local
+        // account with this email but it isn't verified yet (see
+        // OAuthController::verifyRequired()) — sends a verification email
+        // that returns the user to /oauth/authorize once clicked, instead
+        // of leaving them stuck on the consumer app's error page.
+        Route::get('/oauth/verify-required', [OAuthController::class, 'verifyRequired'])->name('oauth.verify-required');
     });
     // advertisement pages
     Route::get('/event_list/{id}', [AdvertisementPageController::class, 'index'])->name('advertisement_pages.index');
     Route::get('/page-view/{slug}/{page_uuid}', [AdvertisementPageController::class, 'show'])->name('advertisement_pages.show');
+
+    // Central ad engine (ads.skoolyst.com) — click redirect + TEMPORARY debug route.
+    Route::get('/ads/click/{placement}', [AdController::class, 'click'])->name('ads.click');
+    Route::get('/ads-debug/{placement}', [AdController::class, 'debug'])->name('ads.debug'); // TODO: remove after testing
+
+    // Central email API (ads.skoolyst.com) — TEMPORARY debug route.
+    Route::get('/email-debug', [EmailController::class, 'debug'])->name('email.debug'); // TODO: remove after testing
 
     Route::post('/schools/{school}/reviews', [ReviewController::class, 'store'])->name('website.school.reviews.store');
 
@@ -251,18 +273,19 @@ Route::group([
 
         // In routes/web.php
         Route::prefix('dashboard')->middleware(['auth', 'role:super-admin'])->group(function () {
-            // Admin MCQ dashboard routes and controllers (mcq-dashboard/stats,
-            // test-types, subjects, topics, mcqs, mock-tests) removed (Steps 2-3,
-            // 2026-09-10). Models, migrations and database untouched.
-
-            // Book Categories
-            Route::resource('book-categories', BookCategoryController::class);
-
-            // Books
-            Route::resource('books', BookController::class);
+            // Admin MCQ dashboard routes/controllers removed (Steps 2-3, 2026-09-10).
+            // Book Categories / Books admin routes removed (2026-09-29) — both
+            // controllers were already empty stubs with no views, never functional.
+            // The Shop/Blog/MCQ/Books database tables themselves were dropped in
+            // this same change (see database/migrations/2026_09_29_1310*).
 
             // Study Materials
             Route::resource('study-materials', StudyMaterialController::class);
+
+            // "Login with Skoolyst" — Connected Apps management.
+            Route::resource('oauth-clients', OAuthClientController::class)->except(['show']);
+            Route::post('oauth-clients/{oauthClient}/regenerate-secret', [OAuthClientController::class, 'regenerateSecret'])
+                ->name('oauth-clients.regenerate-secret');
         });
 
         // School Admin Routes

@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'uuid',
         'name',
         'email',
+        'google_id',
         'phone',
         'address',
         'bio',
@@ -54,10 +56,6 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function shop()
-    {
-        return $this->hasOne(Shop::class, 'user_id');
-    }
     public function school()
     {
         return $this->belongsTo(School::class);
@@ -79,72 +77,6 @@ class User extends Authenticatable
     public function hasDashboardAccess(): bool
     {
         return $this->hasAnyRole(['super-admin', 'school-admin', 'shop-owner']);
-    }
-
-    // NEW: Test Preparation Relationships
-    public function userMcqAnswers()
-    {
-        return $this->hasMany(UserMcqAnswer::class);
-    }
-
-    public function userTestAttempts()
-    {
-        return $this->hasMany(UserTestAttempt::class);
-    }
-
-    public function userProgress()
-    {
-        return $this->hasMany(UserProgress::class);
-    }
-
-    public function createdMcqs()
-    {
-        return $this->hasMany(Mcq::class, 'created_by');
-    }
-
-    public function approvedMcqs()
-    {
-        return $this->hasMany(Mcq::class, 'approved_by');
-    }
-
-    public function createdMockTests()
-    {
-        return $this->hasMany(MockTest::class, 'created_by');
-    }
-
-    public function bookListings()
-    {
-        return $this->hasManyThrough(Book::class, Product::class, 'user_id', 'product_id');
-    }
-
-    // Helper methods for test preparation
-    public function getTotalCorrectAnswers()
-    {
-        return $this->userMcqAnswers()->where('is_correct', true)->count();
-    }
-
-    public function getTotalTestsTaken()
-    {
-        return $this->userTestAttempts()->where('status', 'completed')->count();
-    }
-
-    public function getAverageTestScore()
-    {
-        $attempts = $this->userTestAttempts()->where('status', 'completed')->get();
-
-        if ($attempts->count() === 0) {
-            return 0;
-        }
-
-        return $attempts->avg('percentage');
-    }
-
-    public function getTopicsReadCount()
-    {
-        return $this->userProgress()
-            ->where('progress_type', 'topic_read')
-            ->where('progress_percentage', '>=', 100)
-            ->count();
     }
 
     // Generate UUID automatically
@@ -175,17 +107,6 @@ class User extends Authenticatable
         }
 
         return null;
-    }
-
-    // Accessor for user's test preparation stats
-    public function getTestStatsAttribute()
-    {
-        return [
-            'correct_answers' => $this->getTotalCorrectAnswers(),
-            'tests_taken' => $this->getTotalTestsTaken(),
-            'average_score' => round($this->getAverageTestScore(), 1),
-            'topics_read' => $this->getTopicsReadCount(),
-        ];
     }
 
     // Check if user has premium access

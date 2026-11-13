@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    {{-- Resource hints: start the connection to third-party origins as early as
+         possible (DNS + TCP + TLS), in parallel with HTML parsing, so the actual
+         requests for Bootstrap CSS / Font Awesome / etc. don't pay that latency
+         on top of the fetch itself. This is the main lever for "render-blocking
+         requests" savings, since we can't avoid needing those origins. --}}
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
+    <link rel="dns-prefetch" href="https://embed.tawk.to">
+
     {{-- Pages that build their own primary meta (title/description/OG/Twitter) via
          @push('meta') should pass pageSetsOwnMeta => true so the layout does not
          emit a second, conflicting <title>/description. --}}
@@ -30,11 +40,6 @@
     <meta property="twitter:image" content="{{ asset('assets/assets/hero1.png') }}">
     @endunless
 
-<!-- // <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3104637221187005"
-    //  crossorigin="anonymous"></script> -->
-    
-     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2529569703326249"
-     crossorigin="anonymous"></script>
     @unless($pageSetsOwnCanonical ?? false)
     <!-- Default canonical; pages with a full @push("meta") block that includes their own should pass pageSetsOwnCanonical -->
     <link rel="canonical" href="{{ url()->current() }}">
@@ -127,6 +132,59 @@
 
     @include('website.layout.header')
 
+    <!-- ==================== FLASH TOAST (session success/error/status) ==================== -->
+    @if (session('success') || session('error') || session('status'))
+        @php
+            $flashType = session('success') ? 'success' : (session('error') ? 'error' : 'status');
+            $flashMessage = session('success') ?: (session('error') ?: session('status'));
+        @endphp
+        <div id="flashToast" class="flash-toast flash-toast--{{ $flashType }}" role="alert" aria-live="polite">
+            <i class="fas {{ $flashType === 'error' ? 'fa-circle-exclamation' : 'fa-circle-check' }}"></i>
+            <span>{{ $flashMessage }}</span>
+            <button type="button" class="flash-toast__close" aria-label="Close" onclick="document.getElementById('flashToast').remove()">&times;</button>
+        </div>
+        <style>
+            .flash-toast {
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                z-index: 2000;
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                max-width: 380px;
+                padding: 0.9rem 1.1rem;
+                border-radius: 10px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+                font-size: 0.9rem;
+                animation: flashToastIn 0.35s ease;
+            }
+            .flash-toast--success { background: #ecfdf5; border-left: 4px solid #10b981; color: #065f46; }
+            .flash-toast--error   { background: #fef2f2; border-left: 4px solid #dc2626; color: #991b1b; }
+            .flash-toast--status  { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af; }
+            .flash-toast i { font-size: 1.1rem; flex-shrink: 0; }
+            .flash-toast span { flex: 1; line-height: 1.4; }
+            .flash-toast__close {
+                background: none; border: none; font-size: 1.2rem; line-height: 1;
+                cursor: pointer; opacity: 0.6; color: inherit; flex-shrink: 0;
+            }
+            .flash-toast__close:hover { opacity: 1; }
+            @keyframes flashToastIn {
+                from { transform: translateX(30px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @media (max-width: 480px) {
+                .flash-toast { right: 12px; left: 12px; max-width: none; top: 80px; }
+            }
+        </style>
+        <script>
+            setTimeout(function () {
+                var toast = document.getElementById('flashToast');
+                if (toast) toast.remove();
+            }, 6000);
+        </script>
+    @endif
+
     <!-- ==================== MAIN CONTENT ==================== -->
     @yield('content')
 
@@ -134,6 +192,41 @@
     <!-- ==================== FOOTER ==================== -->
 
     @include('website.layout.footer')
+
+    <!-- ==================== FIRST-VISIT INTRO MODAL ==================== -->
+    <div class="modal fade" id="introModal" tabindex="-1" aria-labelledby="introModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h2 class="modal-title h5" id="introModalTitle">Welcome to SKOOLYST</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-3">SKOOLYST connects parents with schools across Pakistan, all in one place.</p>
+                    <div class="mb-3">
+                        <h3 class="h6 fw-bold mb-1"><i class="fas fa-user-graduate text-primary me-1"></i> For parents &amp; students</h3>
+                        <ul class="small mb-0 ps-3">
+                            <li>Find and compare schools by city, fees, curriculum and facilities.</li>
+                            <li>See complete details about any listed school.</li>
+                            <li>Ask people who know a school to share their review on SKOOLYST.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="h6 fw-bold mb-1"><i class="fas fa-school text-primary me-1"></i> For school owners</h3>
+                        <ul class="small mb-0 ps-3">
+                            <li>List your school and reach thousands of parents.</li>
+                            <li>Receive inquiries directly, including on WhatsApp.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 flex-wrap gap-2">
+                    <a href="{{ route('register') }}" class="btn btn-outline-primary btn-sm">Register Your School</a>
+                    <a href="{{ route('browseSchools.index') }}" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Explore Schools</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== JAVASCRIPT ==================== -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
     
@@ -144,16 +237,61 @@
     
     @stack('scripts')
 
+    <script>
+        window.addEventListener('load', function () {
+            const modalEl = document.getElementById('introModal');
+            if (!modalEl || !window.bootstrap) return;
+
+            const KEY = 'skoolyst_intro_seen_v1';
+            let seen = false;
+            try { seen = localStorage.getItem(KEY) === '1'; } catch (e) {}
+            if (seen) return;
+
+            const modal = new bootstrap.Modal(modalEl);
+            modalEl.addEventListener('hidden.bs.modal', function () {
+                try { localStorage.setItem(KEY, '1'); } catch (e) {}
+            });
+            modal.show();
+        });
+    </script>
+
+    <!-- Google AdSense (auto ads) — moved here from <head> so it never competes
+         with critical CSS/fonts/LCP image for early network priority. Still
+         async, so it never blocks rendering either way. -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2529569703326249"
+     crossorigin="anonymous"></script>
+
     <!--Start of Tawk.to Script-->
+    <!-- Chat widget is not needed for first paint/LCP and its JS is heavy
+         enough to add measurable main-thread work — load it once the browser
+         is idle (or after the user actually interacts), not immediately on
+         page load, to keep TBT/long-tasks down during initial render. -->
     <script type="text/javascript">
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
     (function(){
-    var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-    s1.async=true;
-    s1.src='https://embed.tawk.to/6a29afa35bdfa41c2ccf5e2a/1jqpdc6jv';
-    s1.charset='UTF-8';
-    s1.setAttribute('crossorigin','*');
-    s0.parentNode.insertBefore(s1,s0);
+        var loaded = false;
+        function loadTawk() {
+            if (loaded) return;
+            loaded = true;
+            var Tawk_API = window.Tawk_API = window.Tawk_API || {};
+            Tawk_API.Tawk_LoadStart = new Date();
+            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+            s1.async = true;
+            s1.src = 'https://embed.tawk.to/6a29afa35bdfa41c2ccf5e2a/1jqpdc6jv';
+            s1.charset = 'UTF-8';
+            s1.setAttribute('crossorigin', '*');
+            s0.parentNode.insertBefore(s1, s0);
+            ['scroll', 'mousemove', 'touchstart', 'keydown'].forEach(function (evt) {
+                window.removeEventListener(evt, loadTawk, { passive: true });
+            });
+        }
+        ['scroll', 'mousemove', 'touchstart', 'keydown'].forEach(function (evt) {
+            window.addEventListener(evt, loadTawk, { passive: true, once: true });
+        });
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(loadTawk, { timeout: 5000 });
+        } else {
+            setTimeout(loadTawk, 4000);
+        }
     })();
     </script>
     <!--End of Tawk.to Script-->

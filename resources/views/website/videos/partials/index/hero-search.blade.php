@@ -3,7 +3,7 @@
     <div class="videos-hero-content">
         <h1 class="videos-hero-title">SKOOLYST EduVideos</h1>
         <p class="videos-hero-subheading">
-            Explore our collection of educational videos from schools and shops.
+            Explore our collection of educational videos from schools.
             Learn, discover, and get inspired with quality content.
         </p>
     </div>
@@ -19,9 +19,6 @@
                 @endif
                 @if(request('school') && request('school') != 'all')
                     <input type="hidden" name="school" value="{{ request('school') }}">
-                @endif
-                @if(request('shop') && request('shop') != 'all')
-                    <input type="hidden" name="shop" value="{{ request('shop') }}">
                 @endif
                 @if(request('filter') && request('filter') != 'all')
                     <input type="hidden" name="filter" value="{{ request('filter') }}">

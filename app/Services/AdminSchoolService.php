@@ -18,7 +18,7 @@ use Carbon\Carbon;
 
 class AdminSchoolService
 {
-    public function createSchool(StoreSchoolRequest $request, ImageWebpService $imageWebp): void
+    public function createSchool(StoreSchoolRequest $request, ImageWebpService $imageWebp): School
     {
         $validated = $request->validated();
 
@@ -49,6 +49,7 @@ class AdminSchoolService
                 'address' => $validated['address'],
                 'city' => $validated['city'],
                 'contact_number' => $validated['contact_number'] ?? null,
+                'whatsapp_number' => $validated['whatsapp_number'] ?? null,
                 'email' => $validated['email'],
                 'website' => $validated['website'] ?? null,
                 'facilities' => $validated['facilities'] ?? null,
@@ -146,6 +147,8 @@ class AdminSchoolService
 
             DB::commit();
             $this->clearSchoolListingCaches($school);
+
+            return $school;
         } catch (\Throwable $e) {
             DB::rollBack();
             throw $e;
@@ -184,6 +187,7 @@ class AdminSchoolService
                 'address' => $validated['address'],
                 'city' => $validated['city'],
                 'contact_number' => $validated['contact_number'] ?? null,
+                'whatsapp_number' => $validated['whatsapp_number'] ?? null,
                 'email' => $validated['email'] ?? null,
                 'website' => $validated['website'] ?? null,
                 'facilities' => $validated['facilities'] ?? null,

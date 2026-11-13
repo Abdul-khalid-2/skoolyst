@@ -18,7 +18,6 @@ class Video extends Model
         'category_id',
         'user_id',
         'school_id',
-        'shop_id',
         'title',
         'slug',
         'description',
@@ -94,11 +93,6 @@ class Video extends Model
         return $this->belongsTo(School::class);
     }
 
-    public function shop(): BelongsTo
-    {
-        return $this->belongsTo(Shop::class);
-    }
-
     public function reactions(): HasMany
     {
         return $this->hasMany(VideoReaction::class);
@@ -142,11 +136,6 @@ class Video extends Model
     public function scopeBySchool($query, $schoolId)
     {
         return $query->where('school_id', $schoolId);
-    }
-
-    public function scopeByShop($query, $shopId)
-    {
-        return $query->where('shop_id', $shopId);
     }
 
     public function scopeByCategory($query, $categoryId)

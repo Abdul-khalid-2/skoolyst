@@ -6,6 +6,7 @@ use App\Rules\NoSpamContent;
 use App\Rules\NotDisposableEmail;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
+use App\Mail\AdminSchoolActivityMail;
 use App\Models\Curriculum;
 use App\Models\Feature;
 use App\Models\School;
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class SchoolController extends Controller
@@ -100,7 +103,9 @@ class SchoolController extends Controller
     public function store(StoreSchoolRequest $request, ImageWebpService $imageWebp, AdminSchoolService $adminSchools)
     {
         try {
-            $adminSchools->createSchool($request, $imageWebp);
+            $school = $adminSchools->createSchool($request, $imageWebp);
+
+            $this->notifyAdminOfSchoolActivity($school, 'created');
         } catch (\Throwable $e) {
             report($e);
             $userMessage = 'Could not save the school. Please review the highlighted fields and the message below, then try again.';
@@ -196,6 +201,8 @@ class SchoolController extends Controller
             return redirect()->back()->with('error', 'Failed to update school. Please try again.')->withInput();
         }
 
+        $this->notifyAdminOfSchoolActivity($school, 'updated');
+
         return redirect()->route('schools.show', $school->id)
             ->with('success', 'School updated successfully!');
     }
@@ -225,22 +232,28 @@ class SchoolController extends Controller
             'school_address' => 'required|string',
             'school_city' => 'required|string',
             'school_contact' => 'nullable|string|max:500',
+            'school_whatsapp' => 'nullable|string|regex:/^[0-9+\-\s()]{7,25}$/',
             'school_description' => 'nullable|string',
             'school_facilities' => 'nullable|string',
-            'school_gender_type' => 'required|in:girls,boys,co-education',
+            'school_gender_type' => 'required|in:girls,boys,co-education,separate-campuses',
             'school_ownership_type' => 'required|in:private,government,semi-government,ngo',
             'school_website' => 'nullable|url',
             'admin_name' => ['required', 'string', 'min:2', 'max:100', new NoSpamContent],
             'admin_email' => ['required', 'email:rfc,dns', 'unique:users,email', new NotDisposableEmail],
             'admin_password' => 'required|string|min:8|confirmed',
             'fee_structure_type' => 'required|in:fixed,class_wise',
-            'regular_fees' => 'nullable',
-            'discounted_fees' => 'nullable',
-            'admission_fees' => 'nullable',
+            'regular_fees' => 'nullable|numeric|min:0|max:99999999.99',
+            'discounted_fees' => 'nullable|numeric|min:0|max:99999999.99',
+            'admission_fees' => 'nullable|numeric|min:0|max:99999999.99',
             'class_wise_fees' => 'required_if:fee_structure_type,class_wise|array|min:1|max:5',
             'class_wise_fees.*.range' => 'required|string|max:35',
-            'class_wise_fees.*.amount' => 'required|string|max:35',
+            'class_wise_fees.*.amount' => 'required|numeric|min:0|max:99999999.99',
             'school_terms' => 'required|accepted',
+        ], [
+            'regular_fees.numeric' => 'Regular fees must be a valid number.',
+            'discounted_fees.numeric' => 'Discounted fees must be a valid number.',
+            'admission_fees.numeric' => 'Admission fees must be a valid number.',
+            'class_wise_fees.*.amount.numeric' => 'Fee amount must be a valid number.',
         ]);
 
         try {
@@ -273,6 +286,7 @@ class SchoolController extends Controller
                 'address' => $validated['school_address'],
                 'city' => $validated['school_city'],
                 'contact_number' => $validated['school_contact'],
+                'whatsapp_number' => $request->boolean('school_whatsapp_enabled') ? ($validated['school_whatsapp'] ?? null) : null,
                 'website' => $validated['school_website'],
                 'description' => $validated['school_description'],
                 'facilities' => $validated['school_facilities'],
@@ -300,6 +314,8 @@ class SchoolController extends Controller
 
             DB::commit();
 
+            $this->notifyAdminOfSchoolActivity($school, 'registered');
+
             Auth::login($user);
 
             return redirect()->route('schools.edit', $school->id)
@@ -307,7 +323,32 @@ class SchoolController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
 
-            return back()->with('error', 'Registration failed: '.$e->getMessage())->withInput();
+            Log::error('School registration failed', [
+                'error' => $e->getMessage(),
+                'school_email' => $validated['school_email'] ?? null,
+            ]);
+
+            return back()
+                ->with('error', 'Something went wrong while registering your school. Please check your details and try again.')
+                ->withInput();
+        }
+    }
+
+    /**
+     * Notify the platform admin about school registration/create/update
+     * activity. Never allowed to break the calling action — any mail
+     * failure is logged, not thrown (same pattern as ContactInquiryController).
+     */
+    private function notifyAdminOfSchoolActivity(School $school, string $type): void
+    {
+        try {
+            Mail::to('skoolyst@gmail.com')->send(new AdminSchoolActivityMail($school, $type));
+        } catch (\Throwable $e) {
+            Log::warning('Failed to email admin about school activity', [
+                'school_id' => $school->id,
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

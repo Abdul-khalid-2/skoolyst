@@ -86,6 +86,7 @@ class Branch extends Model
     {
         return [
             'co-education' => 'Co-Educational',
+            'separate-campuses' => 'Boys & Girls (Separate Campuses)',
             'boys' => 'Boys Only',
             'girls' => 'Girls Only',
         ];
