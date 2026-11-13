@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Mail\AdminUserActivityMail;
 use App\Services\HomeService;
+use App\Rules\NoSpamContent;
+use App\Rules\NotDisposableEmail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -44,8 +47,8 @@ class RegisteredUserController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
+            'name' => ['required', 'string', 'min:2', 'max:100', new NoSpamContent],
+            'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', 'unique:' . User::class, new NotDisposableEmail],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -58,9 +61,14 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         // Notify admin about new registration
-        Mail::to('skoolyst@gmail.com')->send(
-            new AdminUserActivityMail($user, 'registered')
-        );
+        // (wrapped so a mail/API failure never blocks a real user's registration)
+        try {
+            Mail::to('skoolyst@gmail.com')->send(
+                new AdminUserActivityMail($user, 'registered')
+            );
+        } catch (\Throwable $e) {
+            Log::warning('Admin registration notification failed: ' . $e->getMessage());
+        }
 
         Auth::login($user);
 
