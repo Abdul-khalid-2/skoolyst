@@ -150,7 +150,9 @@ Route::group([
     });
 
     Route::middleware('guest')->group(function () {
-        Route::post('/schools/register', [SchoolController::class, 'register'])->name('school.register');
+        Route::post('/schools/register', [SchoolController::class, 'register'])
+            ->middleware(['throttle:5,10', \App\Http\Middleware\RejectSpamBots::class])
+            ->name('school.register');
     });
 
     Route::get('/', [HomeController::class, 'home'])->name('website.home');

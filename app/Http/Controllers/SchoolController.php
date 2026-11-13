@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Rules\NoSpamContent;
+use App\Rules\NotDisposableEmail;
 use App\Http\Requests\StoreSchoolRequest;
 use App\Http\Requests\UpdateSchoolRequest;
 use App\Mail\AdminSchoolActivityMail;
@@ -225,8 +227,8 @@ class SchoolController extends Controller
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'school_name' => 'required|string|max:255',
-            'school_email' => 'required|email|unique:schools,email',
+            'school_name' => ['required', 'string', 'max:255', new NoSpamContent],
+            'school_email' => ['required', 'email', 'unique:schools,email', new NotDisposableEmail],
             'school_address' => 'required|string',
             'school_city' => 'required|string',
             'school_contact' => 'nullable|string|max:500',
@@ -236,8 +238,8 @@ class SchoolController extends Controller
             'school_gender_type' => 'required|in:girls,boys,co-education,separate-campuses',
             'school_ownership_type' => 'required|in:private,government,semi-government,ngo',
             'school_website' => 'nullable|url',
-            'admin_name' => 'required|string|max:255',
-            'admin_email' => 'required|email|unique:users,email',
+            'admin_name' => ['required', 'string', 'min:2', 'max:100', new NoSpamContent],
+            'admin_email' => ['required', 'email:rfc,dns', 'unique:users,email', new NotDisposableEmail],
             'admin_password' => 'required|string|min:8|confirmed',
             'fee_structure_type' => 'required|in:fixed,class_wise',
             'regular_fees' => 'nullable|numeric|min:0|max:99999999.99',

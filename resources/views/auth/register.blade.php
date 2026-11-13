@@ -85,6 +85,7 @@
                 <div id="userRegistration">
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
+                        <x-spam-guard />
 
                         <!-- Sticky Error Summary -->
                         <div id="userErrorSummary" class="school-error-summary" style="display:none;" role="alert" aria-live="polite">
@@ -166,6 +167,7 @@
                 <div id="schoolRegistration" class="school-registration">
                     <form method="POST" action="{{ route('school.register') }}">
                         @csrf
+                        <x-spam-guard />
 
                         <!-- Sticky Error Summary -->
                         <div id="schoolErrorSummary" class="school-error-summary" style="display:none;" role="alert" aria-live="polite">
